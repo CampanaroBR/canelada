@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { gerarStories } from "@/lib/stories";
 
 export async function criarRodada() {
   const session = await auth();
@@ -85,6 +86,12 @@ export async function submitVotos(rodadaId: string, votos: VotoInput[]) {
     }
   } catch {
     return { error: "Erro ao registrar votos. Tente novamente." };
+  }
+
+  try {
+    await gerarStories(rodadaId);
+  } catch {
+    // story generation is non-critical — don't block the response
   }
 
   return { success: true };
