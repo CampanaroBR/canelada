@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { SelecaoCard } from "./SelecaoCard";
 
 export type StoryWithRodada = Prisma.StoryGetPayload<{
   include: { rodada: { select: { data: true } } };
@@ -59,6 +60,10 @@ function rodadaLabel(date: Date): string {
 }
 
 export function StoryCard({ story }: { story: StoryWithRodada }) {
+  if (story.tipo === "SELECAO") {
+    return <SelecaoCard story={story} />;
+  }
+
   const cfg = TIPO_CONFIG[story.tipo];
 
   return (

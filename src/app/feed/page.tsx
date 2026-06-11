@@ -4,8 +4,32 @@ import { prisma } from "@/lib/prisma";
 import { StoryCard, type StoryWithRodada } from "./StoryCard";
 import { BottomNav } from "@/components/layout/BottomNav";
 import Link from "next/link";
+import { criarRodada } from "@/app/votacao/actions";
 
 export const dynamic = "force-dynamic";
+
+const FAB_BASE: React.CSSProperties = {
+  position: "fixed",
+  bottom: "calc(72px + env(safe-area-inset-bottom, 0px))",
+  right: "max(20px, calc((100vw - 430px) / 2 + 20px))",
+  zIndex: 20,
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+  borderRadius: "var(--radius-pill)",
+  padding: "12px 18px",
+  fontFamily: "var(--font-display)",
+  fontWeight: 900,
+  fontSize: "14px",
+  letterSpacing: "0.08em",
+  textTransform: "uppercase",
+  textDecoration: "none",
+  boxShadow: "var(--shadow-accent), var(--shadow-lg)",
+  whiteSpace: "nowrap",
+  border: "none",
+  cursor: "pointer",
+  WebkitTapHighlightColor: "transparent",
+};
 
 export default async function FeedPage() {
   const session = await auth();
@@ -13,24 +37,37 @@ export default async function FeedPage() {
 
   const jogador = await prisma.jogador.findUnique({
     where: { userId: session.user.id },
-    select: { grupoId: true },
+    select: { id: true, grupoId: true },
   });
   if (!jogador) redirect("/onboarding");
 
-  const stories = await prisma.story.findMany({
-    where: { rodada: { grupoId: jogador.grupoId } },
-    include: { rodada: { select: { data: true } } },
-    orderBy: { createdAt: "desc" },
-    take: 50,
-  });
+  const [stories, rodadaAtiva] = await Promise.all([
+    prisma.story.findMany({
+      where: { rodada: { grupoId: jogador.grupoId } },
+      include: { rodada: { select: { data: true } } },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    }),
+    prisma.rodada.findFirst({
+      where: { grupoId: jogador.grupoId, encerrada: false },
+      select: { id: true },
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
+
+  const jaVotou = rodadaAtiva
+    ? !!(await prisma.voto.findFirst({
+        where: { rodadaId: rodadaAtiva.id, votanteId: jogador.id },
+        select: { id: true },
+      }))
+    : false;
 
   return (
     <div style={{ minHeight: "100dvh", background: "var(--color-bg)" }}>
 
-      {/* Sticky header — top: env(safe-area-inset-top) so it sticks below notch */}
       <header style={{
         position: "sticky",
-        top: "env(safe-area-inset-top, 0px)",
+        top: 0,
         zIndex: 30,
         height: "56px",
         display: "flex",
@@ -38,9 +75,9 @@ export default async function FeedPage() {
         justifyContent: "space-between",
         padding: "0 20px",
         background: "rgba(10,10,10,0.90)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        borderBottom: "1px solid var(--color-border-muted)",
+        backdropFilter: "blur(20px) saturate(180%)",
+        WebkitBackdropFilter: "blur(20px) saturate(180%)",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
       }}>
         <span style={{
           fontFamily: "var(--font-display)",
@@ -52,7 +89,6 @@ export default async function FeedPage() {
         }}>
           CANELADA
         </span>
-        {/* 44×44 touch target for accessibility */}
         <button
           aria-label="Notificações"
           style={{
@@ -74,7 +110,6 @@ export default async function FeedPage() {
         </button>
       </header>
 
-      {/* Content — padding-bottom clears bottom nav + safe area */}
       <main style={{
         padding: "16px 16px calc(88px + env(safe-area-inset-bottom, 0px))",
         display: "flex",
@@ -90,34 +125,32 @@ export default async function FeedPage() {
         }
       </main>
 
-      {/* FAB — floats above bottom nav, right-aligned within 430px container */}
-      <Link
-        href="/votacao"
-        style={{
-          position: "fixed",
-          bottom: "calc(72px + env(safe-area-inset-bottom, 0px))",
-          right: "max(20px, calc((100vw - 430px) / 2 + 20px))",
-          zIndex: 20,
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          background: "var(--color-accent)",
-          color: "var(--color-on-accent)",
-          borderRadius: "var(--radius-pill)",
-          padding: "12px 18px",
-          fontFamily: "var(--font-display)",
-          fontWeight: 900,
-          fontSize: "14px",
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          textDecoration: "none",
-          boxShadow: "var(--shadow-accent), var(--shadow-lg)",
-          whiteSpace: "nowrap",
-        }}
-      >
-        <span style={{ fontSize: "17px" }}>⚽</span>
-        BABA ROLOU HOJE
-      </Link>
+      {/* Contextual FAB */}
+      {!rodadaAtiva && (
+        <form
+          action={criarRodada}
+          style={{
+            position: "fixed",
+            bottom: "calc(72px + env(safe-area-inset-bottom, 0px))",
+            right: "max(20px, calc((100vw - 430px) / 2 + 20px))",
+            zIndex: 20,
+          }}
+        >
+          <button type="submit" style={{ ...FAB_BASE, background: "var(--color-accent)", color: "var(--color-on-accent)" }}>
+            <span style={{ fontSize: "17px" }}>⚽</span>
+            BABA ROLOU HOJE
+          </button>
+        </form>
+      )}
+      {rodadaAtiva && !jaVotou && (
+        <Link
+          href="/votacao"
+          style={{ ...FAB_BASE, background: "var(--color-accent)", color: "var(--color-on-accent)" }}
+        >
+          <span style={{ fontSize: "17px" }}>🗳️</span>
+          VOTAR AGORA
+        </Link>
+      )}
 
       <BottomNav />
     </div>
@@ -136,17 +169,7 @@ function EmptyFeed() {
       textAlign: "center",
       gap: "20px",
     }}>
-      {/* Ghost ball */}
-      <div style={{
-        fontSize: "88px",
-        lineHeight: 1,
-        filter: "grayscale(1)",
-        opacity: 0.08,
-        userSelect: "none",
-      }}>
-        ⚽
-      </div>
-
+      <div style={{ fontSize: "88px", lineHeight: 1, filter: "grayscale(1)", opacity: 0.08, userSelect: "none" }}>⚽</div>
       <div>
         <h2 style={{
           fontFamily: "var(--font-display)",
