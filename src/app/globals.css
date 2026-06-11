@@ -2,8 +2,9 @@
 @import "tailwindcss";
 
 :root {
-  /* Brand / Green */
-  --green: #9fe870;
+  /* Brand / Accent */
+  --color-accent: #B5FF4D;
+  --green: #B5FF4D;
   --green-pale: #e2f6d5;
   --green-mid: #c5edab;
   --green-deep: #163300;
