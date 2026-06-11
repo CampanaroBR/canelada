@@ -10,7 +10,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Google,
     Resend({
-      from: "Canelada <no-reply@canelada.app>",
+      from: "Canelada <onboarding@resend.dev>",
     }),
   ],
   callbacks: {
