@@ -1,0 +1,168 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  apelido       String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts      Account[]
+  sessions      Session[]
+  jogador       Jogador?
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?  
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Grupo {
+  id        String   @id @default(cuid())
+  nome      String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+
+  jogadores Jogador[]
+  rodadas   Rodada[]
+}
+
+model Jogador {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  grupoId   String
+  apelido   String
+  foto      String?
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  grupo     Grupo    @relation(fields: [grupoId], references: [id])
+  votosRecebidos  Voto[]   @relation("VotadoVotos")
+  votosEmitidos   Voto[]   @relation("VotanteVotos")
+  traitsRecebidas JogadorTrait[]
+}
+
+model Rodada {
+  id          String       @id @default(cuid())
+  grupoId     String
+  data        DateTime     @default(now())
+  encerrada   Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+
+  grupo       Grupo        @relation(fields: [grupoId], references: [id])
+  votos       Voto[]
+  stories     Story[]
+}
+
+model Voto {
+  id          String     @id @default(cuid())
+  rodadaId    String
+  votanteId   String
+  votadoId    String
+  categoria   CategoriaVoto
+  traitSlug   String?
+  createdAt   DateTime   @default(now())
+
+  rodada      Rodada     @relation(fields: [rodadaId], references: [id])
+  votante     Jogador    @relation("VotanteVotos", fields: [votanteId], references: [id])
+  votado      Jogador    @relation("VotadoVotos", fields: [votadoId], references: [id])
+
+  @@unique([rodadaId, votanteId, categoria])
+}
+
+enum CategoriaVoto {
+  MVP
+  BAGRE
+  RACUDO
+  RESENHA
+  TRAIT
+}
+
+model Trait {
+  slug        String         @id
+  nome        String
+  descricao   String?
+  categoria   TraitCategoria
+  emoji       String?
+
+  jogadores   JogadorTrait[]
+}
+
+enum TraitCategoria {
+  FUTEBOL
+  PERSONALIDADE
+  RESENHA
+}
+
+model JogadorTrait {
+  id          String   @id @default(cuid())
+  jogadorId   String
+  traitSlug   String
+  contador    Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  jogador     Jogador  @relation(fields: [jogadorId], references: [id])
+  trait       Trait    @relation(fields: [traitSlug], references: [slug])
+
+  @@unique([jogadorId, traitSlug])
+}
+
+model Story {
+  id          String    @id @default(cuid())
+  rodadaId    String
+  texto       String
+  tipo        StoryTipo
+  createdAt   DateTime  @default(now())
+
+  rodada      Rodada    @relation(fields: [rodadaId], references: [id])
+}
+
+enum StoryTipo {
+  MVP
+  BAGRE
+  TRAIT_CONQUISTADA
+  SELECAO
+  SEQUENCIA
+}
