@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-const AVATAR_COLORS = ["#B5FF4D", "#60A5FA", "#F59E0B", "#EF4444", "#A78BFA", "#34D399", "#F97316", "#EC4899"];
+const AVATAR_COLORS = ["#9fe870", "#60A5FA", "#F59E0B", "#EF4444", "#A78BFA", "#34D399", "#F97316", "#EC4899"];
 function getAvatarColor(name: string) {
   let h = 0;
   for (const c of name) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
@@ -18,13 +18,13 @@ function getInitials(name: string) {
 }
 
 const CAT_CONFIG: Record<string, { label: string; color: string }> = {
-  FUTEBOL:       { label: "Futebol",       color: "#B5FF4D" },
+  FUTEBOL:       { label: "Futebol",       color: "#9fe870" },
   PERSONALIDADE: { label: "Personalidade", color: "#F59E0B" },
   RESENHA:       { label: "Resenha",       color: "#EF4444" },
 };
 
 const VOTO_CONFIG: Record<string, { label: string; color: string }> = {
-  MVP:     { label: "MVP",     color: "#B5FF4D" },
+  MVP:     { label: "MVP",     color: "#9fe870" },
   BAGRE:   { label: "Bagre",   color: "#EF4444" },
   RACUDO:  { label: "Raçudo",  color: "#F59E0B" },
   RESENHA: { label: "Resenha", color: "#60A5FA" },
@@ -120,10 +120,10 @@ export default async function PerfilPage({
         display: "flex",
         alignItems: "center",
         padding: "0 20px",
-        background: "rgba(10,10,10,0.90)",
-        backdropFilter: "blur(20px) saturate(180%)",
-        WebkitBackdropFilter: "blur(20px) saturate(180%)",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        background: "rgba(18,18,18,0.60)",
+        backdropFilter: "blur(40px) saturate(200%) brightness(1.08)",
+        WebkitBackdropFilter: "blur(40px) saturate(200%) brightness(1.08)",
+        boxShadow: ["inset 0 1px 0 rgba(255,255,255,0.12)", "inset 0 -1px 0 rgba(255,255,255,0.08)", "0 1px 0 rgba(0,0,0,0.20)"].join(", "),
         gap: "12px",
       }}>
         <Link
@@ -214,14 +214,14 @@ export default async function PerfilPage({
             maxWidth: "320px",
           }}>
             {[
-              { label: "MVPs", value: mvpCount, color: "#B5FF4D" },
+              { label: "MVPs", value: mvpCount, color: "#9fe870" },
               { label: "Bagres", value: bagreCount, color: "#EF4444" },
               { label: "Traits", value: traitsUnlocked, color: "#A78BFA" },
             ].map((s) => (
               <div key={s.label} style={{
                 background: "var(--color-surface-1)",
                 borderRadius: "var(--radius-md)",
-                border: "1px solid var(--color-border)",
+                boxShadow: "var(--shadow-border)",
                 padding: "12px 8px",
                 display: "flex",
                 flexDirection: "column",
@@ -234,6 +234,7 @@ export default async function PerfilPage({
                   fontSize: "28px",
                   lineHeight: 1,
                   color: s.color,
+                  fontVariantNumeric: "tabular-nums",
                 }}>
                   {s.value}
                 </span>
@@ -283,7 +284,7 @@ export default async function PerfilPage({
                         <div key={trait.slug} style={{
                           background: unlocked ? catCfg.color + "12" : "var(--color-surface-1)",
                           borderRadius: "var(--radius-md)",
-                          border: `1px solid ${unlocked ? catCfg.color + "44" : "var(--color-border)"}`,
+                          boxShadow: unlocked ? `0 0 0 1px ${catCfg.color}44` : "var(--shadow-border)",
                           padding: "12px 8px",
                           display: "flex",
                           flexDirection: "column",
@@ -361,7 +362,7 @@ export default async function PerfilPage({
                   <div key={rodada.id} style={{
                     background: "var(--color-surface-1)",
                     borderRadius: "var(--radius-md)",
-                    border: "1px solid var(--color-border)",
+                    boxShadow: "var(--shadow-border)",
                     padding: "12px 16px",
                     display: "flex",
                     justifyContent: "space-between",
@@ -386,7 +387,7 @@ export default async function PerfilPage({
                               padding: "2px 8px",
                               borderRadius: "9999px",
                               background: cfg.color + "20",
-                              border: `1px solid ${cfg.color}44`,
+                              boxShadow: `0 0 0 1px ${cfg.color}44`,
                               color: cfg.color,
                               fontFamily: "var(--font-display)",
                               fontWeight: 900,

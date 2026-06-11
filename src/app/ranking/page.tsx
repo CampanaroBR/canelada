@@ -57,10 +57,10 @@ export default async function RankingPage() {
         display: "flex",
         alignItems: "center",
         padding: "0 20px",
-        background: "rgba(10,10,10,0.90)",
-        backdropFilter: "blur(20px) saturate(180%)",
-        WebkitBackdropFilter: "blur(20px) saturate(180%)",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        background: "rgba(18,18,18,0.60)",
+        backdropFilter: "blur(40px) saturate(200%) brightness(1.08)",
+        WebkitBackdropFilter: "blur(40px) saturate(200%) brightness(1.08)",
+        boxShadow: ["inset 0 1px 0 rgba(255,255,255,0.12)", "inset 0 -1px 0 rgba(255,255,255,0.08)", "0 1px 0 rgba(0,0,0,0.20)"].join(", "),
       }}>
         <span style={{
           fontFamily: "var(--font-display)",

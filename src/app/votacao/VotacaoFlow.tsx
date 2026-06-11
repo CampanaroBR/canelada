@@ -15,14 +15,14 @@ interface Props {
 }
 
 const STEPS = [
-  { categoria: "MVP",     label: "CRAQUE DO DIA",   pre: "QUEM FOI",   accent: "O CRAQUE?",    color: "#B5FF4D" },
-  { categoria: "BAGRE",   label: "BAGRE DA VEZ",    pre: "QUEM FOI",   accent: "O BAGRE?",     color: "#EF4444" },
-  { categoria: "RACUDO",  label: "RAÇUDO",           pre: "QUEM MAIS",  accent: "SE RAÇOU?",    color: "#F59E0B" },
-  { categoria: "RESENHA", label: "REI DA RESENHA",  pre: "QUEM ANIMOU", accent: "A RESENHA?",  color: "#60A5FA" },
-  { categoria: "TRAIT",   label: "TRAIT ESPECIAL",  pre: "QUEM MERECE", accent: "UMA TRAIT?",  color: "#A78BFA" },
+  { categoria: "MVP",     label: "CRAQUE DO DIA",  pre: "QUEM FOI",    accent: "O CRAQUE?",   color: "#9fe870" },
+  { categoria: "BAGRE",   label: "BAGRE DA VEZ",   pre: "QUEM FOI",    accent: "O BAGRE?",    color: "#EF4444" },
+  { categoria: "RACUDO",  label: "RAÇUDO",          pre: "QUEM MAIS",   accent: "SE RAÇOU?",   color: "#F59E0B" },
+  { categoria: "RESENHA", label: "REI DA RESENHA", pre: "QUEM ANIMOU", accent: "A RESENHA?",  color: "#60A5FA" },
+  { categoria: "TRAIT",   label: "TRAIT ESPECIAL", pre: "QUEM MERECE", accent: "UMA TRAIT?",  color: "#A78BFA" },
 ] as const;
 
-const AVATAR_COLORS = ["#B5FF4D", "#60A5FA", "#F59E0B", "#EF4444", "#A78BFA", "#34D399", "#F97316", "#EC4899"];
+const AVATAR_COLORS = ["#9fe870", "#60A5FA", "#F59E0B", "#EF4444", "#A78BFA", "#34D399", "#F97316", "#EC4899"];
 
 function getAvatarColor(apelido: string) {
   let h = 0;
@@ -36,7 +36,6 @@ function getInitials(apelido: string) {
 }
 
 export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
-  // step 0-4: pick player for each category; step 5: pick trait; step 6: done
   const [step, setStep] = useState(0);
   const [selections, setSelections] = useState<Record<number, string>>({});
   const [traitSlug, setTraitSlug] = useState<string | null>(null);
@@ -56,16 +55,12 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
     }
   }, [step, router]);
 
-  // Allow proceeding even with no players (step will be skipped without a vote)
   const canProceed =
     step === 5 ? traitSlug !== null : noPlayers || selections[step] !== undefined;
 
   function handleBack() {
-    if (step === 0) {
-      router.push("/feed");
-    } else {
-      setStep(step - 1);
-    }
+    if (step === 0) router.push("/feed");
+    else setStep(step - 1);
   }
 
   function submitAllVotes() {
@@ -80,18 +75,12 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
           v.votadoId !== undefined
       );
 
-    if (votos.length === 0) {
-      setStep(6);
-      return;
-    }
+    if (votos.length === 0) { setStep(6); return; }
 
     startTransition(async () => {
       const result = await submitVotos(rodadaId, votos);
-      if ("error" in result) {
-        setError(result.error ?? "Erro desconhecido.");
-      } else {
-        setStep(6);
-      }
+      if ("error" in result) setError(result.error ?? "Erro desconhecido.");
+      else setStep(6);
     });
   }
 
@@ -99,201 +88,199 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
     if (step < 4) {
       setStep(step + 1);
     } else if (step === 4) {
-      // Skip trait picker if no player was selected (no outros)
-      if (noPlayers || selections[4] === undefined) {
-        submitAllVotes();
-      } else {
-        setStep(5);
-      }
+      if (noPlayers || selections[4] === undefined) submitAllVotes();
+      else setStep(5);
     } else if (step === 5) {
       submitAllVotes();
     }
   }
 
   if (step === 6) {
-    return (
-      <DoneScreen
-        selections={selections}
-        traitSlug={traitSlug}
-        jogadores={jogadores}
-        traits={traits}
-      />
-    );
+    return <DoneScreen selections={selections} traitSlug={traitSlug} jogadores={jogadores} traits={traits} />;
   }
 
   const traitPlayer = step === 5 ? jogadores.find((j) => j.id === selections[4]) : null;
 
   return (
-    <div style={{
-      position: "fixed",
-      top: 0,
-      bottom: 0,
-      left: "50%",
-      transform: "translateX(-50%)",
-      width: "min(100vw, 430px)",
-      background: "var(--color-bg)",
-      display: "flex",
-      flexDirection: "column",
-      overflow: "hidden",
-    }}>
-      {/* Progress bar */}
+    <>
+      <style>{`
+        .vote-card {
+          transition-property: transform, box-shadow, background;
+          transition-duration: 150ms;
+          transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .vote-card:active { transform: scale(0.96); }
+        .vote-cta {
+          transition-property: background, color, transform;
+          transition-duration: 150ms;
+          transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .vote-cta:not(:disabled):active { transform: scale(0.96); }
+        .vote-back {
+          transition-property: color, background;
+          transition-duration: 150ms;
+          transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+        }
+      `}</style>
       <div style={{
+        position: "fixed",
+        top: 0,
+        bottom: 0,
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: "min(100vw, 430px)",
+        background: "var(--color-bg)",
         display: "flex",
-        gap: "4px",
-        padding: "0 16px",
-        paddingTop: "calc(12px + env(safe-area-inset-top, 0px))",
-        paddingBottom: "12px",
+        flexDirection: "column",
+        overflow: "hidden",
       }}>
-        {STEPS.map((s, i) => (
-          <div
-            key={i}
-            style={{
-              flex: 1,
-              height: "3px",
-              borderRadius: "9999px",
-              background: i <= progressStep ? s.color : "var(--color-surface-2)",
-              opacity: i > progressStep ? 0.3 : 1,
-              transition: "background 0.3s, opacity 0.3s",
-            }}
-          />
-        ))}
-      </div>
-
-      {/* Header */}
-      <div style={{ padding: "0 20px 16px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-          {/* Back button — 44×44 touch target */}
-          <button
-            onClick={handleBack}
-            aria-label="Voltar"
-            style={{
-              width: "44px",
-              height: "44px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              color: "var(--color-text-muted)",
-              marginLeft: "-10px",
-              WebkitTapHighlightColor: "transparent",
-              borderRadius: "var(--radius-sm)",
-            }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
-
-          <div style={{
-            background: cfg.color + "22",
-            border: `1px solid ${cfg.color}55`,
-            borderRadius: "9999px",
-            padding: "4px 12px",
-            fontFamily: "var(--font-display)",
-            fontWeight: 900,
-            fontSize: "11px",
-            letterSpacing: "0.12em",
-            textTransform: "uppercase" as const,
-            color: cfg.color,
-          }}>
-            {cfg.label}
-          </div>
-
-          <span style={{ fontFamily: "var(--font-body)", fontSize: "12px", color: "var(--color-text-muted)", minWidth: "34px", textAlign: "right" }}>
-            {step >= 4 ? "5" : step + 1} / 5
-          </span>
+        {/* Progress bar */}
+        <div style={{
+          display: "flex",
+          gap: "4px",
+          padding: "0 16px",
+          paddingTop: "calc(12px + env(safe-area-inset-top, 0px))",
+          paddingBottom: "12px",
+        }}>
+          {STEPS.map((s, i) => (
+            <div
+              key={i}
+              style={{
+                flex: 1,
+                height: "3px",
+                borderRadius: "9999px",
+                background: i <= progressStep ? s.color : "var(--color-surface-2)",
+                opacity: i > progressStep ? 0.3 : 1,
+                transition: "background 300ms cubic-bezier(0.23,1,0.32,1), opacity 300ms cubic-bezier(0.23,1,0.32,1)",
+              }}
+            />
+          ))}
         </div>
 
-        <h1 style={{
-          fontFamily: "var(--font-display)",
-          fontWeight: 900,
-          fontSize: "clamp(30px, 8vw, 40px)",
-          lineHeight: 0.9,
-          letterSpacing: "-0.01em",
-          textTransform: "uppercase",
-          color: "var(--color-text-primary)",
-        }}>
-          {step === 5 ? (
-            <>
-              QUAL A<br />
-              <span style={{ color: cfg.color }}>TRAIT?</span>
-            </>
-          ) : (
-            <>
-              {cfg.pre}<br />
-              <span style={{ color: cfg.color }}>{cfg.accent}</span>
-            </>
-          )}
-        </h1>
+        {/* Header */}
+        <div style={{ padding: "0 20px 16px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+            <button
+              onClick={handleBack}
+              aria-label="Voltar"
+              className="vote-back"
+              style={{
+                width: "44px",
+                height: "44px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                color: "var(--color-text-muted)",
+                marginLeft: "-10px",
+                WebkitTapHighlightColor: "transparent",
+                borderRadius: "var(--radius-sm)",
+              }}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
 
-        {step === 5 && traitPlayer && (
-          <p style={{
-            marginTop: "6px",
-            fontSize: "13px",
-            color: "var(--color-text-muted)",
-            fontFamily: "var(--font-body)",
-          }}>
-            Para <strong style={{ color: "var(--color-text-secondary)" }}>{traitPlayer.apelido}</strong>
-          </p>
-        )}
-      </div>
+            {/* Label pill — shadow-as-border */}
+            <div style={{
+              background: cfg.color + "18",
+              boxShadow: `0 0 0 1px ${cfg.color}50`,
+              borderRadius: "9999px",
+              padding: "4px 12px",
+              fontFamily: "var(--font-display)",
+              fontWeight: 900,
+              fontSize: "11px",
+              letterSpacing: "0.12em",
+              textTransform: "uppercase" as const,
+              color: cfg.color,
+            }}>
+              {cfg.label}
+            </div>
 
-      {/* Scrollable content */}
-      <div style={{ flex: 1, overflowY: "auto", padding: "0 16px" }}>
-        {step < 5 ? (
-          <PlayerGrid
-            jogadores={outros}
-            selected={selections[step]}
-            onSelect={(id) => setSelections((prev) => ({ ...prev, [step]: id }))}
-            color={cfg.color}
-          />
-        ) : (
-          <TraitGrid
-            traits={traits}
-            selected={traitSlug}
-            onSelect={setTraitSlug}
-          />
-        )}
-      </div>
+            <span className="tabular" style={{ fontFamily: "var(--font-body)", fontSize: "12px", color: "var(--color-text-muted)", minWidth: "34px", textAlign: "right" }}>
+              {step >= 4 ? "5" : step + 1} / 5
+            </span>
+          </div>
 
-      {/* Footer */}
-      <div style={{
-        padding: "12px 20px",
-        paddingBottom: "max(20px, env(safe-area-inset-bottom, 0px))",
-        borderTop: "1px solid var(--color-border-muted)",
-        background: "rgba(10,10,10,0.97)",
-      }}>
-        {error && (
-          <p style={{ color: "var(--color-danger)", fontSize: "13px", marginBottom: "8px", textAlign: "center", fontFamily: "var(--font-body)" }}>
-            {error}
-          </p>
-        )}
-        <button
-          onClick={handleNext}
-          disabled={!canProceed || isPending}
-          style={{
-            width: "100%",
-            height: "56px",
-            background: canProceed ? cfg.color : "var(--color-surface-2)",
-            color: canProceed ? "#0D0D0D" : "var(--color-text-muted)",
-            border: "none",
-            borderRadius: "var(--radius-md)",
+          <h1 style={{
             fontFamily: "var(--font-display)",
             fontWeight: 900,
-            fontSize: "16px",
-            letterSpacing: "0.08em",
+            fontSize: "clamp(30px, 8vw, 40px)",
+            lineHeight: 0.9,
+            letterSpacing: "-0.01em",
             textTransform: "uppercase",
-            cursor: canProceed ? "pointer" : "default",
-            transition: "background 0.15s, color 0.15s",
-            WebkitTapHighlightColor: "transparent",
-          }}
-        >
-          {isPending ? "ENVIANDO..." : step === 5 ? "CONFIRMAR VOTOS" : "PRÓXIMO →"}
-        </button>
+            color: "var(--color-text-primary)",
+          }}>
+            {step === 5 ? (
+              <>QUAL A<br /><span style={{ color: cfg.color }}>TRAIT?</span></>
+            ) : (
+              <>{cfg.pre}<br /><span style={{ color: cfg.color }}>{cfg.accent}</span></>
+            )}
+          </h1>
+
+          {step === 5 && traitPlayer && (
+            <p style={{ marginTop: "6px", fontSize: "13px", color: "var(--color-text-muted)", fontFamily: "var(--font-body)" }}>
+              Para <strong style={{ color: "var(--color-text-secondary)" }}>{traitPlayer.apelido}</strong>
+            </p>
+          )}
+        </div>
+
+        {/* Scrollable content */}
+        <div style={{ flex: 1, overflowY: "auto", padding: "0 16px" }}>
+          {step < 5 ? (
+            <PlayerGrid
+              jogadores={outros}
+              selected={selections[step]}
+              onSelect={(id) => setSelections((prev) => ({ ...prev, [step]: id }))}
+              color={cfg.color}
+            />
+          ) : (
+            <TraitGrid traits={traits} selected={traitSlug} onSelect={setTraitSlug} />
+          )}
+        </div>
+
+        {/* Footer — liquid glass */}
+        <div style={{
+          padding: "12px 20px",
+          paddingBottom: "max(20px, env(safe-area-inset-bottom, 0px))",
+          background: "rgba(18,18,18,0.80)",
+          backdropFilter: "blur(24px) saturate(180%)",
+          WebkitBackdropFilter: "blur(24px) saturate(180%)",
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08)",
+        }}>
+          {error && (
+            <p role="alert" style={{ color: "var(--color-danger)", fontSize: "13px", marginBottom: "8px", textAlign: "center", fontFamily: "var(--font-body)" }}>
+              {error}
+            </p>
+          )}
+          <button
+            onClick={handleNext}
+            disabled={!canProceed || isPending}
+            className="vote-cta"
+            style={{
+              width: "100%",
+              height: "52px",
+              background: canProceed ? cfg.color : "var(--color-surface-2)",
+              color: canProceed ? "#0D0D0D" : "var(--color-text-muted)",
+              border: "none",
+              borderRadius: "var(--radius-xl)",
+              fontFamily: "var(--font-display)",
+              fontWeight: 900,
+              fontSize: "16px",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              cursor: canProceed ? "pointer" : "default",
+              WebkitTapHighlightColor: "transparent",
+            }}
+          >
+            {isPending ? "ENVIANDO..." : step === 5 ? "CONFIRMAR VOTOS" : "PRÓXIMO →"}
+          </button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -325,9 +312,13 @@ function PlayerGrid({
           <button
             key={j.id}
             onClick={() => onSelect(j.id)}
+            className="vote-card"
             style={{
               background: isSelected ? color + "18" : "var(--color-surface-1)",
-              border: `2px solid ${isSelected ? color : "var(--color-border)"}`,
+              boxShadow: isSelected
+                ? `0 0 0 2px ${color}, inset 0 1px 0 rgba(255,255,255,0.06)`
+                : "var(--shadow-border)",
+              border: "none",
               borderRadius: "var(--radius-md)",
               padding: "14px 8px 10px",
               display: "flex",
@@ -335,7 +326,6 @@ function PlayerGrid({
               alignItems: "center",
               gap: "8px",
               cursor: "pointer",
-              transition: "all 0.12s",
               WebkitTapHighlightColor: "transparent",
             }}
           >
@@ -344,7 +334,7 @@ function PlayerGrid({
               height: "52px",
               borderRadius: "50%",
               background: isSelected ? color + "22" : avatarColor + "18",
-              border: `2px solid ${isSelected ? color : avatarColor + "55"}`,
+              boxShadow: `0 0 0 2px ${isSelected ? color + "80" : avatarColor + "55"}`,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -353,7 +343,6 @@ function PlayerGrid({
               fontSize: "15px",
               letterSpacing: "0.04em",
               color: isSelected ? color : avatarColor,
-              position: "relative",
               flexShrink: 0,
             }}>
               {isSelected ? (
@@ -396,9 +385,9 @@ function TraitGrid({
   onSelect: (slug: string) => void;
 }) {
   const categories = [
-    { key: "FUTEBOL", label: "Futebol" },
-    { key: "PERSONALIDADE", label: "Personalidade" },
-    { key: "RESENHA", label: "Resenha" },
+    { key: "FUTEBOL",       label: "Futebol",       color: "#9fe870" },
+    { key: "PERSONALIDADE", label: "Personalidade", color: "#F59E0B" },
+    { key: "RESENHA",       label: "Resenha",       color: "#EF4444" },
   ];
 
   return (
@@ -413,9 +402,10 @@ function TraitGrid({
               fontWeight: 700,
               letterSpacing: "0.12em",
               textTransform: "uppercase",
-              color: "var(--color-text-muted)",
+              color: cat.color,
               fontFamily: "var(--font-body)",
               marginBottom: "8px",
+              opacity: 0.8,
             }}>
               {cat.label}
             </p>
@@ -426,9 +416,13 @@ function TraitGrid({
                   <button
                     key={trait.slug}
                     onClick={() => onSelect(trait.slug)}
+                    className="vote-card"
                     style={{
-                      background: isSelected ? "rgba(167,139,250,0.18)" : "var(--color-surface-1)",
-                      border: `2px solid ${isSelected ? "#A78BFA" : "var(--color-border)"}`,
+                      background: isSelected ? cat.color + "18" : "var(--color-surface-1)",
+                      boxShadow: isSelected
+                        ? `0 0 0 2px ${cat.color}, inset 0 1px 0 rgba(255,255,255,0.06)`
+                        : "var(--shadow-border)",
+                      border: "none",
                       borderRadius: "var(--radius-md)",
                       padding: "12px 8px 10px",
                       display: "flex",
@@ -436,7 +430,6 @@ function TraitGrid({
                       alignItems: "center",
                       gap: "4px",
                       cursor: "pointer",
-                      transition: "all 0.12s",
                       WebkitTapHighlightColor: "transparent",
                     }}
                   >
@@ -445,9 +438,10 @@ function TraitGrid({
                       fontSize: "10px",
                       fontWeight: 600,
                       fontFamily: "var(--font-body)",
-                      color: isSelected ? "#A78BFA" : "var(--color-text-secondary)",
+                      color: isSelected ? cat.color : "var(--color-text-secondary)",
                       textAlign: "center",
                       lineHeight: 1.2,
+                      transition: "color 150ms cubic-bezier(0.23,1,0.32,1)",
                     }}>
                       {trait.nome}
                     </span>
@@ -477,7 +471,7 @@ function DoneScreen({
   const trait = traits.find((t) => t.slug === traitSlug);
 
   const summary = [
-    { label: "MVP",     color: "#B5FF4D", value: apelido(selections[0]) },
+    { label: "MVP",     color: "#9fe870", value: apelido(selections[0]) },
     { label: "BAGRE",   color: "#EF4444", value: apelido(selections[1]) },
     { label: "RAÇUDO",  color: "#F59E0B", value: apelido(selections[2]) },
     { label: "RESENHA", color: "#60A5FA", value: apelido(selections[3]) },
@@ -517,12 +511,13 @@ function DoneScreen({
         </p>
       </div>
 
+      {/* Summary card — shadow-as-border */}
       <div style={{
         width: "100%",
         maxWidth: "320px",
         background: "var(--color-surface-1)",
         borderRadius: "var(--radius-lg)",
-        border: "1px solid var(--color-border)",
+        boxShadow: "var(--shadow-border)",
         overflow: "hidden",
       }}>
         {summary.map((item, i) => (
@@ -533,7 +528,7 @@ function DoneScreen({
               justifyContent: "space-between",
               alignItems: "center",
               padding: "12px 16px",
-              borderBottom: i < summary.length - 1 ? "1px solid var(--color-border-muted)" : "none",
+              boxShadow: i < summary.length - 1 ? "inset 0 -1px 0 rgba(255,255,255,0.05)" : "none",
             }}
           >
             <span style={{
