@@ -96,7 +96,11 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
   return (
     <div style={{
       position: "fixed",
-      inset: 0,
+      top: 0,
+      bottom: 0,
+      left: "50%",
+      transform: "translateX(-50%)",
+      width: "min(100vw, 430px)",
       background: "var(--color-bg)",
       display: "flex",
       flexDirection: "column",

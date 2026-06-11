@@ -68,16 +68,18 @@ html {
 }
 
 body {
-  /* Mobile-first: max-width centered on wider screens */
-  max-width: 430px;
-  margin-inline: auto;
-  min-height: 100dvh;
   background: #0A0A0A;
   color: #F5F5F5;
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
-  /* Push content below iOS notch / Dynamic Island */
-  padding-top: env(safe-area-inset-top, 0px);
-  /* Prevent horizontal overflow on mobile */
   overflow-x: hidden;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.35; }
+  50%       { opacity: 0.6; }
+}
+
+.skeleton-pulse {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
 }

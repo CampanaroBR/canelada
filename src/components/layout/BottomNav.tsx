@@ -57,10 +57,10 @@ export function BottomNav() {
       padding: "8px 12px",
       /* Explicit 2-part padding so the inner 8px + safe area sum correctly */
       paddingBottom: "max(12px, env(safe-area-inset-bottom, 0px))",
-      background: "rgba(10,10,10,0.94)",
-      backdropFilter: "blur(20px)",
-      WebkitBackdropFilter: "blur(20px)",
-      borderTop: "1px solid var(--color-border-muted)",
+      background: "rgba(10,10,10,0.7)",
+      backdropFilter: "blur(20px) saturate(180%)",
+      WebkitBackdropFilter: "blur(20px) saturate(180%)",
+      borderTop: "1px solid rgba(255,255,255,0.08)",
     }}>
       <div style={{
         display: "flex",

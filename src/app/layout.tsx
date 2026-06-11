@@ -18,7 +18,22 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR">
-      <body>{children}</body>
+      <body>
+        <div
+          id="app-shell"
+          style={{
+            maxWidth: "430px",
+            marginInline: "auto",
+            minHeight: "100dvh",
+            background: "#0A0A0A",
+            position: "relative",
+            overflowX: "hidden",
+            paddingTop: "env(safe-area-inset-top, 0px)",
+          }}
+        >
+          {children}
+        </div>
+      </body>
     </html>
   );
 }
