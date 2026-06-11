@@ -10,14 +10,14 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   async function handleGoogle() {
-    await signIn("google", { callbackUrl: "/feed" });
+    await signIn("google", { callbackUrl: "/api/auth/post-login" });
   }
 
   async function handleMagicLink(e: React.FormEvent) {
     e.preventDefault();
     if (!email) return;
     setLoading(true);
-    await signIn("resend", { email, callbackUrl: "/feed", redirect: false });
+    await signIn("resend", { email, callbackUrl: "/api/auth/post-login", redirect: false });
     setSent(true);
     setLoading(false);
   }
