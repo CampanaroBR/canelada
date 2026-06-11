@@ -3,6 +3,8 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { BottomNav } from "@/components/layout/BottomNav";
 import Link from "next/link";
+import Image from "next/image";
+import { TRAIT_SVG } from "@/app/votacao/VotacaoFlow";
 
 export const dynamic = "force-dynamic";
 
@@ -456,15 +458,17 @@ export default async function PerfilPage({
                     </span>
                   </div>
 
-                  {/* Circular badge grid — inspirado na tela Milestones */}
+                  {/* Hexagon badge grid */}
                   <div style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(4, 1fr)",
-                    gap: "8px",
+                    gridTemplateColumns: "repeat(3, 1fr)",
+                    gap: "12px 8px",
                   }}>
                     {catTraits.map((trait) => {
                       const count = unlockedMap.get(trait.slug);
                       const unlocked = count !== undefined;
+                      const svgSrc = TRAIT_SVG[trait.slug];
+
                       return (
                         <div key={trait.slug} style={{
                           display: "flex",
@@ -472,51 +476,74 @@ export default async function PerfilPage({
                           alignItems: "center",
                           gap: "8px",
                         }}>
-                          {/* Circular badge */}
+                          {/* Hexagon outer shell — borda via padding */}
                           <div style={{
-                            width: "60px",
-                            height: "60px",
-                            borderRadius: "50%",
-                            background: unlocked
-                              ? `radial-gradient(circle at 35% 35%, ${catCfg.color}30, ${catCfg.color}10)`
-                              : "var(--color-surface-2)",
-                            boxShadow: unlocked
-                              ? [
-                                  `0 0 0 1px ${catCfg.color}50`,
-                                  `0 0 16px ${catCfg.color}20`,
-                                  "inset 0 1px 0 rgba(255,255,255,0.10)",
-                                ].join(", ")
-                              : "0 0 0 1px rgba(255,255,255,0.06)",
+                            width: "76px",
+                            height: "76px",
+                            clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
+                            background: unlocked ? catCfg.color + "55" : "rgba(255,255,255,0.07)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
-                            fontSize: "22px",
-                            filter: unlocked ? "none" : "grayscale(1)",
-                            opacity: unlocked ? 1 : 0.3,
+                            padding: "3px",
                             position: "relative",
-                            flexShrink: 0,
                           }}>
-                            {trait.emoji ?? "⭐"}
+                            {/* Hexagon inner */}
+                            <div style={{
+                              width: "100%",
+                              height: "100%",
+                              clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
+                              background: unlocked
+                                ? `radial-gradient(circle at 35% 30%, ${catCfg.color}28, ${catCfg.color}10)`
+                                : "var(--color-surface-2)",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              overflow: "hidden",
+                            }}>
+                              {svgSrc ? (
+                                <Image
+                                  src={svgSrc}
+                                  alt={trait.nome}
+                                  width={48}
+                                  height={48}
+                                  style={{
+                                    objectFit: "contain",
+                                    filter: unlocked ? "none" : "grayscale(1)",
+                                    opacity: unlocked ? 1 : 0.30,
+                                  }}
+                                />
+                              ) : (
+                                <span style={{
+                                  fontSize: "22px",
+                                  filter: unlocked ? "none" : "grayscale(1)",
+                                  opacity: unlocked ? 1 : 0.30,
+                                }}>
+                                  {trait.emoji ?? "⭐"}
+                                </span>
+                              )}
+                            </div>
 
                             {/* Count badge */}
                             {unlocked && count! > 1 && (
                               <div style={{
                                 position: "absolute",
-                                top: "-2px",
-                                right: "-2px",
+                                top: "4px",
+                                right: "4px",
                                 background: catCfg.color,
                                 color: "#0D0D0D",
                                 borderRadius: "9999px",
-                                minWidth: "18px",
-                                height: "18px",
+                                minWidth: "16px",
+                                height: "16px",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
-                                fontSize: "9px",
+                                fontSize: "8px",
                                 fontWeight: 900,
                                 fontFamily: "var(--font-display)",
-                                padding: "0 4px",
+                                padding: "0 3px",
                                 boxShadow: "0 0 0 2px var(--color-bg)",
+                                zIndex: 1,
                               }}>
                                 {count}
                               </div>
@@ -524,7 +551,7 @@ export default async function PerfilPage({
                           </div>
 
                           <span style={{
-                            fontSize: "9px",
+                            fontSize: "10px",
                             fontWeight: unlocked ? 700 : 500,
                             fontFamily: "var(--font-body)",
                             color: unlocked ? catCfg.color : "var(--color-text-muted)",
@@ -532,6 +559,7 @@ export default async function PerfilPage({
                             lineHeight: 1.3,
                             opacity: unlocked ? 1 : 0.4,
                             letterSpacing: "0.02em",
+                            maxWidth: "72px",
                           }}>
                             {trait.nome}
                           </span>

@@ -4,6 +4,7 @@ import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { submitVotos } from "./actions";
 import { BottomNav } from "@/components/layout/BottomNav";
+import Image from "next/image";
 
 type Jogador = { id: string; apelido: string };
 type Trait = { slug: string; nome: string; categoria: string; emoji: string | null };
@@ -16,12 +17,30 @@ interface Props {
 }
 
 const STEPS = [
-  { categoria: "MVP",     label: "CRAQUE DO DIA",  pre: "QUEM FOI",    accent: "O CRAQUE?",   color: "#9fe870" },
-  { categoria: "BAGRE",   label: "BAGRE DA VEZ",   pre: "QUEM FOI",    accent: "O BAGRE?",    color: "#EF4444" },
-  { categoria: "RACUDO",  label: "RAÇUDO",          pre: "QUEM MAIS",   accent: "SE RAÇOU?",   color: "#F59E0B" },
-  { categoria: "RESENHA", label: "REI DA RESENHA", pre: "QUEM ANIMOU", accent: "A RESENHA?",  color: "#60A5FA" },
-  { categoria: "TRAIT",   label: "TRAIT ESPECIAL", pre: "QUEM MERECE", accent: "UMA TRAIT?",  color: "#A78BFA" },
+  { categoria: "MVP",     label: "CRAQUE DO DIA",  pre: "QUEM FOI",    accent: "O CRAQUE?",   color: "#9fe870", illustration: "/traits/Craque.svg"    },
+  { categoria: "BAGRE",   label: "BAGRE DA VEZ",   pre: "QUEM FOI",    accent: "O BAGRE?",    color: "#EF4444", illustration: "/traits/Bagre.svg"     },
+  { categoria: "RACUDO",  label: "RAÇUDO",          pre: "QUEM MAIS",   accent: "SE RAÇOU?",   color: "#F59E0B", illustration: "/traits/Racudo.svg"    },
+  { categoria: "RESENHA", label: "REI DA RESENHA", pre: "QUEM ANIMOU", accent: "A RESENHA?",  color: "#60A5FA", illustration: "/traits/So_resenha.svg" },
+  { categoria: "TRAIT",   label: "TRAIT ESPECIAL", pre: "QUEM MERECE", accent: "UMA TRAIT?",  color: "#A78BFA", illustration: null                    },
 ] as const;
+
+/* slug → arquivo SVG em /public/traits/ */
+export const TRAIT_SVG: Record<string, string> = {
+  "racudo":        "/traits/Racudo.svg",
+  "matador":       "/traits/Matador.svg",
+  "paredao":       "/traits/Paredao.svg",
+  "categoria":     "/traits/Craque.svg",
+  "xerife":        "/traits/Xerife.svg",
+  "chorao":        "/traits/Chorao.svg",
+  "paneleiro":     "/traits/Paneleiro.svg",
+  "fominha":       "/traits/Fominha.svg",
+  "resenha-forte": "/traits/So_resenha.svg",
+  "bagre":         "/traits/Bagre.svg",
+  "cone":          "/traits/Cone.svg",
+  "corpo-mole":    "/traits/Corpo_mole.svg",
+  "firuleiro":     "/traits/Firuleiro.svg",
+  "reclamao":      "/traits/Reclamao.svg",
+};
 
 const AVATAR_COLORS = ["#9fe870", "#60A5FA", "#F59E0B", "#EF4444", "#A78BFA", "#34D399", "#F97316", "#EC4899"];
 
@@ -117,16 +136,11 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
           transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
         }
         .vote-cta:not(:disabled):active { transform: scale(0.96); }
-        .vote-back {
-          transition-property: color, background;
-          transition-duration: 150ms;
-          transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
-        }
       `}</style>
+
       <div style={{
         position: "fixed",
-        top: 0,
-        bottom: 0,
+        top: 0, bottom: 0,
         left: "50%",
         transform: "translateX(-50%)",
         width: "min(100vw, 430px)",
@@ -135,47 +149,37 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
         flexDirection: "column",
         overflow: "hidden",
       }}>
-        {/* Progress bar */}
+
+        {/* ── Progress bar ── */}
         <div style={{
           display: "flex",
           gap: "4px",
           padding: "0 16px",
           paddingTop: "calc(12px + env(safe-area-inset-top, 0px))",
-          paddingBottom: "12px",
+          paddingBottom: "10px",
+          flexShrink: 0,
         }}>
           {STEPS.map((s, i) => (
-            <div
-              key={i}
-              style={{
-                flex: 1,
-                height: "3px",
-                borderRadius: "9999px",
-                background: i <= progressStep ? s.color : "var(--color-surface-2)",
-                opacity: i > progressStep ? 0.3 : 1,
-                transition: "background 300ms cubic-bezier(0.23,1,0.32,1), opacity 300ms cubic-bezier(0.23,1,0.32,1)",
-              }}
-            />
+            <div key={i} style={{
+              flex: 1, height: "3px", borderRadius: "9999px",
+              background: i <= progressStep ? s.color : "var(--color-surface-2)",
+              opacity: i > progressStep ? 0.3 : 1,
+              transition: "background 300ms cubic-bezier(0.23,1,0.32,1), opacity 300ms cubic-bezier(0.23,1,0.32,1)",
+            }} />
           ))}
         </div>
 
-        {/* Header */}
-        <div style={{ padding: "0 20px 16px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+        {/* ── Header: back + label + counter ── */}
+        <div style={{ padding: "0 20px 10px", flexShrink: 0 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <button
               onClick={handleBack}
               aria-label="Voltar"
-              className="vote-back"
               style={{
-                width: "44px",
-                height: "44px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                color: "var(--color-text-muted)",
-                marginLeft: "-10px",
+                width: "44px", height: "44px",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                background: "none", border: "none", cursor: "pointer",
+                color: "var(--color-text-muted)", marginLeft: "-10px",
                 WebkitTapHighlightColor: "transparent",
                 borderRadius: "var(--radius-sm)",
               }}
@@ -185,34 +189,70 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
               </svg>
             </button>
 
-            {/* Label pill — shadow-as-border */}
             <div style={{
               background: cfg.color + "18",
               boxShadow: `0 0 0 1px ${cfg.color}50`,
               borderRadius: "9999px",
               padding: "4px 12px",
-              fontFamily: "var(--font-display)",
-              fontWeight: 900,
-              fontSize: "11px",
-              letterSpacing: "0.12em",
-              textTransform: "uppercase" as const,
-              color: cfg.color,
+              fontFamily: "var(--font-display)", fontWeight: 900,
+              fontSize: "11px", letterSpacing: "0.12em",
+              textTransform: "uppercase" as const, color: cfg.color,
             }}>
               {cfg.label}
             </div>
 
-            <span className="tabular" style={{ fontFamily: "var(--font-body)", fontSize: "12px", color: "var(--color-text-muted)", minWidth: "34px", textAlign: "right" }}>
+            <span className="tabular" style={{
+              fontFamily: "var(--font-body)", fontSize: "12px",
+              color: "var(--color-text-muted)", minWidth: "34px", textAlign: "right",
+            }}>
               {step >= 4 ? "5" : step + 1} / 5
             </span>
           </div>
+        </div>
 
+        {/* ── Ilustração do step — hero visual ── */}
+        {step < 5 && cfg.illustration && (
+          <div style={{
+            position: "relative",
+            flexShrink: 0,
+            height: "200px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            overflow: "hidden",
+          }}>
+            {/* Glow de fundo */}
+            <div aria-hidden style={{
+              position: "absolute",
+              inset: 0,
+              background: `radial-gradient(ellipse at center, ${cfg.color}20 0%, transparent 70%)`,
+              pointerEvents: "none",
+            }} />
+            {/* Fade inferior */}
+            <div aria-hidden style={{
+              position: "absolute",
+              bottom: 0, left: 0, right: 0, height: "60px",
+              background: "linear-gradient(to bottom, transparent, var(--color-bg))",
+              pointerEvents: "none",
+              zIndex: 1,
+            }} />
+            <Image
+              src={cfg.illustration}
+              alt={cfg.label}
+              width={180}
+              height={180}
+              style={{ objectFit: "contain", position: "relative", zIndex: 0 }}
+              priority
+            />
+          </div>
+        )}
+
+        {/* Título da pergunta */}
+        <div style={{ padding: "0 20px 12px", flexShrink: 0 }}>
           <h1 style={{
-            fontFamily: "var(--font-display)",
-            fontWeight: 900,
-            fontSize: "clamp(30px, 8vw, 40px)",
-            lineHeight: 0.9,
-            letterSpacing: "-0.01em",
-            textTransform: "uppercase",
+            fontFamily: "var(--font-display)", fontWeight: 900,
+            fontSize: "clamp(28px, 8vw, 38px)", lineHeight: 0.9,
+            letterSpacing: "-0.01em", textTransform: "uppercase",
             color: "var(--color-text-primary)",
           }}>
             {step === 5 ? (
@@ -221,7 +261,6 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
               <>{cfg.pre}<br /><span style={{ color: cfg.color }}>{cfg.accent}</span></>
             )}
           </h1>
-
           {step === 5 && traitPlayer && (
             <p style={{ marginTop: "6px", fontSize: "13px", color: "var(--color-text-muted)", fontFamily: "var(--font-body)" }}>
               Para <strong style={{ color: "var(--color-text-secondary)" }}>{traitPlayer.apelido}</strong>
@@ -229,7 +268,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
           )}
         </div>
 
-        {/* Scrollable content — padding bottom deixa espaço para footer + navbar */}
+        {/* ── Conteúdo scrollável ── */}
         <div style={{ flex: 1, overflowY: "auto", padding: "0 16px" }}>
           {step < 5 ? (
             <PlayerGrid
@@ -243,7 +282,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
           )}
         </div>
 
-        {/* Footer — liquid glass, acima do BottomNav */}
+        {/* ── Footer CTA ── */}
         <div style={{
           padding: "12px 20px",
           paddingBottom: "calc(84px + env(safe-area-inset-bottom, 0px))",
@@ -251,6 +290,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
           backdropFilter: "blur(24px) saturate(180%)",
           WebkitBackdropFilter: "blur(24px) saturate(180%)",
           boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08)",
+          flexShrink: 0,
         }}>
           {error && (
             <p role="alert" style={{ color: "var(--color-danger)", fontSize: "13px", marginBottom: "8px", textAlign: "center", fontFamily: "var(--font-body)" }}>
@@ -262,17 +302,12 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
             disabled={!canProceed || isPending}
             className="vote-cta"
             style={{
-              width: "100%",
-              height: "52px",
+              width: "100%", height: "52px",
               background: canProceed ? cfg.color : "var(--color-surface-2)",
               color: canProceed ? "#0D0D0D" : "var(--color-text-muted)",
-              border: "none",
-              borderRadius: "var(--radius-xl)",
-              fontFamily: "var(--font-display)",
-              fontWeight: 900,
-              fontSize: "16px",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
+              border: "none", borderRadius: "var(--radius-xl)",
+              fontFamily: "var(--font-display)", fontWeight: 900,
+              fontSize: "16px", letterSpacing: "0.08em", textTransform: "uppercase",
               cursor: canProceed ? "pointer" : "default",
               WebkitTapHighlightColor: "transparent",
             }}
@@ -287,12 +322,8 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
   );
 }
 
-function PlayerGrid({
-  jogadores,
-  selected,
-  onSelect,
-  color,
-}: {
+/* ── Player grid ── */
+function PlayerGrid({ jogadores, selected, onSelect, color }: {
   jogadores: Jogador[];
   selected: string | undefined;
   onSelect: (id: string) => void;
@@ -321,53 +352,33 @@ function PlayerGrid({
               boxShadow: isSelected
                 ? `0 0 0 2px ${color}, inset 0 1px 0 rgba(255,255,255,0.06)`
                 : "var(--shadow-border)",
-              border: "none",
-              borderRadius: "var(--radius-md)",
+              border: "none", borderRadius: "var(--radius-md)",
               padding: "14px 8px 10px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "8px",
-              cursor: "pointer",
-              WebkitTapHighlightColor: "transparent",
+              display: "flex", flexDirection: "column", alignItems: "center", gap: "8px",
+              cursor: "pointer", WebkitTapHighlightColor: "transparent",
             }}
           >
             <div style={{
-              width: "52px",
-              height: "52px",
-              borderRadius: "50%",
+              width: "52px", height: "52px", borderRadius: "50%",
               background: isSelected ? color + "22" : avatarColor + "18",
               boxShadow: `0 0 0 2px ${isSelected ? color + "80" : avatarColor + "55"}`,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontFamily: "var(--font-display)",
-              fontWeight: 900,
-              fontSize: "15px",
-              letterSpacing: "0.04em",
-              color: isSelected ? color : avatarColor,
-              flexShrink: 0,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontFamily: "var(--font-display)", fontWeight: 900,
+              fontSize: "15px", letterSpacing: "0.04em",
+              color: isSelected ? color : avatarColor, flexShrink: 0,
             }}>
               {isSelected ? (
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
-              ) : (
-                getInitials(j.apelido)
-              )}
+              ) : getInitials(j.apelido)}
             </div>
             <span style={{
-              fontSize: "11px",
-              fontWeight: isSelected ? 700 : 500,
+              fontSize: "11px", fontWeight: isSelected ? 700 : 500,
               fontFamily: "var(--font-body)",
               color: isSelected ? color : "var(--color-text-secondary)",
-              letterSpacing: "0.01em",
-              textAlign: "center",
-              lineHeight: 1.2,
-              maxWidth: "72px",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
+              letterSpacing: "0.01em", textAlign: "center", lineHeight: 1.2,
+              maxWidth: "72px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
             }}>
               {j.apelido}
             </span>
@@ -378,11 +389,8 @@ function PlayerGrid({
   );
 }
 
-function TraitGrid({
-  traits,
-  selected,
-  onSelect,
-}: {
+/* ── Trait grid com ilustrações SVG ── */
+function TraitGrid({ traits, selected, onSelect }: {
   traits: Trait[];
   selected: string | null;
   onSelect: (slug: string) => void;
@@ -401,20 +409,16 @@ function TraitGrid({
         return (
           <div key={cat.key}>
             <p style={{
-              fontSize: "10px",
-              fontWeight: 700,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              color: cat.color,
-              fontFamily: "var(--font-body)",
-              marginBottom: "8px",
-              opacity: 0.8,
+              fontSize: "10px", fontWeight: 700, letterSpacing: "0.12em",
+              textTransform: "uppercase", color: cat.color,
+              fontFamily: "var(--font-body)", marginBottom: "10px", opacity: 0.8,
             }}>
               {cat.label}
             </p>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px" }}>
               {catTraits.map((trait) => {
                 const isSelected = selected === trait.slug;
+                const svgSrc = TRAIT_SVG[trait.slug];
                 return (
                   <button
                     key={trait.slug}
@@ -425,25 +429,35 @@ function TraitGrid({
                       boxShadow: isSelected
                         ? `0 0 0 2px ${cat.color}, inset 0 1px 0 rgba(255,255,255,0.06)`
                         : "var(--shadow-border)",
-                      border: "none",
-                      borderRadius: "var(--radius-md)",
+                      border: "none", borderRadius: "var(--radius-md)",
                       padding: "12px 8px 10px",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      gap: "4px",
-                      cursor: "pointer",
-                      WebkitTapHighlightColor: "transparent",
+                      display: "flex", flexDirection: "column", alignItems: "center", gap: "6px",
+                      cursor: "pointer", WebkitTapHighlightColor: "transparent",
                     }}
                   >
-                    <span style={{ fontSize: "22px", lineHeight: 1 }}>{trait.emoji ?? "⭐"}</span>
+                    {/* Ilustração SVG ou emoji fallback */}
+                    {svgSrc ? (
+                      <div style={{
+                        width: "52px", height: "52px",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        filter: isSelected ? "none" : "saturate(0.7)",
+                      }}>
+                        <Image
+                          src={svgSrc}
+                          alt={trait.nome}
+                          width={52}
+                          height={52}
+                          style={{ objectFit: "contain" }}
+                        />
+                      </div>
+                    ) : (
+                      <span style={{ fontSize: "28px", lineHeight: 1 }}>{trait.emoji ?? "⭐"}</span>
+                    )}
                     <span style={{
-                      fontSize: "10px",
-                      fontWeight: 600,
+                      fontSize: "10px", fontWeight: 600,
                       fontFamily: "var(--font-body)",
                       color: isSelected ? cat.color : "var(--color-text-secondary)",
-                      textAlign: "center",
-                      lineHeight: 1.2,
+                      textAlign: "center", lineHeight: 1.2,
                       transition: "color 150ms cubic-bezier(0.23,1,0.32,1)",
                     }}>
                       {trait.nome}
@@ -459,12 +473,8 @@ function TraitGrid({
   );
 }
 
-function DoneScreen({
-  selections,
-  traitSlug,
-  jogadores,
-  traits,
-}: {
+/* ── Done screen — full-screen verde estilo TOP SNIPER ── */
+function DoneScreen({ selections, traitSlug, jogadores, traits }: {
   selections: Record<number, string>;
   traitSlug: string | null;
   jogadores: Jogador[];
@@ -485,138 +495,85 @@ function DoneScreen({
     <div style={{
       minHeight: "100dvh",
       background: "var(--color-accent)",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
+      display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center",
       padding: "32px 24px calc(32px + env(safe-area-inset-bottom, 0px))",
-      textAlign: "center",
-      gap: "32px",
-      position: "relative",
-      overflow: "hidden",
+      textAlign: "center", gap: "28px",
+      position: "relative", overflow: "hidden",
     }}>
-      {/* Stripe texture */}
       <div aria-hidden style={{
-        position: "absolute",
-        inset: "-40px",
+        position: "absolute", inset: "-40px",
         backgroundImage: "repeating-linear-gradient(90deg, transparent 0px, transparent 46px, rgba(0,0,0,0.07) 46px, rgba(0,0,0,0.07) 48px)",
         pointerEvents: "none",
       }} />
-      {/* Radial vignette */}
       <div aria-hidden style={{
-        position: "absolute",
-        inset: 0,
+        position: "absolute", inset: 0,
         background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.25) 100%)",
         pointerEvents: "none",
       }} />
 
-      {/* Badge — double-bezel circular, estilo TOP SNIPER */}
+      {/* Badge double-bezel */}
       <div style={{ position: "relative", zIndex: 1 }}>
-        {/* Outer ring */}
         <div style={{
-          width: "140px",
-          height: "140px",
-          borderRadius: "50%",
+          width: "140px", height: "140px", borderRadius: "50%",
           background: "rgba(0,0,0,0.18)",
-          boxShadow: [
-            "0 0 0 1px rgba(0,0,0,0.25)",
-            "inset 0 2px 0 rgba(255,255,255,0.15)",
-            "0 8px 32px rgba(0,0,0,0.30)",
-          ].join(", "),
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "8px",
+          boxShadow: ["0 0 0 1px rgba(0,0,0,0.25)", "inset 0 2px 0 rgba(255,255,255,0.15)", "0 8px 32px rgba(0,0,0,0.30)"].join(", "),
+          display: "flex", alignItems: "center", justifyContent: "center", padding: "8px",
         }}>
-          {/* Inner core */}
           <div style={{
-            width: "100%",
-            height: "100%",
-            borderRadius: "50%",
+            width: "100%", height: "100%", borderRadius: "50%",
             background: "rgba(0,0,0,0.22)",
             boxShadow: "inset 0 2px 4px rgba(0,0,0,0.30), 0 0 0 1px rgba(0,0,0,0.20)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "52px",
-            lineHeight: 1,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            overflow: "hidden",
           }}>
-            ⚽
+            <Image src="/traits/Craque.svg" alt="Votos enviados" width={100} height={100} style={{ objectFit: "contain" }} />
           </div>
         </div>
       </div>
 
-      {/* Texto hero */}
       <div style={{ position: "relative", zIndex: 1 }}>
         <h1 style={{
-          fontFamily: "var(--font-display)",
-          fontWeight: 900,
-          fontSize: "clamp(52px, 14vw, 72px)",
-          lineHeight: 0.86,
-          letterSpacing: "-0.02em",
-          textTransform: "uppercase",
-          color: "var(--color-on-accent)",
-          marginBottom: "16px",
+          fontFamily: "var(--font-display)", fontWeight: 900,
+          fontSize: "clamp(52px, 14vw, 72px)", lineHeight: 0.86,
+          letterSpacing: "-0.02em", textTransform: "uppercase",
+          color: "var(--color-on-accent)", marginBottom: "12px",
         }}>
           VOTOS<br />ENVIADOS!
         </h1>
         <p style={{
-          fontSize: "13px",
-          fontWeight: 600,
-          letterSpacing: "0.12em",
-          textTransform: "uppercase",
-          color: "rgba(22,51,0,0.55)",
+          fontSize: "13px", fontWeight: 600, letterSpacing: "0.12em",
+          textTransform: "uppercase", color: "rgba(22,51,0,0.55)",
           fontFamily: "var(--font-body)",
         }}>
           Voltando para o feed...
         </p>
       </div>
 
-      {/* Summary card — dark card sobre fundo verde */}
       <div style={{
-        position: "relative",
-        zIndex: 1,
-        width: "100%",
-        maxWidth: "320px",
-        background: "rgba(0,0,0,0.22)",
-        borderRadius: "var(--radius-lg)",
-        boxShadow: [
-          "0 0 0 1px rgba(0,0,0,0.25)",
-          "inset 0 1px 0 rgba(255,255,255,0.10)",
-          "0 8px 32px rgba(0,0,0,0.20)",
-        ].join(", "),
+        position: "relative", zIndex: 1,
+        width: "100%", maxWidth: "320px",
+        background: "rgba(0,0,0,0.22)", borderRadius: "var(--radius-lg)",
+        boxShadow: ["0 0 0 1px rgba(0,0,0,0.25)", "inset 0 1px 0 rgba(255,255,255,0.10)", "0 8px 32px rgba(0,0,0,0.20)"].join(", "),
         overflow: "hidden",
-        backdropFilter: "blur(8px)",
-        WebkitBackdropFilter: "blur(8px)",
+        backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
       }}>
         {summary.map((item, i) => (
-          <div
-            key={item.label}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "11px 16px",
-              boxShadow: i < summary.length - 1 ? "inset 0 -1px 0 rgba(0,0,0,0.15)" : "none",
-            }}
-          >
+          <div key={item.label} style={{
+            display: "flex", justifyContent: "space-between", alignItems: "center",
+            padding: "11px 16px",
+            boxShadow: i < summary.length - 1 ? "inset 0 -1px 0 rgba(0,0,0,0.15)" : "none",
+          }}>
             <span style={{
-              fontFamily: "var(--font-display)",
-              fontWeight: 900,
-              fontSize: "11px",
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              color: item.color,
-              minWidth: "64px",
-              textShadow: "0 1px 4px rgba(0,0,0,0.30)",
+              fontFamily: "var(--font-display)", fontWeight: 900,
+              fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase",
+              color: item.color, minWidth: "64px",
             }}>
               {item.label}
             </span>
             <span style={{
-              fontSize: "13px",
-              fontWeight: 600,
-              fontFamily: "var(--font-body)",
-              color: "rgba(255,255,255,0.90)",
+              fontSize: "13px", fontWeight: 600,
+              fontFamily: "var(--font-body)", color: "rgba(255,255,255,0.90)",
               textAlign: "right",
             }}>
               {item.value}
