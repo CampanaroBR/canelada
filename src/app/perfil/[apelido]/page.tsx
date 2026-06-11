@@ -37,7 +37,7 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: "24px 24px 96px",
+        padding: "24px 24px calc(88px + env(safe-area-inset-bottom, 0px))",
         textAlign: "center",
         gap: "16px",
       }}>

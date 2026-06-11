@@ -61,9 +61,23 @@
   padding: 0;
 }
 
-html, body {
+html {
+  /* Dark bg extends edge-to-edge behind safe areas */
+  background: #0A0A0A;
+  height: 100%;
+}
+
+body {
+  /* Mobile-first: max-width centered on wider screens */
+  max-width: 430px;
+  margin-inline: auto;
+  min-height: 100dvh;
   background: #0A0A0A;
   color: #F5F5F5;
-  -webkit-font-smoothing: antialiased;
   font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  /* Push content below iOS notch / Dynamic Island */
+  padding-top: env(safe-area-inset-top, 0px);
+  /* Prevent horizontal overflow on mobile */
+  overflow-x: hidden;
 }

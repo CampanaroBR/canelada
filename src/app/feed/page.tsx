@@ -27,10 +27,10 @@ export default async function FeedPage() {
   return (
     <div style={{ minHeight: "100dvh", background: "var(--color-bg)" }}>
 
-      {/* Sticky header */}
+      {/* Sticky header — top: env(safe-area-inset-top) so it sticks below notch */}
       <header style={{
         position: "sticky",
-        top: 0,
+        top: "env(safe-area-inset-top, 0px)",
         zIndex: 30,
         height: "56px",
         display: "flex",
@@ -52,16 +52,20 @@ export default async function FeedPage() {
         }}>
           CANELADA
         </span>
+        {/* 44×44 touch target for accessibility */}
         <button
           aria-label="Notificações"
           style={{
             background: "none",
             border: "none",
             cursor: "pointer",
-            padding: "8px",
-            color: "var(--color-text-muted)",
+            width: "44px",
+            height: "44px",
             display: "flex",
             alignItems: "center",
+            justifyContent: "center",
+            color: "var(--color-text-muted)",
+            marginRight: "-10px",
           }}
         >
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -70,9 +74,9 @@ export default async function FeedPage() {
         </button>
       </header>
 
-      {/* Content */}
+      {/* Content — padding-bottom clears bottom nav + safe area */}
       <main style={{
-        padding: "16px 16px 96px",
+        padding: "16px 16px calc(88px + env(safe-area-inset-bottom, 0px))",
         display: "flex",
         flexDirection: "column",
         gap: "10px",
@@ -86,13 +90,13 @@ export default async function FeedPage() {
         }
       </main>
 
-      {/* FAB */}
+      {/* FAB — floats above bottom nav, right-aligned within 430px container */}
       <Link
         href="/votacao"
         style={{
           position: "fixed",
-          bottom: "76px",
-          right: "20px",
+          bottom: "calc(72px + env(safe-area-inset-bottom, 0px))",
+          right: "max(20px, calc((100vw - 430px) / 2 + 20px))",
           zIndex: 20,
           display: "flex",
           alignItems: "center",
