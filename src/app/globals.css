@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Barlow+Condensed:wght@700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Barlow+Condensed:wght@700;800;900&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -8,38 +8,41 @@
   --color-surface-1:    #141414;
   --color-surface-2:    #1C1C1C;
   --color-surface-3:    #242424;
-  --color-border:       #2A2A2A;
-  --color-border-muted: #1E1E1E;
+  --color-border:       rgba(255,255,255,0.08);
+  --color-border-muted: rgba(255,255,255,0.04);
 
-  /* Accent */
-  --color-accent:       #B5FF4D;
-  --color-accent-hover: #A8F040;
-  --color-accent-muted: rgba(181,255,77,0.12);
-  --color-on-accent:    #0D0D0D;
+  /* Accent — verde Canelada */
+  --color-accent:       #9fe870;
+  --color-accent-hover: #8fd960;
+  --color-accent-muted: rgba(159,232,112,0.12);
+  --color-on-accent:    #163300;
 
   /* Text */
-  --color-text-primary:   #F5F5F5;
-  --color-text-secondary: #A3A3A3;
-  --color-text-muted:     #525252;
+  --color-text-primary:   rgba(255,255,255,0.87);
+  --color-text-secondary: rgba(255,255,255,0.45);
+  --color-text-muted:     rgba(255,255,255,0.25);
   --color-text-inverse:   #0D0D0D;
 
   /* Semantic */
   --color-success: #22C55E;
   --color-danger:  #EF4444;
   --color-warning: #F59E0B;
-  --color-mvp:     #B5FF4D;
+  --color-mvp:     #9fe870;
   --color-bagre:   #EF4444;
 
   /* Traits */
-  --trait-futebol:       #B5FF4D;
+  --trait-futebol:       #9fe870;
   --trait-personalidade: #F59E0B;
   --trait-resenha:       #EF4444;
 
-  /* Shadows */
+  /* Shadows — layered, sem solid borders (make-interfaces-feel-better) */
   --shadow-sm:     0 1px 2px rgba(0,0,0,0.4);
   --shadow-md:     0 2px 8px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.3);
   --shadow-lg:     0 8px 24px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
-  --shadow-accent: 0 0 20px rgba(181,255,77,0.15);
+  --shadow-accent: 0 0 24px rgba(159,232,112,0.18);
+  /* Shadow-as-border para dark mode (surfaces.md) */
+  --shadow-border:       0 0 0 1px rgba(255,255,255,0.08);
+  --shadow-border-hover: 0 0 0 1px rgba(255,255,255,0.13);
 
   /* Border Radius */
   --radius-xs:   4px;
@@ -53,33 +56,51 @@
   /* Typography */
   --font-display: 'Barlow Condensed', sans-serif;
   --font-body:    'Inter', sans-serif;
+
+  /* Easing curves customizadas (emil-design-eng) */
+  --ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
 html {
-  /* Dark bg extends edge-to-edge behind safe areas */
   background: #0A0A0A;
   height: 100%;
+  /* Font smoothing (make-interfaces-feel-better — typography.md) */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Text wrapping padrão */
+  text-wrap: pretty;
 }
 
 body {
   background: #0A0A0A;
-  color: #F5F5F5;
+  color: rgba(255,255,255,0.87);
   font-family: var(--font-body);
-  -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
 
+/* Headings: text-wrap balance (make-interfaces-feel-better — typography.md) */
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+}
+
+/* Tabular nums para dados numéricos (make-interfaces-feel-better) */
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* Skeleton loading */
 @keyframes skeleton-pulse {
   0%, 100% { opacity: 0.35; }
   50%       { opacity: 0.6; }
 }
-
 .skeleton-pulse {
   animation: skeleton-pulse 1.5s ease-in-out infinite;
 }
