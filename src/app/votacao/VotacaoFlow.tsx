@@ -40,6 +40,7 @@ export const TRAIT_SVG: Record<string, string> = {
   "corpo-mole":    "/traits/Corpo_mole.svg",
   "firuleiro":     "/traits/Firuleiro.svg",
   "reclamao":      "/traits/Reclamao.svg",
+  "garcom":        "/traits/Garcom.svg",
 };
 
 const AVATAR_COLORS = ["#9fe870", "#60A5FA", "#F59E0B", "#EF4444", "#A78BFA", "#34D399", "#F97316", "#EC4899"];
