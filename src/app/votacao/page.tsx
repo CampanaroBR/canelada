@@ -68,7 +68,7 @@ function NoRodadaScreen() {
         display: "flex",
         alignItems: "center",
         padding: "0 20px",
-        borderBottom: "1px solid var(--color-border-muted)",
+        boxShadow: "inset 0 -1px 0 rgba(255,255,255,0.05)",
       }}>
         <span style={{
           fontFamily: "var(--font-display)",
@@ -160,7 +160,7 @@ type VotoComVotado = {
 };
 
 const CATEGORIA_CONFIG: Record<string, { label: string; color: string }> = {
-  MVP:     { label: "MVP",     color: "#B5FF4D" },
+  MVP:     { label: "MVP",     color: "#9fe870" },
   BAGRE:   { label: "Bagre",   color: "#EF4444" },
   RACUDO:  { label: "Raçudo",  color: "#F59E0B" },
   RESENHA: { label: "Resenha", color: "#60A5FA" },
@@ -175,7 +175,7 @@ function JaVotouScreen({ votos }: { votos: VotoComVotado[] }) {
         display: "flex",
         alignItems: "center",
         padding: "0 20px",
-        borderBottom: "1px solid var(--color-border-muted)",
+        boxShadow: "inset 0 -1px 0 rgba(255,255,255,0.05)",
       }}>
         <span style={{
           fontFamily: "var(--font-display)",
@@ -230,7 +230,7 @@ function JaVotouScreen({ votos }: { votos: VotoComVotado[] }) {
             maxWidth: "320px",
             background: "var(--color-surface-1)",
             borderRadius: "var(--radius-lg)",
-            border: "1px solid var(--color-border)",
+            boxShadow: "var(--shadow-border)",
             overflow: "hidden",
           }}>
             {votos.map((v, i) => {
@@ -243,7 +243,7 @@ function JaVotouScreen({ votos }: { votos: VotoComVotado[] }) {
                     justifyContent: "space-between",
                     alignItems: "center",
                     padding: "12px 16px",
-                    borderBottom: i < votos.length - 1 ? "1px solid var(--color-border-muted)" : "none",
+                    boxShadow: i < votos.length - 1 ? "inset 0 -1px 0 rgba(255,255,255,0.05)" : "none",
                   }}
                 >
                   <span style={{

@@ -3,6 +3,7 @@
 import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { submitVotos } from "./actions";
+import { BottomNav } from "@/components/layout/BottomNav";
 
 type Jogador = { id: string; apelido: string };
 type Trait = { slug: string; nome: string; categoria: string; emoji: string | null };
@@ -228,7 +229,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
           )}
         </div>
 
-        {/* Scrollable content */}
+        {/* Scrollable content — padding bottom deixa espaço para footer + navbar */}
         <div style={{ flex: 1, overflowY: "auto", padding: "0 16px" }}>
           {step < 5 ? (
             <PlayerGrid
@@ -242,10 +243,10 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
           )}
         </div>
 
-        {/* Footer — liquid glass */}
+        {/* Footer — liquid glass, acima do BottomNav */}
         <div style={{
           padding: "12px 20px",
-          paddingBottom: "max(20px, env(safe-area-inset-bottom, 0px))",
+          paddingBottom: "calc(84px + env(safe-area-inset-bottom, 0px))",
           background: "rgba(18,18,18,0.80)",
           backdropFilter: "blur(24px) saturate(180%)",
           WebkitBackdropFilter: "blur(24px) saturate(180%)",
@@ -279,6 +280,8 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
             {isPending ? "ENVIANDO..." : step === 5 ? "CONFIRMAR VOTOS" : "PRÓXIMO →"}
           </button>
         </div>
+
+        <BottomNav />
       </div>
     </>
   );

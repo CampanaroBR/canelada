@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 const FAB_BASE: React.CSSProperties = {
   position: "fixed",
-  bottom: "calc(72px + env(safe-area-inset-bottom, 0px))",
+  bottom: "calc(96px + env(safe-area-inset-bottom, 0px))",
   right: "max(20px, calc((100vw - 430px) / 2 + 20px))",
   zIndex: 20,
   display: "flex",
