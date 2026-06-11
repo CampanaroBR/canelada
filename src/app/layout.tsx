@@ -27,7 +27,6 @@ export default function RootLayout({
             minHeight: "100dvh",
             background: "#0A0A0A",
             position: "relative",
-            overflowX: "hidden",
             paddingTop: "env(safe-area-inset-top, 0px)",
           }}
         >

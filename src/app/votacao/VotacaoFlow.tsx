@@ -45,6 +45,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
   const router = useRouter();
 
   const outros = jogadores.filter((j) => j.id !== meuId);
+  const noPlayers = outros.length === 0;
   const progressStep = step >= 5 ? 4 : step;
   const cfg = STEPS[step <= 4 ? step : 4];
 
@@ -55,28 +56,57 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
     }
   }, [step, router]);
 
-  const canProceed = step === 5 ? traitSlug !== null : selections[step] !== undefined;
+  // Allow proceeding even with no players (step will be skipped without a vote)
+  const canProceed =
+    step === 5 ? traitSlug !== null : noPlayers || selections[step] !== undefined;
+
+  function handleBack() {
+    if (step === 0) {
+      router.push("/feed");
+    } else {
+      setStep(step - 1);
+    }
+  }
+
+  function submitAllVotes() {
+    const votos = STEPS
+      .map((s, i) => ({
+        categoria: s.categoria as "MVP" | "BAGRE" | "RACUDO" | "RESENHA" | "TRAIT",
+        votadoId: selections[i] as string | undefined,
+        ...(s.categoria === "TRAIT" && traitSlug ? { traitSlug } : {}),
+      }))
+      .filter(
+        (v): v is { categoria: "MVP" | "BAGRE" | "RACUDO" | "RESENHA" | "TRAIT"; votadoId: string; traitSlug?: string } =>
+          v.votadoId !== undefined
+      );
+
+    if (votos.length === 0) {
+      setStep(6);
+      return;
+    }
+
+    startTransition(async () => {
+      const result = await submitVotos(rodadaId, votos);
+      if ("error" in result) {
+        setError(result.error ?? "Erro desconhecido.");
+      } else {
+        setStep(6);
+      }
+    });
+  }
 
   function handleNext() {
     if (step < 4) {
       setStep(step + 1);
     } else if (step === 4) {
-      setStep(5);
+      // Skip trait picker if no player was selected (no outros)
+      if (noPlayers || selections[4] === undefined) {
+        submitAllVotes();
+      } else {
+        setStep(5);
+      }
     } else if (step === 5) {
-      const votos = STEPS.map((s, i) => ({
-        categoria: s.categoria as "MVP" | "BAGRE" | "RACUDO" | "RESENHA" | "TRAIT",
-        votadoId: selections[i],
-        ...(s.categoria === "TRAIT" && traitSlug ? { traitSlug } : {}),
-      }));
-
-      startTransition(async () => {
-        const result = await submitVotos(rodadaId, votos);
-        if ("error" in result) {
-          setError(result.error ?? "Erro desconhecido.");
-        } else {
-          setStep(6);
-        }
-      });
+      submitAllVotes();
     }
   }
 
@@ -132,6 +162,30 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
       {/* Header */}
       <div style={{ padding: "0 20px 16px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+          {/* Back button — 44×44 touch target */}
+          <button
+            onClick={handleBack}
+            aria-label="Voltar"
+            style={{
+              width: "44px",
+              height: "44px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "var(--color-text-muted)",
+              marginLeft: "-10px",
+              WebkitTapHighlightColor: "transparent",
+              borderRadius: "var(--radius-sm)",
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+
           <div style={{
             background: cfg.color + "22",
             border: `1px solid ${cfg.color}55`,
@@ -141,12 +195,13 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
             fontWeight: 900,
             fontSize: "11px",
             letterSpacing: "0.12em",
-            textTransform: "uppercase",
+            textTransform: "uppercase" as const,
             color: cfg.color,
           }}>
             {cfg.label}
           </div>
-          <span style={{ fontFamily: "var(--font-body)", fontSize: "12px", color: "var(--color-text-muted)" }}>
+
+          <span style={{ fontFamily: "var(--font-body)", fontSize: "12px", color: "var(--color-text-muted)", minWidth: "34px", textAlign: "right" }}>
             {step >= 4 ? "5" : step + 1} / 5
           </span>
         </div>
