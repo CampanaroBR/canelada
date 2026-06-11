@@ -63,7 +63,7 @@ export default async function PerfilPage({
   if (!jogador) {
     return (
       <div style={{ minHeight: "100dvh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
-        <header style={{ height: "56px", display: "flex", alignItems: "center", padding: "0 20px", borderBottom: "1px solid var(--color-border-muted)" }}>
+        <header style={{ height: "56px", display: "flex", alignItems: "center", padding: "0 20px", boxShadow: "inset 0 -1px 0 rgba(255,255,255,0.06)" }}>
           <Link href="/feed" style={{ color: "var(--color-text-muted)", display: "flex", alignItems: "center" }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
           </Link>
@@ -109,9 +109,18 @@ export default async function PerfilPage({
   const color = getAvatarColor(jogador.apelido);
   const initials = getInitials(jogador.apelido);
   const traitsUnlocked = jogador.traitsRecebidas.length;
+  const joinYear = new Date(jogador.createdAt).getFullYear();
+
+  const STATS = [
+    { label: "MVPs",   value: mvpCount,       color: "#9fe870" },
+    { label: "Bagres", value: bagreCount,      color: "#EF4444" },
+    { label: "Traits", value: traitsUnlocked,  color: "#A78BFA" },
+  ];
 
   return (
     <div style={{ minHeight: "100dvh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
+
+      {/* ── Sticky header — liquid glass ── */}
       <header style={{
         position: "sticky",
         top: 0,
@@ -120,11 +129,15 @@ export default async function PerfilPage({
         display: "flex",
         alignItems: "center",
         padding: "0 20px",
+        gap: "12px",
         background: "rgba(18,18,18,0.60)",
         backdropFilter: "blur(40px) saturate(200%) brightness(1.08)",
         WebkitBackdropFilter: "blur(40px) saturate(200%) brightness(1.08)",
-        boxShadow: ["inset 0 1px 0 rgba(255,255,255,0.12)", "inset 0 -1px 0 rgba(255,255,255,0.08)", "0 1px 0 rgba(0,0,0,0.20)"].join(", "),
-        gap: "12px",
+        boxShadow: [
+          "inset 0 1px 0 rgba(255,255,255,0.12)",
+          "inset 0 -1px 0 rgba(255,255,255,0.08)",
+          "0 1px 0 rgba(0,0,0,0.20)",
+        ].join(", "),
       }}>
         <Link
           href="/feed"
@@ -138,6 +151,7 @@ export default async function PerfilPage({
             color: "var(--color-text-muted)",
             marginLeft: "-10px",
             flexShrink: 0,
+            textDecoration: "none",
           }}
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -147,185 +161,380 @@ export default async function PerfilPage({
         <span style={{
           fontFamily: "var(--font-display)",
           fontWeight: 900,
-          fontSize: "18px",
-          letterSpacing: "0.08em",
-          color: "var(--color-accent)",
+          fontSize: "16px",
+          letterSpacing: "0.1em",
+          color: "var(--color-text-muted)",
           textTransform: "uppercase",
           flex: 1,
           overflow: "hidden",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
         }}>
-          {jogador.apelido.toUpperCase()}
+          PERFIL
         </span>
       </header>
 
-      <main style={{
-        flex: 1,
-        padding: "24px 16px calc(88px + env(safe-area-inset-bottom, 0px))",
-        display: "flex",
-        flexDirection: "column",
-        gap: "24px",
-      }}>
-        {/* Hero: avatar + stats */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "16px", paddingTop: "8px" }}>
-          <div style={{
-            width: "88px",
-            height: "88px",
-            borderRadius: "50%",
-            background: color + "22",
-            border: `3px solid ${color}55`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+      <main style={{ flex: 1, paddingBottom: "calc(88px + env(safe-area-inset-bottom, 0px))" }}>
+
+        {/* ── HERO DRAMÁTICO ── */}
+        <div style={{
+          position: "relative",
+          height: "52dvh",
+          minHeight: "320px",
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "flex-end",
+        }}>
+          {/* Stripe texture diagonal */}
+          <div aria-hidden style={{
+            position: "absolute",
+            inset: "-40px",
+            backgroundImage: "repeating-linear-gradient(135deg, transparent 0px, transparent 28px, rgba(255,255,255,0.012) 28px, rgba(255,255,255,0.012) 29px)",
+            pointerEvents: "none",
+          }} />
+
+          {/* Color wash de cima */}
+          <div aria-hidden style={{
+            position: "absolute",
+            inset: 0,
+            background: `linear-gradient(180deg, ${color}28 0%, transparent 65%)`,
+            pointerEvents: "none",
+          }} />
+
+          {/* Watermark gigante — initials como textura */}
+          <div aria-hidden style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -55%)",
             fontFamily: "var(--font-display)",
             fontWeight: 900,
-            fontSize: "28px",
-            color,
-            letterSpacing: "0.04em",
-            boxShadow: `0 0 32px ${color}22`,
+            fontSize: "clamp(160px, 42vw, 220px)",
+            lineHeight: 1,
+            letterSpacing: "-0.06em",
+            textTransform: "uppercase",
+            color: color,
+            opacity: 0.06,
+            userSelect: "none",
+            whiteSpace: "nowrap",
+            pointerEvents: "none",
           }}>
             {initials}
           </div>
-          <div style={{ textAlign: "center" }}>
+
+          {/* Avatar double-bezel — flutuando no centro */}
+          <div style={{
+            position: "absolute",
+            top: "38%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}>
+            {/* Outer shell */}
+            <div style={{
+              width: "108px",
+              height: "108px",
+              borderRadius: "50%",
+              background: color + "10",
+              boxShadow: [
+                `0 0 0 1px ${color}30`,
+                `0 0 48px ${color}25`,
+                "inset 0 1px 1px rgba(255,255,255,0.10)",
+              ].join(", "),
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "6px",
+            }}>
+              {/* Inner core */}
+              <div style={{
+                width: "100%",
+                height: "100%",
+                borderRadius: "50%",
+                background: `radial-gradient(circle at 35% 35%, ${color}30, ${color}10)`,
+                boxShadow: `inset 0 1px 1px rgba(255,255,255,0.12), 0 0 0 1px ${color}25`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontFamily: "var(--font-display)",
+                fontWeight: 900,
+                fontSize: "30px",
+                letterSpacing: "0.04em",
+                color: color,
+              }}>
+                {initials}
+              </div>
+            </div>
+          </div>
+
+          {/* Fade para dark na base */}
+          <div aria-hidden style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: "60%",
+            background: "linear-gradient(to bottom, transparent 0%, var(--color-bg) 100%)",
+            pointerEvents: "none",
+          }} />
+
+          {/* Nome + meta — ancorado na base do hero */}
+          <div style={{
+            position: "relative",
+            zIndex: 1,
+            padding: "0 24px 20px",
+          }}>
             <h1 style={{
               fontFamily: "var(--font-display)",
               fontWeight: 900,
-              fontSize: "clamp(28px, 7vw, 36px)",
-              letterSpacing: "-0.01em",
+              fontSize: "clamp(44px, 12vw, 64px)",
+              lineHeight: 0.88,
+              letterSpacing: "-0.02em",
               textTransform: "uppercase",
               color: "var(--color-text-primary)",
-              lineHeight: 1,
-              marginBottom: "6px",
+              marginBottom: "10px",
             }}>
               {jogador.apelido}
             </h1>
-            <p style={{ fontSize: "13px", color: "var(--color-text-muted)", fontFamily: "var(--font-body)" }}>
-              {totalRodadas} rodada{totalRodadas !== 1 ? "s" : ""}
-            </p>
-          </div>
 
-          {/* Stats row */}
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr",
-            gap: "8px",
-            width: "100%",
-            maxWidth: "320px",
-          }}>
-            {[
-              { label: "MVPs", value: mvpCount, color: "#9fe870" },
-              { label: "Bagres", value: bagreCount, color: "#EF4444" },
-              { label: "Traits", value: traitsUnlocked, color: "#A78BFA" },
-            ].map((s) => (
-              <div key={s.label} style={{
-                background: "var(--color-surface-1)",
-                borderRadius: "var(--radius-md)",
-                boxShadow: "var(--shadow-border)",
-                padding: "12px 8px",
-                display: "flex",
-                flexDirection: "column",
+            {/* Meta pill */}
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              <div style={{
+                display: "inline-flex",
                 alignItems: "center",
-                gap: "2px",
+                gap: "6px",
+                padding: "4px 10px",
+                borderRadius: "var(--radius-pill)",
+                background: "rgba(255,255,255,0.06)",
+                boxShadow: "0 0 0 1px rgba(255,255,255,0.10)",
               }}>
+                <span style={{ fontSize: "10px" }}>⚽</span>
                 <span style={{
-                  fontFamily: "var(--font-display)",
-                  fontWeight: 900,
-                  fontSize: "28px",
-                  lineHeight: 1,
-                  color: s.color,
-                  fontVariantNumeric: "tabular-nums",
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  letterSpacing: "0.08em",
+                  color: "var(--color-text-secondary)",
+                  fontFamily: "var(--font-body)",
+                  textTransform: "uppercase",
                 }}>
-                  {s.value}
-                </span>
-                <span style={{ fontSize: "10px", fontWeight: 600, color: "var(--color-text-muted)", fontFamily: "var(--font-body)", letterSpacing: "0.06em", textTransform: "uppercase" }}>
-                  {s.label}
+                  {totalRodadas} Rodada{totalRodadas !== 1 ? "s" : ""}
                 </span>
               </div>
-            ))}
+              <div style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "4px 10px",
+                borderRadius: "var(--radius-pill)",
+                background: "rgba(255,255,255,0.06)",
+                boxShadow: "0 0 0 1px rgba(255,255,255,0.10)",
+              }}>
+                <span style={{
+                  fontSize: "11px",
+                  fontWeight: 600,
+                  letterSpacing: "0.08em",
+                  color: "var(--color-text-secondary)",
+                  fontFamily: "var(--font-body)",
+                  textTransform: "uppercase",
+                }}>
+                  Desde {joinYear}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Traits */}
-        <section>
-          <h2 style={{
-            fontFamily: "var(--font-display)",
-            fontWeight: 900,
-            fontSize: "14px",
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
-            color: "var(--color-text-muted)",
-            marginBottom: "16px",
+        {/* ── STATS GRID — estilo "X6 PREMIER LEAGUE" ── */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "8px",
+          padding: "0 16px 32px",
+        }}>
+          {STATS.map((s) => (
+            <div key={s.label} style={{
+              background: "var(--color-surface-1)",
+              borderRadius: "var(--radius-lg)",
+              boxShadow: `var(--shadow-border), inset 0 1px 0 rgba(255,255,255,0.04)`,
+              padding: "16px 12px 14px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+              gap: "4px",
+              position: "relative",
+              overflow: "hidden",
+            }}>
+              {/* Accent left bar */}
+              <div aria-hidden style={{
+                position: "absolute",
+                top: 0, left: 0, bottom: 0,
+                width: "3px",
+                background: s.color,
+                borderRadius: "3px 0 0 3px",
+              }} />
+              <span style={{
+                fontSize: "9px",
+                fontWeight: 700,
+                letterSpacing: "0.14em",
+                textTransform: "uppercase",
+                color: "var(--color-text-muted)",
+                fontFamily: "var(--font-body)",
+              }}>
+                {s.label}
+              </span>
+              <span style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 900,
+                fontSize: "clamp(36px, 9vw, 48px)",
+                lineHeight: 0.9,
+                color: s.color,
+                fontVariantNumeric: "tabular-nums",
+              }}>
+                {s.value}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* ── TRAITS — grid circular estilo Milestones ── */}
+        <section style={{ padding: "0 16px 32px" }}>
+          <div style={{
+            display: "flex",
+            alignItems: "baseline",
+            justifyContent: "space-between",
+            marginBottom: "20px",
           }}>
-            TRAITS
-          </h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            <h2 style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 900,
+              fontSize: "20px",
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              color: "var(--color-text-primary)",
+            }}>
+              CONQUISTAS
+            </h2>
+            <span style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 900,
+              fontSize: "14px",
+              color: "var(--color-text-muted)",
+            }}>
+              {traitsUnlocked}/{allTraits.length}
+            </span>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
             {Object.entries(traitsByCategory).map(([catKey, catTraits]) => {
               const catCfg = CAT_CONFIG[catKey];
+              const unlockedInCat = catTraits.filter(t => unlockedMap.has(t.slug)).length;
               return (
                 <div key={catKey}>
-                  <p style={{
-                    fontSize: "10px",
-                    fontWeight: 700,
-                    letterSpacing: "0.12em",
-                    textTransform: "uppercase",
-                    color: catCfg.color,
-                    fontFamily: "var(--font-body)",
-                    marginBottom: "10px",
-                    opacity: 0.8,
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginBottom: "14px",
                   }}>
-                    {catCfg.label}
-                  </p>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px" }}>
+                    <p style={{
+                      fontSize: "10px",
+                      fontWeight: 700,
+                      letterSpacing: "0.16em",
+                      textTransform: "uppercase",
+                      color: catCfg.color,
+                      fontFamily: "var(--font-body)",
+                    }}>
+                      {catCfg.label}
+                    </p>
+                    <span style={{
+                      fontSize: "10px",
+                      fontWeight: 600,
+                      color: "var(--color-text-muted)",
+                      fontFamily: "var(--font-body)",
+                    }}>
+                      {unlockedInCat}/{catTraits.length}
+                    </span>
+                  </div>
+
+                  {/* Circular badge grid — inspirado na tela Milestones */}
+                  <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(4, 1fr)",
+                    gap: "8px",
+                  }}>
                     {catTraits.map((trait) => {
                       const count = unlockedMap.get(trait.slug);
                       const unlocked = count !== undefined;
                       return (
                         <div key={trait.slug} style={{
-                          background: unlocked ? catCfg.color + "12" : "var(--color-surface-1)",
-                          borderRadius: "var(--radius-md)",
-                          boxShadow: unlocked ? `0 0 0 1px ${catCfg.color}44` : "var(--shadow-border)",
-                          padding: "12px 8px",
                           display: "flex",
                           flexDirection: "column",
                           alignItems: "center",
-                          gap: "6px",
-                          opacity: unlocked ? 1 : 0.35,
-                          position: "relative",
+                          gap: "8px",
                         }}>
-                          <span style={{ fontSize: "22px", filter: unlocked ? "none" : "grayscale(1)", lineHeight: 1 }}>
+                          {/* Circular badge */}
+                          <div style={{
+                            width: "60px",
+                            height: "60px",
+                            borderRadius: "50%",
+                            background: unlocked
+                              ? `radial-gradient(circle at 35% 35%, ${catCfg.color}30, ${catCfg.color}10)`
+                              : "var(--color-surface-2)",
+                            boxShadow: unlocked
+                              ? [
+                                  `0 0 0 1px ${catCfg.color}50`,
+                                  `0 0 16px ${catCfg.color}20`,
+                                  "inset 0 1px 0 rgba(255,255,255,0.10)",
+                                ].join(", ")
+                              : "0 0 0 1px rgba(255,255,255,0.06)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "22px",
+                            filter: unlocked ? "none" : "grayscale(1)",
+                            opacity: unlocked ? 1 : 0.3,
+                            position: "relative",
+                            flexShrink: 0,
+                          }}>
                             {trait.emoji ?? "⭐"}
-                          </span>
+
+                            {/* Count badge */}
+                            {unlocked && count! > 1 && (
+                              <div style={{
+                                position: "absolute",
+                                top: "-2px",
+                                right: "-2px",
+                                background: catCfg.color,
+                                color: "#0D0D0D",
+                                borderRadius: "9999px",
+                                minWidth: "18px",
+                                height: "18px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                fontSize: "9px",
+                                fontWeight: 900,
+                                fontFamily: "var(--font-display)",
+                                padding: "0 4px",
+                                boxShadow: "0 0 0 2px var(--color-bg)",
+                              }}>
+                                {count}
+                              </div>
+                            )}
+                          </div>
+
                           <span style={{
-                            fontSize: "10px",
-                            fontWeight: 600,
+                            fontSize: "9px",
+                            fontWeight: unlocked ? 700 : 500,
                             fontFamily: "var(--font-body)",
                             color: unlocked ? catCfg.color : "var(--color-text-muted)",
                             textAlign: "center",
-                            lineHeight: 1.2,
+                            lineHeight: 1.3,
+                            opacity: unlocked ? 1 : 0.4,
+                            letterSpacing: "0.02em",
                           }}>
                             {trait.nome}
                           </span>
-                          {unlocked && count! > 1 && (
-                            <div style={{
-                              position: "absolute",
-                              top: "6px",
-                              right: "6px",
-                              background: catCfg.color,
-                              color: "#0D0D0D",
-                              borderRadius: "9999px",
-                              width: "16px",
-                              height: "16px",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              fontSize: "9px",
-                              fontWeight: 900,
-                              fontFamily: "var(--font-display)",
-                            }}>
-                              {count}
-                            </div>
-                          )}
                         </div>
                       );
                     })}
@@ -336,21 +545,21 @@ export default async function PerfilPage({
           </div>
         </section>
 
-        {/* Histórico de rodadas */}
+        {/* ── HISTÓRICO ── */}
         {recentRodadas.length > 0 && (
-          <section>
+          <section style={{ padding: "0 16px 32px" }}>
             <h2 style={{
               fontFamily: "var(--font-display)",
               fontWeight: 900,
-              fontSize: "14px",
-              letterSpacing: "0.1em",
+              fontSize: "20px",
+              letterSpacing: "0.06em",
               textTransform: "uppercase",
-              color: "var(--color-text-muted)",
-              marginBottom: "12px",
+              color: "var(--color-text-primary)",
+              marginBottom: "16px",
             }}>
               HISTÓRICO
             </h2>
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
               {recentRodadas.map((rodada) => {
                 const dateStr = new Date(rodada.data).toLocaleDateString("pt-BR", {
                   weekday: "short",
@@ -369,7 +578,7 @@ export default async function PerfilPage({
                     alignItems: "center",
                     gap: "12px",
                   }}>
-                    <span style={{
+                    <time style={{
                       fontSize: "12px",
                       color: "var(--color-text-muted)",
                       fontFamily: "var(--font-body)",
@@ -377,17 +586,17 @@ export default async function PerfilPage({
                       flexShrink: 0,
                     }}>
                       {dateStr}
-                    </span>
+                    </time>
                     {recebeu.length > 0 ? (
-                      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                      <div style={{ display: "flex", gap: "5px", flexWrap: "wrap", justifyContent: "flex-end" }}>
                         {recebeu.map((v, i) => {
                           const cfg = VOTO_CONFIG[v.categoria] ?? { label: v.categoria, color: "var(--color-text-muted)" };
                           return (
                             <span key={i} style={{
                               padding: "2px 8px",
                               borderRadius: "9999px",
-                              background: cfg.color + "20",
-                              boxShadow: `0 0 0 1px ${cfg.color}44`,
+                              background: cfg.color + "18",
+                              boxShadow: `0 0 0 1px ${cfg.color}40`,
                               color: cfg.color,
                               fontFamily: "var(--font-display)",
                               fontWeight: 900,
@@ -401,7 +610,7 @@ export default async function PerfilPage({
                         })}
                       </div>
                     ) : (
-                      <span style={{ fontSize: "12px", color: "var(--color-text-muted)", opacity: 0.5, fontFamily: "var(--font-body)" }}>
+                      <span style={{ fontSize: "12px", color: "var(--color-text-muted)", opacity: 0.4, fontFamily: "var(--font-body)" }}>
                         Sem votos
                       </span>
                     )}

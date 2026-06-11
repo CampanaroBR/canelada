@@ -481,44 +481,110 @@ function DoneScreen({
   return (
     <div style={{
       minHeight: "100dvh",
-      background: "var(--color-bg)",
+      background: "var(--color-accent)",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
-      padding: "32px 24px",
+      padding: "32px 24px calc(32px + env(safe-area-inset-bottom, 0px))",
       textAlign: "center",
-      gap: "28px",
+      gap: "32px",
+      position: "relative",
+      overflow: "hidden",
     }}>
-      <div style={{ fontSize: "64px", lineHeight: 1 }}>⚽</div>
+      {/* Stripe texture */}
+      <div aria-hidden style={{
+        position: "absolute",
+        inset: "-40px",
+        backgroundImage: "repeating-linear-gradient(90deg, transparent 0px, transparent 46px, rgba(0,0,0,0.07) 46px, rgba(0,0,0,0.07) 48px)",
+        pointerEvents: "none",
+      }} />
+      {/* Radial vignette */}
+      <div aria-hidden style={{
+        position: "absolute",
+        inset: 0,
+        background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.25) 100%)",
+        pointerEvents: "none",
+      }} />
 
-      <div>
+      {/* Badge — double-bezel circular, estilo TOP SNIPER */}
+      <div style={{ position: "relative", zIndex: 1 }}>
+        {/* Outer ring */}
+        <div style={{
+          width: "140px",
+          height: "140px",
+          borderRadius: "50%",
+          background: "rgba(0,0,0,0.18)",
+          boxShadow: [
+            "0 0 0 1px rgba(0,0,0,0.25)",
+            "inset 0 2px 0 rgba(255,255,255,0.15)",
+            "0 8px 32px rgba(0,0,0,0.30)",
+          ].join(", "),
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "8px",
+        }}>
+          {/* Inner core */}
+          <div style={{
+            width: "100%",
+            height: "100%",
+            borderRadius: "50%",
+            background: "rgba(0,0,0,0.22)",
+            boxShadow: "inset 0 2px 4px rgba(0,0,0,0.30), 0 0 0 1px rgba(0,0,0,0.20)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: "52px",
+            lineHeight: 1,
+          }}>
+            ⚽
+          </div>
+        </div>
+      </div>
+
+      {/* Texto hero */}
+      <div style={{ position: "relative", zIndex: 1 }}>
         <h1 style={{
           fontFamily: "var(--font-display)",
           fontWeight: 900,
-          fontSize: "clamp(48px, 13vw, 64px)",
-          lineHeight: 0.88,
+          fontSize: "clamp(52px, 14vw, 72px)",
+          lineHeight: 0.86,
           letterSpacing: "-0.02em",
           textTransform: "uppercase",
-          color: "var(--color-text-primary)",
-          marginBottom: "10px",
+          color: "var(--color-on-accent)",
+          marginBottom: "16px",
         }}>
-          VOTOS<br />
-          <span style={{ color: "var(--color-accent)" }}>ENVIADOS!</span>
+          VOTOS<br />ENVIADOS!
         </h1>
-        <p style={{ fontSize: "14px", color: "var(--color-text-muted)", fontFamily: "var(--font-body)" }}>
+        <p style={{
+          fontSize: "13px",
+          fontWeight: 600,
+          letterSpacing: "0.12em",
+          textTransform: "uppercase",
+          color: "rgba(22,51,0,0.55)",
+          fontFamily: "var(--font-body)",
+        }}>
           Voltando para o feed...
         </p>
       </div>
 
-      {/* Summary card — shadow-as-border */}
+      {/* Summary card — dark card sobre fundo verde */}
       <div style={{
+        position: "relative",
+        zIndex: 1,
         width: "100%",
         maxWidth: "320px",
-        background: "var(--color-surface-1)",
+        background: "rgba(0,0,0,0.22)",
         borderRadius: "var(--radius-lg)",
-        boxShadow: "var(--shadow-border)",
+        boxShadow: [
+          "0 0 0 1px rgba(0,0,0,0.25)",
+          "inset 0 1px 0 rgba(255,255,255,0.10)",
+          "0 8px 32px rgba(0,0,0,0.20)",
+        ].join(", "),
         overflow: "hidden",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
       }}>
         {summary.map((item, i) => (
           <div
@@ -527,18 +593,19 @@ function DoneScreen({
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              padding: "12px 16px",
-              boxShadow: i < summary.length - 1 ? "inset 0 -1px 0 rgba(255,255,255,0.05)" : "none",
+              padding: "11px 16px",
+              boxShadow: i < summary.length - 1 ? "inset 0 -1px 0 rgba(0,0,0,0.15)" : "none",
             }}
           >
             <span style={{
               fontFamily: "var(--font-display)",
               fontWeight: 900,
               fontSize: "11px",
-              letterSpacing: "0.1em",
+              letterSpacing: "0.12em",
               textTransform: "uppercase",
               color: item.color,
               minWidth: "64px",
+              textShadow: "0 1px 4px rgba(0,0,0,0.30)",
             }}>
               {item.label}
             </span>
@@ -546,7 +613,7 @@ function DoneScreen({
               fontSize: "13px",
               fontWeight: 600,
               fontFamily: "var(--font-body)",
-              color: "var(--color-text-primary)",
+              color: "rgba(255,255,255,0.90)",
               textAlign: "right",
             }}>
               {item.value}
