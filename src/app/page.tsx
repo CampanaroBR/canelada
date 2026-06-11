@@ -1,11 +1,10 @@
-import { SoccerBall, Trophy, Fish, Lightning } from "@phosphor-icons/react/dist/ssr";
+import { Trophy, Fish, Zap, CircleDot } from "lucide-react";
 
 export default function Home() {
   return (
     <main
       style={{
         minHeight: "100dvh",
-        background: "var(--bg)",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -35,7 +34,7 @@ export default function Home() {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <SoccerBall size={28} color="var(--green)" weight="fill" />
+            <CircleDot size={28} color="var(--green)" />
             <span
               style={{
                 fontFamily: "var(--f-display)",
@@ -62,9 +61,9 @@ export default function Home() {
 
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 4 }}>
             {[
-              { icon: <Trophy size={13} weight="fill" />, label: "MVP" },
-              { icon: <Fish size={13} weight="fill" />, label: "Bagre" },
-              { icon: <Lightning size={13} weight="fill" />, label: "Traits" },
+              { icon: <Trophy size={13} />, label: "MVP" },
+              { icon: <Fish size={13} />, label: "Bagre" },
+              { icon: <Zap size={13} />, label: "Traits" },
             ].map(({ icon, label }) => (
               <span
                 key={label}
@@ -91,11 +90,11 @@ export default function Home() {
         {/* Coming soon card */}
         <div
           style={{
-            background: "var(--card)",
+            background: "#141414",
             borderRadius: "var(--r-2xl)",
             padding: "24px",
             boxShadow: "var(--s2)",
-            border: "1px solid var(--brd)",
+            border: "1px solid rgba(255,255,255,0.06)",
           }}
         >
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -120,7 +119,7 @@ export default function Home() {
               style={{
                 fontSize: 20,
                 fontWeight: 800,
-                color: "var(--ink)",
+                color: "#ffffff",
                 lineHeight: 1.2,
               }}
             >
@@ -129,7 +128,7 @@ export default function Home() {
             <p
               style={{
                 fontSize: 13,
-                color: "var(--ink3)",
+                color: "rgba(255,255,255,0.45)",
                 lineHeight: 1.5,
               }}
             >
@@ -158,7 +157,7 @@ export default function Home() {
             cursor: "pointer",
           }}
         >
-          <SoccerBall size={20} weight="fill" />
+          <CircleDot size={20} />
           Baba rolou hoje
         </button>
       </div>
