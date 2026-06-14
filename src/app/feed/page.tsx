@@ -1,38 +1,10 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { BottomNav } from "@/components/layout/BottomNav";
-import Link from "next/link";
 import { criarRodada } from "@/app/votacao/actions";
 import { HomeClient } from "./HomeClient";
 
 export const dynamic = "force-dynamic";
-
-// Figma asset URLs
-const IMG = {
-  logo:        "http://localhost:3845/assets/31c46a81e6d70b0dc33ca60496ecfa043e761f1c.png",
-  campo:       "http://localhost:3845/assets/a263af27cbe7a4ef6641eae0a2116c73349a78ff.png",
-  tshirt:      "http://localhost:3845/assets/b4cbc176d76f942ed9d2e730c598230da33eb369.svg",
-  bell:        "http://localhost:3845/assets/85367da42c70e1d5ab7fd44d7b65dddf496bca2b.svg",
-  list:        "http://localhost:3845/assets/1b0a8c436f55e4a6e53e98bbd07cc3cfc0bbbb83.svg",
-  calendar:    "http://localhost:3845/assets/9fbcd9405a497085e1df88ed009276f1587d787c.svg",
-  alarm:       "http://localhost:3845/assets/3171d50ce937795f17f4d5b40bcfcc5f2b35e39f.svg",
-  trophy:      "http://localhost:3845/assets/e3f883d17ae67efead123e30b9dec3f2de83035c.svg",
-  calendarStar:"http://localhost:3845/assets/e23d845c76452f4c998a4f8f10e56d4c15e127ca.svg",
-  medal:       "http://localhost:3845/assets/ad6be823fa87a138055c46b3af3a96875dd76d19.svg",
-  caretRight:  "http://localhost:3845/assets/7038802d9fcf108f2f3ad5a4a93d5463281a40c6.svg",
-  medal1:      "http://localhost:3845/assets/ed3d245a654a2fbbf71fa008b60c5261a3b492b4.svg",
-  medal2:      "http://localhost:3845/assets/5cbc74c5d63a841c4db0d1f95fa614b4b6ccb83e.svg",
-  medal3:      "http://localhost:3845/assets/9a1646dc20219cb326579f1d3aa136312f40d036.svg",
-  // Personagem mascots
-  mascotPreg:  "http://localhost:3845/assets/b663ed68937f38dbe3274350c39786fc36e54346.png",
-  mascotMat:   "http://localhost:3845/assets/320508786458480dbbb96170e84a70d16c6f69f9.png",
-  mascotBagre: "http://localhost:3845/assets/87fa5599c5cd3975730bfdff7b046d047125b39c.png",
-  // Conquista badges
-  emChamas:    "http://localhost:3845/assets/3ec226f3c12640cf91318642ba7cb1e93af99fc1.png",
-  virada:      "http://localhost:3845/assets/ebc29bb02d6decbb4a455a28707bcd21935d9c0e.png",
-  maFase:      "http://localhost:3845/assets/4b0505e234167ce75814365564715857215d2164.png",
-};
 
 type Jogador = { id: string; apelido: string; foto: string | null };
 type MaisVotado = { apelido: string; qtd: number; categoria: string };
@@ -130,7 +102,7 @@ export default async function FeedPage() {
 
   return (
     <HomeClient
-      IMG={IMG}
+      IMG={{}}
       rodadaId={rodadaAtiva?.id ?? null}
       dataRodada={dataRodada}
       jaVotou={jaVotou}

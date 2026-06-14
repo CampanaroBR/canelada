@@ -1,14 +1,7 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-
-const IMG = {
-  bg:     "http://localhost:3845/assets/d587fe7c24ceb24c8d6ecc467f3f8a203987b753.png",
-  logo:   "http://localhost:3845/assets/31c46a81e6d70b0dc33ca60496ecfa043e761f1c.png",
-  google: "http://localhost:3845/assets/e6026b325b204e0310f53c70753007bf197e776a.svg",
-  apple:  "http://localhost:3845/assets/79e06fa7512f018f36aa91d5bde850cc5a2ffa69.svg",
-  phone:  "http://localhost:3845/assets/ccd31afc9916b6faaedcfa108579f4769d5459c9.svg",
-};
+import { GoogleLogo, AppleLogo, Phone } from "@phosphor-icons/react";
 
 export default function LoginPage() {
   return (
@@ -16,7 +9,7 @@ export default function LoginPage() {
 
       {/* Background image */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img alt="" aria-hidden src={IMG.bg} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
+      <img alt="" aria-hidden src="/login-bg.png" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
 
       {/* Center glow blur */}
       <div aria-hidden style={{
@@ -43,7 +36,7 @@ export default function LoginPage() {
         alignItems: "center",
       }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt="Canelada" src={IMG.logo} style={{ width: 116, height: 116, objectFit: "contain", marginBottom: -8 }} />
+        <img alt="Canelada" src="/logo.png" style={{ width: 116, height: 116, objectFit: "contain", marginBottom: -8 }} />
         <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center", width: "100%" }}>
           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 28, lineHeight: "36px", color: "#fff", textAlign: "center", letterSpacing: "-0.5px" }}>
             Canelada
@@ -69,8 +62,7 @@ export default function LoginPage() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img alt="" src={IMG.google} style={{ width: 20, height: 20 }} />
+              <GoogleLogo size={20} weight="bold" color="#111" />
               <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#111", whiteSpace: "nowrap" }}>
                 Continuar com Google
               </span>
@@ -87,8 +79,7 @@ export default function LoginPage() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img alt="" src={IMG.apple} style={{ width: 20, height: 20 }} />
+              <AppleLogo size={20} weight="fill" color="#fff" />
               <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>
                 Continuar com Apple
               </span>
@@ -105,8 +96,7 @@ export default function LoginPage() {
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img alt="" src={IMG.phone} style={{ width: 20, height: 20 }} />
+              <Phone size={20} weight="fill" color="#fff" />
               <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>
                 Entrar com telefone
               </span>

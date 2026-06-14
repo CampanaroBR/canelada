@@ -1,99 +1,363 @@
-# CANELADA — Product Spec MVP
-
-> Escopo do MVP. Não implementar nada fora daqui sem instrução explícita.
+# CANELADA — Product Spec
 
 ---
 
-## Contexto
+## 1. Visão do Produto
 
-Grupo fechado de condomínio. Todos se conhecem. A pelada já existe.
-O Canelada não organiza o jogo — transforma o que já aconteceu em resenha.
+### O que é o Canelada?
 
-**Problema:** As histórias, zoações e rivalidades do baba desaparecem no WhatsApp.
-**Solução:** Feed social com votação pós-baba, traits acumuladas e cards compartilháveis.
+Canelada é uma **rede social gamificada para grupos de baba** (pelada / society).
+
+O objetivo não é controlar o jogo.  
+O objetivo é **transformar o baba em uma experiência social contínua**, criando:
+
+- Rivalidade
+- Reconhecimento
+- Resenha
+- Memória coletiva
+- Identidade dos jogadores
+
+> O futebol acontece das 20h às 22h. A resenha continua a semana inteira.
 
 ---
 
-## Loop central do produto
+## 2. Problema
+
+Hoje o baba gera histórias, zoações, rivalidades e momentos memoráveis.  
+Mas **tudo desaparece no WhatsApp**.
+
+Não existe um lugar para:
+
+- Guardar a história do grupo
+- Registrar os destaques
+- Acompanhar rankings e evolução dos jogadores
+- Gerar conteúdo compartilhável
+- Manter a resenha viva entre os babas
+
+---
+
+## 3. Solução
+
+Canelada transforma cada noite de baba em:
+
+- Rankings sociais
+- Traits e conquistas acumuladas
+- Seleção da rodada
+- Histórias automáticas
+- Feed social com conteúdo gerado automaticamente
+
+---
+
+## 4. Público-alvo
+
+**Primário:** Homens entre 35 e 60 anos que:
+
+- Jogam baba semanalmente
+- Usam WhatsApp diariamente
+- Gostam de competir e zoar os amigos
+
+**Principais motivações:**
+
+- Ser reconhecido
+- Aparecer na seleção
+- Ser MVP
+- Provocar os amigos
+- Compartilhar resultados
+- Participar da resenha
+
+---
+
+## 5. Proposta de Valor
+
+> "Canelada transforma o baba em uma experiência social memorável."
+
+---
+
+## 6. Personalidade da Marca
+
+**O produto deve ser:**
+- Divertido
+- Brasileiro
+- Competitivo
+- Amigável
+- Irreverente
+- Moderno
+
+**Nunca:**
+- Infantil
+- Gamer / esteticamente "gaming"
+- Exageradamente técnico
+- Complexo
+
+---
+
+## 7. Posicionamento
+
+Não somos:
+- ❌ Fut7
+- ❌ SofaScore
+- ❌ Gestão esportiva
+
+Somos:
+- ✅ Rede social do baba
+
+---
+
+## 8. Pilares do Produto
+
+1. **Resenha** — a funcionalidade principal
+2. **Reconhecimento** — todo mundo quer aparecer
+3. **Rivalidade** — mantém o interesse entre os babas
+4. **Compartilhamento** — WhatsApp é essencial
+
+---
+
+## 9. Como funciona o baba
+
+**Estrutura:** 5x5 (1 goleiro + 4 de linha)
+
+**Primeiro baba (20h):**
+- Os 10 primeiros entram automaticamente
+- Dois jogadores batem par ou ímpar e escolhem os times
+- Duração: 15 minutos, sem limite de gols
+
+**Demais babas:**
+- Duração: 10 minutos ou 2 gols
+- Quem vence permanece em quadra
+- Quem perde sai; novos jogadores entram por ordem de chegada
+
+---
+
+## 10. Funcionalidades
+
+### 10.1 Feed `/feed`
+
+Tela principal. Inspirado em Bleacher Report, OneFootball, Copa90.
+
+Conteúdo gerado automaticamente após cada rodada:
+- MVP da rodada
+- Seleção da rodada
+- Traits conquistadas
+- Conquistas desbloqueadas
+- Rivalidades e sequências
+- Rankings
+- Histórias narrativas
+
+**Exemplo de story:** *"Arthur encerrou uma sequência de 5 derrotas."*
+
+**Status atual:** ✅ Feed com story cards. FAB "Baba rolou hoje" para organizadores.
+
+---
+
+### 10.2 Votação (Resumo da Rodada) `/votacao`
+
+Processo rápido após o baba. Tempo máximo: ~1 minuto.
+
+Perguntas obrigatórias:
+- Quem foi o **MVP**?
+- Quem foi o **Bagre**?
+- Quem foi o mais **Raçudo**?
+- Quem animou mais a **Resenha**?
+- Qual **Trait** merece? (para o escolhido no passo anterior)
+
+Opcional (pós-MVP):
+- Gols
+- Assistências
+
+**Status atual:** ✅ Fluxo de 5 steps com ilustrações SVG por categoria.
+
+---
+
+### 10.3 Perfil do Jogador `/perfil/[apelido]`
+
+Cada jogador possui:
+- Apelido + avatar gerado (iniciais com cor única)
+- Overall (pós-MVP)
+- Grid de traits (conquistadas coloridas, não conquistadas grayscale)
+- Histórico das últimas rodadas
+- Conquistas
+
+**Status atual:** ✅ Hero dramático, stats (MVPs / Bagres / Traits), grid hexagonal de traits com SVGs, histórico de rodadas.
+
+---
+
+### 10.4 Seleção da Rodada
+
+Formação automática: **1 goleiro + 4 de linha**.
+
+Baseada em:
+- Votos recebidos
+- Gols (pós-MVP)
+- Assistências (pós-MVP)
+
+Visual: campinho estilizado, compartilhável via WhatsApp.
+
+**Status atual:** ✅ Card de seleção gerado no feed. Compartilhamento: pendente.
+
+---
+
+### 10.5 Rankings `/ranking`
+
+Rankings sociais por categoria:
+- Mais MVP
+- Mais Bagre
+- Mais Raçudo
+- Mais Resenha
+- Mais Presente (pós-MVP)
+
+**Status atual:** ✅ Tabs por categoria, hero card para 1º lugar, podium para 2º e 3º.
+
+---
+
+### 10.6 Traits
+
+Sistema central de reputação e personalidade. Traits são acumuladas ao longo das rodadas.
+
+#### Futebol
+| Slug | Nome |
+|------|------|
+| `racudo` | Raçudo |
+| `matador` | Matador |
+| `paredao` | Paredão |
+| `categoria` | Categoria |
+| `xerife` | Xerife |
+| `garcom` | Garçom |
+
+#### Personalidade
+| Slug | Nome |
+|------|------|
+| `chorao` | Chorão |
+| `paneleiro` | Paneleiro |
+| `fominha` | Fominha |
+| `resenha-forte` | Resenha Forte |
+| `catimbeiro` | Catimbeiro |
+
+#### Resenha
+| Slug | Nome |
+|------|------|
+| `bagre` | Bagre da Noite |
+| `cone` | Cone |
+| `corpo-mole` | Corpo Mole |
+| `firuleiro` | Firuleiro |
+| `reclamao` | Reclamão |
+| `chegou-agora` | Chegou Agora |
+
+**Ilustrações:** SVGs individuais em `/public/traits/`. Mapeamento completo em `VotacaoFlow.tsx → TRAIT_SVG`.
+
+**Status atual:** ✅ Traits no perfil (hexágonos com SVG), na votação (picker com ilustrações) e no feed (story cards de trait conquistada).
+
+---
+
+### 10.7 Conquistas
+
+Sistema de badges desbloqueáveis por marcos. Exemplos:
+
+| Conquista | Critério |
+|-----------|----------|
+| Primeira Vitória | Primeira rodada vencida |
+| Veterano | 50 presenças |
+| Lenda do MVP | 10 MVPs |
+
+**Status atual:** 🔲 Não implementado.
+
+---
+
+### 10.8 Stories Automáticas
+
+O sistema gera narrativas automaticamente após cada rodada.
+
+**Tipos de story:**
+- `MVP` — eleito MVP da rodada
+- `BAGRE` — eleito bagre
+- `TRAIT_CONQUISTADA` — nova trait desbloqueada
+- `SELECAO` — entrou para a seleção da rodada
+- `SEQUENCIA` — sequência de MVPs consecutivos (pós-MVP)
+
+**Exemplos de texto:**
+- *"Arthur foi eleito MVP pela terceira rodada consecutiva."*
+- *"Carlos conquistou a trait Paneleiro."*
+- *"João foi escolhido para a Seleção da Rodada."*
+
+**Status atual:** ✅ Tipos MVP, BAGRE, TRAIT_CONQUISTADA, SELECAO implementados. Geração automática pós-votação.
+
+---
+
+### 10.9 Cards Compartilháveis
+
+Geração de imagem para compartilhamento no WhatsApp.
+
+Conteúdo candidato:
+- Card de MVP da rodada
+- Card da Seleção da Rodada
+- Card de trait conquistada
+- Card de conquista desbloqueada
+
+**Status atual:** 🔲 Não implementado. Alta prioridade de roadmap.
+
+---
+
+## 11. Autenticação
+
+- Google OAuth
+- Email Magic Link via Resend
+- Sessão via Auth.js v5 com JWT
+- Rotas protegidas: `/feed`, `/votacao`, `/perfil`, `/ranking`, `/onboarding`
+- Rota pública: `/login`
+
+---
+
+## 12. Regras de Negócio
+
+- Qualquer jogador autenticado pode marcar "Baba rolou hoje"
+- Uma rodada fica aberta para votação por 24h
+- Cada jogador vota uma vez por rodada
+- Traits são acumulativas — pode ter a mesma trait várias vezes
+- A seleção da rodada é gerada automaticamente ao fechar a votação
+- MVP atual: apenas um grupo fixo (sem multi-tenant)
+
+---
+
+## 13. Loop Central
 
 ```
 Baba encerra
-→ Alguém abre o app e marca "Baba rolou hoje"
-→ Notificação dispara para o grupo
-→ Janela de votação abre (45 segundos por pessoa)
-→ Cada jogador vota: MVP, Bagre, Traits
+→ Qualquer jogador abre o app e marca "Baba rolou hoje"
+→ Janela de votação abre (24h)
+→ Cada jogador vota: MVP, Bagre, Raçudo, Resenha, Trait
 → Feed é gerado com stories automáticas
-→ Cards compartilháveis são gerados
+→ Cards compartilháveis são gerados (roadmap)
 → Grupo compartilha no WhatsApp
 → Resenha continua durante a semana no feed
 ```
 
 ---
 
-## Telas do MVP
+## 14. North Star
 
-### 1. Login `/login`
-- Logo CANELADA em Barlow Condensed 900
-- Tagline: "O baba virou resenha."
-- Botão: "Entrar com Google"
-- Botão: "Entrar com email" (Magic Link)
+**Métrica principal:** % do grupo que vota após cada baba.
 
-### 2. Onboarding `/onboarding`
-- Input: apelido (máximo 20 caracteres)
-- Botão: "Entrar no grupo"
-- No MVP: apenas um grupo fixo
-
-### 3. Feed `/feed`
-- Header: logo + ícone de notificação
-- Botão flutuante: "⚽ Baba rolou hoje" (apenas organizador)
-- Lista de story cards em ordem cronológica reversa
-- Bottom navigation: Feed | Votação | Perfil | Ranking
-
-### 4. Votação `/votacao`
-- Fluxo fullscreen tipo story (5 perguntas)
-- Progress bar no topo
-- Grid de jogadores: avatar + apelido
-- Votação fica aberta 24h
-
-### 5. Perfil `/perfil/[apelido]`
-- Avatar grande + apelido
-- Grid de traits (conquistadas coloridas, não conquistadas grayscale)
-- Histórico recente de 5 rodadas
-
-### 6. Ranking `/ranking`
-- Tabs: Mais MVP | Mais Bagre | Mais Raçudo | Mais Resenha
-- Top 3 com destaque visual
+Métricas secundárias:
+- Retenção semanal (volta sem precisar de notificação)
+- Stories compartilhadas no WhatsApp
+- Sessões por semana por usuário
 
 ---
 
-## Autenticação
+## 15. Roadmap Pós-MVP
 
-- Provider 1: Google OAuth
-- Provider 2: Email Magic Link via Resend
-- Sessão: Auth.js v5 com JWT
-- Rotas protegidas: `/feed`, `/votacao`, `/perfil`, `/ranking`, `/onboarding`
-- Rotas públicas: `/login`
+**Próxima prioridade:**
+1. Cards compartilháveis (WhatsApp) — maior alavanca de crescimento orgânico
+2. Push notifications — lembrete de votação aberta
+3. Gols e assistências na votação
+4. Sistema de conquistas/badges
+5. Overall do jogador
 
----
+**Médio prazo:**
+- Múltiplos grupos (muda arquitetura — planejar antes de crescer)
+- Perfil com foto real
+- Comentários no feed
 
-## Variáveis de ambiente
-
-```env
-DATABASE_URL=
-AUTH_SECRET=
-AUTH_GOOGLE_ID=
-AUTH_GOOGLE_SECRET=
-AUTH_RESEND_KEY=
-RESEND_API_KEY=
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-```
-
----
-
-## Fora do MVP
-
-- Múltiplos grupos
-- Notificações push
-- Stripe / pagamentos
+**Fora do escopo atual:**
 - Landing page pública
-- Comentários
+- Stripe / pagamentos
+- App nativo (iOS/Android)

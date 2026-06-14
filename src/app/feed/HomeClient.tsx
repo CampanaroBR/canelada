@@ -2,38 +2,20 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import {
+  House, Check, Football, ChartBar,
+  Trophy, Medal, CaretRight,
+  CalendarBlank, Alarm, CalendarStar,
+  List, Bell,
+} from "@phosphor-icons/react";
 import { BottomsheetMaisVotados } from "@/components/BottomsheetMaisVotados";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
+import { getMedalha } from "@/lib/assets";
 
-// Figma asset URLs — Home screen (node 126:44)
-const A = {
-  campo:        "http://localhost:3845/assets/a263af27cbe7a4ef6641eae0a2116c73349a78ff.png",
-  logo:         "http://localhost:3845/assets/31c46a81e6d70b0dc33ca60496ecfa043e761f1c.png",
-  calendarBlank:"http://localhost:3845/assets/9fbcd9405a497085e1df88ed009276f1587d787c.svg",
-  alarm:        "http://localhost:3845/assets/3171d50ce937795f17f4d5b40bcfcc5f2b35e39f.svg",
-  tshirt:       "http://localhost:3845/assets/b4cbc176d76f942ed9d2e730c598230da33eb369.svg",
-  tshirtAlt:    "http://localhost:3845/assets/e34ae7fbaf552e83335c72c359cb51099b46e149.svg",
-  caretRight:   "http://localhost:3845/assets/7038802d9fcf108f2f3ad5a4a93d5463281a40c6.svg",
-  caretRight1:  "http://localhost:3845/assets/1a99e8b512216ad730b3789f0f32149bb65b8734.svg",
-  trophy:       "http://localhost:3845/assets/e3f883d17ae67efead123e30b9dec3f2de83035c.svg",
-  medal1:       "http://localhost:3845/assets/ed3d245a654a2fbbf71fa008b60c5261a3b492b4.svg",
-  medal2:       "http://localhost:3845/assets/5cbc74c5d63a841c4db0d1f95fa614b4b6ccb83e.svg",
-  medal3:       "http://localhost:3845/assets/9a1646dc20219cb326579f1d3aa136312f40d036.svg",
-  calendarStar: "http://localhost:3845/assets/e23d845c76452f4c998a4f8f10e56d4c15e127ca.svg",
-  medalIcon:    "http://localhost:3845/assets/ad6be823fa87a138055c46b3af3a96875dd76d19.svg",
-  mascotPreg:   "http://localhost:3845/assets/b663ed68937f38dbe3274350c39786fc36e54346.png",
-  mascotMat:    "http://localhost:3845/assets/320508786458480dbbb96170e84a70d16c6f69f9.png",
-  mascotBagre:  "http://localhost:3845/assets/87fa5599c5cd3975730bfdff7b046d047125b39c.png",
-  emChamas:     "http://localhost:3845/assets/3ec226f3c12640cf91318642ba7cb1e93af99fc1.png",
-  virada:       "http://localhost:3845/assets/ebc29bb02d6decbb4a455a28707bcd21935d9c0e.png",
-  maFase:       "http://localhost:3845/assets/4b0505e234167ce75814365564715857215d2164.png",
-  navHouse:     "http://localhost:3845/assets/d1145caf56c1aabcabda4a5ea86d0a680ee52020.svg",
-  navCheck:     "http://localhost:3845/assets/39afc8a71d58ddc41ddc8c85bf441ed7521dcf1a.svg",
-  navBall:      "http://localhost:3845/assets/f200e818eb26a68d4b29cc37c51b603a4ce1fa37.svg",
-  navChart:     "http://localhost:3845/assets/1bd0dd48431b328313535cfc2138cbb0e273f436.svg",
-  list:         "http://localhost:3845/assets/1b0a8c436f55e4a6e53e98bbd07cc3cfc0bbbb83.svg",
-  bell:         "http://localhost:3845/assets/85367da42c70e1d5ab7fd44d7b65dddf496bca2b.svg",
-};
+const CAMPO  = "/campo.png";
+const LOGO   = "/logo.png";
+const TSHIRT     = "/tshirt.svg";
+const TSHIRT_ALT = "/tshirt-alt.svg";
 
 type MaisVotado = { apelido: string; qtd: number; categoria: string };
 type Personagem  = { tipo: string; texto: string; data: Date };
@@ -52,9 +34,9 @@ interface Props {
 }
 
 const PERSONAGEM_MASCOTS: Record<string, string> = {
-  MVP:    A.mascotMat,
-  BAGRE:  A.mascotBagre,
-  RACUDO: A.mascotPreg,
+  MVP:    "/ilustracoes/tubarao.png",
+  BAGRE:  "/ilustracoes/bagre.png",
+  RACUDO: "/ilustracoes/corpo-mole.png",
 };
 
 const PERSONAGEM_TITLES: Record<string, string> = {
@@ -63,8 +45,12 @@ const PERSONAGEM_TITLES: Record<string, string> = {
   RACUDO: "PREGUEIRO",
 };
 
-const BADGE_IMGS = [A.emChamas, A.virada, A.maFase];
-const MEDAL_IMGS = [A.medal1, A.medal2, A.medal3];
+// Fallback badge images when conquista traitNome isn't recognized
+const BADGE_FALLBACKS = [
+  "/medalhas/em-chamas.png",
+  "/medalhas/virada-de-chave.png",
+  "/medalhas/ma-fase.png",
+];
 
 export function HomeClient({
   rodadaId, dataRodada, jaVotou,
@@ -104,7 +90,7 @@ export function HomeClient({
             {/* Campo inner card */}
             <div style={{ position: "relative", border: "1px solid #777575", borderRadius: 40, overflow: "hidden", padding: "16px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img aria-hidden alt="" src={A.campo} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none", borderRadius: 40 }} />
+              <img aria-hidden alt="" src={CAMPO} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none", borderRadius: 40 }} />
               <div aria-hidden style={{ position: "absolute", inset: 0, background: "rgba(35,52,0,0.34)", borderRadius: 40, pointerEvents: "none" }} />
 
               {/* Voting Panel */}
@@ -124,13 +110,11 @@ export function HomeClient({
                 {dataRodada && (
                   <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end", flexShrink: 0 }}>
                     <div style={{ background: "#1e1e1e", padding: "4px 8px", borderRadius: 48, display: "flex", alignItems: "center", gap: 4, overflow: "hidden" }}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img alt="" src={A.calendarBlank} style={{ width: 16, height: 16, flexShrink: 0 }} />
+                      <CalendarBlank size={16} color="#9fe870" weight="bold" />
                       <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "20px", color: "#9fe870", letterSpacing: "-0.48px", whiteSpace: "nowrap" }}>{dataRodada}</span>
                     </div>
                     <div style={{ background: "#1e1e1e", padding: "4px 8px", borderRadius: 48, display: "flex", alignItems: "center", gap: 4, overflow: "hidden" }}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img alt="" src={A.alarm} style={{ width: 16, height: 16, flexShrink: 0 }} />
+                      <Alarm size={16} color="#fff" weight="bold" />
                       <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "20px", color: "#fff", letterSpacing: "-0.48px", whiteSpace: "nowrap" }}>20:00</span>
                     </div>
                   </div>
@@ -139,14 +123,14 @@ export function HomeClient({
 
               {/* Players formation */}
               <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 24, alignItems: "center" }}>
-                <PlayerSlot tshirt={A.tshirt} />
+                <PlayerSlot tshirt={TSHIRT} />
                 <div style={{ display: "flex", gap: 62, alignItems: "center", justifyContent: "center", width: "100%" }}>
-                  <PlayerSlot tshirt={A.tshirt} />
-                  <PlayerSlot tshirt={A.tshirt} />
-                  <PlayerSlot tshirt={A.tshirt} />
+                  <PlayerSlot tshirt={TSHIRT} />
+                  <PlayerSlot tshirt={TSHIRT} />
+                  <PlayerSlot tshirt={TSHIRT} />
                 </div>
                 <div style={{ borderTop: "1px solid #5e5e5e", width: 292, paddingTop: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <PlayerSlot tshirt={A.tshirtAlt} />
+                  <PlayerSlot tshirt={TSHIRT_ALT} />
                 </div>
               </div>
 
@@ -164,8 +148,7 @@ export function HomeClient({
                       <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "rgba(255,255,255,0.6)" }}>Escolha o personagem de cada um</span>
                     </div>
                     <div style={{ width: 36, height: 36, borderRadius: 12, background: "#9fe870", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img alt="" src={A.caretRight} style={{ width: 20, height: 20 }} />
+                      <CaretRight size={20} weight="bold" color="#000" />
                     </div>
                   </Link>
                 ) : !rodadaId ? (
@@ -195,8 +178,7 @@ export function HomeClient({
             <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 20, padding: 17, display: "flex", flexDirection: "column", gap: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 4, flex: 1 }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img alt="" src={A.trophy} style={{ width: 16, height: 16 }} />
+                  <Trophy size={16} color="#fff" weight="fill" />
                   <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>MAIS VOTADOS</span>
                 </div>
                 <button onClick={() => setBsOpen(true)} style={{
@@ -205,8 +187,7 @@ export function HomeClient({
                   borderRadius: 9999, padding: "7px 13px", cursor: "pointer",
                 }}>
                   <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "18px", color: "#fff" }}>Ver mais</span>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img alt="" src={A.caretRight1} style={{ width: 12, height: 12 }} />
+                  <CaretRight size={12} color="#fff" weight="bold" />
                 </button>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -224,9 +205,8 @@ export function HomeClient({
                             <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 14, lineHeight: "18px", color: "#8d908d" }}>{v.categoria}</p>
                           </div>
                         </div>
-                        <div style={{ background: "#000", border: "1px solid #353535", borderRadius: 12, width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 4 }}>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img alt="" src={MEDAL_IMGS[i]} style={{ width: 28, height: 28 }} />
+                        <div style={{ background: "#000", border: "1px solid #353535", borderRadius: 12, width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <Medal size={24} color={["#f5c518","#aaa","#cd7f32"][i] ?? "#fff"} weight="fill" />
                         </div>
                       </div>
                     </div>
@@ -240,8 +220,7 @@ export function HomeClient({
           {personagens.length > 0 && (
             <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 20, padding: 17, display: "flex", flexDirection: "column", gap: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img alt="" src={A.calendarStar} style={{ width: 16, height: 16 }} />
+                <CalendarStar size={16} color="#fff" weight="fill" />
                 <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>PERSONAGEM DA SEMANA</span>
               </div>
               {datePills.length > 0 && (
@@ -262,7 +241,7 @@ export function HomeClient({
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {personagens.map((p, i) => {
                   const title = PERSONAGEM_TITLES[p.tipo] ?? p.tipo;
-                  const mascot = PERSONAGEM_MASCOTS[p.tipo] ?? A.mascotPreg;
+                  const mascot = PERSONAGEM_MASCOTS[p.tipo] ?? "/ilustracoes/corpo-mole.png";
                   const nome = p.texto.split(" ").slice(0, 2).join(" ");
                   const dateStr = new Date(p.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
                   const qtd = 7 - i;
@@ -287,8 +266,7 @@ export function HomeClient({
                           borderRadius: 9999, padding: "7px 13px", cursor: "pointer",
                         }}>
                           <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "18px", color: "#fff" }}>Ver mais</span>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img alt="" src={A.caretRight1} style={{ width: 12, height: 12 }} />
+                          <CaretRight size={12} color="#fff" weight="bold" />
                         </button>
                       </div>
                       <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "flex-end", alignSelf: "stretch" }}>
@@ -307,8 +285,7 @@ export function HomeClient({
             <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 20, padding: 17, display: "flex", flexDirection: "column", gap: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                 <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 4 }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img alt="" src={A.medalIcon} style={{ width: 16, height: 16 }} />
+                  <Medal size={16} color="#fff" weight="fill" />
                   <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>MEDALHAS</span>
                 </div>
                 <Link href="/ranking" style={{
@@ -317,8 +294,7 @@ export function HomeClient({
                   borderRadius: 9999, padding: "7px 13px",
                 }}>
                   <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "18px", color: "#fff" }}>Ver todas</span>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img alt="" src={A.caretRight1} style={{ width: 12, height: 12 }} />
+                  <CaretRight size={12} color="#fff" weight="bold" />
                 </Link>
               </div>
               <div style={{ background: "#111", border: "1px solid #1e1e1e", borderRadius: 12, padding: "9px 13px", display: "flex", gap: 12, alignItems: "center" }}>
@@ -333,7 +309,7 @@ export function HomeClient({
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {conquistas.map((c, i) => {
-                  const badge = BADGE_IMGS[i % BADGE_IMGS.length];
+                  const badge = getMedalha(c.traitNome) ?? BADGE_FALLBACKS[i % BADGE_FALLBACKS.length];
                   const subtitles = ["3x seguido como Craque/Matador", "Do pior para o melhor em 1 jogo", "3x seguido como pior personagem"];
                   return (
                     <div key={i} style={{ background: "#000", border: "1px solid #2e2e2e", borderRadius: 16, padding: "9px 17px" }}>
@@ -348,7 +324,7 @@ export function HomeClient({
                         </div>
                         <div style={{ width: 72, height: 72, overflow: "hidden", flexShrink: 0 }}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img alt="" src={badge} style={{ width: 72, height: 72 }} />
+                          <img alt={c.traitNome} src={badge} style={{ width: 72, height: 72 }} />
                         </div>
                       </div>
                     </div>
@@ -368,21 +344,19 @@ export function HomeClient({
         <div style={{ height: 54 }} />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 8px", height: 64, pointerEvents: "auto" }}>
           <button style={{ width: 56, height: 64, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img alt="Menu" src={A.list} style={{ width: 32, height: 32 }} />
+            <List size={32} color="#fff" weight="bold" />
           </button>
           <div style={{ display: "flex", alignItems: "center", alignSelf: "stretch" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img alt="Canelada" src={A.logo} style={{ height: "100%", aspectRatio: "1 / 1", objectFit: "cover" }} />
+            <img alt="Canelada" src={LOGO} style={{ height: "100%", aspectRatio: "1 / 1", objectFit: "cover" }} />
           </div>
           <button style={{ width: 56, height: 64, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "none", border: "none", cursor: "pointer" }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img alt="Notificações" src={A.bell} style={{ width: 28, height: 28 }} />
+            <Bell size={28} color="#fff" weight="bold" />
           </button>
         </div>
       </div>
 
-      {/* ── BOTTOM NAV (Figma: bg rgba(0,0,0,0.08) border #393939 rounded-32px) ── */}
+      {/* ── BOTTOM NAV ── */}
       <div style={{
         position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)",
         width: "min(100%, 430px)", zIndex: 30,
@@ -397,10 +371,10 @@ export function HomeClient({
           boxShadow: "0px 4px 4.7px 1px rgba(0,0,0,0.28)",
         }}>
           <div style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "space-between" }}>
-            <NavItem icon={A.navHouse} label="Home" active />
-            <NavItem icon={A.navCheck} label="Votos" href="/votacao" />
-            <NavItem icon={A.navBall} label="Pelada" href="/feed" />
-            <NavItem icon={A.navChart} label="Ranking" href="/ranking" />
+            <NavItem icon="house"   label="Home"    active />
+            <NavItem icon="check"   label="Votos"   href="/votacao" />
+            <NavItem icon="soccer"  label="Pelada"  href="/feed" />
+            <NavItem icon="chart"   label="Ranking" href="/ranking" />
           </div>
         </nav>
       </div>
@@ -433,6 +407,16 @@ function PlayerSlot({ tshirt }: { tshirt: string }) {
 }
 
 function NavItem({ icon, label, active, href }: { icon: string; label: string; active?: boolean; href?: string }) {
+  const iconEl = (() => {
+    const c = active ? "#000" : "#fff";
+    const w = 28;
+    if (icon === "house")  return <House  size={w} color={c} weight={active ? "fill" : "regular"} />;
+    if (icon === "check")  return <Check  size={w} color={c} weight={active ? "fill" : "regular"} />;
+    if (icon === "soccer") return <Football size={w} color={c} weight={active ? "fill" : "regular"} />;
+    if (icon === "chart")  return <ChartBar size={w} color={c} weight={active ? "fill" : "regular"} />;
+    return null;
+  })();
+
   const inner = (
     <div style={{
       width: 56, height: 56,
@@ -442,8 +426,7 @@ function NavItem({ icon, label, active, href }: { icon: string; label: string; a
       padding: 8, overflow: "hidden",
     }}>
       <div style={{ width: 28, display: "flex", flexDirection: "column", alignItems: "center" }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt="" src={icon} style={{ width: 28, height: 28 }} />
+        {iconEl}
         <span style={{
           fontFamily: "var(--font-display)", fontWeight: active ? 800 : 600,
           fontSize: 10, lineHeight: "14px", color: active ? "#000" : "#fff",
