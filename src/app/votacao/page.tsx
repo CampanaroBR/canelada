@@ -160,7 +160,7 @@ type VotoComVotado = {
 };
 
 const CATEGORIA_CONFIG: Record<string, { label: string; color: string }> = {
-  MVP:     { label: "MVP",     color: "#9fe870" },
+  MVP:     { label: "MVP",     color: "#B5FF4D" },
   BAGRE:   { label: "Bagre",   color: "#EF4444" },
   RACUDO:  { label: "Raçudo",  color: "#F59E0B" },
   RESENHA: { label: "Resenha", color: "#60A5FA" },

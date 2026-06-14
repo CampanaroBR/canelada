@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Prisma } from "@prisma/client";
 import { SelecaoCard } from "./SelecaoCard";
 
@@ -12,6 +13,7 @@ const TIPO_CONFIG = {
     color: "var(--color-accent)",
     colorRaw: "rgba(159,232,112,",
     accentBar: "var(--color-accent)",
+    illustration: "/traits/Craque.svg",
   },
   BAGRE: {
     label: "BAGRE",
@@ -19,6 +21,7 @@ const TIPO_CONFIG = {
     color: "var(--color-bagre)",
     colorRaw: "rgba(239,68,68,",
     accentBar: "var(--color-bagre)",
+    illustration: "/traits/Bagre.svg",
   },
   TRAIT_CONQUISTADA: {
     label: "CONQUISTA",
@@ -26,6 +29,7 @@ const TIPO_CONFIG = {
     color: "var(--color-warning)",
     colorRaw: "rgba(245,158,11,",
     accentBar: "var(--color-warning)",
+    illustration: "/traits/Firuleiro.svg",
   },
   SELECAO: {
     label: "SELEÇÃO",
@@ -33,6 +37,7 @@ const TIPO_CONFIG = {
     color: "var(--color-success)",
     colorRaw: "rgba(34,197,94,",
     accentBar: "var(--color-success)",
+    illustration: "/traits/Xerife.svg",
   },
   SEQUENCIA: {
     label: "SEQUÊNCIA",
@@ -40,6 +45,7 @@ const TIPO_CONFIG = {
     color: "var(--color-accent)",
     colorRaw: "rgba(159,232,112,",
     accentBar: "var(--color-accent)",
+    illustration: "/traits/Racudo.svg",
   },
 } as const;
 
@@ -69,11 +75,10 @@ export function StoryCard({ story }: { story: StoryWithRodada }) {
       style={{
         position: "relative",
         borderRadius: "var(--radius-lg)",
-        /* Double-bezel outer shell (high-end-visual-design) */
         background: "var(--color-surface-1)",
-        /* Shadow-as-border dark (surfaces.md) */
         boxShadow: "var(--shadow-border)",
         overflow: "hidden",
+        minHeight: "96px",
       }}
     >
       {/* Accent bar esquerda — 3px */}
@@ -90,8 +95,39 @@ export function StoryCard({ story }: { story: StoryWithRodada }) {
         }}
       />
 
-      {/* Inner core — padding concentric: outer 16px, inner = 16-3 pad ≈ 12px content area */}
-      <div style={{ padding: "14px 16px 14px 20px" }}>
+      {/* SVG illustration — background hero visual */}
+      <div aria-hidden style={{
+        position: "absolute",
+        right: "-8px",
+        bottom: "-8px",
+        width: "120px",
+        height: "120px",
+        opacity: 0.13,
+        pointerEvents: "none",
+        filter: `drop-shadow(0 0 24px ${cfg.colorRaw}0.6))`,
+      }}>
+        <Image
+          src={cfg.illustration}
+          alt=""
+          width={120}
+          height={120}
+          style={{ width: "100%", height: "100%", objectFit: "contain" }}
+        />
+      </div>
+
+      {/* Glow layer */}
+      <div aria-hidden style={{
+        position: "absolute",
+        right: 0,
+        bottom: 0,
+        width: "140px",
+        height: "140px",
+        background: `radial-gradient(circle at 80% 80%, ${cfg.colorRaw}0.08) 0%, transparent 70%)`,
+        pointerEvents: "none",
+      }} />
+
+      {/* Inner core */}
+      <div style={{ padding: "14px 140px 14px 20px", position: "relative" }}>
 
         {/* Top row */}
         <div style={{
@@ -100,7 +136,7 @@ export function StoryCard({ story }: { story: StoryWithRodada }) {
           justifyContent: "space-between",
           marginBottom: "10px",
         }}>
-          {/* Label pill — shadow-as-border */}
+          {/* Label pill */}
           <div style={{
             display: "inline-flex",
             alignItems: "center",
@@ -123,7 +159,6 @@ export function StoryCard({ story }: { story: StoryWithRodada }) {
             </span>
           </div>
 
-          {/* Tempo — tabular-nums (make-interfaces-feel-better) */}
           <time
             className="tabular"
             dateTime={new Date(story.createdAt).toISOString()}
@@ -139,15 +174,15 @@ export function StoryCard({ story }: { story: StoryWithRodada }) {
           </time>
         </div>
 
-        {/* Story text — hero, text-wrap: pretty via CSS global */}
+        {/* Story text */}
         <p style={{
-          fontSize: "16px",
-          fontWeight: 500,
-          lineHeight: 1.5,
+          fontSize: "18px",
+          fontWeight: 600,
+          lineHeight: 1.4,
           color: "var(--color-text-primary)",
           fontFamily: "var(--font-body)",
           margin: "0 0 11px",
-          letterSpacing: "-0.01em",
+          letterSpacing: "-0.02em",
         }}>
           {story.texto}
         </p>

@@ -11,13 +11,13 @@ export type RankingData = {
 };
 
 const TABS = [
-  { key: "MVP"     as const, label: "MVP",     color: "#9fe870", emoji: "⚽" },
+  { key: "MVP"     as const, label: "MVP",     color: "#B5FF4D", emoji: "⚽" },
   { key: "BAGRE"   as const, label: "Bagre",   color: "#EF4444", emoji: "🐟" },
   { key: "RACUDO"  as const, label: "Raçudo",  color: "#F59E0B", emoji: "💪" },
   { key: "RESENHA" as const, label: "Resenha", color: "#60A5FA", emoji: "🎤" },
 ];
 
-const AVATAR_COLORS = ["#9fe870", "#60A5FA", "#F59E0B", "#EF4444", "#A78BFA", "#34D399", "#F97316", "#EC4899"];
+const AVATAR_COLORS = ["#B5FF4D", "#60A5FA", "#F59E0B", "#EF4444", "#A78BFA", "#34D399", "#F97316", "#EC4899"];
 function avatarColor(name: string) {
   let h = 0;
   for (const c of name) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
@@ -50,77 +50,102 @@ function AvatarCircle({ name, size = 48, active = false, accentColor = "" }: {
   );
 }
 
-/* Primeiro lugar — hero card dramático com cor de fundo */
+/* Primeiro lugar — hero card com cor preenchendo como o Login */
 function FirstPlaceCard({ entry, color, emoji }: { entry: RankingEntry; color: string; emoji: string }) {
+  const tabLabel = TABS.find(t => t.color === color)?.label ?? "ranking";
   return (
     <div style={{
       position: "relative",
       borderRadius: "var(--radius-lg)",
-      background: color + "14",
-      boxShadow: `0 0 0 1px ${color}40, inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 24px ${color}15`,
-      padding: "20px",
+      background: `linear-gradient(135deg, ${color}28 0%, ${color}10 60%, transparent 100%)`,
+      boxShadow: `0 0 0 1px ${color}50, inset 0 1px 0 rgba(255,255,255,0.10), 0 8px 40px ${color}25`,
+      padding: "24px 20px",
       overflow: "hidden",
       marginBottom: "8px",
     }}>
-      {/* Watermark gigante do número 1 */}
+      {/* Color fill strip on top */}
       <div aria-hidden style={{
         position: "absolute",
-        right: "-8px",
+        top: 0, left: 0, right: 0,
+        height: "3px",
+        background: color,
+        opacity: 0.9,
+      }} />
+
+      {/* Radial glow behind avatar */}
+      <div aria-hidden style={{
+        position: "absolute",
+        left: "10px",
+        top: "50%",
+        transform: "translateY(-50%)",
+        width: "120px",
+        height: "120px",
+        borderRadius: "50%",
+        background: `radial-gradient(circle, ${color}25 0%, transparent 70%)`,
+        pointerEvents: "none",
+      }} />
+
+      {/* Watermark "1" */}
+      <div aria-hidden style={{
+        position: "absolute",
+        right: "-4px",
         top: "50%",
         transform: "translateY(-50%)",
         fontFamily: "var(--font-display)",
         fontWeight: 900,
-        fontSize: "120px",
+        fontSize: "clamp(140px, 38vw, 180px)",
         lineHeight: 1,
         color: color,
-        opacity: 0.07,
+        opacity: 0.06,
         userSelect: "none",
         letterSpacing: "-0.04em",
       }}>1</div>
 
+      {/* Label topo */}
+      <p style={{
+        fontSize: "10px", fontWeight: 700, letterSpacing: "0.16em",
+        textTransform: "uppercase", color: color,
+        fontFamily: "var(--font-body)", marginBottom: "16px", opacity: 0.9,
+        position: "relative",
+      }}>
+        {emoji} Líder do {tabLabel}
+      </p>
+
       <div style={{ display: "flex", alignItems: "center", gap: "16px", position: "relative" }}>
-        <div style={{ position: "relative" }}>
-          <AvatarCircle name={entry.apelido} size={64} active accentColor={color} />
-          {/* Medal badge */}
+        <div style={{ position: "relative", flexShrink: 0 }}>
+          <AvatarCircle name={entry.apelido} size={72} active accentColor={color} />
           <div style={{
-            position: "absolute", bottom: "-2px", right: "-4px",
-            fontSize: "18px", lineHeight: 1,
-            filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.40))",
+            position: "absolute", bottom: "-4px", right: "-6px",
+            fontSize: "22px", lineHeight: 1,
+            filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.50))",
           }}>🥇</div>
         </div>
 
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{
-            fontSize: "10px", fontWeight: 700, letterSpacing: "0.14em",
-            textTransform: "uppercase", color: color,
-            fontFamily: "var(--font-body)", marginBottom: "4px", opacity: 0.8,
-          }}>
-            {emoji} Líder do {TABS.find(t => t.color === color)?.label ?? "ranking"}
-          </p>
-          <h3 style={{
-            fontFamily: "var(--font-display)", fontWeight: 900,
-            fontSize: "clamp(22px, 6vw, 28px)", lineHeight: 0.9,
-            letterSpacing: "-0.01em", textTransform: "uppercase",
-            color: "var(--color-text-primary)",
-            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-          }}>
-            {entry.apelido}
-          </h3>
-        </div>
+        <h3 style={{
+          flex: 1, minWidth: 0,
+          fontFamily: "var(--font-display)", fontWeight: 900,
+          fontSize: "clamp(28px, 8vw, 40px)", lineHeight: 0.9,
+          letterSpacing: "-0.02em", textTransform: "uppercase",
+          color: "var(--color-text-primary)",
+          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+        }}>
+          {entry.apelido}
+        </h3>
 
         {/* Contador dominante */}
         <div style={{ textAlign: "right", flexShrink: 0 }}>
           <div className="tabular" style={{
             fontFamily: "var(--font-display)", fontWeight: 900,
-            fontSize: "clamp(40px, 11vw, 52px)", lineHeight: 0.9,
+            fontSize: "clamp(64px, 18vw, 88px)", lineHeight: 0.85,
             color: color,
+            letterSpacing: "-0.03em",
           }}>
             {entry.count}
           </div>
           <div style={{
-            fontSize: "9px", fontWeight: 700, letterSpacing: "0.1em",
+            fontSize: "9px", fontWeight: 700, letterSpacing: "0.12em",
             textTransform: "uppercase", color: "var(--color-text-muted)",
-            fontFamily: "var(--font-body)",
+            fontFamily: "var(--font-body)", marginTop: "4px",
           }}>
             voto{entry.count !== 1 ? "s" : ""}
           </div>
@@ -159,7 +184,8 @@ function PodiumRow({ entry, rank, color }: { entry: RankingEntry; rank: 2 | 3; c
       </span>
       <span className="tabular" style={{
         fontFamily: "var(--font-display)", fontWeight: 900,
-        fontSize: "22px", lineHeight: 1, color,
+        fontSize: "32px", lineHeight: 1, color,
+        letterSpacing: "-0.02em",
       }}>
         {entry.count}
       </span>

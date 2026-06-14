@@ -5,10 +5,17 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import Link from "next/link";
 import Image from "next/image";
 import { TRAIT_SVG } from "@/app/votacao/VotacaoFlow";
+import {
+  CONQUISTAS,
+  CAT_CONQUISTA_CONFIG,
+  computeConquistas,
+  computeOverall,
+  type ConquistaCategoria,
+} from "@/lib/conquistas";
 
 export const dynamic = "force-dynamic";
 
-const AVATAR_COLORS = ["#9fe870", "#60A5FA", "#F59E0B", "#EF4444", "#A78BFA", "#34D399", "#F97316", "#EC4899"];
+const AVATAR_COLORS = ["#B5FF4D", "#60A5FA", "#F59E0B", "#EF4444", "#A78BFA", "#34D399", "#F97316", "#EC4899"];
 function getAvatarColor(name: string) {
   let h = 0;
   for (const c of name) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
@@ -20,13 +27,13 @@ function getInitials(name: string) {
 }
 
 const CAT_CONFIG: Record<string, { label: string; color: string }> = {
-  FUTEBOL:       { label: "Futebol",       color: "#9fe870" },
+  FUTEBOL:       { label: "Futebol",       color: "#B5FF4D" },
   PERSONALIDADE: { label: "Personalidade", color: "#F59E0B" },
   RESENHA:       { label: "Resenha",       color: "#EF4444" },
 };
 
 const VOTO_CONFIG: Record<string, { label: string; color: string }> = {
-  MVP:     { label: "MVP",     color: "#9fe870" },
+  MVP:     { label: "MVP",     color: "#B5FF4D" },
   BAGRE:   { label: "Bagre",   color: "#EF4444" },
   RACUDO:  { label: "Raçudo",  color: "#F59E0B" },
   RESENHA: { label: "Resenha", color: "#60A5FA" },
@@ -78,14 +85,21 @@ export default async function PerfilPage({
     );
   }
 
-  const [allTraits, mvpCount, bagreCount, totalRodadas, recentRodadas] = await Promise.all([
+  const [allTraits, mvpCount, bagreCount, racudoCount, resenhaCount, totalRodadas, presencaRows, recentRodadas] = await Promise.all([
     prisma.trait.findMany({
       orderBy: [{ categoria: "asc" }, { nome: "asc" }],
       select: { slug: true, nome: true, emoji: true, categoria: true },
     }),
     prisma.voto.count({ where: { votadoId: jogador.id, categoria: "MVP" } }),
     prisma.voto.count({ where: { votadoId: jogador.id, categoria: "BAGRE" } }),
+    prisma.voto.count({ where: { votadoId: jogador.id, categoria: "RACUDO" } }),
+    prisma.voto.count({ where: { votadoId: jogador.id, categoria: "RESENHA" } }),
     prisma.rodada.count({ where: { grupoId: jogador.grupoId } }),
+    prisma.voto.findMany({
+      where: { votadoId: jogador.id },
+      select: { rodadaId: true },
+      distinct: ["rodadaId"],
+    }),
     prisma.rodada.findMany({
       where: { grupoId: jogador.grupoId },
       select: {
@@ -111,12 +125,25 @@ export default async function PerfilPage({
   const color = getAvatarColor(jogador.apelido);
   const initials = getInitials(jogador.apelido);
   const traitsUnlocked = jogador.traitsRecebidas.length;
+  const presencaCount = presencaRows.length;
   const joinYear = new Date(jogador.createdAt).getFullYear();
 
+  const conquiStats = { mvpCount, bagreCount, racudoCount, resenhaCount, traitsUnlocked, presencaCount };
+  const conquistasUnlocked = computeConquistas(conquiStats);
+  const overall = computeOverall(conquiStats);
+
+  const conquistasByCategory = (Object.keys(CAT_CONQUISTA_CONFIG) as ConquistaCategoria[]).reduce(
+    (acc, cat) => {
+      acc[cat] = CONQUISTAS.filter((c) => c.categoria === cat);
+      return acc;
+    },
+    {} as Record<ConquistaCategoria, typeof CONQUISTAS>
+  );
+
   const STATS = [
-    { label: "MVPs",   value: mvpCount,       color: "#9fe870" },
-    { label: "Bagres", value: bagreCount,      color: "#EF4444" },
-    { label: "Traits", value: traitsUnlocked,  color: "#A78BFA" },
+    { label: "MVPs",     value: mvpCount,       color: "#B5FF4D" },
+    { label: "Bagres",   value: bagreCount,      color: "#EF4444" },
+    { label: "Traits",   value: traitsUnlocked,  color: "#A78BFA" },
   ];
 
   return (
@@ -286,20 +313,59 @@ export default async function PerfilPage({
             zIndex: 1,
             padding: "0 24px 20px",
           }}>
-            <h1 style={{
-              fontFamily: "var(--font-display)",
-              fontWeight: 900,
-              fontSize: "clamp(44px, 12vw, 64px)",
-              lineHeight: 0.88,
-              letterSpacing: "-0.02em",
-              textTransform: "uppercase",
-              color: "var(--color-text-primary)",
-              marginBottom: "10px",
-            }}>
-              {jogador.apelido}
-            </h1>
+            {/* Overall + nome */}
+            <div style={{ display: "flex", alignItems: "flex-end", gap: "14px", marginBottom: "12px" }}>
+              <h1 style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 900,
+                fontSize: "clamp(44px, 12vw, 64px)",
+                lineHeight: 0.88,
+                letterSpacing: "-0.02em",
+                textTransform: "uppercase",
+                color: "var(--color-text-primary)",
+                flex: 1,
+                minWidth: 0,
+              }}>
+                {jogador.apelido}
+              </h1>
 
-            {/* Meta pill */}
+              {/* Overall score */}
+              <div style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                flexShrink: 0,
+                background: color + "18",
+                borderRadius: "var(--radius-md)",
+                boxShadow: `0 0 0 1px ${color}40, 0 0 20px ${color}15`,
+                padding: "6px 12px 4px",
+              }}>
+                <span className="tabular" style={{
+                  fontFamily: "var(--font-display)",
+                  fontWeight: 900,
+                  fontSize: "clamp(32px, 9vw, 44px)",
+                  lineHeight: 0.9,
+                  color: color,
+                  letterSpacing: "-0.02em",
+                }}>
+                  {overall}
+                </span>
+                <span style={{
+                  fontSize: "8px",
+                  fontWeight: 700,
+                  letterSpacing: "0.14em",
+                  textTransform: "uppercase",
+                  color: color,
+                  opacity: 0.7,
+                  fontFamily: "var(--font-body)",
+                  marginTop: "3px",
+                }}>
+                  OVR
+                </span>
+              </div>
+            </div>
+
+            {/* Meta pills */}
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
               <div style={{
                 display: "inline-flex",
@@ -398,7 +464,7 @@ export default async function PerfilPage({
           ))}
         </div>
 
-        {/* ── TRAITS — grid circular estilo Milestones ── */}
+        {/* ── TRAITS — grid hexagonal ── */}
         <section style={{ padding: "0 16px 32px" }}>
           <div style={{
             display: "flex",
@@ -414,7 +480,7 @@ export default async function PerfilPage({
               textTransform: "uppercase",
               color: "var(--color-text-primary)",
             }}>
-              CONQUISTAS
+              MARCAS
             </h2>
             <span style={{
               fontFamily: "var(--font-display)",
@@ -562,6 +628,136 @@ export default async function PerfilPage({
                             maxWidth: "72px",
                           }}>
                             {trait.nome}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ── MEDALHAS — conquistas do jogador ── */}
+        <section style={{ padding: "0 16px 32px" }}>
+          <div style={{
+            display: "flex",
+            alignItems: "baseline",
+            justifyContent: "space-between",
+            marginBottom: "20px",
+          }}>
+            <h2 style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 900,
+              fontSize: "20px",
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              color: "var(--color-text-primary)",
+            }}>
+              MEDALHAS
+            </h2>
+            <span style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 900,
+              fontSize: "14px",
+              color: "var(--color-text-muted)",
+            }}>
+              {conquistasUnlocked.size}/{CONQUISTAS.length}
+            </span>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "28px" }}>
+            {(Object.keys(CAT_CONQUISTA_CONFIG) as ConquistaCategoria[]).map((catKey) => {
+              const catCfg = CAT_CONQUISTA_CONFIG[catKey];
+              const catConquistas = conquistasByCategory[catKey];
+              const unlockedInCat = catConquistas.filter(c => conquistasUnlocked.has(c.slug)).length;
+
+              return (
+                <div key={catKey}>
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginBottom: "14px",
+                  }}>
+                    <p style={{
+                      fontSize: "10px",
+                      fontWeight: 700,
+                      letterSpacing: "0.16em",
+                      textTransform: "uppercase",
+                      color: catCfg.color,
+                      fontFamily: "var(--font-body)",
+                    }}>
+                      {catCfg.icon} {catCfg.label}
+                    </p>
+                    <span style={{
+                      fontSize: "10px",
+                      fontWeight: 600,
+                      color: "var(--color-text-muted)",
+                      fontFamily: "var(--font-body)",
+                    }}>
+                      {unlockedInCat}/{catConquistas.length}
+                    </span>
+                  </div>
+
+                  <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(4, 1fr)",
+                    gap: "12px 4px",
+                  }}>
+                    {catConquistas.map((conquista) => {
+                      const unlocked = conquistasUnlocked.has(conquista.slug);
+                      return (
+                        <div key={conquista.slug} style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          gap: "6px",
+                        }}>
+                          {/* Circular badge */}
+                          <div style={{
+                            width: "68px",
+                            height: "68px",
+                            borderRadius: "50%",
+                            background: unlocked
+                              ? `radial-gradient(circle at 35% 30%, ${catCfg.color}30, ${catCfg.color}10)`
+                              : "var(--color-surface-2)",
+                            boxShadow: unlocked
+                              ? `0 0 0 2px ${catCfg.color}60, 0 0 16px ${catCfg.color}20, inset 0 1px 0 rgba(255,255,255,0.10)`
+                              : "0 0 0 1px rgba(255,255,255,0.06)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            overflow: "hidden",
+                            flexShrink: 0,
+                            transition: "box-shadow 200ms",
+                          }}>
+                            <Image
+                              src={conquista.svg}
+                              alt={conquista.nome}
+                              width={44}
+                              height={44}
+                              style={{
+                                objectFit: "contain",
+                                filter: unlocked ? "none" : "grayscale(1)",
+                                opacity: unlocked ? 1 : 0.25,
+                              }}
+                            />
+                          </div>
+
+                          <span style={{
+                            fontSize: "9px",
+                            fontWeight: unlocked ? 700 : 500,
+                            fontFamily: "var(--font-body)",
+                            color: unlocked ? catCfg.color : "var(--color-text-muted)",
+                            textAlign: "center",
+                            lineHeight: 1.3,
+                            opacity: unlocked ? 1 : 0.35,
+                            letterSpacing: "0.02em",
+                            maxWidth: "68px",
+                          }}>
+                            {conquista.nome}
                           </span>
                         </div>
                       );

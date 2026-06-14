@@ -11,11 +11,11 @@
   --color-border:       rgba(255,255,255,0.08);
   --color-border-muted: rgba(255,255,255,0.04);
 
-  /* Accent — verde Canelada */
+  /* Accent — verde do designer #9fe870 */
   --color-accent:       #9fe870;
-  --color-accent-hover: #8fd960;
+  --color-accent-hover: #7ed44e;
   --color-accent-muted: rgba(159,232,112,0.12);
-  --color-on-accent:    #163300;
+  --color-on-accent:    #090909;
 
   /* Text */
   --color-text-primary:   rgba(255,255,255,0.87);
@@ -28,7 +28,7 @@
   --color-danger:  #EF4444;
   --color-warning: #F59E0B;
   --color-mvp:     #9fe870;
-  --color-bagre:   #EF4444;
+  --color-bagre:   #d42020;
 
   /* Traits */
   --trait-futebol:       #9fe870;
@@ -39,7 +39,7 @@
   --shadow-sm:     0 1px 2px rgba(0,0,0,0.4);
   --shadow-md:     0 2px 8px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.3);
   --shadow-lg:     0 8px 24px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
-  --shadow-accent: 0 0 24px rgba(159,232,112,0.18);
+  --shadow-accent: 0 0 24px rgba(159,232,112,0.22);
   /* Shadow-as-border para dark mode (surfaces.md) */
   --shadow-border:       0 0 0 1px rgba(255,255,255,0.08);
   --shadow-border-hover: 0 0 0 1px rgba(255,255,255,0.13);

@@ -17,7 +17,7 @@ interface Props {
 }
 
 const STEPS = [
-  { categoria: "MVP",     label: "CRAQUE DO DIA",  pre: "QUEM FOI",    accent: "O CRAQUE?",   color: "#9fe870", illustration: "/traits/Craque.svg"    },
+  { categoria: "MVP",     label: "CRAQUE DO DIA",  pre: "QUEM FOI",    accent: "O CRAQUE?",   color: "#B5FF4D", illustration: "/traits/Craque.svg"    },
   { categoria: "BAGRE",   label: "BAGRE DA VEZ",   pre: "QUEM FOI",    accent: "O BAGRE?",    color: "#EF4444", illustration: "/traits/Bagre.svg"     },
   { categoria: "RACUDO",  label: "RAÇUDO",          pre: "QUEM MAIS",   accent: "SE RAÇOU?",   color: "#F59E0B", illustration: "/traits/Racudo.svg"    },
   { categoria: "RESENHA", label: "REI DA RESENHA", pre: "QUEM ANIMOU", accent: "A RESENHA?",  color: "#60A5FA", illustration: "/traits/So_resenha.svg" },
@@ -43,7 +43,7 @@ export const TRAIT_SVG: Record<string, string> = {
   "garcom":        "/traits/Garcom.svg",
 };
 
-const AVATAR_COLORS = ["#9fe870", "#60A5FA", "#F59E0B", "#EF4444", "#A78BFA", "#34D399", "#F97316", "#EC4899"];
+const AVATAR_COLORS = ["#B5FF4D", "#60A5FA", "#F59E0B", "#EF4444", "#A78BFA", "#34D399", "#F97316", "#EC4899"];
 
 function getAvatarColor(apelido: string) {
   let h = 0;
@@ -397,7 +397,7 @@ function TraitGrid({ traits, selected, onSelect }: {
   onSelect: (slug: string) => void;
 }) {
   const categories = [
-    { key: "FUTEBOL",       label: "Futebol",       color: "#9fe870" },
+    { key: "FUTEBOL",       label: "Futebol",       color: "#B5FF4D" },
     { key: "PERSONALIDADE", label: "Personalidade", color: "#F59E0B" },
     { key: "RESENHA",       label: "Resenha",       color: "#EF4444" },
   ];
@@ -485,7 +485,7 @@ function DoneScreen({ selections, traitSlug, jogadores, traits }: {
   const trait = traits.find((t) => t.slug === traitSlug);
 
   const summary = [
-    { label: "MVP",     color: "#9fe870", value: apelido(selections[0]) },
+    { label: "MVP",     color: "#B5FF4D", value: apelido(selections[0]) },
     { label: "BAGRE",   color: "#EF4444", value: apelido(selections[1]) },
     { label: "RAÇUDO",  color: "#F59E0B", value: apelido(selections[2]) },
     { label: "RESENHA", color: "#60A5FA", value: apelido(selections[3]) },
