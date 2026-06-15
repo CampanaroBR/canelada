@@ -443,9 +443,9 @@ export function HomeClient({
                             </div>
                           </div>
 
-                          {/* Description: h-21 w-[178px] pt-2 */}
-                          <div style={{ height: 21, width: 178, flexShrink: 0, paddingTop: 2 }}>
-                            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#555" }}>
+                          {/* Description: h-21 pt-2 */}
+                          <div style={{ height: 21, flexShrink: 0, paddingTop: 2 }}>
+                            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#555", whiteSpace: "nowrap" }}>
                               {c.traitDesc ?? (c.traitEmoji ? `${c.traitEmoji} ${c.traitNome}` : c.traitNome)}
                             </p>
                           </div>
