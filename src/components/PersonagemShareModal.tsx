@@ -75,6 +75,7 @@ export function PersonagemShareModal({ open, onClose, tipo, apelido, data, masco
         backdropFilter: "blur(2px)", WebkitBackdropFilter: "blur(2px)",
         transition: `opacity ${dur} ease`,
         opacity: visible ? 1 : 0,
+        touchAction: "none",
       }}
     >
       {/* Mobile frame — max 430px wide, slides up from bottom */}
@@ -86,9 +87,9 @@ export function PersonagemShareModal({ open, onClose, tipo, apelido, data, masco
           position: "relative",
           width: "100%", maxWidth: 430,
           height: "100%",
-          /* #0a0e0e so the corner triangles in share-bg show dark, not teal */
           background: "#0a0e0e",
           overflow: "hidden",
+          overscrollBehavior: "none",
           display: "flex", flexDirection: "column",
           transition: `transform ${dur} ${ease}`,
           transform: visible ? "translateY(0)" : "translateY(100%)",
@@ -120,7 +121,7 @@ export function PersonagemShareModal({ open, onClose, tipo, apelido, data, masco
         </button>
 
         {/* Upper content — grows to fill space */}
-        <div style={{ position: "relative", zIndex: 1, flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: 80, paddingBottom: 24 }}>
+        <div style={{ position: "relative", zIndex: 1, flex: 1, minHeight: 0, overflow: "hidden", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", paddingTop: 80, paddingBottom: 24 }}>
 
           {/* Character illustration */}
           <div style={{ position: "relative", width: 264, height: 264, flexShrink: 0 }}>
