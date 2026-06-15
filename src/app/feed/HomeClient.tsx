@@ -337,14 +337,14 @@ export function HomeClient({
                 const dateStr = new Date(p.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
                 const qtd     = Math.max(5, 8 - i);
                 return (
-                  <div key={i} style={{ background: "#090909", border: "1px solid #2e2e2e", borderRadius: 16, padding: 17, display: "flex", gap: 16, alignItems: "flex-start" }}>
+                  <div key={i} style={{ background: "#090909", border: "1px solid #2e2e2e", borderRadius: 16, padding: 17, display: "flex", gap: 16, alignItems: "flex-start", overflow: "hidden" }}>
                     {/* Left: info + button */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: 12, flexShrink: 0 }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-start", justifyContent: "center" }}>
                         {/* Title + name block */}
-                        <div style={{ height: 46, display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-start" }}>
+                        <div style={{ height: 46, display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-start", overflow: "hidden", width: "100%" }}>
                           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, lineHeight: "24px", color: "#fff", whiteSpace: "nowrap" }}>{title}</p>
-                          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "18px", color: "#f9a8d4", whiteSpace: "nowrap" }}>{p.texto}</p>
+                          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "18px", color: "#f9a8d4", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", width: "100%" }}>{p.texto}</p>
                         </div>
                         {/* Stats */}
                         <div style={{ height: 21, display: "flex", flexDirection: "column", alignItems: "flex-start", paddingTop: 4 }}>
@@ -365,12 +365,10 @@ export function HomeClient({
                       </button>
                     </div>
 
-                    {/* Right: mascot — fills remaining height */}
-                    <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", justifyContent: "flex-end", alignSelf: "stretch" }}>
-                      <div style={{ position: "relative", height: "100%", aspectRatio: "1/1", overflow: "clip", flexShrink: 0 }}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img alt={title} src={mascot} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
-                      </div>
+                    {/* Right: mascot — fills card height via alignSelf stretch + aspectRatio */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <div style={{ alignSelf: "stretch", aspectRatio: "1/1", position: "relative", overflow: "hidden", flexShrink: 0 }}>
+                      <img alt={title} src={mascot} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", pointerEvents: "none" }} />
                     </div>
                   </div>
                 );
