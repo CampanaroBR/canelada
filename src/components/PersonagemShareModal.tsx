@@ -93,7 +93,7 @@ async function buildShareJpeg(
   await document.fonts.ready;
 
   // Layout constants
-  const TOP     = 40;   // character starts at y:40
+  const TOP     = 80;   // character starts at y:80 — some breathing room from top
   const IMGSIZE = 300;
   const TITLEW  = 300;
   const DESCW   = 313;
@@ -224,138 +224,149 @@ export function PersonagemShareModal({
   const ease = visible ? SPRING_IN : SPRING_OUT;
 
   return (
-    /* Backdrop */
-    <div
-      onClick={onClose}
-      style={{
-        position: "fixed", inset: 0, zIndex: 100,
-        display: "flex", justifyContent: "center",
-        background: "rgba(0,0,0,0.6)",
-        backdropFilter: "blur(2px)", WebkitBackdropFilter: "blur(2px)",
-        transition: `opacity ${dur} ease`,
-        opacity: visible ? 1 : 0,
-        touchAction: "none",
-      }}
-    >
-      {/* ── Mobile frame ── */}
+    <>
+      {/* Backdrop — separate from modal to avoid compositing artifacts */}
       <div
-        role="dialog"
-        aria-modal="true"
-        onClick={e => e.stopPropagation()}
+        aria-hidden
+        onClick={onClose}
         style={{
-          position: "relative",
-          width: "100%", maxWidth: 430, height: "100%",
-          background: "#0a0e0e",
-          overflow: "hidden",
-          display: "flex", flexDirection: "column", alignItems: "flex-end",
-          transition: `transform ${dur} ${ease}`,
-          transform: visible ? "translateY(0)" : "translateY(100%)",
-          willChange: "transform",
+          position: "fixed", inset: 0, zIndex: 100,
+          background: "rgba(0,0,0,0.6)",
+          backdropFilter: "blur(2px)", WebkitBackdropFilter: "blur(2px)",
+          transition: `opacity ${dur} ease`,
+          opacity: visible ? 1 : 0,
+          touchAction: "none",
+        }}
+      />
+
+      {/* Modal positioner */}
+      <div
+        style={{
+          position: "fixed", inset: 0, zIndex: 101,
+          display: "flex", justifyContent: "center",
+          pointerEvents: "none",
+          touchAction: "none",
         }}
       >
-        {/* Background — covers full modal */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          aria-hidden alt="" src="/ilustracoes/share-bg.png"
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none", zIndex: 0 }}
-        />
+        {/* ── Mobile frame ── */}
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={e => e.stopPropagation()}
+          style={{
+            position: "relative",
+            width: "100%", maxWidth: 430, height: "100%",
+            background: "#0a0e0e",
+            overflow: "hidden",
+            display: "flex", flexDirection: "column",
+            pointerEvents: "auto",
+            transition: `transform ${dur} ${ease}`,
+            transform: visible ? "translateY(0)" : "translateY(100%)",
+            willChange: "transform",
+          }}
+        >
+          {/* Background — covers full modal */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            aria-hidden alt="" src="/ilustracoes/share-bg.png"
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none", zIndex: 0 }}
+          />
 
-        {/* ── Row 1: Close button (top-right, natural flex) ── */}
-        <div style={{
-          position: "relative", zIndex: 1,
-          width: "100%", flexShrink: 0,
-          display: "flex", justifyContent: "flex-end",
-          padding: "15px 16px 15px 10px",
-        }}>
-          <button
-            onClick={onClose}
-            aria-label="Fechar"
-            style={{
-              width: 48, height: 48,
-              background: "#000", border: "1px solid #424242",
-              borderRadius: 24,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              cursor: "pointer",
-            }}
-          >
-            <X size={16} color="#fff" weight="bold" />
-          </button>
-        </div>
-
-        {/* ── Row 2: Content (scrollable) + share button + footer (fixed) ── */}
-        <div style={{
-          position: "relative", zIndex: 1,
-          flex: 1, minHeight: 0,
-          width: "100%",
-          display: "flex", flexDirection: "column",
-          alignItems: "center",
-        }}>
-          {/* Scrollable content area */}
+          {/* ── Close button ── */}
           <div style={{
+            position: "relative", zIndex: 1,
+            width: "100%", flexShrink: 0,
+            display: "flex", justifyContent: "flex-end",
+            padding: "15px 16px 0 10px",
+          }}>
+            <button
+              onClick={onClose}
+              aria-label="Fechar"
+              style={{
+                width: 48, height: 48,
+                background: "#000", border: "1px solid #424242",
+                borderRadius: 24,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: "pointer",
+              }}
+            >
+              <X size={16} color="#fff" weight="bold" />
+            </button>
+          </div>
+
+          {/* ── Main content: illustration + title + description (top) | share button (bottom) ── */}
+          <div style={{
+            position: "relative", zIndex: 1,
             flex: 1, minHeight: 0,
             width: "100%",
             display: "flex", flexDirection: "column",
-            alignItems: "center", justifyContent: "center",
-            gap: 32, paddingBottom: 16,
-            overflowY: "auto",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingTop: 16,
+            overflow: "hidden",
           }}>
-            {/* Illustration 300×300 + title (gap 8) */}
+            {/* Upper group: illustration + title + description */}
             <div style={{
               display: "flex", flexDirection: "column",
-              alignItems: "center", gap: 8, width: 300,
+              alignItems: "center", gap: 32,
+              width: 313,
             }}>
-              <div style={{ position: "relative", width: 300, height: 300, flexShrink: 0 }}>
-                {/* Glow */}
-                <div aria-hidden style={{
-                  position: "absolute", top: "50%", left: "50%",
-                  transform: "translate(-50%,-50%)",
-                  width: 289, height: 296,
-                  background: "#0a5c69", filter: "blur(88.6px)",
-                  borderRadius: "50%", pointerEvents: "none",
-                }} />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={mascot} alt={title} style={{
-                  position: "absolute", inset: 0,
-                  width: "100%", height: "100%", objectFit: "contain",
-                }} />
-              </div>
-              {/* Title */}
-              <p style={{
-                margin: 0, width: 300,
-                fontFamily: "var(--font-display)", fontWeight: 700,
-                fontSize: 56, lineHeight: "54px", letterSpacing: "-2px",
-                color: "#fff", textAlign: "center",
+              {/* Illustration + title */}
+              <div style={{
+                display: "flex", flexDirection: "column",
+                alignItems: "center", gap: 8, width: 300,
               }}>
-                {title}
+                <div style={{ position: "relative", width: 300, height: 300, flexShrink: 0 }}>
+                  <div aria-hidden style={{
+                    position: "absolute", top: "50%", left: "50%",
+                    transform: "translate(-50%,-50%)",
+                    width: 289, height: 296,
+                    background: "#0a5c69", filter: "blur(88.6px)",
+                    borderRadius: "50%", pointerEvents: "none",
+                  }} />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={mascot} alt={title} style={{
+                    position: "absolute", inset: 0,
+                    width: "100%", height: "100%", objectFit: "contain",
+                  }} />
+                </div>
+                <p style={{
+                  margin: 0, width: 300,
+                  fontFamily: "var(--font-display)", fontWeight: 700,
+                  fontSize: 56, lineHeight: "54px", letterSpacing: "-2px",
+                  color: "#fff", textAlign: "center",
+                }}>
+                  {title}
+                </p>
+              </div>
+
+              {/* Description */}
+              <p style={{
+                margin: 0, width: 313,
+                fontFamily: "var(--font-body)", fontWeight: 600,
+                fontSize: 20, lineHeight: "24px",
+                color: "#fff", letterSpacing: "-1px",
+              }}>
+                <span style={{ color: "#9fe870" }}>{apelido}</span>
+                {" foi eleito o "}
+                <span style={{ color: "#9fe870" }}>{label}</span>
+                {` do jogo por ${qtd} jogadores${grupoNome ? ` do ${grupoNome}` : ""}.`}
               </p>
             </div>
 
-            {/* Description */}
-            <p style={{
-              margin: 0, width: 313,
-              fontFamily: "var(--font-body)", fontWeight: 600,
-              fontSize: 20, lineHeight: "24px",
-              color: "#fff", letterSpacing: "-1px",
-            }}>
-              <span style={{ color: "#9fe870" }}>{apelido}</span>
-              {" foi eleito o "}
-              <span style={{ color: "#9fe870" }}>{label}</span>
-              {` do jogo por ${qtd} jogadores${grupoNome ? ` do ${grupoNome}` : ""}.`}
-            </p>
-          </div>
-
-          {/* Share button — always visible above footer */}
-          <div style={{ flexShrink: 0, paddingBottom: 16 }}>
+            {/* Share button */}
             <button
               onClick={handleShare}
               disabled={sharing}
               style={{
+                flexShrink: 0,
                 background: "#171717", border: "none",
                 borderRadius: 22, height: 64, padding: "16px 24px",
                 display: "flex", alignItems: "center", gap: 8,
                 cursor: sharing ? "default" : "pointer",
                 boxShadow: "4px 8px 8px 4px rgba(0,0,0,0.08)",
                 whiteSpace: "nowrap", opacity: sharing ? 0.7 : 1,
+                marginBottom: 16,
               }}
             >
               {sharing
@@ -371,8 +382,9 @@ export function PersonagemShareModal({
             </button>
           </div>
 
-          {/* Footer — always at bottom */}
+          {/* ── Footer ── */}
           <div style={{
+            position: "relative", zIndex: 1,
             flexShrink: 0, width: "100%", height: 56,
             borderTop: "1px solid #42bace",
             display: "flex", alignItems: "center", justifyContent: "center",
@@ -388,6 +400,6 @@ export function PersonagemShareModal({
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
