@@ -78,7 +78,7 @@ export function HomeClient({
         {/* ── 1. TEAL HEADER ── */}
         <div style={{
           background: "#1998ad",
-          paddingTop: 148,
+          paddingTop: 130,
           paddingBottom: 24,
           paddingLeft: 16,
           paddingRight: 16,
@@ -324,9 +324,9 @@ export function HomeClient({
                           </p>
                           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#555" }}>{subtitles[i % subtitles.length]}</p>
                         </div>
-                        <div style={{ width: 72, height: 72, overflow: "hidden", flexShrink: 0 }}>
+                        <div style={{ width: 72, height: 72, overflow: "hidden", flexShrink: 0, background: "#111", borderRadius: 8 }}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img alt={c.traitNome} src={badge} style={{ width: 72, height: 72, objectFit: "contain" }} />
+                          <img alt={c.traitNome} src={badge} style={{ width: 72, height: 72, objectFit: "contain", mixBlendMode: "screen" }} />
                         </div>
                       </div>
                     </div>
@@ -338,22 +338,27 @@ export function HomeClient({
         </div>
       </div>
 
-      {/* ── TOPBAR (fixed overlay) ── */}
+      {/* ── TOPBAR (fixed overlay) — matches Figma 126:326 / 126:337 ── */}
       <div style={{
         position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)",
-        width: "min(100%, 430px)", zIndex: 30, pointerEvents: "none",
+        width: "min(100%, 430px)", zIndex: 30,
+        background: "rgba(255,255,255,0.08)",
+        backdropFilter: "blur(50px)", WebkitBackdropFilter: "blur(50px)",
+        borderBottom: "1px solid rgba(84,84,86,0.34)",
       }}>
+        {/* Status bar area */}
         <div style={{ height: 54 }} />
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 8px", height: 64, pointerEvents: "auto" }}>
-          <button style={{ width: 56, height: 64, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
-            <List size={32} color="#fff" weight="bold" />
+        {/* Topbar row */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 8px" }}>
+          <button style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
+            <List size={24} color="#fff" weight="bold" />
           </button>
-          <div style={{ display: "flex", alignItems: "center", alignSelf: "stretch" }}>
+          <div style={{ display: "flex", alignItems: "center", alignSelf: "stretch", padding: "16px 0" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img alt="Canelada" src={LOGO} style={{ height: "100%", aspectRatio: "1 / 1", objectFit: "cover" }} />
+            <img alt="Canelada" src={LOGO} style={{ height: 32, width: 32, objectFit: "contain" }} />
           </div>
-          <button style={{ width: 56, height: 64, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, background: "none", border: "none", cursor: "pointer" }}>
-            <Bell size={28} color="#fff" weight="bold" />
+          <button style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
+            <Bell size={24} color="#fff" weight="bold" />
           </button>
         </div>
       </div>
