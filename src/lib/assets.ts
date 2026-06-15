@@ -24,31 +24,31 @@ export const MASCOTE_POR_CATEGORIA: Record<string, string> = {
   RACUDO: "/ilustracoes/corpo-mole.png",
 };
 
-// Medalhas (slug = nome do Trait no banco) — SVG sem fundo
+// Medalhas — SVG sem fundo (chave = nome exato da medalha)
 export const MEDALHAS: Record<string, string> = {
-  "Em chamas":         "/conquistas/em-chamas.svg",
-  "Rei do mês":        "/conquistas/rei-do-mes.svg",
+  "Em chamas":         "/conquistas/Em chamas.svg",
+  "Rei do mês":        "/conquistas/Rei do mês.svg",
   "Veterano":          "/conquistas/Veterano.svg",
   "Lenda":             "/conquistas/Lenda.svg",
-  "Primeira vitória":  "/conquistas/primeira-vitoria.svg",
+  "Primeira vitória":  "/conquistas/Primeira vitória.svg",
   "Invicto":           "/conquistas/Invicto.svg",
   "Completo":          "/conquistas/Completo.svg",
-  "Troféu Bagre":      "/conquistas/trofeu-bagre.svg",
-  "Raçudo do mês":     "/conquistas/racudo-do-mes.svg",
-  "Alma do Grupo":     "/conquistas/alma-do-grupo.svg",
+  "Troféu Bagre":      "/conquistas/Troféu bagre.svg",
+  "Raçudo do mês":     "/conquistas/Raçudo do mês.svg",
+  "Alma do Grupo":     "/conquistas/Alma do Grupo.svg",
   "Consistente":       "/conquistas/Consistente.svg",
   "Irregular":         "/conquistas/Irregular.svg",
-  "Mais presente":     "/conquistas/mais-presente.svg",
+  "Mais presente":     "/conquistas/Mais presente.svg",
   "Lanterna":          "/conquistas/Lanterna.svg",
-  "Rei absoluto":      "/conquistas/rei-absoluto.svg",
-  "Má fase":           "/conquistas/ma-fase.svg",
-  "Só perde":          "/conquistas/so-perde.svg",
-  "Jogador invisível": "/conquistas/jogador-invisivel.svg",
-  "Virada de chave":   "/conquistas/virada-de-chave.svg",
+  "Rei absoluto":      "/conquistas/Rei absoluto.svg",
+  "Má fase":           "/conquistas/Má fase.svg",
+  "Só perde":          "/conquistas/Só perde.svg",
+  "Jogador invisível": "/conquistas/Jogador invisível.svg",
+  "Virada de chave":   "/conquistas/Virada de chave.svg",
 };
 
-export function getMedalha(traitNome: string): string {
-  return MEDALHAS[traitNome] ?? "/medalhas/em-chamas.png";
+export function getMedalha(nome: string): string | null {
+  return MEDALHAS[nome] ?? null;
 }
 
 export const TRAIT_SVG: Record<string, string> = {
