@@ -6,7 +6,7 @@ import {
   House, CheckCircle, Football, ChartBar,
   Trophy, Medal, CaretRight, Check,
   CalendarBlank, Alarm, CalendarStar,
-  List, Bell,
+  List, Bell, MedalMilitary,
 } from "@phosphor-icons/react";
 import { BottomsheetMaisVotados } from "@/components/BottomsheetMaisVotados";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
@@ -46,7 +46,7 @@ const PERSONAGEM_TITLES: Record<string, string> = {
   RACUDO: "PREGUEIRO",
 };
 
-const MEDAL_ICONS = ["🥇", "🥈", "🥉", "🏅", "🏅", "🏅"];
+const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
 
 export function HomeClient({
   rodadaId, dataRodada, jaVotou,
@@ -289,7 +289,7 @@ export function HomeClient({
                       </div>
                       {/* Medal icon */}
                       <div style={{ background: "#090909", border: "1px solid #353535", borderRadius: 12, width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 4, overflow: "clip" }}>
-                        <span style={{ fontSize: 22, lineHeight: 1 }}>{MEDAL_ICONS[i]}</span>
+                        <MedalMilitary size={28} weight="fill" color={MEDAL_COLORS[i] ?? "#555"} />
                       </div>
                     </div>
                   </div>
