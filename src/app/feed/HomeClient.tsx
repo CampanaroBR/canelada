@@ -20,7 +20,7 @@ const TSHIRT_GK  = "/tshirt-alt.svg";
 
 type MaisVotado = { apelido: string; qtd: number; categoria: string };
 type Personagem  = { tipo: string; texto: string; data: Date };
-type Conquista   = { apelido: string; traitNome: string; traitEmoji: string | null; data: Date };
+type Conquista   = { apelido: string; traitNome: string; traitEmoji: string | null; traitDesc: string | null; data: Date };
 
 interface Props {
   IMG: Record<string, string>;
@@ -423,16 +423,16 @@ export function HomeClient({
                             HOJE · NOVA MEDALHA
                           </p>
                         </div>
-                        {/* Name paragraph */}
-                        <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>
-                          <span style={{ color: "#9fe870" }}>{c.apelido}</span>
-                          {" destravou "}
-                          {`"${c.traitNome}!"`}
+                        {/* Name paragraph — fontSize:0 parent trick for per-span line-height control */}
+                        <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 0, lineHeight: 0, color: "#fff" }}>
+                          <span style={{ fontSize: 16, lineHeight: "20px", color: "#9fe870" }}>{c.apelido}</span>
+                          <span style={{ fontSize: 16, lineHeight: "20px" }}>{" destravou "}</span>
+                          <span style={{ fontSize: 16, lineHeight: "20px" }}>{`"${c.traitNome}!"`}</span>
                         </p>
                         {/* Description */}
                         <div style={{ height: 21, display: "flex", flexDirection: "column", alignItems: "flex-start", paddingTop: 2 }}>
                           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#555" }}>
-                            {c.traitEmoji ? `${c.traitEmoji} ` : ""}{c.traitNome}
+                            {c.traitDesc ?? (c.traitEmoji ? `${c.traitEmoji} ${c.traitNome}` : c.traitNome)}
                           </p>
                         </div>
                       </div>

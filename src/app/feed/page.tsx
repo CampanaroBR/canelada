@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 type Jogador = { id: string; apelido: string; foto: string | null };
 type MaisVotado = { apelido: string; qtd: number; categoria: string };
 type Personagem = { tipo: string; texto: string; data: Date };
-type Conquista = { apelido: string; traitNome: string; traitEmoji: string | null; data: Date };
+type Conquista = { apelido: string; traitNome: string; traitEmoji: string | null; traitDesc: string | null; data: Date };
 
 export default async function FeedPage() {
   const session = await auth();
@@ -75,6 +75,7 @@ export default async function FeedPage() {
     apelido: c.jogador.apelido,
     traitNome: c.trait.nome,
     traitEmoji: c.trait.emoji,
+    traitDesc: c.trait.descricao ?? null,
     data: c.updatedAt,
   }));
 
