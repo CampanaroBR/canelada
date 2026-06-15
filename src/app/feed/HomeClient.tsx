@@ -324,9 +324,9 @@ export function HomeClient({
                           </p>
                           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#555" }}>{subtitles[i % subtitles.length]}</p>
                         </div>
-                        <div style={{ width: 72, height: 72, overflow: "hidden", flexShrink: 0, background: "#111", borderRadius: 8 }}>
+                        <div style={{ width: 72, height: 72, flexShrink: 0 }}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img alt={c.traitNome} src={badge} style={{ width: 72, height: 72, objectFit: "contain", mixBlendMode: "screen" }} />
+                          <img alt={c.traitNome} src={badge} style={{ width: 72, height: 72, objectFit: "contain" }} />
                         </div>
                       </div>
                     </div>
