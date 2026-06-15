@@ -348,9 +348,9 @@ export function HomeClient({
                         </div>
                         {/* Stats */}
                         <div style={{ height: 21, display: "flex", flexDirection: "column", alignItems: "flex-start", paddingTop: 4 }}>
-                          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 11, lineHeight: "16.5px" }}>
-                            <span style={{ color: "#9fe870" }}>Votado {qtd}x · </span>
-                            <span style={{ color: "#838383" }}>{dateStr}</span>
+                          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 0, lineHeight: 0, color: "#9fe870" }}>
+                            <span style={{ fontSize: 11, lineHeight: "16.5px" }}>Votado {qtd}x · </span>
+                            <span style={{ fontSize: 11, lineHeight: "16.5px", color: "#838383" }}>{dateStr}</span>
                           </p>
                         </div>
                       </div>
