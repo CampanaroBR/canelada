@@ -178,7 +178,7 @@ export function HomeClient({
             <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 20, padding: 17, display: "flex", flexDirection: "column", gap: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 4, flex: 1 }}>
-                  <Trophy size={16} color="#fff" weight="fill" />
+                  <Trophy size={16} color="#9fe870" weight="fill" />
                   <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>MAIS VOTADOS</span>
                 </div>
                 <button onClick={() => setBsOpen(true)} style={{
@@ -220,7 +220,7 @@ export function HomeClient({
           {personagens.length > 0 && (
             <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 20, padding: 17, display: "flex", flexDirection: "column", gap: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                <CalendarStar size={16} color="#fff" weight="fill" />
+                <CalendarStar size={16} color="#9fe870" weight="fill" />
                 <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>PERSONAGEM DA SEMANA</span>
               </div>
               {datePills.length > 0 && (
@@ -261,7 +261,7 @@ export function HomeClient({
                           </div>
                         </div>
                         <button style={{
-                          display: "inline-flex", alignItems: "center", gap: 4,
+                          display: "inline-flex", alignItems: "center", gap: 4, alignSelf: "flex-start",
                           background: "#2a2a2a", border: "1px solid #3a3a3a",
                           borderRadius: 9999, padding: "7px 13px", cursor: "pointer",
                         }}>
@@ -285,7 +285,7 @@ export function HomeClient({
             <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 20, padding: 17, display: "flex", flexDirection: "column", gap: 16 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                 <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 4 }}>
-                  <Medal size={16} color="#fff" weight="fill" />
+                  <Medal size={16} color="#9fe870" weight="fill" />
                   <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>MEDALHAS</span>
                 </div>
                 <Link href="/ranking" style={{
