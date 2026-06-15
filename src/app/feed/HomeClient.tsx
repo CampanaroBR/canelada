@@ -19,7 +19,7 @@ const TSHIRT     = "/tshirt.svg";
 const TSHIRT_GK  = "/tshirt-alt.svg";
 
 type MaisVotado = { apelido: string; qtd: number; categoria: string };
-type Personagem  = { tipo: string; texto: string; data: Date };
+type Personagem  = { tipo: string; apelido: string; texto: string; data: Date };
 type Conquista   = { apelido: string; traitNome: string; traitEmoji: string | null; traitDesc: string | null; data: Date };
 
 interface Props {
@@ -344,7 +344,7 @@ export function HomeClient({
                         {/* Title + name block */}
                         <div style={{ height: 46, display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-start", overflow: "hidden", width: "100%" }}>
                           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, lineHeight: "24px", color: "#fff", whiteSpace: "nowrap" }}>{title}</p>
-                          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "18px", color: "#f9a8d4", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", width: "100%" }}>{p.texto}</p>
+                          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "18px", color: "#f9a8d4", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", width: "100%" }}>{p.apelido}</p>
                         </div>
                         {/* Stats */}
                         <div style={{ height: 21, display: "flex", flexDirection: "column", alignItems: "flex-start", paddingTop: 4 }}>
@@ -365,10 +365,12 @@ export function HomeClient({
                       </button>
                     </div>
 
-                    {/* Right: mascot — fills card height via alignSelf stretch + aspectRatio */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <div style={{ alignSelf: "stretch", aspectRatio: "1/1", position: "relative", overflow: "hidden", flexShrink: 0 }}>
-                      <img alt={title} src={mascot} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", pointerEvents: "none" }} />
+                    {/* Right: mascot — outer stretches to card height, inner derives width via aspectRatio */}
+                    <div style={{ alignSelf: "stretch", display: "flex", alignItems: "stretch", flexShrink: 0 }}>
+                      <div style={{ position: "relative", height: "100%", aspectRatio: "1/1", overflow: "clip", flexShrink: 0 }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img alt={title} src={mascot} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", pointerEvents: "none" }} />
+                      </div>
                     </div>
                   </div>
                 );

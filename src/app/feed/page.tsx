@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 type Jogador = { id: string; apelido: string; foto: string | null };
 type MaisVotado = { apelido: string; qtd: number; categoria: string };
-type Personagem = { tipo: string; texto: string; data: Date };
+type Personagem = { tipo: string; apelido: string; texto: string; data: Date };
 type Conquista = { apelido: string; traitNome: string; traitEmoji: string | null; traitDesc: string | null; data: Date };
 
 export default async function FeedPage() {
@@ -67,6 +67,7 @@ export default async function FeedPage() {
 
   const personagens: Personagem[] = recentStories.map(s => ({
     tipo: s.tipo,
+    apelido: s.texto.split(" ")[0] ?? "?",
     texto: s.texto,
     data: s.rodada.data,
   }));
