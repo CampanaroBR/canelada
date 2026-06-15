@@ -7,7 +7,9 @@ import {
   Trophy, Medal, CaretRight, Check,
   CalendarBlank, Alarm, CalendarStar,
   List, Bell, MedalMilitary,
+  User, UsersThree, SignOut, X,
 } from "@phosphor-icons/react";
+import { signOut } from "next-auth/react";
 import { BottomsheetMaisVotados } from "@/components/BottomsheetMaisVotados";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
 import { PersonagemShareModal } from "@/components/PersonagemShareModal";
@@ -57,6 +59,7 @@ export function HomeClient({
   const [bsOpen, setBsOpen] = useState(false);
   const [activePill, setActivePill] = useState(datePills.length > 0 ? datePills.length - 1 : 0);
   const [sharePersonagem, setSharePersonagem] = useState<number | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const lbEntries: LeaderboardEntry[] = maisVotados.slice(0, 6).map((v, i) => ({
     rank: i + 1,
@@ -489,7 +492,7 @@ export function HomeClient({
         borderBottom: "1px solid rgba(84,84,86,0.34)",
       }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 8px" }}>
-          <button style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 4px", background: "none", border: "none", cursor: "pointer", overflow: "clip" }}>
+          <button onClick={() => setMenuOpen(true)} style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 4px", background: "none", border: "none", cursor: "pointer", overflow: "clip" }}>
             <List size={24} color="#fff" weight="bold" />
           </button>
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -543,6 +546,71 @@ export function HomeClient({
           qtd={maisVotados[sharePersonagem]?.qtd ?? Math.max(5, 8 - sharePersonagem)}
           grupoNome={grupoNome}
         />
+      )}
+
+      {/* ── Menu Hambúrguer Drawer ── */}
+      {menuOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            aria-hidden
+            onClick={() => setMenuOpen(false)}
+            style={{
+              position: "fixed", inset: 0, zIndex: 50,
+              background: "rgba(0,0,0,0.65)",
+              backdropFilter: "blur(2px)", WebkitBackdropFilter: "blur(2px)",
+            }}
+          />
+          {/* Drawer */}
+          <div style={{
+            position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)",
+            width: "min(100%, 430px)", zIndex: 51,
+            background: "#1a1a1a",
+            border: "1px solid #2e2e2e",
+            borderRadius: "32px 32px 0 0",
+            paddingBottom: "max(24px, env(safe-area-inset-bottom, 24px))",
+          }}>
+            {/* Handle */}
+            <div style={{ display: "flex", justifyContent: "center", padding: "12px 0 8px" }}>
+              <div style={{ width: 40, height: 4, background: "#3a3a3a", borderRadius: 9999 }} />
+            </div>
+
+            {/* Header */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 16px 16px" }}>
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#fff" }}>
+                MENU
+              </span>
+              <button
+                onClick={() => setMenuOpen(false)}
+                style={{ width: 40, height: 40, background: "#000", border: "1px solid #424242", borderRadius: 20, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+              >
+                <X size={16} color="#fff" weight="bold" />
+              </button>
+            </div>
+
+            {/* Items */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 2, padding: "0 16px" }}>
+              <MenuRow icon={<User size={20} color="#fff" weight="regular" />} label="Meu Perfil" href="/perfil" onClose={() => setMenuOpen(false)} />
+              <MenuRow icon={<UsersThree size={20} color="#fff" weight="regular" />} label="Meu Grupo" href="/grupo" onClose={() => setMenuOpen(false)} />
+              <div style={{ height: 1, background: "#2a2a2a", margin: "8px 0" }} />
+              <button
+                onClick={() => signOut({ callbackUrl: "/login" })}
+                style={{
+                  display: "flex", alignItems: "center", gap: 12,
+                  background: "none", border: "none", cursor: "pointer",
+                  padding: "14px 8px", borderRadius: 12, width: "100%",
+                }}
+              >
+                <div style={{ width: 40, height: 40, background: "#2a0a0a", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <SignOut size={20} color="#ef4444" weight="regular" />
+                </div>
+                <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 16, color: "#ef4444" }}>
+                  Sair
+                </span>
+              </button>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
@@ -609,4 +677,23 @@ function NavItem({ icon, label, active, href }: { icon: React.ReactNode; label: 
   );
   if (href) return <Link href={href} style={{ textDecoration: "none" }}>{inner}</Link>;
   return <button style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>{inner}</button>;
+}
+
+function MenuRow({ icon, label, href, onClose }: { icon: React.ReactNode; label: string; href: string; onClose: () => void }) {
+  return (
+    <Link href={href} onClick={onClose} style={{ textDecoration: "none" }}>
+      <div style={{
+        display: "flex", alignItems: "center", gap: 12,
+        padding: "14px 8px", borderRadius: 12,
+      }}>
+        <div style={{ width: 40, height: 40, background: "#2a2a2a", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          {icon}
+        </div>
+        <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 16, color: "#fff" }}>
+          {label}
+        </span>
+        <CaretRight size={16} color="#555" weight="bold" style={{ marginLeft: "auto" }} />
+      </div>
+    </Link>
+  );
 }
