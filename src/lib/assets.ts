@@ -17,11 +17,11 @@ export const ILUSTRACOES: Record<string, string> = {
   polvo:         "/ilustracoes/polvo.png",
 };
 
-// Mapa de categoria de voto → ilustração do personagem principal (SVG sem fundo)
+// Mapa de categoria de voto → ilustração do personagem principal (PNG com canal alfa)
 export const MASCOTE_POR_CATEGORIA: Record<string, string> = {
-  MVP:    "/traits/Matador.svg",
-  BAGRE:  "/traits/Bagre.svg",
-  RACUDO: "/traits/Corpo_mole.svg",
+  MVP:    "/ilustracoes/tubarao.png",
+  BAGRE:  "/ilustracoes/bagre.png",
+  RACUDO: "/ilustracoes/corpo-mole.png",
 };
 
 // Medalhas (slug = nome do Trait no banco) — SVG sem fundo

@@ -35,9 +35,9 @@ interface Props {
 }
 
 const PERSONAGEM_MASCOTS: Record<string, string> = {
-  MVP:    "/traits/Matador.svg",
-  BAGRE:  "/traits/Bagre.svg",
-  RACUDO: "/traits/Corpo_mole.svg",
+  MVP:    "/ilustracoes/tubarao.png",
+  BAGRE:  "/ilustracoes/bagre.png",
+  RACUDO: "/ilustracoes/corpo-mole.png",
 };
 
 const PERSONAGEM_TITLES: Record<string, string> = {
@@ -243,7 +243,7 @@ export function HomeClient({
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {personagens.map((p, i) => {
                   const title = PERSONAGEM_TITLES[p.tipo] ?? p.tipo;
-                  const mascot = PERSONAGEM_MASCOTS[p.tipo] ?? "/traits/Corpo_mole.svg";
+                  const mascot = PERSONAGEM_MASCOTS[p.tipo] ?? "/ilustracoes/corpo-mole.png";
                   const nome = p.texto.split(" ").slice(0, 2).join(" ");
                   const dateStr = new Date(p.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
                   const qtd = 7 - i;
@@ -396,7 +396,7 @@ export function HomeClient({
           tipo={personagens[sharePersonagem].tipo}
           texto={personagens[sharePersonagem].texto}
           data={personagens[sharePersonagem].data}
-          mascot={PERSONAGEM_MASCOTS[personagens[sharePersonagem].tipo] ?? "/traits/Corpo_mole.svg"}
+          mascot={PERSONAGEM_MASCOTS[personagens[sharePersonagem].tipo] ?? "/ilustracoes/corpo-mole.png"}
           qtd={7 - sharePersonagem}
         />
       )}
