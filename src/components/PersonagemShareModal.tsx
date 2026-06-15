@@ -271,6 +271,12 @@ export function PersonagemShareModal({
             aria-hidden alt="" src="/ilustracoes/share-bg.png"
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none", zIndex: 0 }}
           />
+          {/* Dark gradient at top to cover light beams behind close button */}
+          <div aria-hidden style={{
+            position: "absolute", top: 0, left: 0, right: 0, height: 110,
+            background: "linear-gradient(to bottom, rgba(8,22,26,0.72) 0%, transparent 100%)",
+            pointerEvents: "none", zIndex: 0,
+          }} />
 
           {/* ── Close button ── */}
           <div style={{
