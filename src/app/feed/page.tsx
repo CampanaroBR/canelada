@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { criarRodada } from "@/app/votacao/actions";
 import { HomeClient } from "./HomeClient";
+import { getMedalha } from "@/lib/assets";
 
 export const dynamic = "force-dynamic";
 
@@ -72,14 +73,16 @@ export default async function FeedPage() {
     data: s.rodada.data,
   }));
 
-  const conquistas: Conquista[] = recentConquistas.map(c => ({
-    apelido: c.jogador.apelido,
-    traitSlug: c.traitSlug,
-    traitNome: c.trait.nome,
-    traitEmoji: c.trait.emoji,
-    traitDesc: c.trait.descricao ?? null,
-    data: c.updatedAt,
-  }));
+  const conquistas: Conquista[] = recentConquistas
+    .filter(c => getMedalha(c.trait.nome) !== null)
+    .map(c => ({
+      apelido: c.jogador.apelido,
+      traitSlug: c.traitSlug,
+      traitNome: c.trait.nome,
+      traitEmoji: c.trait.emoji,
+      traitDesc: c.trait.descricao ?? null,
+      data: c.updatedAt,
+    }));
 
   const jaVotou = rodadaAtiva
     ? !!(await prisma.voto.findFirst({

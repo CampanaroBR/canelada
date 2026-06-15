@@ -5,7 +5,7 @@ import { PrismaClient, TraitCategoria } from "@prisma/client";
 const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
 
-// ── Traits ────────────────────────────────────────────────────────────────────
+// ── Traits de personalidade ────────────────────────────────────────────────────
 const TRAITS = [
   { slug: "racudo",        nome: "Raçudo",         categoria: TraitCategoria.FUTEBOL,       emoji: "💪" },
   { slug: "matador",       nome: "Matador",         categoria: TraitCategoria.FUTEBOL,       emoji: "⚽" },
@@ -24,6 +24,29 @@ const TRAITS = [
   { slug: "firuleiro",     nome: "Firuleiro",       categoria: TraitCategoria.RESENHA,       emoji: "💅" },
   { slug: "reclamao",      nome: "Reclamão",        categoria: TraitCategoria.RESENHA,       emoji: "😤" },
   { slug: "chegou-agora",  nome: "Chegou Agora",    categoria: TraitCategoria.RESENHA,       emoji: "🐌" },
+];
+
+// ── Medalhas (badges hexagonais de conquista) ─────────────────────────────────
+const MEDALHA_TRAITS = [
+  { slug: "em-chamas",         nome: "Em chamas",         categoria: TraitCategoria.FUTEBOL, emoji: "🔥", descricao: "3x seguido como MVP/Matador" },
+  { slug: "rei-do-mes",        nome: "Rei do mês",        categoria: TraitCategoria.FUTEBOL, emoji: "👑", descricao: "MVP mais vezes no mês" },
+  { slug: "veterano",          nome: "Veterano",          categoria: TraitCategoria.FUTEBOL, emoji: "🎖️", descricao: "Presente em 20+ rodadas" },
+  { slug: "lenda",             nome: "Lenda",             categoria: TraitCategoria.FUTEBOL, emoji: "⭐", descricao: "MVP em 10+ rodadas no total" },
+  { slug: "primeira-vitoria",  nome: "Primeira vitória",  categoria: TraitCategoria.FUTEBOL, emoji: "🏆", descricao: "Primeiro MVP da carreira" },
+  { slug: "invicto",           nome: "Invicto",           categoria: TraitCategoria.FUTEBOL, emoji: "🛡️", descricao: "5 rodadas sem ser Bagre" },
+  { slug: "completo",          nome: "Completo",          categoria: TraitCategoria.FUTEBOL, emoji: "⭐", descricao: "MVP em todas as categorias" },
+  { slug: "trofeu-bagre",      nome: "Troféu Bagre",      categoria: TraitCategoria.RESENHA, emoji: "🐟", descricao: "5x Bagre da noite" },
+  { slug: "racudo-do-mes",     nome: "Raçudo do mês",     categoria: TraitCategoria.FUTEBOL, emoji: "💪", descricao: "Raçudo mais vezes no mês" },
+  { slug: "alma-do-grupo",     nome: "Alma do Grupo",     categoria: TraitCategoria.PERSONALIDADE, emoji: "❤️", descricao: "Mais votado em Resenha" },
+  { slug: "consistente",       nome: "Consistente",       categoria: TraitCategoria.FUTEBOL, emoji: "📈", descricao: "Top 3 em 5 rodadas seguidas" },
+  { slug: "irregular",         nome: "Irregular",         categoria: TraitCategoria.FUTEBOL, emoji: "📉", descricao: "Alternou MVP e Bagre na mesma semana" },
+  { slug: "mais-presente",     nome: "Mais presente",     categoria: TraitCategoria.FUTEBOL, emoji: "📅", descricao: "Mais rodadas jogadas no mês" },
+  { slug: "lanterna",          nome: "Lanterna",          categoria: TraitCategoria.RESENHA, emoji: "🏮", descricao: "Último no ranking por 1 mês" },
+  { slug: "rei-absoluto",      nome: "Rei absoluto",      categoria: TraitCategoria.FUTEBOL, emoji: "🏆", descricao: "Líder em todas as categorias" },
+  { slug: "ma-fase",           nome: "Má fase",           categoria: TraitCategoria.RESENHA, emoji: "💀", descricao: "3x seguido como pior personagem" },
+  { slug: "so-perde",          nome: "Só perde",          categoria: TraitCategoria.RESENHA, emoji: "😭", descricao: "5 derrotas consecutivas" },
+  { slug: "jogador-invisivel", nome: "Jogador invisível", categoria: TraitCategoria.RESENHA, emoji: "👻", descricao: "0 votos em 3 rodadas seguidas" },
+  { slug: "virada-de-chave",   nome: "Virada de chave",   categoria: TraitCategoria.FUTEBOL, emoji: "🔑", descricao: "Do pior para o melhor em 1 jogo" },
 ];
 
 // ── Jogadores ─────────────────────────────────────────────────────────────────
@@ -164,6 +187,15 @@ const ROTEIRO = [
   },
 ];
 
+// ── Medalhas conquistadas (JogadorTrait com slug de medalha) ──────────────────
+const JOGADOR_MEDALHAS = [
+  { apelido: "Falcão",  slug: "em-chamas",        contador: 1, descricao: "3x seguido como MVP/Matador"  },
+  { apelido: "Kaká",    slug: "virada-de-chave",   contador: 1, descricao: "Do pior para o melhor em 1 jogo" },
+  { apelido: "Romário", slug: "primeira-vitoria",  contador: 1, descricao: "Primeiro MVP da carreira"     },
+  { apelido: "Zico",    slug: "consistente",       contador: 1, descricao: "Top 3 em 5 rodadas seguidas"  },
+  { apelido: "Adriano", slug: "ma-fase",           contador: 1, descricao: "3x seguido como pior personagem" },
+];
+
 // ── Traits acumuladas por jogador ─────────────────────────────────────────────
 const JOGADOR_TRAITS = [
   { apelido: "Falcão",     slug: "matador",       contador: 4 },
@@ -190,11 +222,15 @@ const JOGADOR_TRAITS = [
 async function main() {
   console.log("🌱 Iniciando seed completo...\n");
 
-  // 1. Traits
+  // 1. Traits de personalidade
   for (const t of TRAITS) {
     await prisma.trait.upsert({ where: { slug: t.slug }, update: {}, create: t });
   }
-  console.log(`✓ ${TRAITS.length} traits`);
+  // Medalhas como Traits
+  for (const m of MEDALHA_TRAITS) {
+    await prisma.trait.upsert({ where: { slug: m.slug }, update: {}, create: m });
+  }
+  console.log(`✓ ${TRAITS.length} traits + ${MEDALHA_TRAITS.length} medalhas`);
 
   // 2. Grupo
   const grupo = await prisma.grupo.upsert({
@@ -297,7 +333,7 @@ async function main() {
     console.log(`✓ Rodada -${r.semanas}sem — MVP: ${r.mvp}, Bagre: ${r.bagre}`);
   }
 
-  // 5. JogadorTrait acumulado
+  // 5. JogadorTrait de personalidade
   for (const jt of JOGADOR_TRAITS) {
     const jogadorId = jogadorMap[jt.apelido];
     if (!jogadorId) continue;
@@ -308,6 +344,18 @@ async function main() {
     });
   }
   console.log(`✓ ${JOGADOR_TRAITS.length} trait assignments`);
+
+  // 6. JogadorTrait de medalhas (conquistas)
+  for (const jm of JOGADOR_MEDALHAS) {
+    const jogadorId = jogadorMap[jm.apelido];
+    if (!jogadorId) continue;
+    await prisma.jogadorTrait.upsert({
+      where: { jogadorId_traitSlug: { jogadorId, traitSlug: jm.slug } },
+      update: { contador: jm.contador },
+      create: { jogadorId, traitSlug: jm.slug, contador: jm.contador },
+    });
+  }
+  console.log(`✓ ${JOGADOR_MEDALHAS.length} medalhas conquistadas`);
 
   console.log("\n✅ Seed completo! O app está vivo.");
 }
