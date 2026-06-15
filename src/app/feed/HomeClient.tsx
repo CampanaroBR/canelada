@@ -11,7 +11,7 @@ import {
 import { BottomsheetMaisVotados } from "@/components/BottomsheetMaisVotados";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
 import { PersonagemShareModal } from "@/components/PersonagemShareModal";
-import { getMedalha, TRAIT_SVG } from "@/lib/assets";
+import { getMedalha } from "@/lib/assets";
 
 const CAMPO      = "/campo.png";
 const LOGO       = "/logo.png";
@@ -413,7 +413,7 @@ export function HomeClient({
             {/* Achievement cards */}
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {conquistas.map((c, i) => {
-                const badgeSrc = getMedalha(c.traitNome) ?? TRAIT_SVG[c.traitSlug] ?? null;
+                const badgeSrc = getMedalha(c.traitNome);
                 return (
                   <div key={i} style={{ background: "#090909", border: "1px solid #2e2e2e", borderRadius: 16, padding: "9px 17px", display: "flex", alignItems: "flex-start" }}>
                     {/* flex-[1_0_0] min-w-px wrapper */}
