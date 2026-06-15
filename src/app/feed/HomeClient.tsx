@@ -10,6 +10,7 @@ import {
 } from "@phosphor-icons/react";
 import { BottomsheetMaisVotados } from "@/components/BottomsheetMaisVotados";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
+import { PersonagemShareModal } from "@/components/PersonagemShareModal";
 import { getMedalha } from "@/lib/assets";
 
 const CAMPO  = "/campo.png";
@@ -59,6 +60,7 @@ export function HomeClient({
 }: Props) {
   const [bsOpen, setBsOpen] = useState(false);
   const [activePill, setActivePill] = useState(datePills.length > 0 ? datePills.length - 1 : 0);
+  const [sharePersonagem, setSharePersonagem] = useState<number | null>(null);
 
   const lbEntries: LeaderboardEntry[] = maisVotados.slice(0, 6).map((v, i) => ({
     rank: i + 1,
@@ -260,7 +262,7 @@ export function HomeClient({
                             </p>
                           </div>
                         </div>
-                        <button style={{
+                        <button onClick={() => setSharePersonagem(i)} style={{
                           display: "inline-flex", alignItems: "center", gap: 4, alignSelf: "flex-start",
                           background: "#2a2a2a", border: "1px solid #3a3a3a",
                           borderRadius: 9999, padding: "7px 13px", cursor: "pointer",
@@ -271,7 +273,7 @@ export function HomeClient({
                       </div>
                       <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "flex-end", alignSelf: "stretch" }}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img alt={title} src={mascot} style={{ width: 117, height: 117, objectFit: "cover", flexShrink: 0 }} />
+                        <img alt={title} src={mascot} style={{ width: 117, height: 117, objectFit: "cover", flexShrink: 0, mixBlendMode: "screen" }} />
                       </div>
                     </div>
                   );
@@ -324,7 +326,7 @@ export function HomeClient({
                         </div>
                         <div style={{ width: 72, height: 72, overflow: "hidden", flexShrink: 0 }}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img alt={c.traitNome} src={badge} style={{ width: 72, height: 72 }} />
+                          <img alt={c.traitNome} src={badge} style={{ width: 72, height: 72, mixBlendMode: "screen" }} />
                         </div>
                       </div>
                     </div>
@@ -386,6 +388,18 @@ export function HomeClient({
         datas={datePills}
         dataAtiva={datePills.length - 1}
       />
+
+      {sharePersonagem !== null && personagens[sharePersonagem] && (
+        <PersonagemShareModal
+          open
+          onClose={() => setSharePersonagem(null)}
+          tipo={personagens[sharePersonagem].tipo}
+          texto={personagens[sharePersonagem].texto}
+          data={personagens[sharePersonagem].data}
+          mascot={PERSONAGEM_MASCOTS[personagens[sharePersonagem].tipo] ?? "/ilustracoes/corpo-mole.png"}
+          qtd={7 - sharePersonagem}
+        />
+      )}
     </div>
   );
 }

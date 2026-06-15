@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { BottomNav } from "@/components/layout/BottomNav";
 import Link from "next/link";
 import Image from "next/image";
-import { TRAIT_SVG } from "@/app/votacao/VotacaoFlow";
+import { TRAIT_SVG } from "@/lib/assets";
 import {
   CONQUISTAS,
   CAT_CONQUISTA_CONFIG,

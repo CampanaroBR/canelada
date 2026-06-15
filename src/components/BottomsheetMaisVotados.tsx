@@ -1,13 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-const imgTrophy      = "http://localhost:3845/assets/e3f883d17ae67efead123e30b9dec3f2de83035c.svg";
-const imgX           = "http://localhost:3845/assets/c6048d3d966a755882e18ffea09b55b0e4f3cf24.svg";
-const imgShare       = "http://localhost:3845/assets/dbdc853835956bc779b76d41db5a8392794a04c4.svg";
-const imgMedal1      = "http://localhost:3845/assets/ed3d245a654a2fbbf71fa008b60c5261a3b492b4.svg";
-const imgMedal2      = "http://localhost:3845/assets/5cbc74c5d63a841c4db0d1f95fa614b4b6ccb83e.svg";
-const imgMedal3      = "http://localhost:3845/assets/9a1646dc20219cb326579f1d3aa136312f40d036.svg";
+import { Trophy, X, ShareNetwork, Medal } from "@phosphor-icons/react";
 
 export type LeaderboardEntry = {
   rank: number;
@@ -20,26 +14,27 @@ interface Props {
   open: boolean;
   onClose: () => void;
   entries: LeaderboardEntry[];
-  datas?: string[]; // date filter labels
+  datas?: string[];
   dataAtiva?: number;
 }
 
 export function BottomsheetMaisVotados({ open, onClose, entries, datas = [], dataAtiva = 2 }: Props) {
   const [visible, setVisible] = useState(false);
   const [animOut, setAnimOut] = useState(false);
+  const [activePill, setActivePill] = useState(dataAtiva);
 
   useEffect(() => {
-    if (open) { setAnimOut(false); setVisible(true); }
+    if (open) { setAnimOut(false); setVisible(true); setActivePill(dataAtiva); }
     else if (visible) {
       setAnimOut(true);
       const t = setTimeout(() => setVisible(false), 280);
       return () => clearTimeout(t);
     }
-  }, [open, visible]);
+  }, [open, visible, dataAtiva]);
 
   if (!visible) return null;
 
-  const medalImgs = [imgMedal1, imgMedal2, imgMedal3];
+  const medalColors = ["#f5c518", "#aaa", "#cd7f32"];
 
   return (
     <>
@@ -81,13 +76,11 @@ export function BottomsheetMaisVotados({ open, onClose, entries, datas = [], dat
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 8px 16px", backdropFilter: "blur(4px)" }}>
           <div style={{ width: 40, height: 40 }} />
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={imgTrophy} alt="" style={{ width: 16, height: 16 }} />
+            <Trophy size={16} color="#9fe870" weight="fill" />
             <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#fff" }}>MAIS VOTADOS</span>
           </div>
           <button onClick={onClose} style={{ width: 40, height: 40, background: "#000", border: "1px solid #424242", borderRadius: 24, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={imgX} alt="Fechar" style={{ width: 16, height: 16 }} />
+            <X size={16} color="#fff" weight="bold" />
           </button>
         </div>
 
@@ -97,23 +90,22 @@ export function BottomsheetMaisVotados({ open, onClose, entries, datas = [], dat
           {/* Share button */}
           <button style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#2a2a2a", border: "1px solid #3a3a3a", borderRadius: 9999, padding: "9px 17px", cursor: "pointer" }}>
             <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, color: "#fff" }}>Compartilhar</span>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={imgShare} alt="" style={{ width: 16, height: 16 }} />
+            <ShareNetwork size={16} color="#fff" weight="bold" />
           </button>
 
           {/* Date filters */}
           {datas.length > 0 && (
             <div style={{ display: "flex", gap: 8, height: 38, overflow: "hidden" }}>
               {datas.map((d, i) => (
-                <button key={i} style={{
-                  background: i === dataAtiva ? "#9fe870" : "#111",
-                  border: i === dataAtiva ? "none" : "1px solid #2e2e2e",
+                <button key={i} onClick={() => setActivePill(i)} style={{
+                  background: i === activePill ? "#9fe870" : "#111",
+                  border: i === activePill ? "none" : "1px solid #2e2e2e",
                   borderRadius: 9999,
-                  padding: i === dataAtiva ? "6px 12px" : "7px 13px",
+                  padding: i === activePill ? "6px 12px" : "7px 13px",
                   fontFamily: "var(--font-display)",
                   fontWeight: 700,
                   fontSize: 12,
-                  color: i === dataAtiva ? "#000" : "#555",
+                  color: i === activePill ? "#000" : "#555",
                   cursor: "pointer",
                   flexShrink: 0,
                 }}>
@@ -147,8 +139,7 @@ export function BottomsheetMaisVotados({ open, onClose, entries, datas = [], dat
                     </div>
                     {entry.rank <= 3 && (
                       <div style={{ width: 40, height: 40, background: "#000", border: "1px solid #353535", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={medalImgs[entry.rank - 1]} alt="" style={{ width: 28, height: 28 }} />
+                        <Medal size={28} color={medalColors[entry.rank - 1]} weight="fill" />
                       </div>
                     )}
                   </div>

@@ -50,3 +50,21 @@ export const MEDALHAS: Record<string, string> = {
 export function getMedalha(traitNome: string): string {
   return MEDALHAS[traitNome] ?? "/medalhas/em-chamas.png";
 }
+
+export const TRAIT_SVG: Record<string, string> = {
+  "racudo":        "/traits/Racudo.svg",
+  "matador":       "/traits/Matador.svg",
+  "paredao":       "/traits/Paredao.svg",
+  "categoria":     "/traits/Craque.svg",
+  "xerife":        "/traits/Xerife.svg",
+  "chorao":        "/traits/Chorao.svg",
+  "paneleiro":     "/traits/Paneleiro.svg",
+  "fominha":       "/traits/Fominha.svg",
+  "resenha-forte": "/traits/So_resenha.svg",
+  "bagre":         "/traits/Bagre.svg",
+  "cone":          "/traits/Cone.svg",
+  "corpo-mole":    "/traits/Corpo_mole.svg",
+  "firuleiro":     "/traits/Firuleiro.svg",
+  "reclamao":      "/traits/Reclamao.svg",
+  "garcom":        "/traits/Garcom.svg",
+};

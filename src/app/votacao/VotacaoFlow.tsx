@@ -3,8 +3,8 @@
 import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { submitVotos } from "./actions";
-import { BottomNav } from "@/components/layout/BottomNav";
-import Image from "next/image";
+import { House, CheckCircle, Football, ChartBar, CaretLeft, FastForward } from "@phosphor-icons/react";
+import Link from "next/link";
 
 type Jogador = { id: string; apelido: string };
 type Trait = { slug: string; nome: string; categoria: string; emoji: string | null };
@@ -17,43 +17,47 @@ interface Props {
 }
 
 const STEPS = [
-  { categoria: "MVP",     label: "CRAQUE DO DIA",  pre: "QUEM FOI",    accent: "O CRAQUE?",   color: "#B5FF4D", illustration: "/traits/Craque.svg"    },
-  { categoria: "BAGRE",   label: "BAGRE DA VEZ",   pre: "QUEM FOI",    accent: "O BAGRE?",    color: "#EF4444", illustration: "/traits/Bagre.svg"     },
-  { categoria: "RACUDO",  label: "RAÇUDO",          pre: "QUEM MAIS",   accent: "SE RAÇOU?",   color: "#F59E0B", illustration: "/traits/Racudo.svg"    },
-  { categoria: "RESENHA", label: "REI DA RESENHA", pre: "QUEM ANIMOU", accent: "A RESENHA?",  color: "#60A5FA", illustration: "/traits/So_resenha.svg" },
-  { categoria: "TRAIT",   label: "TRAIT ESPECIAL", pre: "QUEM MERECE", accent: "UMA TRAIT?",  color: "#A78BFA", illustration: null                    },
+  {
+    categoria: "MVP",
+    title: "MATADOR",
+    description: "O artilheiro implacável. Ninguém escapou dos gols dele hoje.",
+    illustration: "/ilustracoes/tubarao.png",
+  },
+  {
+    categoria: "BAGRE",
+    title: "BAGRE DA NOITE",
+    description: "Errou tudo que tentou. Hoje definitivamente não era o dia dele.",
+    illustration: "/ilustracoes/bagre.png",
+  },
+  {
+    categoria: "RACUDO",
+    title: "PREGUEIRO",
+    description: "Corpo presente, alma ausente. Raçou quando quis, mas não muito.",
+    illustration: "/ilustracoes/corpo-mole.png",
+  },
+  {
+    categoria: "RESENHA",
+    title: "REI DA RESENHA",
+    description: "A zoação ficou mais animada com ele em campo.",
+    illustration: "/ilustracoes/gato.png",
+  },
+  {
+    categoria: "TRAIT",
+    title: "TRAIT ESPECIAL",
+    description: "Escolha um jogador que merece um reconhecimento especial.",
+    illustration: "/ilustracoes/flamingo.png",
+  },
 ] as const;
 
-/* slug → arquivo SVG em /public/traits/ */
-export const TRAIT_SVG: Record<string, string> = {
-  "racudo":        "/traits/Racudo.svg",
-  "matador":       "/traits/Matador.svg",
-  "paredao":       "/traits/Paredao.svg",
-  "categoria":     "/traits/Craque.svg",
-  "xerife":        "/traits/Xerife.svg",
-  "chorao":        "/traits/Chorao.svg",
-  "paneleiro":     "/traits/Paneleiro.svg",
-  "fominha":       "/traits/Fominha.svg",
-  "resenha-forte": "/traits/So_resenha.svg",
-  "bagre":         "/traits/Bagre.svg",
-  "cone":          "/traits/Cone.svg",
-  "corpo-mole":    "/traits/Corpo_mole.svg",
-  "firuleiro":     "/traits/Firuleiro.svg",
-  "reclamao":      "/traits/Reclamao.svg",
-  "garcom":        "/traits/Garcom.svg",
-};
-
-const AVATAR_COLORS = ["#B5FF4D", "#60A5FA", "#F59E0B", "#EF4444", "#A78BFA", "#34D399", "#F97316", "#EC4899"];
-
-function getAvatarColor(apelido: string) {
-  let h = 0;
-  for (const c of apelido) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
-  return AVATAR_COLORS[h % AVATAR_COLORS.length];
+function getInitial(apelido: string) {
+  return apelido.trim()[0]?.toUpperCase() ?? "?";
 }
 
-function getInitials(apelido: string) {
-  const parts = apelido.trim().split(/\s+/);
-  return parts.length >= 2 ? (parts[0][0] + parts[1][0]).toUpperCase() : apelido.slice(0, 2).toUpperCase();
+function getAvatarColor(apelido: string) {
+  const colors = ["#B5FF4D", "#60A5FA", "#F59E0B", "#EF4444", "#A78BFA", "#34D399", "#F97316", "#EC4899"];
+  let h = 0;
+  for (const c of apelido) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
+  return colors[h % colors.length];
 }
 
 export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
@@ -65,9 +69,8 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
   const router = useRouter();
 
   const outros = jogadores.filter((j) => j.id !== meuId);
-  const noPlayers = outros.length === 0;
-  const progressStep = step >= 5 ? 4 : step;
   const cfg = STEPS[step <= 4 ? step : 4];
+  const totalSteps = STEPS.length;
 
   useEffect(() => {
     if (step === 6) {
@@ -75,14 +78,6 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
       return () => clearTimeout(t);
     }
   }, [step, router]);
-
-  const canProceed =
-    step === 5 ? traitSlug !== null : noPlayers || selections[step] !== undefined;
-
-  function handleBack() {
-    if (step === 0) router.push("/feed");
-    else setStep(step - 1);
-  }
 
   function submitAllVotes() {
     const votos = STEPS
@@ -109,279 +104,272 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
     if (step < 4) {
       setStep(step + 1);
     } else if (step === 4) {
-      if (noPlayers || selections[4] === undefined) submitAllVotes();
+      if (selections[4] === undefined) submitAllVotes();
       else setStep(5);
     } else if (step === 5) {
       submitAllVotes();
     }
   }
 
+  function handleSkip() {
+    handleNext();
+  }
+
+  function handleBack() {
+    if (step === 0) router.push("/feed");
+    else setStep(step - 1);
+  }
+
   if (step === 6) {
-    return <DoneScreen selections={selections} traitSlug={traitSlug} jogadores={jogadores} traits={traits} />;
+    return <DoneScreen />;
   }
 
   const traitPlayer = step === 5 ? jogadores.find((j) => j.id === selections[4]) : null;
+  const progressPct = (step / totalSteps) * 100;
 
   return (
     <>
       <style>{`
-        .vote-card {
-          transition-property: transform, box-shadow, background;
-          transition-duration: 150ms;
-          transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        .vote-card:active { transform: scale(0.96); }
-        .vote-cta {
-          transition-property: background, color, transform;
-          transition-duration: 150ms;
-          transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        .vote-cta:not(:disabled):active { transform: scale(0.96); }
+        .vote-btn { transition: transform 120ms cubic-bezier(0.23,1,0.32,1); }
+        .vote-btn:active { transform: scale(0.94); }
       `}</style>
 
       <div style={{
-        position: "fixed",
-        top: 0, bottom: 0,
-        left: "50%",
-        transform: "translateX(-50%)",
-        width: "min(100vw, 430px)",
-        background: "var(--color-bg)",
+        minHeight: "100dvh",
+        background: "#090909",
         display: "flex",
         flexDirection: "column",
+        position: "relative",
         overflow: "hidden",
       }}>
 
-        {/* ── Progress bar ── */}
-        <div style={{
-          display: "flex",
-          gap: "4px",
-          padding: "0 16px",
-          paddingTop: "calc(12px + env(safe-area-inset-top, 0px))",
-          paddingBottom: "10px",
-          flexShrink: 0,
-        }}>
-          {STEPS.map((s, i) => (
-            <div key={i} style={{
-              flex: 1, height: "3px", borderRadius: "9999px",
-              background: i <= progressStep ? s.color : "var(--color-surface-2)",
-              opacity: i > progressStep ? 0.3 : 1,
-              transition: "background 300ms cubic-bezier(0.23,1,0.32,1), opacity 300ms cubic-bezier(0.23,1,0.32,1)",
-            }} />
-          ))}
+        {/* ── Main content ── */}
+        <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+
+          {/* Top character card */}
+          <div style={{
+            background: "#171717",
+            borderBottomLeftRadius: 48,
+            borderBottomRightRadius: 48,
+            paddingTop: "calc(168px + env(safe-area-inset-top, 0px))",
+            paddingBottom: 24,
+            paddingLeft: 8,
+            paddingRight: 8,
+            flexShrink: 0,
+          }}>
+            <div style={{
+              border: "1px solid rgba(255,215,0,0.2)",
+              borderRadius: 36,
+              background: "linear-gradient(158.57deg, #1a1a1a 0%, #0d0d0d 100%)",
+              padding: 8,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+            }}>
+              {/* Illustration */}
+              <div style={{ width: 132, height: 132, flexShrink: 0, boxShadow: "0px 4px 45px -30px rgba(255,215,0,0.25)" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={step <= 4 ? cfg.illustration : "/ilustracoes/flamingo.png"}
+                  alt={step <= 4 ? cfg.title : "Trait"}
+                  style={{ width: "100%", height: "100%", objectFit: "cover", mixBlendMode: "screen" }}
+                />
+              </div>
+              {/* Info */}
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
+                <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 24, lineHeight: "28px", color: "#fff" }}>
+                  {step === 5 ? "TRAIT ESPECIAL" : cfg.title}
+                </p>
+                <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 14, lineHeight: "18px", color: "#999", letterSpacing: "-0.65px" }}>
+                  {step === 5 && traitPlayer
+                    ? `Para ${traitPlayer.apelido}: qual trait ele merece?`
+                    : step <= 4 ? cfg.description : ""}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom player grid */}
+          <div style={{
+            background: "#171717",
+            borderTopLeftRadius: 48,
+            borderTopRightRadius: 48,
+            flex: 1,
+            padding: "24px 8px",
+            overflowY: "auto",
+            paddingBottom: "calc(96px + env(safe-area-inset-bottom, 0px))",
+          }}>
+            {step < 5 ? (
+              <PlayerGrid
+                jogadores={outros}
+                selected={selections[step]}
+                onSelect={(id) => setSelections((prev) => ({ ...prev, [step]: id }))}
+              />
+            ) : (
+              <TraitGrid traits={traits} selected={traitSlug} onSelect={setTraitSlug} />
+            )}
+          </div>
         </div>
 
-        {/* ── Header: back + label + counter ── */}
-        <div style={{ padding: "0 20px 10px", flexShrink: 0 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        {/* ── Topbar (fixed overlay) ── */}
+        <div style={{
+          position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)",
+          width: "min(100%, 430px)", zIndex: 30,
+        }}>
+          <div style={{ height: "calc(26px + env(safe-area-inset-top, 0px))" }} />
+          <div style={{ padding: "0 16px", display: "flex", alignItems: "center", gap: 12 }}>
+            {/* Back button */}
             <button
               onClick={handleBack}
-              aria-label="Voltar"
               style={{
-                width: "44px", height: "44px",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                background: "none", border: "none", cursor: "pointer",
-                color: "var(--color-text-muted)", marginLeft: "-10px",
-                WebkitTapHighlightColor: "transparent",
-                borderRadius: "var(--radius-sm)",
+                width: 40, height: 40,
+                background: "#2a2a2a", border: "1px solid #444",
+                borderRadius: 9999, display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: "pointer", flexShrink: 0,
               }}
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="15 18 9 12 15 6" />
-              </svg>
+              <CaretLeft size={18} color="#fff" weight="bold" />
             </button>
 
-            <div style={{
-              background: cfg.color + "18",
-              boxShadow: `0 0 0 1px ${cfg.color}50`,
-              borderRadius: "9999px",
-              padding: "4px 12px",
-              fontFamily: "var(--font-display)", fontWeight: 900,
-              fontSize: "11px", letterSpacing: "0.12em",
-              textTransform: "uppercase" as const, color: cfg.color,
-            }}>
-              {cfg.label}
+            {/* Title */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "18px", color: "#999", textTransform: "uppercase" as const, letterSpacing: "0.5px" }}>
+                VOTANDO
+              </p>
+              <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 18, lineHeight: "27px", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {step + 1} de {totalSteps} personagens
+              </p>
             </div>
 
-            <span className="tabular" style={{
-              fontFamily: "var(--font-body)", fontSize: "12px",
-              color: "var(--color-text-muted)", minWidth: "34px", textAlign: "right",
-            }}>
-              {step >= 4 ? "5" : step + 1} / 5
-            </span>
+            {/* Skip button */}
+            <button
+              onClick={handleSkip}
+              style={{
+                background: "#2a2a2a", borderRadius: 10,
+                padding: "8px 12px", display: "flex", alignItems: "center", gap: 4,
+                cursor: "pointer", border: "none", flexShrink: 0,
+              }}
+            >
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, color: "#666" }}>Pular</span>
+              <FastForward size={14} color="#666" weight="fill" />
+            </button>
+          </div>
+
+          {/* Progress bar */}
+          <div style={{ padding: "12px 16px 0" }}>
+            <div style={{ height: 6, background: "#333", borderRadius: 9999, overflow: "hidden" }}>
+              <div style={{
+                height: "100%", background: "#9fe870",
+                borderRadius: 9999,
+                width: `${progressPct}%`,
+                transition: "width 300ms cubic-bezier(0.23,1,0.32,1)",
+              }} />
+            </div>
           </div>
         </div>
 
-        {/* ── Ilustração do step — hero visual ── */}
-        {step < 5 && cfg.illustration && (
-          <div style={{
-            position: "relative",
-            flexShrink: 0,
-            height: "200px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            overflow: "hidden",
-          }}>
-            {/* Glow de fundo */}
-            <div aria-hidden style={{
-              position: "absolute",
-              inset: 0,
-              background: `radial-gradient(ellipse at center, ${cfg.color}20 0%, transparent 70%)`,
-              pointerEvents: "none",
-            }} />
-            {/* Fade inferior */}
-            <div aria-hidden style={{
-              position: "absolute",
-              bottom: 0, left: 0, right: 0, height: "60px",
-              background: "linear-gradient(to bottom, transparent, var(--color-bg))",
-              pointerEvents: "none",
-              zIndex: 1,
-            }} />
-            <Image
-              src={cfg.illustration}
-              alt={cfg.label}
-              width={180}
-              height={180}
-              style={{ objectFit: "contain", position: "relative", zIndex: 0 }}
-              priority
-            />
-          </div>
-        )}
-
-        {/* Título da pergunta */}
-        <div style={{ padding: "0 20px 12px", flexShrink: 0 }}>
-          <h1 style={{
-            fontFamily: "var(--font-display)", fontWeight: 900,
-            fontSize: "clamp(28px, 8vw, 38px)", lineHeight: 0.9,
-            letterSpacing: "-0.01em", textTransform: "uppercase",
-            color: "var(--color-text-primary)",
-          }}>
-            {step === 5 ? (
-              <>QUAL A<br /><span style={{ color: cfg.color }}>TRAIT?</span></>
-            ) : (
-              <>{cfg.pre}<br /><span style={{ color: cfg.color }}>{cfg.accent}</span></>
-            )}
-          </h1>
-          {step === 5 && traitPlayer && (
-            <p style={{ marginTop: "6px", fontSize: "13px", color: "var(--color-text-muted)", fontFamily: "var(--font-body)" }}>
-              Para <strong style={{ color: "var(--color-text-secondary)" }}>{traitPlayer.apelido}</strong>
-            </p>
-          )}
-        </div>
-
-        {/* ── Conteúdo scrollável ── */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "0 16px" }}>
-          {step < 5 ? (
-            <PlayerGrid
-              jogadores={outros}
-              selected={selections[step]}
-              onSelect={(id) => setSelections((prev) => ({ ...prev, [step]: id }))}
-              color={cfg.color}
-            />
-          ) : (
-            <TraitGrid traits={traits} selected={traitSlug} onSelect={setTraitSlug} />
-          )}
-        </div>
-
-        {/* ── Footer CTA ── */}
+        {/* ── Bottom Nav ── */}
         <div style={{
-          padding: "12px 20px",
-          paddingBottom: "calc(84px + env(safe-area-inset-bottom, 0px))",
-          background: "rgba(18,18,18,0.80)",
-          backdropFilter: "blur(24px) saturate(180%)",
-          WebkitBackdropFilter: "blur(24px) saturate(180%)",
-          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08)",
-          flexShrink: 0,
+          position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)",
+          width: "min(100%, 430px)", zIndex: 30,
+          padding: "0 16px",
+          paddingBottom: "max(6px, env(safe-area-inset-bottom, 6px))",
         }}>
           {error && (
-            <p role="alert" style={{ color: "var(--color-danger)", fontSize: "13px", marginBottom: "8px", textAlign: "center", fontFamily: "var(--font-body)" }}>
+            <p role="alert" style={{ color: "#ef4444", fontSize: 13, textAlign: "center", fontFamily: "var(--font-body)", marginBottom: 8 }}>
               {error}
             </p>
           )}
-          <button
-            onClick={handleNext}
-            disabled={!canProceed || isPending}
-            className="vote-cta"
-            style={{
-              width: "100%", height: "52px",
-              background: canProceed ? cfg.color : "var(--color-surface-2)",
-              color: canProceed ? "#0D0D0D" : "var(--color-text-muted)",
-              border: "none", borderRadius: "var(--radius-xl)",
-              fontFamily: "var(--font-display)", fontWeight: 900,
-              fontSize: "16px", letterSpacing: "0.08em", textTransform: "uppercase",
-              cursor: canProceed ? "pointer" : "default",
-              WebkitTapHighlightColor: "transparent",
-            }}
-          >
-            {isPending ? "ENVIANDO..." : step === 5 ? "CONFIRMAR VOTOS" : "PRÓXIMO →"}
-          </button>
+          <nav style={{
+            background: "rgba(0,0,0,0.08)", border: "1px solid #393939",
+            borderRadius: 32, padding: "6px 15px",
+            display: "flex", alignItems: "center",
+            backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
+            boxShadow: "0px 4px 4.7px 1px rgba(0,0,0,0.28)",
+          }}>
+            <div style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "space-between" }}>
+              <VNavItem icon="house" label="Home" href="/feed" />
+              <VNavItem icon="check" label="Votos" active />
+              <VNavItem icon="soccer" label="Pelada" href="/feed" />
+              <VNavItem icon="chart" label="Ranking" href="/ranking" />
+            </div>
+          </nav>
         </div>
-
-        <BottomNav />
       </div>
     </>
   );
 }
 
-/* ── Player grid ── */
-function PlayerGrid({ jogadores, selected, onSelect, color }: {
+function PlayerGrid({ jogadores, selected, onSelect }: {
   jogadores: Jogador[];
   selected: string | undefined;
   onSelect: (id: string) => void;
-  color: string;
 }) {
   if (jogadores.length === 0) {
     return (
-      <p style={{ color: "var(--color-text-muted)", fontFamily: "var(--font-body)", fontSize: "14px", textAlign: "center", padding: "32px 0" }}>
+      <p style={{ color: "#666", fontFamily: "var(--font-body)", fontSize: 14, textAlign: "center", padding: "32px 0" }}>
         Nenhum outro jogador no grupo ainda.
       </p>
     );
   }
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "10px", paddingBottom: "16px" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
       {jogadores.map((j) => {
         const isSelected = selected === j.id;
+        const initial = getInitial(j.apelido);
         const avatarColor = getAvatarColor(j.apelido);
+        const firstName = j.apelido.split(" ")[0];
+
         return (
           <button
             key={j.id}
             onClick={() => onSelect(j.id)}
-            className="vote-card"
+            className="vote-btn"
             style={{
-              background: isSelected ? color + "18" : "var(--color-surface-1)",
-              boxShadow: isSelected
-                ? `0 0 0 2px ${color}, inset 0 1px 0 rgba(255,255,255,0.06)`
-                : "var(--shadow-border)",
-              border: "none", borderRadius: "var(--radius-md)",
-              padding: "14px 8px 10px",
-              display: "flex", flexDirection: "column", alignItems: "center", gap: "8px",
-              cursor: "pointer", WebkitTapHighlightColor: "transparent",
+              background: isSelected ? "#272727" : "#000",
+              border: isSelected ? "2px solid #9fe870" : "1px solid #2e2e2e",
+              borderRadius: isSelected ? 20 : 14,
+              padding: isSelected ? "10px 9px" : "13px 9px",
+              display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+              cursor: "pointer",
+              minHeight: isSelected ? 110 : 84,
+              transition: "all 150ms cubic-bezier(0.23,1,0.32,1)",
             }}
           >
-            <div style={{
-              width: "52px", height: "52px", borderRadius: "50%",
-              background: isSelected ? color + "22" : avatarColor + "18",
-              boxShadow: `0 0 0 2px ${isSelected ? color + "80" : avatarColor + "55"}`,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontFamily: "var(--font-display)", fontWeight: 900,
-              fontSize: "15px", letterSpacing: "0.04em",
-              color: isSelected ? color : avatarColor, flexShrink: 0,
-            }}>
-              {isSelected ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              ) : getInitials(j.apelido)}
-            </div>
+            {isSelected ? (
+              <div style={{
+                width: 72, height: 72, borderRadius: "50%",
+                background: avatarColor + "22",
+                border: `2px solid ${avatarColor}55`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                overflow: "hidden", flexShrink: 0,
+              }}>
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 28, color: avatarColor }}>{initial}</span>
+              </div>
+            ) : (
+              <div style={{
+                width: 40, height: 40, borderRadius: "50%",
+                background: "#2a2a2a",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                flexShrink: 0,
+              }}>
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 18, color: "#fff" }}>{initial}</span>
+              </div>
+            )}
             <span style={{
-              fontSize: "11px", fontWeight: isSelected ? 700 : 500,
-              fontFamily: "var(--font-body)",
-              color: isSelected ? color : "var(--color-text-secondary)",
-              letterSpacing: "0.01em", textAlign: "center", lineHeight: 1.2,
-              maxWidth: "72px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+              fontFamily: "var(--font-display)",
+              fontWeight: 800,
+              fontSize: isSelected ? 14 : 11,
+              color: isSelected ? "#ccc" : "#ccc",
+              textAlign: "center",
+              lineHeight: "13.75px",
+              maxWidth: "100%",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
             }}>
-              {j.apelido}
+              {firstName}
             </span>
           </button>
         );
@@ -390,7 +378,6 @@ function PlayerGrid({ jogadores, selected, onSelect, color }: {
   );
 }
 
-/* ── Trait grid com ilustrações SVG ── */
 function TraitGrid({ traits, selected, onSelect }: {
   traits: Trait[];
   selected: string | null;
@@ -403,63 +390,43 @@ function TraitGrid({ traits, selected, onSelect }: {
   ];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px", paddingBottom: "16px" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
       {categories.map((cat) => {
         const catTraits = traits.filter((t) => t.categoria === cat.key);
         if (catTraits.length === 0) return null;
         return (
           <div key={cat.key}>
-            <p style={{
-              fontSize: "10px", fontWeight: 700, letterSpacing: "0.12em",
-              textTransform: "uppercase", color: cat.color,
-              fontFamily: "var(--font-body)", marginBottom: "10px", opacity: 0.8,
-            }}>
+            <p style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase" as const, color: cat.color, marginBottom: 8, opacity: 0.8 }}>
               {cat.label}
             </p>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
               {catTraits.map((trait) => {
                 const isSelected = selected === trait.slug;
-                const svgSrc = TRAIT_SVG[trait.slug];
                 return (
                   <button
                     key={trait.slug}
                     onClick={() => onSelect(trait.slug)}
-                    className="vote-card"
+                    className="vote-btn"
                     style={{
-                      background: isSelected ? cat.color + "18" : "var(--color-surface-1)",
-                      boxShadow: isSelected
-                        ? `0 0 0 2px ${cat.color}, inset 0 1px 0 rgba(255,255,255,0.06)`
-                        : "var(--shadow-border)",
-                      border: "none", borderRadius: "var(--radius-md)",
-                      padding: "12px 8px 10px",
-                      display: "flex", flexDirection: "column", alignItems: "center", gap: "6px",
-                      cursor: "pointer", WebkitTapHighlightColor: "transparent",
+                      background: isSelected ? "#272727" : "#000",
+                      border: isSelected ? `2px solid ${cat.color}` : "1px solid #2e2e2e",
+                      borderRadius: 14,
+                      padding: "13px 9px",
+                      display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                      cursor: "pointer",
                     }}
                   >
-                    {/* Ilustração SVG ou emoji fallback */}
-                    {svgSrc ? (
-                      <div style={{
-                        width: "52px", height: "52px",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        filter: isSelected ? "none" : "saturate(0.7)",
-                      }}>
-                        <Image
-                          src={svgSrc}
-                          alt={trait.nome}
-                          width={52}
-                          height={52}
-                          style={{ objectFit: "contain" }}
-                        />
-                      </div>
-                    ) : (
-                      <span style={{ fontSize: "28px", lineHeight: 1 }}>{trait.emoji ?? "⭐"}</span>
-                    )}
+                    <div style={{
+                      width: 40, height: 40, borderRadius: "50%",
+                      background: "#2a2a2a",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}>
+                      <span style={{ fontSize: 20 }}>{trait.emoji ?? "⭐"}</span>
+                    </div>
                     <span style={{
-                      fontSize: "10px", fontWeight: 600,
-                      fontFamily: "var(--font-body)",
-                      color: isSelected ? cat.color : "var(--color-text-secondary)",
-                      textAlign: "center", lineHeight: 1.2,
-                      transition: "color 150ms cubic-bezier(0.23,1,0.32,1)",
+                      fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 11,
+                      color: isSelected ? cat.color : "#ccc",
+                      textAlign: "center", lineHeight: "13.75px",
                     }}>
                       {trait.nome}
                     </span>
@@ -474,114 +441,63 @@ function TraitGrid({ traits, selected, onSelect }: {
   );
 }
 
-/* ── Done screen — full-screen verde estilo TOP SNIPER ── */
-function DoneScreen({ selections, traitSlug, jogadores, traits }: {
-  selections: Record<number, string>;
-  traitSlug: string | null;
-  jogadores: Jogador[];
-  traits: Trait[];
-}) {
-  const apelido = (id: string) => jogadores.find((j) => j.id === id)?.apelido ?? "—";
-  const trait = traits.find((t) => t.slug === traitSlug);
-
-  const summary = [
-    { label: "MVP",     color: "#B5FF4D", value: apelido(selections[0]) },
-    { label: "BAGRE",   color: "#EF4444", value: apelido(selections[1]) },
-    { label: "RAÇUDO",  color: "#F59E0B", value: apelido(selections[2]) },
-    { label: "RESENHA", color: "#60A5FA", value: apelido(selections[3]) },
-    { label: "TRAIT",   color: "#A78BFA", value: `${apelido(selections[4])} — ${trait?.emoji ?? ""} ${trait?.nome ?? ""}`.trim() },
-  ];
-
+function DoneScreen() {
   return (
     <div style={{
       minHeight: "100dvh",
-      background: "var(--color-accent)",
+      background: "#9fe870",
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
-      padding: "32px 24px calc(32px + env(safe-area-inset-bottom, 0px))",
-      textAlign: "center", gap: "28px",
-      position: "relative", overflow: "hidden",
+      textAlign: "center", gap: 24, padding: "32px 24px",
     }}>
       <div aria-hidden style={{
         position: "absolute", inset: "-40px",
         backgroundImage: "repeating-linear-gradient(90deg, transparent 0px, transparent 46px, rgba(0,0,0,0.07) 46px, rgba(0,0,0,0.07) 48px)",
-        pointerEvents: "none",
       }} />
-      <div aria-hidden style={{
-        position: "absolute", inset: 0,
-        background: "radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.25) 100%)",
-        pointerEvents: "none",
-      }} />
-
-      {/* Badge double-bezel */}
-      <div style={{ position: "relative", zIndex: 1 }}>
-        <div style={{
-          width: "140px", height: "140px", borderRadius: "50%",
-          background: "rgba(0,0,0,0.18)",
-          boxShadow: ["0 0 0 1px rgba(0,0,0,0.25)", "inset 0 2px 0 rgba(255,255,255,0.15)", "0 8px 32px rgba(0,0,0,0.30)"].join(", "),
-          display: "flex", alignItems: "center", justifyContent: "center", padding: "8px",
-        }}>
-          <div style={{
-            width: "100%", height: "100%", borderRadius: "50%",
-            background: "rgba(0,0,0,0.22)",
-            boxShadow: "inset 0 2px 4px rgba(0,0,0,0.30), 0 0 0 1px rgba(0,0,0,0.20)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            overflow: "hidden",
-          }}>
-            <Image src="/traits/Craque.svg" alt="Votos enviados" width={100} height={100} style={{ objectFit: "contain" }} />
-          </div>
-        </div>
-      </div>
-
-      <div style={{ position: "relative", zIndex: 1 }}>
-        <h1 style={{
-          fontFamily: "var(--font-display)", fontWeight: 900,
-          fontSize: "clamp(52px, 14vw, 72px)", lineHeight: 0.86,
-          letterSpacing: "-0.02em", textTransform: "uppercase",
-          color: "var(--color-on-accent)", marginBottom: "12px",
-        }}>
-          VOTOS<br />ENVIADOS!
-        </h1>
-        <p style={{
-          fontSize: "13px", fontWeight: 600, letterSpacing: "0.12em",
-          textTransform: "uppercase", color: "rgba(22,51,0,0.55)",
-          fontFamily: "var(--font-body)",
-        }}>
-          Voltando para o feed...
-        </p>
-      </div>
-
-      <div style={{
-        position: "relative", zIndex: 1,
-        width: "100%", maxWidth: "320px",
-        background: "rgba(0,0,0,0.22)", borderRadius: "var(--radius-lg)",
-        boxShadow: ["0 0 0 1px rgba(0,0,0,0.25)", "inset 0 1px 0 rgba(255,255,255,0.10)", "0 8px 32px rgba(0,0,0,0.20)"].join(", "),
-        overflow: "hidden",
-        backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+      <h1 style={{
+        fontFamily: "var(--font-display)", fontWeight: 900,
+        fontSize: "clamp(52px, 14vw, 72px)", lineHeight: 0.86,
+        letterSpacing: "-0.02em", textTransform: "uppercase" as const,
+        color: "#0d0d0d", position: "relative",
       }}>
-        {summary.map((item, i) => (
-          <div key={item.label} style={{
-            display: "flex", justifyContent: "space-between", alignItems: "center",
-            padding: "11px 16px",
-            boxShadow: i < summary.length - 1 ? "inset 0 -1px 0 rgba(0,0,0,0.15)" : "none",
-          }}>
-            <span style={{
-              fontFamily: "var(--font-display)", fontWeight: 900,
-              fontSize: "11px", letterSpacing: "0.12em", textTransform: "uppercase",
-              color: item.color, minWidth: "64px",
-            }}>
-              {item.label}
-            </span>
-            <span style={{
-              fontSize: "13px", fontWeight: 600,
-              fontFamily: "var(--font-body)", color: "rgba(255,255,255,0.90)",
-              textAlign: "right",
-            }}>
-              {item.value}
-            </span>
-          </div>
-        ))}
+        VOTOS<br />ENVIADOS!
+      </h1>
+      <p style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 13, color: "rgba(22,51,0,0.55)", letterSpacing: "0.12em", textTransform: "uppercase" as const }}>
+        Voltando para o feed...
+      </p>
+    </div>
+  );
+}
+
+function VNavItem({ icon, label, active, href }: { icon: string; label: string; active?: boolean; href?: string }) {
+  const c = active ? "#000" : "#fff";
+  const w = 28;
+  const iconEl = (() => {
+    if (icon === "house")  return <House  size={w} color={c} weight={active ? "fill" : "regular"} />;
+    if (icon === "check")  return <CheckCircle size={w} color={c} weight={active ? "fill" : "regular"} />;
+    if (icon === "soccer") return <Football size={w} color={c} weight={active ? "fill" : "regular"} />;
+    if (icon === "chart")  return <ChartBar size={w} color={c} weight={active ? "fill" : "regular"} />;
+    return null;
+  })();
+
+  const inner = (
+    <div style={{
+      width: 56, height: 56,
+      borderRadius: active ? 100 : undefined,
+      background: active ? "#9fe870" : undefined,
+      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+      padding: 8,
+    }}>
+      <div style={{ width: 28, display: "flex", flexDirection: "column", alignItems: "center" }}>
+        {iconEl}
+        <span style={{
+          fontFamily: "var(--font-display)", fontWeight: active ? 800 : 600,
+          fontSize: 10, lineHeight: "14px", color: active ? "#000" : "#fff",
+          textAlign: "center", letterSpacing: "-0.2px", whiteSpace: "nowrap", minWidth: "100%",
+        }}>{label}</span>
       </div>
     </div>
   );
+  if (href) return <Link href={href} style={{ textDecoration: "none" }}>{inner}</Link>;
+  return <button style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>{inner}</button>;
 }
