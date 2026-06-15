@@ -24,27 +24,27 @@ export const MASCOTE_POR_CATEGORIA: Record<string, string> = {
   RACUDO: "/ilustracoes/corpo-mole.png",
 };
 
-// Medalhas — SVG sem fundo (chave = nome exato da medalha)
+// Medalhas — badges hexagonais (chave = nome exato da medalha)
 export const MEDALHAS: Record<string, string> = {
-  "Em chamas":         "/conquistas/Em chamas.svg",
-  "Rei do mês":        "/conquistas/Rei do mês.svg",
-  "Veterano":          "/conquistas/Veterano.svg",
-  "Lenda":             "/conquistas/Lenda.svg",
-  "Primeira vitória":  "/conquistas/Primeira vitória.svg",
-  "Invicto":           "/conquistas/Invicto.svg",
-  "Completo":          "/conquistas/Completo.svg",
-  "Troféu Bagre":      "/conquistas/Troféu bagre.svg",
-  "Raçudo do mês":     "/conquistas/Raçudo do mês.svg",
-  "Alma do Grupo":     "/conquistas/Alma do Grupo.svg",
-  "Consistente":       "/conquistas/Consistente.svg",
-  "Irregular":         "/conquistas/Irregular.svg",
-  "Mais presente":     "/conquistas/Mais presente.svg",
-  "Lanterna":          "/conquistas/Lanterna.svg",
-  "Rei absoluto":      "/conquistas/Rei absoluto.svg",
-  "Má fase":           "/conquistas/Má fase.svg",
-  "Só perde":          "/conquistas/Só perde.svg",
-  "Jogador invisível": "/conquistas/Jogador invisível.svg",
-  "Virada de chave":   "/conquistas/Virada de chave.svg",
+  "Em chamas":         "/medalhas/em-chamas.png",
+  "Rei do mês":        "/medalhas/rei-do-mes.png",
+  "Veterano":          "/medalhas/veterano.png",
+  "Lenda":             "/medalhas/lenda.png",
+  "Primeira vitória":  "/medalhas/primeira-vitoria.png",
+  "Invicto":           "/medalhas/invicto.png",
+  "Completo":          "/medalhas/completo.png",
+  "Troféu Bagre":      "/medalhas/trofeu-bagre.png",
+  "Raçudo do mês":     "/medalhas/racudo-do-mes.png",
+  "Alma do Grupo":     "/medalhas/alma-do-grupo.png",
+  "Consistente":       "/medalhas/consistente.png",
+  "Irregular":         "/medalhas/irregular.png",
+  "Mais presente":     "/medalhas/mais-presente.png",
+  "Lanterna":          "/medalhas/lanterna.png",
+  "Rei absoluto":      "/medalhas/rei-absoluto.png",
+  "Má fase":           "/medalhas/ma-fase.png",
+  "Só perde":          "/medalhas/so-perde.png",
+  "Jogador invisível": "/medalhas/jogador-invisivel.png",
+  "Virada de chave":   "/medalhas/virada-de-chave.png",
 };
 
 export function getMedalha(nome: string): string | null {
