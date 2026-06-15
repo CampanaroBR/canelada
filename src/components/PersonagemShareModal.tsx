@@ -26,25 +26,29 @@ const PERSONAGEM_LABELS: Record<string, string> = {
   RACUDO: "Pregueiro",
 };
 
+const SPRING_IN = "cubic-bezier(0.32, 0.72, 0, 1)";
+const SPRING_OUT = "cubic-bezier(0.4, 0, 1, 1)";
+
 export function PersonagemShareModal({ open, onClose, tipo, apelido, data, mascot, qtd = 8, grupoNome }: Props) {
+  const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [animOut, setAnimOut] = useState(false);
 
   useEffect(() => {
-    if (open) { setAnimOut(false); setVisible(true); }
-    else if (visible) {
-      setAnimOut(true);
-      const t = setTimeout(() => setVisible(false), 300);
+    if (open) {
+      setMounted(true);
+      requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)));
+    } else {
+      setVisible(false);
+      const t = setTimeout(() => setMounted(false), 320);
       return () => clearTimeout(t);
     }
-  }, [open, visible]);
+  }, [open]);
 
-  if (!visible) return null;
+  if (!mounted) return null;
 
   const title = PERSONAGEM_TITLES[tipo] ?? tipo;
   const label = PERSONAGEM_LABELS[tipo] ?? tipo;
   const dateStr = new Date(data).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
-  const dateFormatted = `CONCLUÍDO · ${dateStr}`;
 
   async function handleShare() {
     if (typeof navigator !== "undefined" && navigator.share) {
@@ -53,29 +57,47 @@ export function PersonagemShareModal({ open, onClose, tipo, apelido, data, masco
           title: `${apelido} é o ${label}!`,
           text: `${apelido} foi eleito o ${label} do jogo${grupoNome ? ` do ${grupoNome}` : ""}! 🏆 #Canelada`,
         });
-      } catch { /* user cancelled */ }
+      } catch { /* cancelled */ }
     }
   }
 
+  const dur = visible ? "380ms" : "260ms";
+  const ease = visible ? SPRING_IN : SPRING_OUT;
+
   return (
-    <>
-      <style>{`
-        @keyframes share-in  { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes share-out { from { opacity:1; transform:translateY(0); }    to { opacity:0; transform:translateY(40px); } }
-      `}</style>
-
-      <div style={{
+    /* Full-screen backdrop — blurs/dims the page behind */
+    <div
+      style={{
         position: "fixed", inset: 0, zIndex: 100,
-        background: "#0a0e0e",
-        animation: `${animOut ? "share-out" : "share-in"} 320ms cubic-bezier(0.32,0.72,0,1) forwards`,
-        overflow: "hidden",
-      }}>
-
-        {/* Background image — teal gradient */}
+        display: "flex", justifyContent: "center",
+        background: "rgba(0,0,0,0.6)",
+        backdropFilter: "blur(2px)",
+        WebkitBackdropFilter: "blur(2px)",
+        transition: `opacity ${dur} ease`,
+        opacity: visible ? 1 : 0,
+      }}
+      onClick={onClose}
+    >
+      {/* Mobile frame — max 430px, full height, slides up */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        onClick={e => e.stopPropagation()}
+        style={{
+          position: "relative",
+          width: "100%", maxWidth: 430,
+          height: "100%",
+          background: "#0a5c69",
+          overflow: "hidden",
+          transition: `transform ${dur} ${ease}`,
+          transform: visible ? "translateY(0)" : "translateY(100%)",
+          willChange: "transform",
+        }}
+      >
+        {/* Background image — teal gradient with vertical bars */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          aria-hidden
-          alt=""
+          aria-hidden alt=""
           src="/ilustracoes/share-bg.png"
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }}
         />
@@ -83,25 +105,27 @@ export function PersonagemShareModal({ open, onClose, tipo, apelido, data, masco
         {/* Close button — top:70, right:16 */}
         <button
           onClick={onClose}
+          aria-label="Fechar"
           style={{
-            position: "absolute", top: 70, right: 16,
+            position: "absolute", top: 70, right: 16, zIndex: 2,
             width: 48, height: 48,
             background: "#000", border: "1px solid #424242",
-            borderRadius: 24, display: "flex", alignItems: "center", justifyContent: "center",
-            cursor: "pointer", zIndex: 2,
+            borderRadius: 24,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            cursor: "pointer",
           }}
         >
           <X size={16} color="#fff" weight="bold" />
         </button>
 
-        {/* Image container — centered, top:100, 264×264 */}
+        {/* Character — centered, top:100, 264×264 container */}
         <div style={{
           position: "absolute",
           top: 100,
           left: "50%", transform: "translateX(-50%)",
           width: 264, height: 264,
         }}>
-          {/* Glow blob */}
+          {/* Glow */}
           <div aria-hidden style={{
             position: "absolute",
             top: "50%", left: "50%",
@@ -112,39 +136,36 @@ export function PersonagemShareModal({ open, onClose, tipo, apelido, data, masco
             borderRadius: "50%",
             pointerEvents: "none",
           }} />
-          {/* Character — 300×300, top:-18, centered */}
-          <div style={{
-            position: "absolute",
-            top: -18, left: "50%", transform: "translateX(-50%)",
-            width: 300, height: 300,
-          }}>
+          {/* Mascot image — 300×300 centered, top:-18 */}
+          <div style={{ position: "absolute", top: -18, left: "50%", transform: "translateX(-50%)", width: 300, height: 300 }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={mascot}
-              alt={title}
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }}
-            />
+            <img src={mascot} alt={title} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
           </div>
         </div>
 
-        {/* Title — top:390, Barlow Bold 56px */}
-        <p style={{
+        {/* Title — below character, centered */}
+        <div style={{
           position: "absolute",
           top: 390,
-          left: 24, right: 24,
-          margin: 0,
-          fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 56,
-          lineHeight: "64px", letterSpacing: "-2px",
-          color: "#fff", textAlign: "center",
+          left: 0, right: 0,
+          display: "flex", justifyContent: "center",
+          padding: "0 24px",
         }}>
-          {title}
-        </p>
+          <p style={{
+            margin: 0,
+            fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 56,
+            lineHeight: "64px", letterSpacing: "-2px",
+            color: "#fff", textAlign: "center",
+          }}>
+            {title}
+          </p>
+        </div>
 
-        {/* Description — top:512, left:40, width:313, Inter SemiBold 20px */}
+        {/* Description — left:40, top:512 area — uses % so it works at any width */}
         <div style={{
           position: "absolute",
           top: 512,
-          left: 40, width: 313,
+          left: 40, right: 40,
         }}>
           <p style={{
             margin: 0,
@@ -160,20 +181,21 @@ export function PersonagemShareModal({ open, onClose, tipo, apelido, data, masco
           </p>
         </div>
 
-        {/* Share button — top:648, centered */}
+        {/* Share button — centered, top:648 */}
         <div style={{
           position: "absolute",
           top: 648,
-          left: "50%", transform: "translateX(-50%)",
+          left: 0, right: 0,
+          display: "flex", justifyContent: "center",
         }}>
           <button
             onClick={handleShare}
             style={{
-              background: "#171717",
+              background: "#171717", border: "none",
               borderRadius: 22, height: 64,
               padding: "16px 24px",
               display: "flex", alignItems: "center", gap: 8,
-              cursor: "pointer", border: "none",
+              cursor: "pointer",
               boxShadow: "4px 8px 8px 4px rgba(0,0,0,0.08)",
               whiteSpace: "nowrap",
             }}
@@ -183,22 +205,24 @@ export function PersonagemShareModal({ open, onClose, tipo, apelido, data, masco
           </button>
         </div>
 
-        {/* Footer — bottom:0, border-top #42bace */}
+        {/* Footer — pinned to bottom */}
         <div style={{
-          position: "absolute", bottom: 0, left: 0, right: 0, height: 56,
+          position: "absolute", bottom: 0, left: 0, right: 0,
+          height: 56,
           borderTop: "1px solid #42bace",
           display: "flex", alignItems: "center", justifyContent: "center",
-          padding: "16px 14px",
+          padding: "0 14px",
+          paddingBottom: "env(safe-area-inset-bottom, 0px)",
         }}>
           <span style={{
             fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12,
             color: "#fff", letterSpacing: "0.5px", textTransform: "uppercase",
             whiteSpace: "nowrap",
           }}>
-            {dateFormatted}
+            CONCLUÍDO · {dateStr}
           </span>
         </div>
       </div>
-    </>
+    </div>
   );
 }
