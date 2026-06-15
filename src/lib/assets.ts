@@ -17,34 +17,34 @@ export const ILUSTRACOES: Record<string, string> = {
   polvo:         "/ilustracoes/polvo.png",
 };
 
-// Mapa de categoria de voto → ilustração do personagem principal
+// Mapa de categoria de voto → ilustração do personagem principal (SVG sem fundo)
 export const MASCOTE_POR_CATEGORIA: Record<string, string> = {
-  MVP:    "/ilustracoes/tubarao.png",   // Matador
-  BAGRE:  "/ilustracoes/bagre.png",     // Bagre da Noite
-  RACUDO: "/ilustracoes/corpo-mole.png", // Pregueiro/Raçudo
+  MVP:    "/traits/Matador.svg",
+  BAGRE:  "/traits/Bagre.svg",
+  RACUDO: "/traits/Corpo_mole.svg",
 };
 
-// Medalhas (slug = nome do Trait no banco)
+// Medalhas (slug = nome do Trait no banco) — SVG sem fundo
 export const MEDALHAS: Record<string, string> = {
-  "Em chamas":        "/medalhas/em-chamas.png",
-  "Rei do mês":       "/medalhas/rei-do-mes.png",
-  "Veterano":         "/medalhas/veterano.png",
-  "Lenda":            "/medalhas/lenda.png",
-  "Primeira vitória": "/medalhas/primeira-vitoria.png",
-  "Invicto":          "/medalhas/invicto.png",
-  "Completo":         "/medalhas/completo.png",
-  "Troféu Bagre":     "/medalhas/trofeu-bagre.png",
-  "Raçudo do mês":    "/medalhas/racudo-do-mes.png",
-  "Alma do Grupo":    "/medalhas/alma-do-grupo.png",
-  "Consistente":      "/medalhas/consistente.png",
-  "Irregular":        "/medalhas/irregular.png",
-  "Mais presente":    "/medalhas/mais-presente.png",
-  "Lanterna":         "/medalhas/lanterna.png",
-  "Rei absoluto":     "/medalhas/rei-absoluto.png",
-  "Má fase":          "/medalhas/ma-fase.png",
-  "Só perde":         "/medalhas/so-perde.png",
-  "Jogador invisível":"/medalhas/jogador-invisivel.png",
-  "Virada de chave":  "/medalhas/virada-de-chave.png",
+  "Em chamas":         "/conquistas/em-chamas.svg",
+  "Rei do mês":        "/conquistas/rei-do-mes.svg",
+  "Veterano":          "/conquistas/Veterano.svg",
+  "Lenda":             "/conquistas/Lenda.svg",
+  "Primeira vitória":  "/conquistas/primeira-vitoria.svg",
+  "Invicto":           "/conquistas/Invicto.svg",
+  "Completo":          "/conquistas/Completo.svg",
+  "Troféu Bagre":      "/conquistas/trofeu-bagre.svg",
+  "Raçudo do mês":     "/conquistas/racudo-do-mes.svg",
+  "Alma do Grupo":     "/conquistas/alma-do-grupo.svg",
+  "Consistente":       "/conquistas/Consistente.svg",
+  "Irregular":         "/conquistas/Irregular.svg",
+  "Mais presente":     "/conquistas/mais-presente.svg",
+  "Lanterna":          "/conquistas/Lanterna.svg",
+  "Rei absoluto":      "/conquistas/rei-absoluto.svg",
+  "Má fase":           "/conquistas/ma-fase.svg",
+  "Só perde":          "/conquistas/so-perde.svg",
+  "Jogador invisível": "/conquistas/jogador-invisivel.svg",
+  "Virada de chave":   "/conquistas/virada-de-chave.svg",
 };
 
 export function getMedalha(traitNome: string): string {

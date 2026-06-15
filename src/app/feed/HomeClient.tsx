@@ -35,9 +35,9 @@ interface Props {
 }
 
 const PERSONAGEM_MASCOTS: Record<string, string> = {
-  MVP:    "/ilustracoes/tubarao.png",
-  BAGRE:  "/ilustracoes/bagre.png",
-  RACUDO: "/ilustracoes/corpo-mole.png",
+  MVP:    "/traits/Matador.svg",
+  BAGRE:  "/traits/Bagre.svg",
+  RACUDO: "/traits/Corpo_mole.svg",
 };
 
 const PERSONAGEM_TITLES: Record<string, string> = {
@@ -243,7 +243,7 @@ export function HomeClient({
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {personagens.map((p, i) => {
                   const title = PERSONAGEM_TITLES[p.tipo] ?? p.tipo;
-                  const mascot = PERSONAGEM_MASCOTS[p.tipo] ?? "/ilustracoes/corpo-mole.png";
+                  const mascot = PERSONAGEM_MASCOTS[p.tipo] ?? "/traits/Corpo_mole.svg";
                   const nome = p.texto.split(" ").slice(0, 2).join(" ");
                   const dateStr = new Date(p.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
                   const qtd = 7 - i;
@@ -273,7 +273,7 @@ export function HomeClient({
                       </div>
                       <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "flex-end", alignSelf: "stretch" }}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img alt={title} src={mascot} style={{ width: 117, height: 117, objectFit: "cover", flexShrink: 0, mixBlendMode: "screen" }} />
+                        <img alt={title} src={mascot} style={{ width: 117, height: 117, objectFit: "contain", flexShrink: 0 }} />
                       </div>
                     </div>
                   );
@@ -326,7 +326,7 @@ export function HomeClient({
                         </div>
                         <div style={{ width: 72, height: 72, overflow: "hidden", flexShrink: 0 }}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img alt={c.traitNome} src={badge} style={{ width: 72, height: 72, mixBlendMode: "screen" }} />
+                          <img alt={c.traitNome} src={badge} style={{ width: 72, height: 72, objectFit: "contain" }} />
                         </div>
                       </div>
                     </div>
@@ -396,7 +396,7 @@ export function HomeClient({
           tipo={personagens[sharePersonagem].tipo}
           texto={personagens[sharePersonagem].texto}
           data={personagens[sharePersonagem].data}
-          mascot={PERSONAGEM_MASCOTS[personagens[sharePersonagem].tipo] ?? "/ilustracoes/corpo-mole.png"}
+          mascot={PERSONAGEM_MASCOTS[personagens[sharePersonagem].tipo] ?? "/traits/Corpo_mole.svg"}
           qtd={7 - sharePersonagem}
         />
       )}
