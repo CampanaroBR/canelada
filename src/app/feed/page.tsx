@@ -46,7 +46,7 @@ export default async function FeedPage() {
       where: { jogador: { grupoId } },
       include: {
         jogador: { select: { apelido: true } },
-        trait: { select: { nome: true, emoji: true } },
+        trait: { select: { nome: true, emoji: true, descricao: true } },
       },
       orderBy: { updatedAt: "desc" },
       take: 3,
