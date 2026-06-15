@@ -308,7 +308,7 @@ export function PersonagemShareModal({
             {/* Upper group: illustration + title + description */}
             <div style={{
               display: "flex", flexDirection: "column",
-              alignItems: "center", gap: 32,
+              alignItems: "center", gap: 16,
               width: 313,
             }}>
               {/* Illustration + title */}
