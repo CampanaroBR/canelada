@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 type Jogador = { id: string; apelido: string; foto: string | null };
 type MaisVotado = { apelido: string; qtd: number; categoria: string };
 type Personagem = { tipo: string; apelido: string; texto: string; data: Date };
-type Conquista = { apelido: string; traitNome: string; traitEmoji: string | null; traitDesc: string | null; data: Date };
+type Conquista = { apelido: string; traitSlug: string; traitNome: string; traitEmoji: string | null; traitDesc: string | null; data: Date };
 
 export default async function FeedPage() {
   const session = await auth();
@@ -74,6 +74,7 @@ export default async function FeedPage() {
 
   const conquistas: Conquista[] = recentConquistas.map(c => ({
     apelido: c.jogador.apelido,
+    traitSlug: c.traitSlug,
     traitNome: c.trait.nome,
     traitEmoji: c.trait.emoji,
     traitDesc: c.trait.descricao ?? null,

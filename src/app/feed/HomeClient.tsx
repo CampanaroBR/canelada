@@ -11,7 +11,7 @@ import {
 import { BottomsheetMaisVotados } from "@/components/BottomsheetMaisVotados";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
 import { PersonagemShareModal } from "@/components/PersonagemShareModal";
-import { getMedalha, MEDALHAS } from "@/lib/assets";
+import { getMedalha, MEDALHAS, TRAIT_SVG } from "@/lib/assets";
 
 const CAMPO      = "/campo.png";
 const LOGO       = "/logo.png";
@@ -20,7 +20,7 @@ const TSHIRT_GK  = "/tshirt-alt.svg";
 
 type MaisVotado = { apelido: string; qtd: number; categoria: string };
 type Personagem  = { tipo: string; apelido: string; texto: string; data: Date };
-type Conquista   = { apelido: string; traitNome: string; traitEmoji: string | null; traitDesc: string | null; data: Date };
+type Conquista   = { apelido: string; traitSlug: string; traitNome: string; traitEmoji: string | null; traitDesc: string | null; data: Date };
 
 interface Props {
   IMG: Record<string, string>;
@@ -413,7 +413,7 @@ export function HomeClient({
             {/* Achievement cards */}
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {conquistas.map((c, i) => {
-                const medalSvg = getMedalha(c.traitNome);
+                const medalSvg = getMedalha(c.traitNome) ?? TRAIT_SVG[c.traitSlug] ?? null;
                 return (
                   <div key={i} style={{ background: "#090909", border: "1px solid #2e2e2e", borderRadius: 16, padding: "9px 17px", display: "flex", alignItems: "flex-start" }}>
                     {/* flex-[1_0_0] min-w-px wrapper */}
