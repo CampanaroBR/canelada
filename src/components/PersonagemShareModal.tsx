@@ -97,6 +97,7 @@ async function buildShareJpeg(
   const IMGSIZE = 300;
   const TITLEW  = 300;
   const DESCW   = 313;
+  const SCALE   = 2;   // 2x for sharp JPEG
 
   // Pre-measure title lines (Barlow Condensed Bold 56px)
   const tmpCanvas = document.createElement("canvas");
@@ -117,9 +118,10 @@ async function buildShareJpeg(
   })();
 
   const canvas = document.createElement("canvas");
-  canvas.width  = W;
-  canvas.height = H;
+  canvas.width  = W * SCALE;
+  canvas.height = H * SCALE;
   const ctx = canvas.getContext("2d")!;
+  ctx.scale(SCALE, SCALE);;
 
   // 1. Background (cover-crop to fill 393×848)
   const scale = Math.max(W / bgImg.width, H / bgImg.height);
@@ -147,7 +149,7 @@ async function buildShareJpeg(
   let titleY = TOP + IMGSIZE + 8;
   for (const line of titleLines) {
     ctx.fillText(line, W / 2, titleY);
-    titleY += 64;
+    titleY += 54;
   }
 
   // 5. Description (Inter SemiBold 20px, mixed colors)
@@ -280,73 +282,70 @@ export function PersonagemShareModal({
           </button>
         </div>
 
-        {/* ── Row 2: Content + share button + footer ── */}
+        {/* ── Row 2: Content (scrollable) + share button + footer (fixed) ── */}
         <div style={{
           position: "relative", zIndex: 1,
           flex: 1, minHeight: 0,
           width: "100%",
           display: "flex", flexDirection: "column",
-          justifyContent: "space-between",
           alignItems: "center",
         }}>
-          {/* Content group: illustration → title (gap 8) → description (gap 64) → share button (gap 58) */}
+          {/* Scrollable content area */}
           <div style={{
+            flex: 1, minHeight: 0,
+            width: "100%",
             display: "flex", flexDirection: "column",
-            alignItems: "center", gap: 58,
-            width: 313,
-            paddingTop: 0,
+            alignItems: "center", justifyContent: "center",
+            gap: 32, paddingBottom: 16,
+            overflowY: "auto",
           }}>
-            {/* illustration + title + description */}
+            {/* Illustration 300×300 + title (gap 8) */}
             <div style={{
               display: "flex", flexDirection: "column",
-              alignItems: "center", gap: 64, width: "100%",
+              alignItems: "center", gap: 8, width: 300,
             }}>
-              {/* Illustration 300×300 + title (gap 8) */}
-              <div style={{
-                display: "flex", flexDirection: "column",
-                alignItems: "center", gap: 8, width: 300,
-              }}>
-                <div style={{ position: "relative", width: 300, height: 300, flexShrink: 0 }}>
-                  {/* Glow */}
-                  <div aria-hidden style={{
-                    position: "absolute", top: "50%", left: "50%",
-                    transform: "translate(-50%,-50%)",
-                    width: 289, height: 296,
-                    background: "#0a5c69", filter: "blur(88.6px)",
-                    borderRadius: "50%", pointerEvents: "none",
-                  }} />
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={mascot} alt={title} style={{
-                    position: "absolute", inset: 0,
-                    width: "100%", height: "100%", objectFit: "contain",
-                  }} />
-                </div>
-                {/* Title */}
-                <p style={{
-                  margin: 0, width: 300,
-                  fontFamily: "var(--font-display)", fontWeight: 700,
-                  fontSize: 56, lineHeight: "64px", letterSpacing: "-2px",
-                  color: "#fff", textAlign: "center",
-                }}>
-                  {title}
-                </p>
+              <div style={{ position: "relative", width: 300, height: 300, flexShrink: 0 }}>
+                {/* Glow */}
+                <div aria-hidden style={{
+                  position: "absolute", top: "50%", left: "50%",
+                  transform: "translate(-50%,-50%)",
+                  width: 289, height: 296,
+                  background: "#0a5c69", filter: "blur(88.6px)",
+                  borderRadius: "50%", pointerEvents: "none",
+                }} />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={mascot} alt={title} style={{
+                  position: "absolute", inset: 0,
+                  width: "100%", height: "100%", objectFit: "contain",
+                }} />
               </div>
-
-              {/* Description */}
+              {/* Title */}
               <p style={{
-                margin: 0, width: 313,
-                fontFamily: "var(--font-body)", fontWeight: 600,
-                fontSize: 20, lineHeight: "24px",
-                color: "#fff", letterSpacing: "-1px",
+                margin: 0, width: 300,
+                fontFamily: "var(--font-display)", fontWeight: 700,
+                fontSize: 56, lineHeight: "54px", letterSpacing: "-2px",
+                color: "#fff", textAlign: "center",
               }}>
-                <span style={{ color: "#9fe870" }}>{apelido}</span>
-                {" foi eleito o "}
-                <span style={{ color: "#9fe870" }}>{label}</span>
-                {` do jogo por ${qtd} jogadores${grupoNome ? ` do ${grupoNome}` : ""}.`}
+                {title}
               </p>
             </div>
 
-            {/* Share button */}
+            {/* Description */}
+            <p style={{
+              margin: 0, width: 313,
+              fontFamily: "var(--font-body)", fontWeight: 600,
+              fontSize: 20, lineHeight: "24px",
+              color: "#fff", letterSpacing: "-1px",
+            }}>
+              <span style={{ color: "#9fe870" }}>{apelido}</span>
+              {" foi eleito o "}
+              <span style={{ color: "#9fe870" }}>{label}</span>
+              {` do jogo por ${qtd} jogadores${grupoNome ? ` do ${grupoNome}` : ""}.`}
+            </p>
+          </div>
+
+          {/* Share button — always visible above footer */}
+          <div style={{ flexShrink: 0, paddingBottom: 16 }}>
             <button
               onClick={handleShare}
               disabled={sharing}
@@ -372,7 +371,7 @@ export function PersonagemShareModal({
             </button>
           </div>
 
-          {/* Footer */}
+          {/* Footer — always at bottom */}
           <div style={{
             flexShrink: 0, width: "100%", height: 56,
             borderTop: "1px solid #42bace",
