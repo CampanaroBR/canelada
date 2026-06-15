@@ -82,7 +82,7 @@ export function HomeClient({
       {/* ── 1. TEAL HEADER ── */}
       <div style={{
         background: "#1998ad",
-        paddingTop: "calc(env(safe-area-inset-top, 0px) + 64px)",
+        paddingTop: "calc(env(safe-area-inset-top, 0px) + 80px)",
         paddingBottom: 20,
         paddingLeft: 16,
         paddingRight: 16,
