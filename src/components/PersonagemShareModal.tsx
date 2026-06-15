@@ -164,9 +164,7 @@ export function PersonagemShareModal({ open, onClose, tipo, apelido, data, masco
             <span style={{ color: "#9fe870" }}>{apelido}</span>
             {" foi eleito o "}
             <span style={{ color: "#9fe870" }}>{label}</span>
-            {` do jogo por ${qtd} jogadores`}
-            {grupoNome ? <> do <span style={{ color: "#9fe870" }}>{grupoNome}</span></> : ""}
-            {"."}
+            {` do jogo por ${qtd} jogadores${grupoNome ? ` do ${grupoNome}` : ""}.`}
           </p>
         </div>
 
