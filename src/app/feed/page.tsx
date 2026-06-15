@@ -86,7 +86,7 @@ export default async function FeedPage() {
     : false;
 
   const dataRodada = rodadaAtiva
-    ? new Date(rodadaAtiva.data).toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })
+    ? new Date(rodadaAtiva.data).toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short" })
     : null;
 
   // Last 3 rodada dates for filter pills

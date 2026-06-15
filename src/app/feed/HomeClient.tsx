@@ -11,7 +11,6 @@ import {
 import { BottomsheetMaisVotados } from "@/components/BottomsheetMaisVotados";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
 import { PersonagemShareModal } from "@/components/PersonagemShareModal";
-import { getMedalha } from "@/lib/assets";
 
 const CAMPO  = "/campo.png";
 const LOGO   = "/logo.png";
@@ -46,12 +45,6 @@ const PERSONAGEM_TITLES: Record<string, string> = {
   RACUDO: "PREGUEIRO",
 };
 
-// Fallback badge images when conquista traitNome isn't recognized
-const BADGE_FALLBACKS = [
-  "/medalhas/em-chamas.png",
-  "/medalhas/virada-de-chave.png",
-  "/medalhas/ma-fase.png",
-];
 
 export function HomeClient({
   rodadaId, dataRodada, jaVotou,
@@ -78,7 +71,7 @@ export function HomeClient({
         {/* ── 1. TEAL HEADER ── */}
         <div style={{
           background: "#1998ad",
-          paddingTop: 130,
+          paddingTop: 76,
           paddingBottom: 24,
           paddingLeft: 16,
           paddingRight: 16,
@@ -88,7 +81,7 @@ export function HomeClient({
           alignItems: "center",
         }}>
           {/* White outer card */}
-          <div style={{ background: "#fff", borderRadius: 48, padding: 12, flex: 1, overflow: "hidden" }}>
+          <div style={{ background: "#fff", borderRadius: 48, padding: 12, flex: 1 }}>
             {/* Campo inner card */}
             <div style={{ position: "relative", border: "1px solid #777575", borderRadius: 40, overflow: "hidden", padding: "16px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -111,11 +104,11 @@ export function HomeClient({
                 </div>
                 {dataRodada && (
                   <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end", flexShrink: 0 }}>
-                    <div style={{ background: "#1e1e1e", padding: "4px 8px", borderRadius: 48, display: "flex", alignItems: "center", gap: 4, overflow: "hidden" }}>
+                    <div style={{ background: "#1e1e1e", padding: "4px 8px", borderRadius: 48, display: "flex", alignItems: "center", gap: 4 }}>
                       <CalendarBlank size={16} color="#9fe870" weight="bold" />
                       <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "20px", color: "#9fe870", letterSpacing: "-0.48px", whiteSpace: "nowrap" }}>{dataRodada}</span>
                     </div>
-                    <div style={{ background: "#1e1e1e", padding: "4px 8px", borderRadius: 48, display: "flex", alignItems: "center", gap: 4, overflow: "hidden" }}>
+                    <div style={{ background: "#1e1e1e", padding: "4px 8px", borderRadius: 48, display: "flex", alignItems: "center", gap: 4 }}>
                       <Alarm size={16} color="#fff" weight="bold" />
                       <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "20px", color: "#fff", letterSpacing: "-0.48px", whiteSpace: "nowrap" }}>20:00</span>
                     </div>
@@ -310,53 +303,43 @@ export function HomeClient({
                 </div>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {conquistas.map((c, i) => {
-                  const badge = getMedalha(c.traitNome) ?? BADGE_FALLBACKS[i % BADGE_FALLBACKS.length];
-                  const subtitles = ["3x seguido como Craque/Matador", "Do pior para o melhor em 1 jogo", "3x seguido como pior personagem"];
-                  return (
-                    <div key={i} style={{ background: "#000", border: "1px solid #2e2e2e", borderRadius: 16, padding: "9px 17px" }}>
-                      <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-                        <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
-                          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 10, lineHeight: "15px", color: "#a1a1a1", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>HOJE · NOVA MEDALHA</p>
-                          <p style={{ margin: 0 }}>
-                            <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#9fe870" }}>{c.apelido}</span>
-                            <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>{` destravou "${c.traitNome}!"`}</span>
-                          </p>
-                          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#555" }}>{subtitles[i % subtitles.length]}</p>
-                        </div>
-                        <div style={{ width: 72, height: 72, flexShrink: 0 }}>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img alt={c.traitNome} src={badge} style={{ width: 72, height: 72, objectFit: "contain" }} />
-                        </div>
+                {conquistas.map((c, i) => (
+                  <div key={i} style={{ background: "#000", border: "1px solid #2e2e2e", borderRadius: 16, padding: "9px 17px" }}>
+                    <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1 }}>
+                        <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 10, lineHeight: "15px", color: "#a1a1a1", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>HOJE · NOVA CONQUISTA</p>
+                        <p style={{ margin: 0 }}>
+                          <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#9fe870" }}>{c.apelido}</span>
+                          <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>{` é o ${c.traitNome}!`}</span>
+                        </p>
+                      </div>
+                      <div style={{ width: 56, height: 56, flexShrink: 0, background: "#1e1e1e", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <span style={{ fontSize: 28, lineHeight: 1 }}>{c.traitEmoji ?? "🏅"}</span>
                       </div>
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             </div>
           )}
         </div>
       </div>
 
-      {/* ── TOPBAR (fixed overlay) — matches Figma 126:326 / 126:337 ── */}
+      {/* ── TOPBAR (fixed overlay) ── */}
       <div style={{
         position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)",
         width: "min(100%, 430px)", zIndex: 30,
+        paddingTop: "env(safe-area-inset-top, 0px)",
         background: "rgba(255,255,255,0.08)",
         backdropFilter: "blur(50px)", WebkitBackdropFilter: "blur(50px)",
         borderBottom: "1px solid rgba(84,84,86,0.34)",
       }}>
-        {/* Status bar area */}
-        <div style={{ height: 54 }} />
-        {/* Topbar row */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 8px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 8px" }}>
           <button style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
             <List size={24} color="#fff" weight="bold" />
           </button>
-          <div style={{ display: "flex", alignItems: "center", alignSelf: "stretch", padding: "16px 0" }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img alt="Canelada" src={LOGO} style={{ height: 32, width: 32, objectFit: "contain" }} />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img alt="Canelada" src={LOGO} style={{ height: 48, width: 48, objectFit: "contain" }} />
           <button style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
             <Bell size={24} color="#fff" weight="bold" />
           </button>

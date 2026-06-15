@@ -130,12 +130,11 @@ export function PersonagemShareModal({ open, onClose, tipo, texto, data, mascot,
         <p style={{
           position: "absolute",
           top: "45.8%",
-          left: "50%", transform: "translateX(-50%)",
+          left: 24, right: 24,
           margin: 0,
           fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 56,
-          lineHeight: "64px", letterSpacing: "-2px",
+          lineHeight: "56px", letterSpacing: "-2px",
           color: "#fff", textAlign: "center",
-          whiteSpace: "nowrap",
         }}>
           {title}
         </p>
