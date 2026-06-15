@@ -76,7 +76,7 @@ export function HomeClient({
       flexDirection: "column",
       gap: 16,
       alignItems: "center",
-      paddingBottom: "calc(80px + env(safe-area-inset-bottom, 0px))",
+      paddingBottom: "calc(96px + env(safe-area-inset-bottom, 0px))",
       position: "relative",
     }}>
 
