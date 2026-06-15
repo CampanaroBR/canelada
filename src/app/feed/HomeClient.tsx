@@ -11,7 +11,7 @@ import {
 import { BottomsheetMaisVotados } from "@/components/BottomsheetMaisVotados";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
 import { PersonagemShareModal } from "@/components/PersonagemShareModal";
-import { getMedalha } from "@/lib/assets";
+import { getMedalha, MEDALHAS } from "@/lib/assets";
 
 const CAMPO      = "/campo.png";
 const LOGO       = "/logo.png";
@@ -472,6 +472,21 @@ export function HomeClient({
                 );
               })}
             </div>
+
+            {/* Grade de todas as medalhas — Figma 185:79 — 5 colunas */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(0, 1fr))", gap: 8 }}>
+              {Object.entries(MEDALHAS).map(([nome, src]) => (
+                <div key={nome} style={{ position: "relative", overflow: "clip", aspectRatio: "1/1" }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    alt={nome}
+                    src={src}
+                    style={{ position: "absolute", display: "block", inset: 0, width: "100%", height: "100%", maxWidth: "none" }}
+                  />
+                </div>
+              ))}
+            </div>
+
           </div>
         )}
       </div>
