@@ -72,8 +72,8 @@ function drawRichText(
 }
 
 /**
- * Renders the share card (Figma 194-229) on a canvas and returns a JPEG Blob.
- * No UI chrome — only background, glow, mascot, title, description.
+ * Renders the share card (Figma 194-267) on a canvas and returns a JPEG Blob.
+ * Fixed 393×848px — no UI chrome, only background + glow + mascot + title + description.
  */
 async function buildShareJpeg(
   mascotSrc: string,
@@ -83,22 +83,22 @@ async function buildShareJpeg(
   qtd: number,
   grupoNome?: string,
 ): Promise<Blob> {
-  const W = 393;
+  // Exact dimensions from Figma node 194-267
+  const W = 393, H = 848;
 
-  // Load assets in parallel
   const [bgImg, mascotImg] = await Promise.all([
     loadImg("/ilustracoes/share-bg.png"),
     loadImg(mascotSrc),
   ]);
   await document.fonts.ready;
 
-  // ── Layout constants (from Figma 194-229) ──
-  const TOP    = 78;   // container starts at y:78
+  // Layout constants
+  const TOP     = 40;   // character starts at y:40
   const IMGSIZE = 300;
   const TITLEW  = 300;
   const DESCW   = 313;
 
-  // Measure title height (may wrap)
+  // Pre-measure title lines (Barlow Condensed Bold 56px)
   const tmpCanvas = document.createElement("canvas");
   const tmpCtx    = tmpCanvas.getContext("2d")!;
   tmpCtx.font     = "bold 56px 'Barlow Condensed', sans-serif";
@@ -115,32 +115,13 @@ async function buildShareJpeg(
     if (line.trim()) lines.push(line.trim());
     return lines;
   })();
-  const TITLEH = titleLines.length * 64;
-
-  // Measure description height
-  tmpCtx.font = "600 20px 'Inter', sans-serif";
-  const descText = `${apelido} foi eleito o ${label} do jogo por ${qtd} jogadores${grupoNome ? ` do ${grupoNome}` : ""}.`;
-  const descLines = (() => {
-    const words = descText.split(" ");
-    let count = 1, line = "";
-    for (const w of words) {
-      const test = line + w + " ";
-      if (tmpCtx.measureText(test).width > DESCW && line) { count++; line = w + " "; }
-      else { line = test; }
-    }
-    return count;
-  })();
-  const DESCH = descLines * 26;
-
-  // Total canvas height: top margin + image + gap + title + gap + desc + bottom padding
-  const H = TOP + IMGSIZE + 8 + TITLEH + 64 + DESCH + 64;
 
   const canvas = document.createElement("canvas");
   canvas.width  = W;
   canvas.height = H;
   const ctx = canvas.getContext("2d")!;
 
-  // 1. Background (cover crop)
+  // 1. Background (cover-crop to fill 393×848)
   const scale = Math.max(W / bgImg.width, H / bgImg.height);
   const bw = bgImg.width * scale, bh = bgImg.height * scale;
   ctx.drawImage(bgImg, (W - bw) / 2, (H - bh) / 2, bw, bh);
