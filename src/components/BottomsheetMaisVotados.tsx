@@ -191,7 +191,7 @@ export function BottomsheetMaisVotados({
                 <div
                   key={entry.rank}
                   style={{
-                    background: "#000", borderRadius: 14,
+                    background: "#090909", border: "1px solid #2e2e2e", borderRadius: 14,
                     paddingLeft: 24, paddingRight: 8,
                     paddingTop: 8, paddingBottom: 8,
                   }}

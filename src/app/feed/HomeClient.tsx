@@ -272,7 +272,7 @@ export function HomeClient({
             {/* Leaderboard rows */}
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {maisVotados.slice(0, 3).map((v, i) => (
-                <div key={i} style={{ background: "#090909", borderRadius: 14, paddingLeft: 24, paddingRight: 8, paddingTop: 8, paddingBottom: 8 }}>
+                <div key={i} style={{ background: "#090909", border: "1px solid #2e2e2e", borderRadius: 14, paddingLeft: 24, paddingRight: 8, paddingTop: 8, paddingBottom: 8 }}>
                   <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
                     <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 20, lineHeight: "18px", color: "#fff", whiteSpace: "nowrap", flexShrink: 0 }}>{i + 1}.</span>
                     <div style={{ background: "#1b1b1b", flex: 1, height: 52, borderRadius: 12, padding: 8, display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
