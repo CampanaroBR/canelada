@@ -5,27 +5,32 @@ import { signIn } from "next-auth/react";
 export default function LoginPage() {
   return (
     <div style={{
-      position: "relative", width: "100%", minHeight: "100dvh",
+      position: "relative",
+      width: "100%", height: "100dvh",
       background: "#0a0f10", overflow: "hidden",
-      display: "flex", alignItems: "flex-start",
-      paddingTop: 62, paddingBottom: 24, paddingLeft: 24, paddingRight: 24,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      paddingTop: 62, paddingBottom: 24,
+      paddingLeft: 16, paddingRight: 16,
+      boxSizing: "border-box",
     }}>
-      {/* Background image */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        alt="" aria-hidden src="/login-bg.png"
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }}
-      />
+      {/* Background */}
+      <div aria-hidden style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+        <div style={{ position: "absolute", inset: 0, background: "#0a0f10" }} />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img alt="" style={{ position: "absolute", width: "100%", height: "100%", objectFit: "cover" }} src="/login-bg.png" />
+      </div>
 
-      {/* Main container */}
+      {/* Main container — flex-1, centered */}
       <div style={{
-        position: "relative", display: "flex", flexDirection: "column",
-        alignItems: "center", gap: 22, width: 345,
+        position: "relative",
+        flex: 1, minWidth: 0,
+        display: "flex", flexDirection: "column",
+        alignItems: "center", gap: 22,
       }}>
 
-        {/* Logo area: 324px tall, blur + logo + title */}
+        {/* Logo area 316×324 */}
         <div style={{ position: "relative", width: 316, height: 324, flexShrink: 0 }}>
-          {/* Blur circle behind logo */}
+          {/* Blur circle */}
           <div aria-hidden style={{
             position: "absolute", left: "50%", top: "50%",
             transform: "translate(-50%, -50%)",
@@ -34,7 +39,7 @@ export default function LoginPage() {
             borderRadius: "50%", pointerEvents: "none",
           }} />
 
-          {/* Logo + brand + tagline */}
+          {/* Title: logo + brand + tagline */}
           <div style={{
             position: "absolute", left: 38, top: 48, width: 246,
             display: "flex", flexDirection: "column", alignItems: "center",
@@ -42,14 +47,15 @@ export default function LoginPage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               alt="Canelada" src="/logo.png"
-              style={{ width: 116, height: 116, objectFit: "contain", marginBottom: -8 }}
+              style={{ width: 116, height: 116, objectFit: "contain", marginBottom: -8, display: "block" }}
             />
             <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center", width: "100%" }}>
               <p style={{
                 margin: 0,
                 fontFamily: "var(--font-display)", fontWeight: 900,
                 fontSize: 28, lineHeight: "36px",
-                color: "#fff", textAlign: "center", letterSpacing: "-0.5px", whiteSpace: "nowrap",
+                color: "#fff", textAlign: "center",
+                letterSpacing: "-0.5px", whiteSpace: "nowrap",
               }}>
                 Canelada
               </p>
@@ -68,8 +74,8 @@ export default function LoginPage() {
         {/* Auth section */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%" }}>
 
-          {/* Buttons */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {/* Auth buttons */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
 
             {/* Google */}
             <button
@@ -86,7 +92,8 @@ export default function LoginPage() {
                 <img src="/google-icon.svg" alt="" aria-hidden width={20} height={20} />
                 <span style={{
                   fontFamily: "var(--font-display)", fontWeight: 700,
-                  fontSize: 16, lineHeight: "20px", color: "#111", whiteSpace: "nowrap",
+                  fontSize: 16, lineHeight: "20px",
+                  color: "#111", whiteSpace: "nowrap",
                 }}>
                   Continuar com Google
                 </span>
@@ -103,12 +110,13 @@ export default function LoginPage() {
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/apple-icon.svg" alt="" aria-hidden width={20} height={20} />
                 <span style={{
                   fontFamily: "var(--font-display)", fontWeight: 700,
-                  fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap",
+                  fontSize: 16, lineHeight: "20px",
+                  color: "#fff", whiteSpace: "nowrap",
                 }}>
                   Continuar com Apple
                 </span>
@@ -125,12 +133,13 @@ export default function LoginPage() {
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/phone-icon.svg" alt="" aria-hidden width={20} height={20} />
                 <span style={{
                   fontFamily: "var(--font-display)", fontWeight: 700,
-                  fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap",
+                  fontSize: 16, lineHeight: "20px",
+                  color: "#fff", whiteSpace: "nowrap",
                 }}>
                   Entrar com telefone
                 </span>
@@ -157,12 +166,13 @@ export default function LoginPage() {
             <p style={{
               margin: 0,
               fontFamily: "var(--font-display)", fontWeight: 700,
-              fontSize: 16, lineHeight: "19.5px", color: "#9fe870", whiteSpace: "nowrap",
+              fontSize: 16, lineHeight: "19.5px",
+              color: "#9fe870", whiteSpace: "nowrap",
             }}>
               ⚽ Novo no App do Baba?
             </p>
             <p style={{
-              margin: 0, marginTop: 4,
+              margin: 0, paddingTop: 4,
               fontFamily: "var(--font-body)", fontWeight: 400,
               fontSize: 14, lineHeight: "18px", color: "#666",
             }}>
@@ -175,7 +185,8 @@ export default function LoginPage() {
             <p style={{
               margin: 0,
               fontFamily: "var(--font-body)", fontWeight: 400,
-              fontSize: 11, lineHeight: "16px", color: "#666", textAlign: "center",
+              fontSize: 11, lineHeight: "16px",
+              color: "#666", textAlign: "center",
             }}>
               Ao continuar você aceita os{" "}
               <strong style={{ fontWeight: 700, color: "#666" }}>Termos de Uso</strong>
