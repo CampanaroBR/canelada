@@ -400,11 +400,11 @@ export function HomeClient({
 
             {/* Stats bar */}
             <div style={{ background: "#111", border: "1px solid #1e1e1e", borderRadius: 12, padding: "9px 13px", display: "flex", gap: 12, alignItems: "center" }}>
-              <span style={{ fontSize: 18, lineHeight: "27px", flexShrink: 0 }}>🏅</span>
+              <span style={{ fontFamily: "var(--font-body)", fontSize: 18, lineHeight: "27px", letterSpacing: "-0.44px", flexShrink: 0 }}>🏅</span>
               <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 4 }}>
-                <p style={{ margin: 0, whiteSpace: "nowrap" }}>
-                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 18, lineHeight: "20px", color: "#fff" }}>{conquistas.length} </span>
-                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 16, lineHeight: "20px", color: "#555" }}>de 15 jogadores</span>
+                <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 0, lineHeight: 0, color: "#fff", whiteSpace: "nowrap" }}>
+                  <span style={{ fontSize: 18, lineHeight: "20px" }}>{conquistas.length} </span>
+                  <span style={{ fontWeight: 500, fontSize: 16, lineHeight: "20px", color: "#555" }}>de 15 jogadores</span>
                 </p>
                 <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 14, lineHeight: "18px", color: "#555", whiteSpace: "nowrap" }}>já conquistaram uma medalha</p>
               </div>
@@ -415,45 +415,47 @@ export function HomeClient({
               {conquistas.map((c, i) => {
                 const medalSvg = getMedalha(c.traitNome);
                 return (
-                  <div key={i} style={{ background: "#090909", border: "1px solid #2e2e2e", borderRadius: 16, padding: "9px 17px" }}>
-                    <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-                      {/* Text */}
-                      <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1, minWidth: 0 }}>
-                        {/* Label row — h:24, text positioned at top:5 */}
-                        <div style={{ height: 24, position: "relative" }}>
-                          <p style={{ margin: 0, position: "absolute", top: 5, left: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 10, lineHeight: "15px", color: "#a1a1a1", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>
-                            HOJE · NOVA MEDALHA
+                  <div key={i} style={{ background: "#090909", border: "1px solid #2e2e2e", borderRadius: 16, padding: "9px 17px", display: "flex", alignItems: "flex-start" }}>
+                    {/* Figma: inner flex-1 wrapper */}
+                    <div style={{ flex: 1, minWidth: 1, position: "relative" }}>
+                      <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+                        {/* Text column: flex-1 so name can wrap */}
+                        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 2, alignItems: "flex-start", justifyContent: "center" }}>
+                          {/* Label h:24 — absolute top:5 */}
+                          <div style={{ height: 24, position: "relative", width: "100%" }}>
+                            <p style={{ margin: 0, position: "absolute", top: 5, left: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 10, lineHeight: "15px", color: "#a1a1a1", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>
+                              HOJE · NOVA MEDALHA
+                            </p>
+                          </div>
+                          {/* Name — fontSize:0 parent, text wraps naturally */}
+                          <p style={{ margin: 0, flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 0, lineHeight: 0, color: "#fff" }}>
+                            <span style={{ fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#9fe870" }}>{c.apelido}</span>
+                            <span style={{ fontWeight: 800, fontSize: 16, lineHeight: "20px" }}>{" destravou "}</span>
+                            <span style={{ fontWeight: 800, fontSize: 16, lineHeight: "20px" }}>{`"${c.traitNome}!"`}</span>
                           </p>
+                          {/* Description h:21 pt:2 */}
+                          <div style={{ height: 21, paddingTop: 2, width: "100%" }}>
+                            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#555" }}>
+                              {c.traitDesc ?? (c.traitEmoji ? `${c.traitEmoji} ${c.traitNome}` : c.traitNome)}
+                            </p>
+                          </div>
                         </div>
-                        {/* Name paragraph — fontSize:0 parent trick for per-span line-height control */}
-                        <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 0, lineHeight: 0, color: "#fff" }}>
-                          <span style={{ fontSize: 16, lineHeight: "20px", color: "#9fe870" }}>{c.apelido}</span>
-                          <span style={{ fontSize: 16, lineHeight: "20px" }}>{" destravou "}</span>
-                          <span style={{ fontSize: 16, lineHeight: "20px" }}>{`"${c.traitNome}!"`}</span>
-                        </p>
-                        {/* Description */}
-                        <div style={{ height: 21, display: "flex", flexDirection: "column", alignItems: "flex-start", paddingTop: 2 }}>
-                          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#555" }}>
-                            {c.traitDesc ?? (c.traitEmoji ? `${c.traitEmoji} ${c.traitNome}` : c.traitNome)}
-                          </p>
-                        </div>
-                      </div>
 
-                      {/* Medal badge: SVG fills 72x72 absolutely, no dark bg */}
-                      {medalSvg ? (
+                        {/* Badge 72×72 overflow-clip */}
                         <div style={{ width: 72, height: 72, flexShrink: 0, position: "relative", overflow: "clip" }}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             alt={c.traitNome}
-                            src={medalSvg}
+                            src={medalSvg ?? undefined}
                             style={{ position: "absolute", display: "block", inset: 0, width: "100%", height: "100%", maxWidth: "none" }}
                           />
+                          {!medalSvg && (
+                            <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>
+                              {c.traitEmoji ?? "🏅"}
+                            </span>
+                          )}
                         </div>
-                      ) : (
-                        <div style={{ width: 72, height: 72, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          <span style={{ fontSize: 40, lineHeight: 1 }}>{c.traitEmoji ?? "🏅"}</span>
-                        </div>
-                      )}
+                      </div>
                     </div>
                   </div>
                 );
