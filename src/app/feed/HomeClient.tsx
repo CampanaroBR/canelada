@@ -31,11 +31,12 @@ interface Props {
   personagens: Personagem[];
   conquistas: Conquista[];
   datePills: string[];
+  grupoNome: string;
   criarRodadaAction: () => Promise<void>;
 }
 
 const PERSONAGEM_MASCOTS: Record<string, string> = {
-  MVP:    "/ilustracoes/tubarao.png",
+  MVP:    "/ilustracoes/tubarao-share.png",
   BAGRE:  "/ilustracoes/bagre.png",
   RACUDO: "/ilustracoes/corpo-mole.png",
 };
@@ -50,7 +51,7 @@ const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
 
 export function HomeClient({
   rodadaId, dataRodada, jaVotou,
-  maisVotados, personagens, conquistas, datePills,
+  maisVotados, personagens, conquistas, datePills, grupoNome,
   criarRodadaAction,
 }: Props) {
   const [bsOpen, setBsOpen] = useState(false);
@@ -536,10 +537,11 @@ export function HomeClient({
           open
           onClose={() => setSharePersonagem(null)}
           tipo={personagens[sharePersonagem].tipo}
-          texto={personagens[sharePersonagem].texto}
+          apelido={personagens[sharePersonagem].apelido}
           data={personagens[sharePersonagem].data}
           mascot={PERSONAGEM_MASCOTS[personagens[sharePersonagem].tipo] ?? "/ilustracoes/corpo-mole.png"}
-          qtd={Math.max(5, 8 - sharePersonagem)}
+          qtd={maisVotados[sharePersonagem]?.qtd ?? Math.max(5, 8 - sharePersonagem)}
+          grupoNome={grupoNome}
         />
       )}
     </div>

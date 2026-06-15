@@ -18,11 +18,12 @@ export default async function FeedPage() {
 
   const jogador = await prisma.jogador.findUnique({
     where: { userId: session.user.id },
-    select: { id: true, grupoId: true },
+    select: { id: true, grupoId: true, grupo: { select: { nome: true } } },
   });
   if (!jogador) redirect("/onboarding");
 
   const grupoId = jogador.grupoId;
+  const grupoNome = jogador.grupo?.nome ?? "";
 
   const [rodadaAtiva, topVotadosRaw, recentStories, recentConquistas, allJogadores] = await Promise.all([
     prisma.rodada.findFirst({
@@ -116,6 +117,7 @@ export default async function FeedPage() {
       personagens={personagens}
       conquistas={conquistas}
       datePills={datePills}
+      grupoNome={grupoNome}
       criarRodadaAction={criarRodada}
     />
   );
