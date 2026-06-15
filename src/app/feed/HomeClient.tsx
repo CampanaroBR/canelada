@@ -338,16 +338,16 @@ export function HomeClient({
                 const qtd     = Math.max(5, 8 - i);
                 return (
                   <div key={i} style={{ background: "#090909", border: "1px solid #2e2e2e", borderRadius: 16, padding: 17, display: "flex", gap: 16, alignItems: "flex-start", overflow: "hidden" }}>
-                    {/* Left: info + button */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: 12, flex: 1, minWidth: 0 }}>
+                    {/* Left: Award Container — flexShrink:0, width = content */}
+                    <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start" }}>
                       <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-start", justifyContent: "center" }}>
-                        {/* Title + name block */}
-                        <div style={{ height: 46, display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-start", overflow: "hidden", width: "100%" }}>
+                        {/* Title + name block h:46 */}
+                        <div style={{ height: 46, display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-start" }}>
                           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, lineHeight: "24px", color: "#fff", whiteSpace: "nowrap" }}>{title}</p>
-                          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "18px", color: "#f9a8d4", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", width: "100%" }}>{p.apelido}</p>
+                          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "18px", color: "#f9a8d4", whiteSpace: "nowrap" }}>{p.apelido}</p>
                         </div>
-                        {/* Stats */}
-                        <div style={{ height: 21, display: "flex", flexDirection: "column", alignItems: "flex-start", paddingTop: 4 }}>
+                        {/* Stats h:21 pt:4 */}
+                        <div style={{ height: 21, paddingTop: 4 }}>
                           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 0, lineHeight: 0, color: "#9fe870" }}>
                             <span style={{ fontSize: 11, lineHeight: "16.5px" }}>Votado {qtd}x · </span>
                             <span style={{ fontSize: 11, lineHeight: "16.5px", color: "#838383" }}>{dateStr}</span>
@@ -356,7 +356,7 @@ export function HomeClient({
                       </div>
                       {/* Ver mais */}
                       <button onClick={() => setSharePersonagem(i)} style={{
-                        display: "inline-flex", alignItems: "center", gap: 4, alignSelf: "flex-start",
+                        display: "inline-flex", alignItems: "center", gap: 4,
                         background: "#2a2a2a", border: "1px solid #3a3a3a",
                         borderRadius: 9999, padding: "7px 13px", cursor: "pointer",
                       }}>
@@ -365,11 +365,11 @@ export function HomeClient({
                       </button>
                     </div>
 
-                    {/* Right: mascot — outer stretches to card height, inner derives width via aspectRatio */}
-                    <div style={{ alignSelf: "stretch", display: "flex", alignItems: "stretch", flexShrink: 0 }}>
-                      <div style={{ position: "relative", height: "100%", aspectRatio: "1/1", overflow: "clip", flexShrink: 0 }}>
+                    {/* Right: flex:1 self-stretch → definite height for mascot h:100% */}
+                    <div style={{ flex: 1, minWidth: 1, alignSelf: "stretch", position: "relative", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+                      <div style={{ position: "relative", height: "100%", aspectRatio: "1920/1920", overflow: "clip", flexShrink: 0 }}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img alt={title} src={mascot} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain", pointerEvents: "none" }} />
+                        <img alt={title} src={mascot} style={{ position: "absolute", display: "block", inset: 0, width: "100%", height: "100%", maxWidth: "none", pointerEvents: "none" }} />
                       </div>
                     </div>
                   </div>

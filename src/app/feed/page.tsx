@@ -67,7 +67,7 @@ export default async function FeedPage() {
 
   const personagens: Personagem[] = recentStories.map(s => ({
     tipo: s.tipo,
-    apelido: s.texto.split(" ")[0] ?? "?",
+    apelido: s.texto.split(" ").find(w => /\p{L}/u.test(w)) ?? "?",
     texto: s.texto,
     data: s.rodada.data,
   }));
