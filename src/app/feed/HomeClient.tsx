@@ -416,32 +416,43 @@ export function HomeClient({
                 const medalSvg = getMedalha(c.traitNome);
                 return (
                   <div key={i} style={{ background: "#090909", border: "1px solid #2e2e2e", borderRadius: 16, padding: "9px 17px", display: "flex", alignItems: "flex-start" }}>
-                    {/* Figma: inner flex-1 wrapper */}
-                    <div style={{ flex: 1, minWidth: 1, position: "relative" }}>
+                    {/* flex-[1_0_0] min-w-px wrapper */}
+                    <div style={{ flex: "1 0 0", minWidth: 1, position: "relative" }}>
+                      {/* flex gap-16 items-center row */}
                       <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-                        {/* Text column: flex-1 so name can wrap */}
-                        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 2, alignItems: "flex-start", justifyContent: "center" }}>
-                          {/* Label h:24 — absolute top:5 */}
-                          <div style={{ height: 24, position: "relative", width: "100%" }}>
+                        {/* Text column: flex-[1_0_0] flex-col gap-2 items-start justify-center min-w-px */}
+                        <div style={{ flex: "1 0 0", minWidth: 1, display: "flex", flexDirection: "column", gap: 2, alignItems: "flex-start", justifyContent: "center" }}>
+
+                          {/* Label: h-24, text absolute top-5 */}
+                          <div style={{ height: 24, position: "relative", width: "100%", flexShrink: 0 }}>
                             <p style={{ margin: 0, position: "absolute", top: 5, left: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 10, lineHeight: "15px", color: "#a1a1a1", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>
                               HOJE · NOVA MEDALHA
                             </p>
                           </div>
-                          {/* Name — fontSize:0 parent, text wraps naturally */}
-                          <p style={{ margin: 0, flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 0, lineHeight: 0, color: "#fff" }}>
-                            <span style={{ fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#9fe870" }}>{c.apelido}</span>
-                            <span style={{ fontWeight: 800, fontSize: 16, lineHeight: "20px" }}>{" destravou "}</span>
-                            <span style={{ fontWeight: 800, fontSize: 16, lineHeight: "20px" }}>{`"${c.traitNome}!"`}</span>
-                          </p>
-                          {/* Description h:21 pt:2 */}
-                          <div style={{ height: 21, paddingTop: 2, width: "100%" }}>
+
+                          {/* Name wrapper: relative shrink-0 w-full → inner flex items-center → p flex-1 min-w-px */}
+                          <div style={{ position: "relative", flexShrink: 0, width: "100%" }}>
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                              <div style={{ display: "flex", alignItems: "center", position: "relative", width: "100%", flexShrink: 0 }}>
+                                <p style={{ margin: 0, flex: "1 0 0", minWidth: 1, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 0, lineHeight: 0, color: "#fff" }}>
+                                  <span style={{ fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#9fe870" }}>{c.apelido}</span>
+                                  <span style={{ fontWeight: 800, fontSize: 16, lineHeight: "20px" }}>{" destravou "}</span>
+                                  <span style={{ fontWeight: 800, fontSize: 16, lineHeight: "20px" }}>{`"${c.traitNome}!"`}</span>
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Description: h-21 w-[178px] pt-2 */}
+                          <div style={{ height: 21, width: 178, flexShrink: 0, paddingTop: 2 }}>
                             <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#555" }}>
                               {c.traitDesc ?? (c.traitEmoji ? `${c.traitEmoji} ${c.traitNome}` : c.traitNome)}
                             </p>
                           </div>
+
                         </div>
 
-                        {/* Badge 72×72 overflow-clip */}
+                        {/* Badge: size-72 overflow-clip shrink-0 */}
                         <div style={{ width: 72, height: 72, flexShrink: 0, position: "relative", overflow: "clip" }}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
