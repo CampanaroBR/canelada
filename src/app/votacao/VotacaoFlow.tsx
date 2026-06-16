@@ -131,18 +131,22 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
       width: "min(100%, 430px)",
       background: "#090909", display: "flex", flexDirection: "column", overflow: "hidden",
     }}>
-      {/* ── Status Bar ── */}
+      {/* ── Status Bar (glass, fixo) ── */}
       <div style={{
         position: "absolute", top: 0, left: 0, right: 0, zIndex: 20,
         paddingTop: "calc(env(safe-area-inset-top, 0px) + 26px)",
         padding: "calc(env(safe-area-inset-top, 0px) + 26px) 16px 16px",
+        background: "rgba(20,18,12,0.32)",
+        backdropFilter: "blur(24px) saturate(180%)",
+        WebkitBackdropFilter: "blur(24px) saturate(180%)",
+        boxShadow: "inset 0 -1px 0 rgba(255,255,255,0.08)",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <button
             onClick={handleBack}
             style={{
               width: 48, height: 48, borderRadius: 24, flexShrink: 0,
-              background: "#000", border: "1px solid #424242",
+              background: "rgba(0,0,0,0.4)", border: "1px solid #424242",
               display: "flex", alignItems: "center", justifyContent: "center",
               cursor: "pointer",
             }}
@@ -181,17 +185,29 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
             background: `linear-gradient(256deg, ${c1} 3%, ${c2} 104%)`,
           }}
         >
-          {/* glows decorativos */}
+          {/* manchas decorativas (Figma: Highlight Frame + Background Frame) */}
           <div aria-hidden style={{
-            position: "absolute", width: 280, height: 280, borderRadius: "50%",
-            background: c2, opacity: 0.25, filter: "blur(70px)",
-            top: -80, right: -60,
-          }} />
+            position: "absolute", left: -157, top: 240,
+            width: 396, height: 396,
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <div style={{
+              width: 301, height: 301, borderRadius: 80,
+              transform: "rotate(23.65deg)",
+              background: `linear-gradient(188deg, ${c1} 17%, ${c2} 78%)`,
+            }} />
+          </div>
           <div aria-hidden style={{
-            position: "absolute", width: 240, height: 240, borderRadius: "50%",
-            background: c1, opacity: 0.35, filter: "blur(70px)",
-            bottom: -60, left: -60,
-          }} />
+            position: "absolute", left: 139, top: -191,
+            width: 447, height: 447,
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <div style={{
+              width: 339, height: 339, borderRadius: 80,
+              transform: "rotate(23.65deg)",
+              background: `linear-gradient(180deg, ${c2} 54%, ${c1} 91%)`,
+            }} />
+          </div>
 
           <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
             <div style={{ position: "relative", width: 220, height: 220, marginBottom: -16 }}>
