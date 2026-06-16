@@ -535,7 +535,8 @@ export function HomeClient({
             aria-hidden
             onClick={() => setMenuOpen(false)}
             style={{
-              position: "absolute", inset: 0, zIndex: 50,
+              position: "fixed", top: 0, bottom: 0, left: "50%", transform: "translateX(-50%)",
+              width: "min(100%, 430px)", zIndex: 50,
               background: "rgba(0,0,0,0.65)",
               backdropFilter: "blur(2px)", WebkitBackdropFilter: "blur(2px)",
             }}

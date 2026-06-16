@@ -126,7 +126,11 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
   if (!trait) return null;
 
   return (
-    <div style={{ position: "absolute", inset: 0, background: "#090909", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+    <div style={{
+      position: "fixed", top: 0, bottom: 0, left: "50%", transform: "translateX(-50%)",
+      width: "min(100%, 430px)",
+      background: "#090909", display: "flex", flexDirection: "column", overflow: "hidden",
+    }}>
       {/* ── Status Bar ── */}
       <div style={{
         position: "absolute", top: 0, left: 0, right: 0, zIndex: 20,
@@ -401,7 +405,8 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
 function DoneScreen({ total }: { total: number }) {
   return (
     <div style={{
-      position: "absolute", inset: 0,
+      position: "fixed", top: 0, bottom: 0, left: "50%", transform: "translateX(-50%)",
+      width: "min(100%, 430px)",
       background: "#9fe870",
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
