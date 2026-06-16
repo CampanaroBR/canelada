@@ -159,10 +159,11 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
         pointerEvents: "none",
         paddingTop: "calc(env(safe-area-inset-top, 0px) + 26px)",
         padding: "calc(env(safe-area-inset-top, 0px) + 26px) 16px 16px",
-        background: "rgba(20,18,12,0.32)",
-        backdropFilter: "blur(24px) saturate(180%)",
-        WebkitBackdropFilter: "blur(24px) saturate(180%)",
+        background: "rgba(15,14,10,0.55)",
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
         boxShadow: "inset 0 -1px 0 rgba(255,255,255,0.08)",
+        willChange: "transform",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <button
@@ -200,6 +201,8 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
       <div style={{
         flex: 1, overflowY: "auto", display: "flex", flexDirection: "column",
         WebkitOverflowScrolling: "touch",
+        overscrollBehavior: "contain",
+        willChange: "scroll-position",
       }}>
         {/* ── Hero (imagem de fundo real, recolorida por trait) ── */}
         <div
@@ -225,6 +228,16 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
           />
 
           <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
+            <div style={{
+              background: "rgba(55,55,55,0.2)", border: "1px solid rgba(255,255,255,0.15)",
+              borderRadius: 100, padding: "4px 10px", whiteSpace: "nowrap",
+              marginBottom: 20,
+            }}>
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, color: "#fff", letterSpacing: "-0.4px" }}>
+                VOTAÇÃO DO BABA · {step + 1}/{total}
+              </span>
+            </div>
+
             <div style={{ position: "relative", width: 220, height: 220, marginBottom: 8 }}>
               <div aria-hidden style={{
                 position: "absolute", inset: 0, margin: "auto",
@@ -237,15 +250,6 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
                 alt={trait.nome}
                 style={{ position: "relative", width: "100%", height: "100%", objectFit: "contain" }}
               />
-              <div style={{
-                position: "absolute", top: -8, left: "50%", transform: "translateX(-50%)",
-                background: "rgba(55,55,55,0.2)", border: "1px solid rgba(255,255,255,0.15)",
-                borderRadius: 100, padding: "4px 10px", whiteSpace: "nowrap",
-              }}>
-                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, color: "#fff", letterSpacing: "-0.4px" }}>
-                  VOTAÇÃO DO BABA · {step + 1}/{total}
-                </span>
-              </div>
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0, width: "100%", maxWidth: 361 }}>
@@ -364,10 +368,9 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
           position: "absolute", left: 8, right: 8,
           bottom: `calc(env(safe-area-inset-bottom, 0px) + 8px)`,
           zIndex: 25,
-          background: "rgba(0,0,0,0.08)", border: "1px solid #393939",
+          background: "rgba(15,14,12,0.9)", border: "1px solid #393939",
           borderRadius: 32, padding: "6px 16px",
           display: "flex", alignItems: "center", gap: 8,
-          backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
           boxShadow: "0px 4px 4.7px 1px rgba(0,0,0,0.28)",
         }}>
           <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 6, minWidth: 0 }}>
