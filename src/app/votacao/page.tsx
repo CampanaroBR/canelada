@@ -33,7 +33,10 @@ export default async function VotacaoPage() {
   if (jaVotou) {
     const votos = await prisma.voto.findMany({
       where: { rodadaId: rodada.id, votanteId: jogador.id },
-      include: { votado: { select: { apelido: true } } },
+      include: {
+        votado: { select: { apelido: true } },
+        trait: { select: { nome: true, emoji: true } },
+      },
     });
     return <JaVotouScreen votos={votos} />;
   }
@@ -45,8 +48,7 @@ export default async function VotacaoPage() {
       orderBy: { apelido: "asc" },
     }),
     prisma.trait.findMany({
-      orderBy: [{ categoria: "asc" }, { nome: "asc" }],
-      select: { slug: true, nome: true, categoria: true, emoji: true },
+      select: { slug: true, nome: true, categoria: true, emoji: true, descricao: true },
     }),
   ]);
 
@@ -157,6 +159,7 @@ type VotoComVotado = {
   categoria: string;
   traitSlug: string | null;
   votado: { apelido: string };
+  trait: { nome: string; emoji: string | null } | null;
 };
 
 const CATEGORIA_CONFIG: Record<string, { label: string; color: string }> = {
@@ -234,7 +237,9 @@ function JaVotouScreen({ votos }: { votos: VotoComVotado[] }) {
             overflow: "hidden",
           }}>
             {votos.map((v, i) => {
-              const cfg = CATEGORIA_CONFIG[v.categoria] ?? { label: v.categoria, color: "var(--color-text-muted)" };
+              const cfg = v.trait
+                ? { label: `${v.trait.emoji ?? ""} ${v.trait.nome}`.trim(), color: "#A78BFA" }
+                : CATEGORIA_CONFIG[v.categoria] ?? { label: v.categoria, color: "var(--color-text-muted)" };
               return (
                 <div
                   key={v.id}

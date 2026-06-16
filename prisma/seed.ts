@@ -6,23 +6,30 @@ const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
 
 // ── Traits de personalidade ────────────────────────────────────────────────────
+// Ordem e textos seguem o PRD oficial — "Sistema de Traits do Canelada".
+// Etapa 1 (Futebol) → Etapa 2 (Personalidade) → Etapa 3 (Resenha).
 const TRAITS = [
-  { slug: "racudo",        nome: "Raçudo",         categoria: TraitCategoria.FUTEBOL,       emoji: "💪" },
-  { slug: "matador",       nome: "Matador",         categoria: TraitCategoria.FUTEBOL,       emoji: "⚽" },
-  { slug: "paredao",       nome: "Paredão",         categoria: TraitCategoria.FUTEBOL,       emoji: "🧤" },
-  { slug: "categoria",     nome: "Categoria",       categoria: TraitCategoria.FUTEBOL,       emoji: "🎩" },
-  { slug: "xerife",        nome: "Xerife",          categoria: TraitCategoria.FUTEBOL,       emoji: "👊" },
-  { slug: "garcom",        nome: "Garçom",          categoria: TraitCategoria.FUTEBOL,       emoji: "🎁" },
+  // Etapa 1 — Futebol
+  { slug: "categoria",     nome: "Categoria",       categoria: TraitCategoria.FUTEBOL,       emoji: "🎩", descricao: "Jogador tecnicamente diferenciado, habilidoso e eficiente." },
+  { slug: "matador",       nome: "Matador",         categoria: TraitCategoria.FUTEBOL,       emoji: "⚽", descricao: "Especialista em finalizar jogadas e marcar gols." },
+  { slug: "paredao",       nome: "Paredão",         categoria: TraitCategoria.FUTEBOL,       emoji: "🧤", descricao: "Responsável por grandes defesas e momentos decisivos." },
+  { slug: "racudo",        nome: "Raçudo",          categoria: TraitCategoria.FUTEBOL,       emoji: "💪", descricao: "Jogador que se destaca pelo esforço, intensidade e entrega." },
+  { slug: "xerife",        nome: "Xerife",          categoria: TraitCategoria.FUTEBOL,       emoji: "👊", descricao: "Líder dentro de campo. Organiza, orienta e assume responsabilidades." },
+  { slug: "garcom",        nome: "Garçom",          categoria: TraitCategoria.FUTEBOL,       emoji: "🥂", descricao: "Especialista em assistências e construção de jogadas." },
+  // Etapa 2 — Personalidade
+  { slug: "resenha-forte", nome: "Só Resenha",      categoria: TraitCategoria.PERSONALIDADE, emoji: "🎤", descricao: "Responsável pela animação, brincadeiras e energia do grupo." },
+  { slug: "chorao",        nome: "Chorão",          categoria: TraitCategoria.PERSONALIDADE, emoji: "😭", descricao: "Sempre encontra um motivo para lamentar uma derrota, lance perdido ou situação adversa." },
+  { slug: "reclamao",      nome: "Reclamão",        categoria: TraitCategoria.PERSONALIDADE, emoji: "😡", descricao: "Questiona decisões, marcações e jogadas com frequência." },
+  { slug: "paneleiro",     nome: "Paneleiro",       categoria: TraitCategoria.PERSONALIDADE, emoji: "🍳", descricao: "Prefere jogar sempre com os mesmos parceiros e amigos." },
+  // Etapa 3 — Resenha
+  { slug: "firuleiro",     nome: "Firuleiro",       categoria: TraitCategoria.RESENHA,       emoji: "🎭", descricao: "Especialista em dribles, pedaladas e jogadas de efeito." },
+  { slug: "corpo-mole",    nome: "Corpo Mole",      categoria: TraitCategoria.RESENHA,       emoji: "🛋️", descricao: "Corre pouco e parece estar sempre economizando energia." },
+  { slug: "cone",          nome: "Cone",            categoria: TraitCategoria.RESENHA,       emoji: "🚧", descricao: "Jogador que teve pouca participação efetiva durante a partida." },
+  { slug: "bagre",         nome: "Bagre da Noite",  categoria: TraitCategoria.RESENHA,       emoji: "🐟", descricao: "Representa a atuação mais bagre da partida." },
+  // Traits extras (fora do fluxo ordenado, mantidas para badges/perfis já existentes)
   { slug: "catimbeiro",    nome: "Catimbeiro",      categoria: TraitCategoria.PERSONALIDADE, emoji: "🐢" },
-  { slug: "chorao",        nome: "Chorão",          categoria: TraitCategoria.PERSONALIDADE, emoji: "😭" },
-  { slug: "paneleiro",     nome: "Paneleiro",       categoria: TraitCategoria.PERSONALIDADE, emoji: "🍳" },
   { slug: "fominha",       nome: "Fominha",         categoria: TraitCategoria.PERSONALIDADE, emoji: "🐷" },
-  { slug: "resenha-forte", nome: "Resenha Forte",   categoria: TraitCategoria.PERSONALIDADE, emoji: "🎤" },
-  { slug: "bagre",         nome: "Bagre da Noite",  categoria: TraitCategoria.RESENHA,       emoji: "🐟" },
-  { slug: "cone",          nome: "Cone",            categoria: TraitCategoria.RESENHA,       emoji: "🔺" },
-  { slug: "corpo-mole",    nome: "Corpo Mole",      categoria: TraitCategoria.RESENHA,       emoji: "🛋️" },
-  { slug: "firuleiro",     nome: "Firuleiro",       categoria: TraitCategoria.RESENHA,       emoji: "💅" },
-  { slug: "reclamao",      nome: "Reclamão",        categoria: TraitCategoria.RESENHA,       emoji: "😤" },
+  { slug: "perna-de-pau",  nome: "Perna de Pau",    categoria: TraitCategoria.RESENHA,       emoji: "💀" },
   { slug: "chegou-agora",  nome: "Chegou Agora",    categoria: TraitCategoria.RESENHA,       emoji: "🐌" },
 ];
 
@@ -224,7 +231,11 @@ async function main() {
 
   // 1. Traits de personalidade
   for (const t of TRAITS) {
-    await prisma.trait.upsert({ where: { slug: t.slug }, update: {}, create: t });
+    await prisma.trait.upsert({
+      where: { slug: t.slug },
+      update: { nome: t.nome, categoria: t.categoria, emoji: t.emoji, descricao: t.descricao ?? null },
+      create: t,
+    });
   }
   // Medalhas como Traits
   for (const m of MEDALHA_TRAITS) {
@@ -290,10 +301,8 @@ async function main() {
       ["RACUDO",  r.racudo ],
       ["RESENHA", r.resenha],
     ] as const) {
-      await prisma.voto.upsert({
-        where: { rodadaId_votanteId_categoria: { rodadaId: rodada.id, votanteId: votanteFixo, categoria } },
-        update: {},
-        create: { rodadaId: rodada.id, votanteId: votanteFixo, votadoId: jogadorMap[apelido], categoria },
+      await prisma.voto.create({
+        data: { rodadaId: rodada.id, votanteId: votanteFixo, votadoId: jogadorMap[apelido], categoria },
       });
     }
 
@@ -304,7 +313,7 @@ async function main() {
       const tvId = traitVotantes[i];
       if (!tvId || !jogadorMap[tv.votado]) continue;
       await prisma.voto.upsert({
-        where: { rodadaId_votanteId_categoria: { rodadaId: rodada.id, votanteId: tvId, categoria: "TRAIT" } },
+        where: { rodadaId_votanteId_categoria_traitSlug: { rodadaId: rodada.id, votanteId: tvId, categoria: "TRAIT", traitSlug: tv.slug } },
         update: {},
         create: {
           rodadaId: rodada.id,

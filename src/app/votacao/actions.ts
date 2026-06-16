@@ -71,19 +71,21 @@ export async function submitVotos(rodadaId: string, votos: VotoInput[]) {
       )
     );
 
-    const traitVoto = votos.find((v) => v.categoria === "TRAIT");
-    if (traitVoto?.traitSlug) {
-      await prisma.jogadorTrait.upsert({
-        where: {
-          jogadorId_traitSlug: {
-            jogadorId: traitVoto.votadoId,
-            traitSlug: traitVoto.traitSlug,
+    const traitVotos = votos.filter((v) => v.categoria === "TRAIT" && v.traitSlug);
+    await Promise.all(
+      traitVotos.map((v) =>
+        prisma.jogadorTrait.upsert({
+          where: {
+            jogadorId_traitSlug: {
+              jogadorId: v.votadoId,
+              traitSlug: v.traitSlug!,
+            },
           },
-        },
-        update: { contador: { increment: 1 } },
-        create: { jogadorId: traitVoto.votadoId, traitSlug: traitVoto.traitSlug },
-      });
-    }
+          update: { contador: { increment: 1 } },
+          create: { jogadorId: v.votadoId, traitSlug: v.traitSlug! },
+        })
+      )
+    );
   } catch {
     return { error: "Erro ao registrar votos. Tente novamente." };
   }

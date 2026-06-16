@@ -62,7 +62,7 @@ export function BottomsheetMaisVotados({
         onClick={onClose}
         aria-hidden
         style={{
-          position: "fixed", inset: 0, zIndex: 50,
+          position: "absolute", inset: 0, zIndex: 50,
           background: "rgba(0,0,0,0.65)",
           backdropFilter: "blur(2px)",
           WebkitBackdropFilter: "blur(2px)",
@@ -74,7 +74,7 @@ export function BottomsheetMaisVotados({
 
       {/* Sheet positioner */}
       <div style={{
-        position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 51,
+        position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 51,
         display: "flex", justifyContent: "center",
         pointerEvents: "none",
       }}>

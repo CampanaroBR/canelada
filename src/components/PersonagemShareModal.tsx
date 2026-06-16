@@ -230,7 +230,7 @@ export function PersonagemShareModal({
         aria-hidden
         onClick={onClose}
         style={{
-          position: "fixed", inset: 0, zIndex: 100,
+          position: "absolute", inset: 0, zIndex: 100,
           background: "rgba(0,0,0,0.6)",
           backdropFilter: "blur(2px)", WebkitBackdropFilter: "blur(2px)",
           transition: `opacity ${dur} ease`,
@@ -242,7 +242,7 @@ export function PersonagemShareModal({
       {/* Modal positioner */}
       <div
         style={{
-          position: "fixed", inset: 0, zIndex: 101,
+          position: "absolute", inset: 0, zIndex: 101,
           display: "flex", justifyContent: "center",
           pointerEvents: "none",
           touchAction: "none",

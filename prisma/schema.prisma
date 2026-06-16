@@ -106,8 +106,9 @@ model Voto {
   rodada      Rodada     @relation(fields: [rodadaId], references: [id])
   votante     Jogador    @relation("VotanteVotos", fields: [votanteId], references: [id])
   votado      Jogador    @relation("VotadoVotos", fields: [votadoId], references: [id])
+  trait       Trait?     @relation(fields: [traitSlug], references: [slug])
 
-  @@unique([rodadaId, votanteId, categoria])
+  @@unique([rodadaId, votanteId, categoria, traitSlug])
 }
 
 enum CategoriaVoto {
@@ -126,6 +127,7 @@ model Trait {
   emoji       String?
 
   jogadores   JogadorTrait[]
+  votos       Voto[]
 }
 
 enum TraitCategoria {

@@ -3,12 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  House, CheckCircle, Football, ChartBar,
   Trophy, Medal, CaretRight, Check,
   CalendarBlank, Alarm, CalendarStar,
   List, Bell, MedalMilitary,
   User, UsersThree, SignOut, X,
 } from "@phosphor-icons/react";
+import { BottomNav } from "@/components/layout/BottomNav";
 import { signOut } from "next-auth/react";
 import { BottomsheetMaisVotados } from "@/components/BottomsheetMaisVotados";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
@@ -504,28 +504,7 @@ export function HomeClient({
       </div>
 
       {/* ── BOTTOM NAV (fixed) ── */}
-      <div style={{
-        position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)",
-        width: "min(100%, 430px)", zIndex: 30,
-        padding: "0 8px",
-        paddingBottom: "max(6px, env(safe-area-inset-bottom, 6px))",
-      }}>
-        <nav style={{
-          background: "rgba(0,0,0,0.08)", border: "1px solid #393939",
-          borderRadius: 32, padding: "6px 15px",
-          display: "flex", alignItems: "center",
-          backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-          boxShadow: "0px 4px 4.7px 1px rgba(0,0,0,0.28)",
-          overflow: "clip",
-        }}>
-          <div style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "space-between" }}>
-            <NavItem icon={<House size={28} color="#000" weight="fill" />}    label="Home"    active />
-            <NavItem icon={<CheckCircle size={28} color="#fff" weight="regular" />} label="Votos"   href="/votacao" />
-            <NavItem icon={<Football size={28} color="#fff" weight="regular" />}    label="Pelada"  href="/feed" />
-            <NavItem icon={<ChartBar size={28} color="#fff" weight="regular" />}    label="Ranking" href="/ranking" />
-          </div>
-        </nav>
-      </div>
+      <BottomNav />
 
       <BottomsheetMaisVotados
         open={bsOpen}
@@ -556,7 +535,7 @@ export function HomeClient({
             aria-hidden
             onClick={() => setMenuOpen(false)}
             style={{
-              position: "fixed", inset: 0, zIndex: 50,
+              position: "absolute", inset: 0, zIndex: 50,
               background: "rgba(0,0,0,0.65)",
               backdropFilter: "blur(2px)", WebkitBackdropFilter: "blur(2px)",
             }}
@@ -656,28 +635,6 @@ function PlayerNamed({ name, tshirt }: { name: string; tshirt: string }) {
   );
 }
 
-function NavItem({ icon, label, active, href }: { icon: React.ReactNode; label: string; active?: boolean; href?: string }) {
-  const inner = (
-    <div style={{
-      width: 56, height: 56,
-      borderRadius: active ? 100 : undefined,
-      background: active ? "#9fe870" : undefined,
-      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-      padding: 8, overflow: "clip",
-    }}>
-      <div style={{ width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center" }}>{icon}</div>
-      <span style={{
-        fontFamily: "var(--font-display)", fontWeight: active ? 800 : 600,
-        fontSize: 10, lineHeight: "14px",
-        color: active ? "#000" : "#fff",
-        textAlign: "center", letterSpacing: "-0.2px", whiteSpace: "nowrap",
-        display: "block", width: "100%",
-      }}>{label}</span>
-    </div>
-  );
-  if (href) return <Link href={href} style={{ textDecoration: "none" }}>{inner}</Link>;
-  return <button style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}>{inner}</button>;
-}
 
 function MenuRow({ icon, label, href, onClose }: { icon: React.ReactNode; label: string; href: string; onClose: () => void }) {
   return (
