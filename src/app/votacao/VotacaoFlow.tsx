@@ -42,6 +42,25 @@ const GRADIENTS: Record<string, [string, string]> = {
   bagre:           ["rgb(10,40,90)",   "rgb(60,120,210)"],
 };
 
+// Rotação de matiz aplicada na imagem de fundo (base = dourado/categoria) pra
+// recolorir o mesmo asset por trait, sem precisar de 14 imagens diferentes.
+const HUE_ROTATE: Record<string, number> = {
+  categoria: 0,
+  matador: 160,
+  paredao: 190,
+  racudo: -25,
+  xerife: 20,
+  garcom: 260,
+  "resenha-forte": 280,
+  chorao: 200,
+  reclamao: -35,
+  paneleiro: 10,
+  firuleiro: 250,
+  "corpo-mole": 180,
+  cone: 15,
+  bagre: 200,
+};
+
 function getInitial(apelido: string) {
   return apelido.trim()[0]?.toUpperCase() ?? "?";
 }
@@ -71,7 +90,8 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
 
   const outros = jogadores.filter((j) => j.id !== meuId);
   const trait = steps[step];
-  const [c1, c2] = GRADIENTS[trait?.slug ?? ""] ?? ["rgb(60,60,65)", "rgb(150,150,155)"];
+  const [c1] = GRADIENTS[trait?.slug ?? ""] ?? ["rgb(60,60,65)", "rgb(150,150,155)"];
+  const hueRotate = HUE_ROTATE[trait?.slug ?? ""] ?? 0;
   const mascot = TRAIT_SVG[trait?.slug ?? ""] ?? "/traits/Craque.svg";
   const filtered = outros.filter((j) => j.apelido.toLowerCase().includes(search.toLowerCase()));
   const pendingPlayer = pending ? jogadores.find((j) => j.id === pending) ?? null : null;
@@ -132,8 +152,11 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
       background: "#090909", display: "flex", flexDirection: "column", overflow: "hidden",
     }}>
       {/* ── Status Bar (glass, fixo) ── */}
+      {/* pointerEvents:none no wrapper + auto só no botão: permite que o swipe-scroll
+          atravesse a área do topbar sem ficar "travando" o gesto (mobile UX) */}
       <div style={{
         position: "absolute", top: 0, left: 0, right: 0, zIndex: 20,
+        pointerEvents: "none",
         paddingTop: "calc(env(safe-area-inset-top, 0px) + 26px)",
         padding: "calc(env(safe-area-inset-top, 0px) + 26px) 16px 16px",
         background: "rgba(20,18,12,0.32)",
@@ -149,6 +172,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
               background: "rgba(0,0,0,0.4)", border: "1px solid #424242",
               display: "flex", alignItems: "center", justifyContent: "center",
               cursor: "pointer",
+              pointerEvents: "auto",
             }}
           >
             <CaretLeft size={16} color="#fff" weight="bold" />
@@ -173,44 +197,35 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
         </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
-        {/* ── Hero (gradiente) ── */}
+      <div style={{
+        flex: 1, overflowY: "auto", display: "flex", flexDirection: "column",
+        WebkitOverflowScrolling: "touch",
+      }}>
+        {/* ── Hero (imagem de fundo real, recolorida por trait) ── */}
         <div
           key={trait.slug}
           style={{
             position: "relative", flexShrink: 0, overflow: "hidden",
             display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-            gap: 8, paddingTop: 104, paddingBottom: 24, paddingLeft: 16, paddingRight: 16,
+            gap: 8, paddingTop: 128, paddingBottom: 24, paddingLeft: 16, paddingRight: 16,
             borderBottomLeftRadius: 48, borderBottomRightRadius: 48,
-            background: `linear-gradient(256deg, ${c1} 3%, ${c2} 104%)`,
+            background: c1,
           }}
         >
-          {/* manchas decorativas (Figma: Highlight Frame + Background Frame) */}
-          <div aria-hidden style={{
-            position: "absolute", left: -157, top: 240,
-            width: 396, height: 396,
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <div style={{
-              width: 301, height: 301, borderRadius: 80,
-              transform: "rotate(23.65deg)",
-              background: `linear-gradient(188deg, ${c1} 17%, ${c2} 78%)`,
-            }} />
-          </div>
-          <div aria-hidden style={{
-            position: "absolute", left: 139, top: -191,
-            width: 447, height: 447,
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <div style={{
-              width: 339, height: 339, borderRadius: 80,
-              transform: "rotate(23.65deg)",
-              background: `linear-gradient(180deg, ${c2} 54%, ${c1} 91%)`,
-            }} />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            aria-hidden
+            src="/ilustracoes/votacao-hero-bg.png"
+            alt=""
+            style={{
+              position: "absolute", inset: 0,
+              width: "100%", height: "100%", objectFit: "cover",
+              filter: `hue-rotate(${hueRotate}deg) saturate(1.05)`,
+            }}
+          />
 
           <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-            <div style={{ position: "relative", width: 220, height: 220, marginBottom: -16 }}>
+            <div style={{ position: "relative", width: 220, height: 220, marginBottom: 8 }}>
               <div aria-hidden style={{
                 position: "absolute", inset: 0, margin: "auto",
                 width: 230, height: 230, borderRadius: "50%",
@@ -233,12 +248,12 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
               </div>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, width: "100%", maxWidth: 361 }}>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0, width: "100%", maxWidth: 361 }}>
               <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 32, lineHeight: "36px", color: "#fff", textAlign: "center" }}>
                 {trait.nome.toUpperCase()} {trait.emoji}
               </p>
               <p style={{
-                margin: 0, paddingTop: 4, paddingLeft: 24, paddingRight: 24,
+                margin: 0, paddingTop: 0, paddingLeft: 24, paddingRight: 24,
                 fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 18, lineHeight: "22px",
                 color: "rgba(255,255,255,0.92)", letterSpacing: "-0.4px", textAlign: "center",
               }}>
