@@ -46,7 +46,6 @@ const TRAIT_BADGE: Record<string, string> = {
   "mais-presente":   "/conquistas/mais-presente.svg",
   "so-perde":        "/conquistas/so-perde.svg",
   "rei-absoluto":    "/conquistas/rei-absoluto.svg",
-  "virada-de-chave": "/conquistas/virada-de-chave.svg",
   "jogador-invisivel":"/conquistas/jogador-invisivel.svg",
   "veterano":        "/conquistas/Veterano.svg",
   "lenda":           "/conquistas/Lenda.svg",
