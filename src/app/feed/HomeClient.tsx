@@ -14,21 +14,22 @@ import { BottomsheetMaisVotados } from "@/components/BottomsheetMaisVotados";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
 import { PersonagemShareModal } from "@/components/PersonagemShareModal";
 
-const TRAIT_MASCOTS: Record<string, string> = {
-  categoria:       "/votacao-mascot/categoria.png",
-  matador:         "/votacao-mascot/matador.png",
-  paredao:         "/votacao-mascot/paredao.png",
-  racudo:          "/votacao-mascot/racudo.png",
-  xerife:          "/votacao-mascot/xerife.png",
-  garcom:          "/votacao-mascot/garcom.png",
-  "resenha-forte": "/votacao-mascot/resenha-forte.png",
-  chorao:          "/votacao-mascot/chorao.png",
-  reclamao:        "/votacao-mascot/reclamao.png",
-  paneleiro:       "/votacao-mascot/paneleiro.png",
-  firuleiro:       "/votacao-mascot/firuleiro.png",
-  "corpo-mole":    "/votacao-mascot/corpo-mole.png",
-  cone:            "/votacao-mascot/cone.png",
-  bagre:           "/votacao-mascot/bagre.png",
+// Mapeia trait slug → badge SVG de conquista
+const TRAIT_BADGE: Record<string, string> = {
+  matador:         "/conquistas/Em chamas.svg",
+  categoria:       "/conquistas/Rei do mês.svg",
+  bagre:           "/conquistas/Troféu bagre.svg",
+  racudo:          "/conquistas/Raçudo do mês.svg",
+  paredao:         "/conquistas/Mais presente.svg",
+  xerife:          "/conquistas/Completo.svg",
+  garcom:          "/conquistas/Invicto.svg",
+  "resenha-forte": "/conquistas/Alma do Grupo.svg",
+  chorao:          "/conquistas/Má fase.svg",
+  reclamao:        "/conquistas/Irregular.svg",
+  paneleiro:       "/conquistas/Consistente.svg",
+  firuleiro:       "/conquistas/Lenda.svg",
+  "corpo-mole":    "/conquistas/Só perde.svg",
+  cone:            "/conquistas/Lanterna.svg",
 };
 
 const CAMPO      = "/campo.png";
@@ -463,8 +464,8 @@ export function HomeClient({
                           </div>
 
                           {/* Description: h-21 pt-2 */}
-                          <div style={{ height: 21, flexShrink: 0, paddingTop: 2 }}>
-                            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#555", whiteSpace: "nowrap" }}>
+                          <div style={{ height: 21, flexShrink: 0, paddingTop: 2, overflow: "hidden" }}>
+                            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                               {c.traitDesc ?? (c.traitEmoji ? `${c.traitEmoji} ${c.traitNome}` : c.traitNome)}
                             </p>
                           </div>
@@ -476,7 +477,7 @@ export function HomeClient({
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             alt={c.traitNome}
-                            src={TRAIT_MASCOTS[c.traitSlug] ?? ""}
+                            src={TRAIT_BADGE[c.traitSlug] ?? ""}
                             style={{ position: "absolute", display: "block", inset: 0, width: "100%", height: "100%", maxWidth: "none", objectFit: "contain" }}
                           />
                         </div>
