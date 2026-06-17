@@ -43,22 +43,22 @@ const GRADIENTS: Record<string, [string, string]> = {
   bagre:           ["rgb(15,60,140)",   "rgb(8,30,80)"],
 };
 
-// Mascotes: ilustrações PNG por trait (animais personagens do Figma)
+// Mascotes: SVGs exportados do Figma em /public/traits/
 const MASCOTE: Record<string, string> = {
-  categoria:       "/ilustracoes/gato.png",
-  matador:         "/ilustracoes/tubarao.png",
-  paredao:         "/ilustracoes/rinoceronte.png",
-  racudo:          "/ilustracoes/touro.png",
-  xerife:          "/ilustracoes/bulldog.png",
-  garcom:          "/ilustracoes/polvo.png",
-  "resenha-forte": "/ilustracoes/peixe-mic.png",
-  chorao:          "/ilustracoes/foca.png",
-  reclamao:        "/ilustracoes/bode.png",
-  paneleiro:       "/ilustracoes/panela.png",
-  firuleiro:       "/ilustracoes/flamingo.png",
-  "corpo-mole":    "/ilustracoes/corpo-mole.png",
-  cone:            "/ilustracoes/cone.png",
-  bagre:           "/ilustracoes/bagre.png",
+  categoria:       "/traits/Craque.svg",
+  matador:         "/traits/Matador.svg",
+  paredao:         "/traits/Paredao.svg",
+  racudo:          "/traits/Racudo.svg",
+  xerife:          "/traits/Xerife.svg",
+  garcom:          "/traits/Garcom.svg",
+  "resenha-forte": "/traits/So_resenha.svg",
+  chorao:          "/traits/Chorao.svg",
+  reclamao:        "/traits/Reclamao.svg",
+  paneleiro:       "/traits/Paneleiro.svg",
+  firuleiro:       "/traits/Firuleiro.svg",
+  "corpo-mole":    "/traits/Corpo_mole.svg",
+  cone:            "/traits/Cone.svg",
+  bagre:           "/traits/Bagre.svg",
 };
 
 // Rotação de matiz aplicada na imagem de fundo (base = dourado/categoria) pra
@@ -269,7 +269,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
               <img
                 src={mascot}
                 alt={trait.nome}
-                style={{ position: "relative", width: "100%", height: "100%", objectFit: "contain", mixBlendMode: "screen" }}
+                style={{ position: "relative", width: "100%", height: "100%", objectFit: "contain" }}
               />
             </div>
 
