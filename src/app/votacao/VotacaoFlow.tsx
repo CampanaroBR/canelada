@@ -3,7 +3,7 @@
 import { useState, useTransition, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { submitVotos } from "./actions";
-import { TRAIT_SVG } from "@/lib/assets";
+// TRAIT_SVG removido — usamos ilustrações de personagens PNG no hero
 import { CaretLeft, CaretRight, MagnifyingGlass, CheckCircle } from "@phosphor-icons/react";
 
 type Jogador = { id: string; apelido: string };
@@ -40,6 +40,24 @@ const GRADIENTS: Record<string, [string, string]> = {
   "corpo-mole":    ["rgb(35,55,80)",   "rgb(110,140,170)"],
   cone:            ["rgb(90,55,10)",   "rgb(200,130,30)"],
   bagre:           ["rgb(10,40,90)",   "rgb(60,120,210)"],
+};
+
+// Mascotes: ilustrações PNG por trait (animais personagens do Figma)
+const MASCOTE: Record<string, string> = {
+  categoria:       "/ilustracoes/gato.png",
+  matador:         "/ilustracoes/tubarao.png",
+  paredao:         "/ilustracoes/rinoceronte.png",
+  racudo:          "/ilustracoes/touro.png",
+  xerife:          "/ilustracoes/bulldog.png",
+  garcom:          "/ilustracoes/polvo.png",
+  "resenha-forte": "/ilustracoes/peixe-mic.png",
+  chorao:          "/ilustracoes/foca.png",
+  reclamao:        "/ilustracoes/bode.png",
+  paneleiro:       "/ilustracoes/porco.png",
+  firuleiro:       "/ilustracoes/flamingo.png",
+  "corpo-mole":    "/ilustracoes/corpo-mole.png",
+  cone:            "/ilustracoes/cone.png",
+  bagre:           "/ilustracoes/bagre.png",
 };
 
 // Rotação de matiz aplicada na imagem de fundo (base = dourado/categoria) pra
@@ -92,7 +110,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
   const trait = steps[step];
   const [c1] = GRADIENTS[trait?.slug ?? ""] ?? ["rgb(60,60,65)", "rgb(150,150,155)"];
   const hueRotate = HUE_ROTATE[trait?.slug ?? ""] ?? 0;
-  const mascot = TRAIT_SVG[trait?.slug ?? ""] ?? "/traits/Craque.svg";
+  const mascot = MASCOTE[trait?.slug ?? ""] ?? "/ilustracoes/gato.png";
   const filtered = outros.filter((j) => j.apelido.toLowerCase().includes(search.toLowerCase()));
   const pendingPlayer = pending ? jogadores.find((j) => j.id === pending) ?? null : null;
   const total = steps.length;
