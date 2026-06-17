@@ -269,7 +269,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
               <img
                 src={mascot}
                 alt={trait.nome}
-                style={{ position: "relative", width: "100%", height: "100%", objectFit: "contain" }}
+                style={{ position: "relative", width: "100%", height: "100%", objectFit: "contain", mixBlendMode: "screen" }}
               />
             </div>
 
