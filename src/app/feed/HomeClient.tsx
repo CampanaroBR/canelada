@@ -14,22 +14,46 @@ import { BottomsheetMaisVotados } from "@/components/BottomsheetMaisVotados";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
 import { PersonagemShareModal } from "@/components/PersonagemShareModal";
 
-// Mapeia trait slug → badge SVG de conquista (nomes slugificados sem espaços/acentos)
+// Mapeia trait slug → badge SVG de conquista
+// Slugs de votação → badge correspondente
+// Slugs de conquista → arquivo direto (nome exato no filesystem)
 const TRAIT_BADGE: Record<string, string> = {
-  matador:         "/conquistas/em-chamas.svg",
-  categoria:       "/conquistas/rei-do-mes.svg",
-  bagre:           "/conquistas/trofeu-bagre.svg",
-  racudo:          "/conquistas/racudo-do-mes.svg",
-  paredao:         "/conquistas/mais-presente.svg",
-  xerife:          "/conquistas/completo.svg",
-  garcom:          "/conquistas/invicto.svg",
-  "resenha-forte": "/conquistas/alma-do-grupo.svg",
-  chorao:          "/conquistas/ma-fase.svg",
-  reclamao:        "/conquistas/irregular.svg",
-  paneleiro:       "/conquistas/consistente.svg",
-  firuleiro:       "/conquistas/lenda.svg",
-  "corpo-mole":    "/conquistas/so-perde.svg",
-  cone:            "/conquistas/lanterna.svg",
+  // Traits de votação
+  matador:           "/conquistas/em-chamas.svg",
+  categoria:         "/conquistas/rei-do-mes.svg",
+  bagre:             "/conquistas/trofeu-bagre.svg",
+  racudo:            "/conquistas/racudo-do-mes.svg",
+  paredao:           "/conquistas/mais-presente.svg",
+  xerife:            "/conquistas/Completo.svg",
+  garcom:            "/conquistas/Invicto.svg",
+  "resenha-forte":   "/conquistas/alma-do-grupo.svg",
+  chorao:            "/conquistas/ma-fase.svg",
+  reclamao:          "/conquistas/Irregular.svg",
+  paneleiro:         "/conquistas/Consistente.svg",
+  firuleiro:         "/conquistas/Lenda.svg",
+  "corpo-mole":      "/conquistas/so-perde.svg",
+  cone:              "/conquistas/Lanterna.svg",
+  // Traits de conquista (slug já é o nome do arquivo)
+  "em-chamas":       "/conquistas/em-chamas.svg",
+  "ma-fase":         "/conquistas/ma-fase.svg",
+  "consistente":     "/conquistas/Consistente.svg",
+  "primeira-vitoria":"/conquistas/primeira-vitoria.svg",
+  "virada-de-chave": "/conquistas/virada-de-chave.svg",
+  "trofeu-bagre":    "/conquistas/trofeu-bagre.svg",
+  "racudo-do-mes":   "/conquistas/racudo-do-mes.svg",
+  "rei-do-mes":      "/conquistas/rei-do-mes.svg",
+  "alma-do-grupo":   "/conquistas/alma-do-grupo.svg",
+  "mais-presente":   "/conquistas/mais-presente.svg",
+  "so-perde":        "/conquistas/so-perde.svg",
+  "rei-absoluto":    "/conquistas/rei-absoluto.svg",
+  "virada-de-chave": "/conquistas/virada-de-chave.svg",
+  "jogador-invisivel":"/conquistas/jogador-invisivel.svg",
+  "veterano":        "/conquistas/Veterano.svg",
+  "lenda":           "/conquistas/Lenda.svg",
+  "invicto":         "/conquistas/Invicto.svg",
+  "irregular":       "/conquistas/Irregular.svg",
+  "lanterna":        "/conquistas/Lanterna.svg",
+  "completo":        "/conquistas/Completo.svg",
 };
 
 const CAMPO      = "/campo.png";
