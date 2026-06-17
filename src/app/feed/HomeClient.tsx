@@ -17,42 +17,27 @@ import { PersonagemShareModal } from "@/components/PersonagemShareModal";
 // Mapeia trait slug → badge SVG de conquista
 // Slugs de votação → badge correspondente
 // Slugs de conquista → arquivo direto (nome exato no filesystem)
+// Mapeia achievement slug → arquivo SVG exato no git (case-sensitive no Vercel/Linux)
 const TRAIT_BADGE: Record<string, string> = {
-  // Traits de votação
-  matador:           "/conquistas/em-chamas.svg",
-  categoria:         "/conquistas/rei-do-mes.svg",
-  bagre:             "/conquistas/trofeu-bagre.svg",
-  racudo:            "/conquistas/racudo-do-mes.svg",
-  paredao:           "/conquistas/mais-presente.svg",
-  xerife:            "/conquistas/Completo.svg",
-  garcom:            "/conquistas/Invicto.svg",
-  "resenha-forte":   "/conquistas/alma-do-grupo.svg",
-  chorao:            "/conquistas/ma-fase.svg",
-  reclamao:          "/conquistas/Irregular.svg",
-  paneleiro:         "/conquistas/Consistente.svg",
-  firuleiro:         "/conquistas/Lenda.svg",
-  "corpo-mole":      "/conquistas/so-perde.svg",
-  cone:              "/conquistas/Lanterna.svg",
-  // Traits de conquista (slug já é o nome do arquivo)
-  "em-chamas":       "/conquistas/em-chamas.svg",
-  "ma-fase":         "/conquistas/ma-fase.svg",
-  "consistente":     "/conquistas/Consistente.svg",
-  "primeira-vitoria":"/conquistas/primeira-vitoria.svg",
-  "virada-de-chave": "/conquistas/virada-de-chave.svg",
-  "trofeu-bagre":    "/conquistas/trofeu-bagre.svg",
-  "racudo-do-mes":   "/conquistas/racudo-do-mes.svg",
-  "rei-do-mes":      "/conquistas/rei-do-mes.svg",
-  "alma-do-grupo":   "/conquistas/alma-do-grupo.svg",
-  "mais-presente":   "/conquistas/mais-presente.svg",
-  "so-perde":        "/conquistas/so-perde.svg",
-  "rei-absoluto":    "/conquistas/rei-absoluto.svg",
+  "alma-do-grupo":    "/conquistas/alma-do-grupo.svg",
+  "completo":         "/conquistas/Completo.svg",
+  "consistente":      "/conquistas/Consistente.svg",
+  "em-chamas":        "/conquistas/em-chamas.svg",
+  "invicto":          "/conquistas/Invicto.svg",
+  "irregular":        "/conquistas/Irregular.svg",
   "jogador-invisivel":"/conquistas/jogador-invisivel.svg",
-  "veterano":        "/conquistas/Veterano.svg",
-  "lenda":           "/conquistas/Lenda.svg",
-  "invicto":         "/conquistas/Invicto.svg",
-  "irregular":       "/conquistas/Irregular.svg",
-  "lanterna":        "/conquistas/Lanterna.svg",
-  "completo":        "/conquistas/Completo.svg",
+  "lanterna":         "/conquistas/Lanterna.svg",
+  "lenda":            "/conquistas/Lenda.svg",
+  "ma-fase":          "/conquistas/ma-fase.svg",
+  "mais-presente":    "/conquistas/mais-presente.svg",
+  "primeira-vitoria": "/conquistas/primeira-vitoria.svg",
+  "racudo-do-mes":    "/conquistas/racudo-do-mes.svg",
+  "rei-absoluto":     "/conquistas/rei-absoluto.svg",
+  "rei-do-mes":       "/conquistas/rei-do-mes.svg",
+  "so-perde":         "/conquistas/so-perde.svg",
+  "trofeu-bagre":     "/conquistas/trofeu-bagre.svg",
+  "veterano":         "/conquistas/Veterano.svg",
+  "virada-de-chave":  "/conquistas/virada-de-chave.svg",
 };
 
 const CAMPO      = "/campo.png";
@@ -464,7 +449,7 @@ export function HomeClient({
                       {/* flex gap-16 items-center row */}
                       <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
                         {/* Text column: flex-[1_0_0] flex-col gap-2 items-start justify-center min-w-px */}
-                        <div style={{ flex: "1 0 0", minWidth: 1, display: "flex", flexDirection: "column", gap: 2, alignItems: "flex-start", justifyContent: "center" }}>
+                        <div style={{ flex: "1 0 0", minWidth: 0, overflow: "hidden", display: "flex", flexDirection: "column", gap: 2, alignItems: "flex-start", justifyContent: "center" }}>
 
                           {/* Label: h-24, text absolute top-5 */}
                           <div style={{ height: 24, position: "relative", width: "100%", flexShrink: 0 }}>

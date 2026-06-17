@@ -44,9 +44,17 @@ export default async function FeedPage() {
       orderBy: { createdAt: "desc" },
       take: 3,
     }),
-    // Medalhas: traits mais recentes dos jogadores do grupo
+    // Medalhas: só traits que têm badge SVG própria (conquistas, não votação)
     prisma.jogadorTrait.findMany({
-      where: { jogador: { grupoId } },
+      where: {
+        jogador: { grupoId },
+        traitSlug: { in: [
+          "alma-do-grupo", "completo", "consistente", "em-chamas", "invicto",
+          "irregular", "jogador-invisivel", "lanterna", "lenda", "ma-fase",
+          "mais-presente", "primeira-vitoria", "racudo-do-mes", "rei-absoluto",
+          "rei-do-mes", "so-perde", "trofeu-bagre", "veterano", "virada-de-chave",
+        ]},
+      },
       include: {
         jogador: { select: { apelido: true } },
         trait: { select: { nome: true, emoji: true, descricao: true } },
