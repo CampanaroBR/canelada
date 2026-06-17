@@ -28,7 +28,7 @@ const ORDERED_SLUGS = [
 // [topo, base] usados em linear-gradient(to bottom, topo, base)
 const GRADIENTS: Record<string, [string, string]> = {
   categoria:       ["rgb(180,130,20)",  "rgb(100,70,8)"],
-  matador:         ["rgb(15,110,100)",  "rgb(8,55,50)"],
+  matador:         ["rgb(40,85,150)",   "rgb(15,40,90)"],
   paredao:         ["rgb(180,20,20)",   "rgb(90,8,8)"],
   racudo:          ["rgb(160,80,15)",   "rgb(90,40,8)"],
   xerife:          ["rgb(160,100,25)",  "rgb(90,55,12)"],
