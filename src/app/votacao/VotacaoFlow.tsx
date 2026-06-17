@@ -53,7 +53,7 @@ const MASCOTE: Record<string, string> = {
   "resenha-forte": "/ilustracoes/peixe-mic.png",
   chorao:          "/ilustracoes/foca.png",
   reclamao:        "/ilustracoes/bode.png",
-  paneleiro:       "/ilustracoes/porco.png",
+  paneleiro:       "/ilustracoes/panela.png",
   firuleiro:       "/ilustracoes/flamingo.png",
   "corpo-mole":    "/ilustracoes/corpo-mole.png",
   cone:            "/ilustracoes/cone.png",
