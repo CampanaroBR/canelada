@@ -67,7 +67,7 @@ export async function criarRodada(data: string, participantesIds: string[]) {
   if (subs.length > 0) {
     await sendPushToSubscriptions(subs, {
       title: "🏆 Votação aberta!",
-      body: "Hora de votar no baba. Quem foi o MVP?",
+      body: "Vote nos melhores e piores do baba de hoje!",
       url: "/votacao",
     });
   }
