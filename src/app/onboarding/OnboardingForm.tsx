@@ -1,27 +1,27 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { saveApelido } from "./actions";
+import { saveOnboarding } from "./actions";
 
 const MAX = 20;
 
 export function OnboardingForm() {
-  const [apelido, setApelido]     = useState("");
-  const [error, setError]         = useState("");
-  const [focused, setFocused]     = useState(false);
-  const [isPending, startTransition] = useTransition();
+  const [apelido, setApelido]         = useState("");
+  const [nomeNoBaba, setNomeNoBaba]   = useState("");
+  const [error, setError]             = useState("");
+  const [isPending, startTransition]  = useTransition();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!apelido.trim()) return;
+    if (!apelido.trim() || !nomeNoBaba.trim()) return;
     setError("");
     startTransition(async () => {
-      const result = await saveApelido(apelido);
+      const result = await saveOnboarding(apelido, nomeNoBaba);
       if (result?.error) setError(result.error);
     });
   }
 
-  const disabled = isPending || !apelido.trim();
+  const disabled = isPending || !apelido.trim() || !nomeNoBaba.trim();
 
   return (
     <>
@@ -209,14 +209,14 @@ export function OnboardingForm() {
           <h1 style={{
             fontFamily: "var(--font-display)",
             fontWeight: 900,
-            fontSize: "clamp(64px, 17vw, 88px)",
+            fontSize: "clamp(54px, 14vw, 80px)",
             lineHeight: 0.88,
             letterSpacing: "-0.02em",
             textTransform: "uppercase",
             marginBottom: "16px",
           }}>
-            <span style={{ color: "var(--color-text-primary)", display: "block" }}>SEU</span>
-            <span style={{ color: "var(--color-accent)", display: "block" }}>APELIDO</span>
+            <span style={{ color: "var(--color-text-primary)", display: "block" }}>ENTRA</span>
+            <span style={{ color: "var(--color-accent)", display: "block" }}>NO BABA</span>
           </h1>
 
           <p style={{
@@ -226,20 +226,23 @@ export function OnboardingForm() {
             lineHeight: 1.55,
             marginBottom: "24px",
           }}>
-            Como o grupo vai te chamar pra sempre.
+            Como o grupo vai te conhecer.
           </p>
 
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-            {/* Input — double-bezel outer shell */}
+
+            {/* Label apelido */}
+            <p style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.12em", color: "var(--color-text-muted)", fontFamily: "var(--font-body)", textTransform: "uppercase", marginBottom: 2 }}>
+              Apelido
+            </p>
+            {/* Input apelido */}
             <div style={{
               position: "relative",
-              borderRadius: "var(--radius-lg)",   /* outer: 16px */
+              borderRadius: "var(--radius-lg)",
               background: "var(--color-surface-1)",
-              /* Shadow-as-border dark (surfaces.md) */
-              boxShadow: error
-                ? "0 0 0 1px rgba(239,68,68,0.5), 0 0 0 3px rgba(239,68,68,0.10)"
-                : "var(--shadow-border)",
-              padding: "4px",                      /* gap entre outer e inner */
+              boxShadow: "var(--shadow-border)",
+              padding: "4px",
+              marginBottom: 4,
             }}>
               <input
                 className="onboarding-input"
@@ -247,19 +250,14 @@ export function OnboardingForm() {
                 placeholder="Ex: Arthurzinho"
                 value={apelido}
                 onChange={(e) => setApelido(e.target.value.slice(0, MAX))}
-                onFocus={() => setFocused(true)}
-                onBlur={() => setFocused(false)}
                 autoFocus
                 autoComplete="off"
                 autoCapitalize="words"
                 aria-label="Apelido"
-                aria-invalid={!!error}
-                aria-describedby={error ? "apelido-error" : undefined}
                 style={{
                   width: "100%",
                   height: "52px",
                   padding: "0 52px 0 16px",
-                  /* Inner core: radius = outer - padding = 16 - 4 = 12px (concentric!) */
                   borderRadius: "var(--radius-md)",
                   background: "var(--color-surface-2)",
                   border: "none",
@@ -269,36 +267,64 @@ export function OnboardingForm() {
                   fontFamily: "var(--font-body)",
                 }}
               />
-              {/* Contador — tabular-nums (make-interfaces-feel-better) */}
-              <span
-                className="tabular"
-                aria-hidden
-                style={{
-                  position: "absolute",
-                  right: "20px",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  fontSize: "11px",
-                  fontWeight: 600,
-                  fontFamily: "var(--font-body)",
-                  color: apelido.length >= MAX ? "var(--color-danger)" : "var(--color-text-muted)",
-                }}
-              >
+              <span className="tabular" aria-hidden style={{
+                position: "absolute", right: "20px", top: "50%", transform: "translateY(-50%)",
+                fontSize: "11px", fontWeight: 600, fontFamily: "var(--font-body)",
+                color: apelido.length >= MAX ? "var(--color-danger)" : "var(--color-text-muted)",
+              }}>
                 {apelido.length}/{MAX}
               </span>
             </div>
 
-            {error && (
-              <p
-                id="apelido-error"
-                role="alert"
+            {/* Label nome no baba */}
+            <p style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.12em", color: "var(--color-text-muted)", fontFamily: "var(--font-body)", textTransform: "uppercase", marginBottom: 2 }}>
+              Nome na lista do WhatsApp
+            </p>
+            <p style={{ fontSize: "12px", color: "var(--color-text-muted)", fontFamily: "var(--font-body)", marginBottom: 4, marginTop: -2 }}>
+              Como você aparece quando confirma presença no grupo.
+            </p>
+            {/* Input nome no baba */}
+            <div style={{
+              position: "relative",
+              borderRadius: "var(--radius-lg)",
+              background: "var(--color-surface-1)",
+              boxShadow: "var(--shadow-border)",
+              padding: "4px",
+              marginBottom: 4,
+            }}>
+              <input
+                className="onboarding-input"
+                type="text"
+                placeholder="Ex: Arthur, Brunão, Galego"
+                value={nomeNoBaba}
+                onChange={(e) => setNomeNoBaba(e.target.value.slice(0, 30))}
+                autoComplete="off"
+                autoCapitalize="words"
+                aria-label="Nome na lista do WhatsApp"
                 style={{
-                  fontSize: "13px",
-                  color: "var(--color-danger)",
+                  width: "100%",
+                  height: "52px",
+                  padding: "0 52px 0 16px",
+                  borderRadius: "var(--radius-md)",
+                  background: "var(--color-surface-2)",
+                  border: "none",
+                  color: "var(--color-text-primary)",
+                  fontSize: "20px",
+                  fontWeight: 600,
                   fontFamily: "var(--font-body)",
-                  paddingLeft: "4px",
                 }}
-              >
+              />
+              <span className="tabular" aria-hidden style={{
+                position: "absolute", right: "20px", top: "50%", transform: "translateY(-50%)",
+                fontSize: "11px", fontWeight: 600, fontFamily: "var(--font-body)",
+                color: nomeNoBaba.length >= 30 ? "var(--color-danger)" : "var(--color-text-muted)",
+              }}>
+                {nomeNoBaba.length}/30
+              </span>
+            </div>
+
+            {error && (
+              <p role="alert" style={{ fontSize: "13px", color: "var(--color-danger)", fontFamily: "var(--font-body)", paddingLeft: "4px" }}>
                 {error}
               </p>
             )}

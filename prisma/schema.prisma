@@ -58,25 +58,34 @@ model VerificationToken {
 }
 
 model Grupo {
-  id        String   @id @default(cuid())
-  nome      String
-  slug      String   @unique
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  nome        String
+  slug        String   @unique
+  inviteCode  String   @unique @default(dbgenerated("gen_random_uuid()"))
+  createdAt   DateTime @default(now())
 
-  jogadores Jogador[]
-  rodadas   Rodada[]
+  jogadores   Jogador[]
+  rodadas     Rodada[]
+}
+
+enum RoleGrupo {
+  SUPER_ADMIN
+  ADMIN
+  PLAYER
 }
 
 model Jogador {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  grupoId   String
-  apelido   String
-  foto      String?
-  createdAt DateTime @default(now())
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  grupoId     String
+  apelido     String
+  nomeNoBaba  String?
+  foto        String?
+  role        RoleGrupo @default(PLAYER)
+  createdAt   DateTime  @default(now())
 
-  user      User     @relation(fields: [userId], references: [id])
-  grupo     Grupo    @relation(fields: [grupoId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+  grupo       Grupo     @relation(fields: [grupoId], references: [id])
   votosRecebidos  Voto[]   @relation("VotadoVotos")
   votosEmitidos   Voto[]   @relation("VotanteVotos")
   traitsRecebidas JogadorTrait[]

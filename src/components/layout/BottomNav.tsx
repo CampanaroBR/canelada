@@ -7,7 +7,7 @@ import { House, CheckCircle, SoccerBall, ChartBar } from "@phosphor-icons/react"
 const NAV_ITEMS = [
   { href: "/feed", label: "Home", icon: House, matchActive: true },
   { href: "/votacao", label: "Votos", icon: CheckCircle, matchActive: true },
-  { href: "/feed", label: "Pelada", icon: SoccerBall, matchActive: false },
+  { href: "/pelada", label: "Pelada", icon: SoccerBall, matchActive: true },
   { href: "/ranking", label: "Ranking", icon: ChartBar, matchActive: true },
 ];
 

@@ -4,13 +4,18 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function saveApelido(apelido: string) {
+export async function saveOnboarding(apelido: string, nomeNoBaba: string) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
-  const trimmed = apelido.trim();
-  if (trimmed.length < 2 || trimmed.length > 20) {
+  const trimmedApelido = apelido.trim();
+  const trimmedNome = nomeNoBaba.trim();
+
+  if (trimmedApelido.length < 2 || trimmedApelido.length > 20) {
     return { error: "Apelido deve ter entre 2 e 20 caracteres." };
+  }
+  if (trimmedNome.length < 2 || trimmedNome.length > 30) {
+    return { error: "Nome do baba deve ter entre 2 e 30 caracteres." };
   }
 
   const existing = await prisma.jogador.findUnique({
@@ -28,9 +33,15 @@ export async function saveApelido(apelido: string) {
     data: {
       userId: session.user.id,
       grupoId: grupo.id,
-      apelido: trimmed,
+      apelido: trimmedApelido,
+      nomeNoBaba: trimmedNome,
     },
   });
 
   redirect("/feed");
+}
+
+// mantém compatibilidade com código antigo
+export async function saveApelido(apelido: string) {
+  return saveOnboarding(apelido, apelido);
 }
