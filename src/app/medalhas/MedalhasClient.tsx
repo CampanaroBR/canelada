@@ -179,64 +179,80 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
 
       {/* ── MAIN CARD — contém tudo ── */}
       <div style={{
-        background: "#0f0f0f",
+        background: "#171717",
+        borderTopLeftRadius: 48,
+        borderTopRightRadius: 48,
+        paddingTop: 24,
+        paddingLeft: 8,
+        paddingRight: 8,
         paddingBottom: "calc(104px + env(safe-area-inset-bottom, 0px))",
+        display: "flex",
+        flexDirection: "column",
+        gap: 16,
       }}>
 
         {/* Section header */}
-        <div style={{
-          padding: "20px 12px 12px",
-          display: "flex",
-          flexDirection: "column",
-          gap: 12,
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <SealCheck size={20} color="#9fe870" weight="fill" />
-            <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>
-              MEDALHAS CONQUISTADAS
-            </span>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, height: 42 }}>
+          <div style={{
+            background: "#171717",
+            border: "1px solid #2e2e2e",
+            borderRadius: 12,
+            padding: 8,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+            <SealCheck size={24} color="#9fe870" weight="fill" />
           </div>
-
-          {/* Filter tabs */}
-          <div style={{ display: "flex", gap: 8, overflowX: "auto" }}>
-            {(["todas", "desbloqueadas", "andamento"] as Filter[]).map(f => {
-              const active = filter === f;
-              const label = f === "todas"
-                ? `Todas (${TOTAL})`
-                : f === "desbloqueadas"
-                ? `Desbloqueadas (${unlockedCount})`
-                : `Em andamento (${TOTAL - unlockedCount})`;
-              return (
-                <button
-                  key={f}
-                  onClick={() => setFilter(f)}
-                  style={{
-                    background: active ? "#9fe870" : "transparent",
-                    border: active ? "none" : "1px solid #2e2e2e",
-                    borderRadius: 9999,
-                    padding: "5px 12px",
-                    cursor: "pointer",
-                    flexShrink: 0,
-                    fontFamily: "var(--font-display)",
-                    fontWeight: active ? 700 : 600,
-                    fontSize: 12,
-                    lineHeight: "18px",
-                    color: active ? "#090909" : "#f5f5f5",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>
+            MEDALHAS CONQUISTADAS
+          </span>
         </div>
 
-        {/* Divider */}
-        <div style={{ height: 1, background: "#1e1e1e", marginBottom: 4 }} />
+        {/* Filter tabs */}
+        <div style={{ display: "flex", gap: 8, overflowX: "auto" }}>
+          {(["todas", "desbloqueadas", "andamento"] as Filter[]).map(f => {
+            const active = filter === f;
+            const label = f === "todas"
+              ? `Todas (${TOTAL})`
+              : f === "desbloqueadas"
+              ? `Desbloqueadas (${unlockedCount})`
+              : `Em andamento (${TOTAL - unlockedCount})`;
+            return (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                style={{
+                  background: active ? "#9fe870" : "transparent",
+                  border: active ? "none" : "1px solid #2e2e2e",
+                  borderRadius: 9999,
+                  padding: "5px 12px",
+                  cursor: "pointer",
+                  flexShrink: 0,
+                  fontFamily: "var(--font-display)",
+                  fontWeight: active ? 700 : 600,
+                  fontSize: 12,
+                  lineHeight: "18px",
+                  color: active ? "#090909" : "#f5f5f5",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
 
-        {/* Badge categories */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 24, padding: "16px 8px" }}>
+        {/* Inner badge container */}
+        <div style={{
+          background: "#090909",
+          border: "1px solid #2e2e2e",
+          borderRadius: 20,
+          padding: "13px 9px",
+          display: "flex",
+          flexDirection: "column",
+          gap: 20,
+        }}>
           {BADGE_CATALOG.map(cat => {
             const visible = cat.badges.filter(b => shouldShow(b.slug));
             if (visible.length === 0) return null;
@@ -259,7 +275,7 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
                 {/* Badge rows of 3 */}
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {chunk(visible, 3).map((row, ri) => (
-                    <div key={ri} style={{ display: "flex", gap: 8 }}>
+                    <div key={ri} style={{ display: "flex", gap: 8, alignItems: "stretch" }}>
                       {row.map(badge => {
                         const unlocked = unlockedSet.has(badge.slug);
                         return (
@@ -270,68 +286,72 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
                               flex: "1 0 0",
                               minWidth: 0,
                               position: "relative",
-                              background: unlocked ? "#0a0e0e" : "#1a1a1a",
-                              border: unlocked ? "1px solid #2e2e2e" : "1px solid #242424",
+                              background: unlocked ? "#0a0e0e" : "#171717",
+                              border: unlocked ? "1px solid #2e2e2e" : "none",
                               borderRadius: 12,
                               display: "flex",
                               flexDirection: "column",
                               alignItems: "center",
                               justifyContent: "center",
-                              padding: "10px 6px",
-                              gap: 6,
+                              padding: unlocked ? "11px 4px" : "10px 4px",
+                              gap: 0,
                               overflow: "hidden",
                               cursor: "pointer",
                               WebkitTapHighlightColor: "transparent",
                             }}
                           >
                             {/* Lock / Check icon */}
-                            <div style={{ position: "absolute", top: 4, right: 4 }}>
+                            <div style={{ position: "absolute", top: unlocked ? 3 : 4, right: 4 }}>
                               {unlocked
-                                ? <CheckCircle size={22} color="#9fe870" weight="fill" />
-                                : <Lock size={13} color="rgba(255,255,255,0.35)" weight="fill" />
+                                ? <CheckCircle size={24} color="#9fe870" weight="fill" />
+                                : <Lock size={14} color="rgba(255,255,255,0.35)" weight="fill" />
                               }
                             </div>
 
-                            {/* Badge image */}
-                            <div style={{ width: 64, height: 64, flexShrink: 0 }}>
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img
-                                alt={badge.nome}
-                                src={badge.svg}
-                                style={{
-                                  width: "100%", height: "100%",
-                                  objectFit: "contain",
-                                  opacity: unlocked ? 1 : 0.3,
-                                }}
-                              />
+                            {/* Player: image + label */}
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                              {/* Badge image with -8px bottom margin */}
+                              <div style={{ width: 72, height: 72, flexShrink: 0, marginBottom: -8 }}>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  alt={badge.nome}
+                                  src={badge.svg}
+                                  style={{
+                                    width: "100%", height: "100%",
+                                    objectFit: "contain",
+                                    opacity: unlocked ? 1 : 0.3,
+                                  }}
+                                />
+                              </div>
+
+                              {/* Label */}
+                              <p style={{
+                                margin: 0,
+                                fontFamily: "var(--font-display)",
+                                fontWeight: 800,
+                                fontSize: 12,
+                                lineHeight: "13.75px",
+                                color: unlocked ? "#fff" : "rgba(255,255,255,0.25)",
+                                textAlign: "center",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                maxWidth: "100%",
+                              }}>
+                                {badge.nome}
+                              </p>
                             </div>
 
-                            {/* Label */}
-                            <p style={{
-                              margin: 0,
-                              fontFamily: "var(--font-display)",
-                              fontWeight: 800,
-                              fontSize: 11,
-                              lineHeight: "14px",
-                              color: unlocked ? "#fff" : "rgba(255,255,255,0.25)",
-                              textAlign: "center",
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              maxWidth: "100%",
-                            }}>
-                              {badge.nome}
-                            </p>
-
-                            {/* Progress bar (locked) */}
+                            {/* Progress bar (locked only) */}
                             {!unlocked && (
                               <div style={{
-                                width: "100%",
-                                height: 5,
+                                width: 72,
+                                height: 6,
                                 background: "rgba(120,120,120,0.2)",
                                 borderRadius: 100,
                                 overflow: "hidden",
                                 flexShrink: 0,
+                                marginTop: 8,
                               }}>
                                 <div style={{
                                   height: "100%",
