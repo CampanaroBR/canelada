@@ -24,23 +24,23 @@ const ORDERED_SLUGS = [
   "firuleiro", "corpo-mole", "cone", "bagre",
 ];
 
-// Gradientes por trait — cores calibradas para bater com o Figma
+// Gradientes por trait — extraídos das screenshots do Figma
 // [topo, base] usados em linear-gradient(to bottom, topo, base)
 const GRADIENTS: Record<string, [string, string]> = {
-  categoria:       ["rgb(180,130,20)",  "rgb(100,70,8)"],
-  matador:         ["rgb(40,85,150)",   "rgb(15,40,90)"],
-  paredao:         ["rgb(180,20,20)",   "rgb(90,8,8)"],
-  racudo:          ["rgb(160,80,15)",   "rgb(90,40,8)"],
-  xerife:          ["rgb(160,100,25)",  "rgb(90,55,12)"],
-  garcom:          ["rgb(110,30,140)",  "rgb(55,12,75)"],
-  "resenha-forte": ["rgb(200,30,120)",  "rgb(110,12,65)"],
-  chorao:          ["rgb(30,80,160)",   "rgb(12,40,90)"],
-  reclamao:        ["rgb(80,25,140)",   "rgb(40,10,80)"],
-  paneleiro:       ["rgb(30,120,40)",   "rgb(12,65,20)"],
-  firuleiro:       ["rgb(170,120,15)",  "rgb(90,65,8)"],
-  "corpo-mole":    ["rgb(140,80,30)",   "rgb(75,40,12)"],
-  cone:            ["rgb(190,90,15)",   "rgb(100,45,8)"],
-  bagre:           ["rgb(15,60,140)",   "rgb(8,30,80)"],
+  categoria:       ["rgb(195,155,35)",  "rgb(95,65,6)"],
+  matador:         ["rgb(38,85,160)",   "rgb(12,40,95)"],
+  paredao:         ["rgb(175,22,22)",   "rgb(85,6,6)"],
+  racudo:          ["rgb(95,50,12)",    "rgb(42,20,4)"],
+  xerife:          ["rgb(145,88,18)",   "rgb(72,40,7)"],
+  garcom:          ["rgb(108,32,138)",  "rgb(52,10,72)"],
+  "resenha-forte": ["rgb(190,22,105)",  "rgb(100,8,52)"],
+  chorao:          ["rgb(28,72,138)",   "rgb(8,32,82)"],
+  reclamao:        ["rgb(72,22,132)",   "rgb(35,8,72)"],
+  paneleiro:       ["rgb(22,108,32)",   "rgb(8,58,14)"],
+  firuleiro:       ["rgb(162,122,16)",  "rgb(82,60,6)"],
+  "corpo-mole":    ["rgb(118,68,20)",   "rgb(58,30,7)"],
+  cone:            ["rgb(188,82,12)",   "rgb(92,38,5)"],
+  bagre:           ["rgb(16,52,128)",   "rgb(6,22,72)"],
 };
 
 // Mascotes: SVGs exportados do Figma em /public/traits/
@@ -243,8 +243,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
             style={{
               position: "absolute", inset: 0,
               width: "100%", height: "100%", objectFit: "cover",
-              opacity: 0.35,
-              mixBlendMode: "screen",
+              opacity: 0.18,
             }}
           />
 
