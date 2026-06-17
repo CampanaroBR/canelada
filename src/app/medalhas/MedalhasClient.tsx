@@ -9,57 +9,59 @@ const BADGE_CATALOG = [
     id: "presenca",
     title: "PRESENÇA 🏅",
     badges: [
-      { slug: "primeiro-baba",  nome: "Primeiro Baba",  svg: "/conquistas/primeiro-baba.svg" },
-      { slug: "veterano",       nome: "Veterano",        svg: "/conquistas/veterano.svg" },
-      { slug: "casca-grossa",   nome: "Casca Grossa",   svg: "/conquistas/casca-grossa.svg" },
-      { slug: "mais-presente",  nome: "Mais Presente",  svg: "/conquistas/mais-presente.svg" },
-      { slug: "alma-do-grupo",  nome: "Alma do Grupo",  svg: "/conquistas/alma-do-grupo.svg" },
-      { slug: "hall-da-fama",   nome: "Hall da Fama",   svg: "/conquistas/hall-da-fama.svg" },
-      { slug: "lenda-do-baba",  nome: "Lenda do Baba",  svg: "/conquistas/lenda-do-baba.svg" },
+      { slug: "primeiro-baba",  nome: "Primeira Pelada", descricao: "Participou da primeira rodada registrada no Canelada.", svg: "/conquistas/primeiro-baba.svg" },
+      { slug: "veterano",       nome: "Veterano",         descricao: "Participou de 10 rodadas.", svg: "/conquistas/veterano.svg" },
+      { slug: "casca-grossa",   nome: "Casca Grossa",     descricao: "Participou de 25 rodadas.", svg: "/conquistas/casca-grossa.svg" },
+      { slug: "mais-presente",  nome: "Mais Presente",    descricao: "Participou de 100% das rodadas de um mês.", svg: "/conquistas/mais-presente.svg" },
+      { slug: "alma-do-grupo",  nome: "Alma do Grupo",    descricao: "Participou de ao menos 80% das rodadas em 3 meses consecutivos.", svg: "/conquistas/alma-do-grupo.svg" },
+      { slug: "hall-da-fama",   nome: "Hall da Fama",     descricao: "Participou de 50 rodadas.", svg: "/conquistas/hall-da-fama.svg" },
+      { slug: "lenda-do-baba",  nome: "Lenda do Baba",    descricao: "Participou de 100 rodadas e tem pelo menos 5 MVPs.", svg: "/conquistas/lenda-do-baba.svg" },
     ],
   },
   {
     id: "performance",
     title: "PERFORMANCE ⭐",
     badges: [
-      { slug: "mvp",             nome: "MVP",             svg: "/conquistas/mvp.svg" },
-      { slug: "rei-absoluto",    nome: "Rei Absoluto",    svg: "/conquistas/rei-absoluto.svg" },
-      { slug: "craque-da-galera",nome: "Craque da Galera",svg: "/conquistas/craque-da-galera.svg" },
-      { slug: "rei-do-mes",      nome: "Rei do Mês",      svg: "/conquistas/rei-do-mes.svg" },
-      { slug: "craque-historico",nome: "Craque Histórico",svg: "/conquistas/craque-historico.svg" },
+      { slug: "mvp",              nome: "MVP",              descricao: "Recebeu MVP pela primeira vez.", svg: "/conquistas/mvp.svg" },
+      { slug: "rei-absoluto",     nome: "Rei Absoluto",     descricao: "Recebeu 5 MVPs acumulados.", svg: "/conquistas/rei-absoluto.svg" },
+      { slug: "craque-da-galera", nome: "Craque da Galera", descricao: "Recebeu 10 MVPs acumulados.", svg: "/conquistas/craque-da-galera.svg" },
+      { slug: "rei-do-mes",       nome: "Rei do Mês",       descricao: "Jogador com mais MVPs durante um mês.", svg: "/conquistas/rei-do-mes.svg" },
+      { slug: "craque-historico", nome: "Craque Histórico", descricao: "Recebeu 20 MVPs acumulados.", svg: "/conquistas/craque-historico.svg" },
     ],
   },
   {
     id: "sequencias",
     title: "SEQUÊNCIAS 🔥",
     badges: [
-      { slug: "em-chamas",      nome: "Em Chamas",      svg: "/conquistas/em-chamas.svg" },
-      { slug: "imparavel",      nome: "Imparável",       svg: "/conquistas/imparavel.svg" },
-      { slug: "invicto",        nome: "Invicto",         svg: "/conquistas/invicto.svg" },
-      { slug: "virada-de-chave",nome: "Virada de Chave", svg: "/conquistas/virada-de-chave.svg" },
-      { slug: "consistente",    nome: "Consistente",     svg: "/conquistas/consistente.svg" },
+      { slug: "em-chamas",       nome: "Em Chamas",       descricao: "Recebeu destaque positivo em 3 rodadas consecutivas.", svg: "/conquistas/em-chamas.svg" },
+      { slug: "imparavel",       nome: "Imparável",        descricao: "Recebeu destaque positivo em 5 rodadas consecutivas.", svg: "/conquistas/imparavel.svg" },
+      { slug: "invicto",         nome: "Invicto",          descricao: "Sem traits negativas por 5 rodadas consecutivas.", svg: "/conquistas/invicto.svg" },
+      { slug: "virada-de-chave", nome: "Virada de Chave",  descricao: "Recebeu trait negativa e conquistou destaque positivo na rodada seguinte.", svg: "/conquistas/virada-de-chave.svg" },
+      { slug: "consistente",     nome: "Consistente",      descricao: "Participou de 8 rodadas consecutivas.", svg: "/conquistas/consistente.svg" },
     ],
   },
   {
     id: "reconhecimento",
     title: "RECONHECIMENTO 💪",
     badges: [
-      { slug: "operario",        nome: "Operário",        svg: "/conquistas/operario.svg" },
-      { slug: "racudo-do-mes",   nome: "Raçudo do Mês",   svg: "/conquistas/racudo-do-mes.svg" },
-      { slug: "resenha-forte",   nome: "Resenha Forte",   svg: "/conquistas/resenha-forte.svg" },
-      { slug: "querido-da-galera",nome: "Querido da Galera",svg: "/conquistas/querido-da-galera.svg" },
+      { slug: "operario",          nome: "Operário",          descricao: "Recebeu a trait Raçudo 5 vezes.", svg: "/conquistas/operario.svg" },
+      { slug: "racudo-do-mes",     nome: "Raçudo do Mês",     descricao: "Recebeu mais votos para Raçudo durante um mês.", svg: "/conquistas/racudo-do-mes.svg" },
+      { slug: "resenha-forte",     nome: "Resenha Forte",     descricao: "Recebeu 20 traits sociais acumuladas.", svg: "/conquistas/resenha-forte.svg" },
+      { slug: "querido-da-galera", nome: "Querido da Galera", descricao: "Recebeu 50 destaques positivos acumulados.", svg: "/conquistas/querido-da-galera.svg" },
     ],
   },
   {
     id: "colecao",
     title: "COLEÇÃO 🎖️",
     badges: [
-      { slug: "colecionador",     nome: "Colecionador",     svg: "/conquistas/colecionador.svg" },
-      { slug: "mestre-da-resenha",nome: "Mestre da Resenha",svg: "/conquistas/mestre-da-resenha.svg" },
-      { slug: "completo",         nome: "Completo!",         svg: "/conquistas/completo.svg" },
+      { slug: "colecionador",      nome: "Colecionador",      descricao: "Desbloqueou 8 badges.", svg: "/conquistas/colecionador.svg" },
+      { slug: "mestre-da-resenha", nome: "Mestre da Resenha", descricao: "Desbloqueou 16 badges.", svg: "/conquistas/mestre-da-resenha.svg" },
+      { slug: "completo",          nome: "Completo!",          descricao: "Desbloqueou todas as badges do jogo.", svg: "/conquistas/completo.svg" },
     ],
   },
 ] as const;
+
+type BadgeEntry = typeof BADGE_CATALOG[number]["badges"][number];
 
 const ALL_SLUGS = BADGE_CATALOG.flatMap(c => c.badges.map(b => b.slug));
 const TOTAL = ALL_SLUGS.length;
@@ -77,6 +79,7 @@ interface Props {
 
 export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
   const [filter, setFilter] = useState<Filter>("todas");
+  const [selected, setSelected] = useState<BadgeEntry | null>(null);
   const unlockedSet = new Set(unlockedSlugs);
   const unlockedCount = ALL_SLUGS.filter(s => unlockedSet.has(s)).length;
 
@@ -262,6 +265,7 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
                         return (
                           <div
                             key={badge.slug}
+                            onClick={() => setSelected(badge)}
                             style={{
                               flex: "1 0 0",
                               minWidth: 0,
@@ -276,6 +280,8 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
                               padding: "10px 6px",
                               gap: 6,
                               overflow: "hidden",
+                              cursor: "pointer",
+                              WebkitTapHighlightColor: "transparent",
                             }}
                           >
                             {/* Lock / Check icon */}
@@ -349,6 +355,125 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
           })}
         </div>
       </div>
+
+      {/* ── BADGE BOTTOM SHEET ── */}
+      {selected && (() => {
+        const unlocked = unlockedSet.has(selected.slug);
+        return (
+          <>
+            {/* Backdrop */}
+            <div
+              onClick={() => setSelected(null)}
+              style={{
+                position: "fixed", inset: 0,
+                background: "rgba(0,0,0,0.6)",
+                backdropFilter: "blur(4px)",
+                WebkitBackdropFilter: "blur(4px)",
+                zIndex: 40,
+              }}
+            />
+
+            {/* Sheet */}
+            <div style={{
+              position: "fixed",
+              bottom: 0,
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "min(100%, 430px)",
+              zIndex: 50,
+              background: "#111",
+              borderTopLeftRadius: 28,
+              borderTopRightRadius: 28,
+              padding: "12px 20px calc(32px + env(safe-area-inset-bottom, 0px))",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 0,
+            }}>
+              {/* Handle */}
+              <div style={{ width: 36, height: 4, background: "#333", borderRadius: 100, marginBottom: 20 }} />
+
+              {/* Badge image */}
+              <div style={{
+                width: 120, height: 120,
+                background: unlocked ? "rgba(159,232,112,0.06)" : "rgba(255,255,255,0.04)",
+                border: unlocked ? "1px solid rgba(159,232,112,0.2)" : "1px solid #2a2a2a",
+                borderRadius: 20,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                marginBottom: 16,
+                flexShrink: 0,
+              }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={selected.svg}
+                  alt={selected.nome}
+                  style={{ width: 96, height: 96, objectFit: "contain", opacity: unlocked ? 1 : 0.3 }}
+                />
+              </div>
+
+              {/* Status pill */}
+              <div style={{
+                display: "inline-flex", alignItems: "center", gap: 5,
+                background: unlocked ? "rgba(159,232,112,0.12)" : "rgba(255,255,255,0.06)",
+                border: unlocked ? "1px solid rgba(159,232,112,0.3)" : "1px solid #2a2a2a",
+                borderRadius: 100,
+                padding: "3px 10px",
+                marginBottom: 10,
+              }}>
+                {unlocked
+                  ? <CheckCircle size={13} color="#9fe870" weight="fill" />
+                  : <Lock size={11} color="rgba(255,255,255,0.35)" weight="fill" />
+                }
+                <span style={{
+                  fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11,
+                  color: unlocked ? "#9fe870" : "rgba(255,255,255,0.35)",
+                  letterSpacing: "0.5px",
+                  textTransform: "uppercase",
+                }}>
+                  {unlocked ? "Conquistada" : "Bloqueada"}
+                </span>
+              </div>
+
+              {/* Name */}
+              <p style={{
+                margin: "0 0 8px",
+                fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 26, lineHeight: "30px",
+                color: "#fff", textAlign: "center",
+              }}>
+                {selected.nome}
+              </p>
+
+              {/* Description */}
+              <p style={{
+                margin: "0 0 24px",
+                fontFamily: "var(--font-body)", fontWeight: 400, fontSize: 14, lineHeight: "20px",
+                color: "#888", textAlign: "center",
+                maxWidth: 280,
+              }}>
+                {selected.descricao}
+              </p>
+
+              {/* Close button */}
+              <button
+                onClick={() => setSelected(null)}
+                style={{
+                  width: "100%",
+                  padding: "14px",
+                  background: "#1e1e1e",
+                  border: "1px solid #2a2a2a",
+                  borderRadius: 14,
+                  fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15,
+                  color: "#fff",
+                  cursor: "pointer",
+                  WebkitTapHighlightColor: "transparent",
+                }}
+              >
+                Fechar
+              </button>
+            </div>
+          </>
+        );
+      })()}
 
       <BottomNav />
     </div>
