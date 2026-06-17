@@ -169,14 +169,10 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
         )}
       </div>
 
-      {/* ── MAIN CARD — contém tudo, sobe sobre o teal ── */}
+      {/* ── MAIN CARD — contém tudo ── */}
       <div style={{
         background: "#0f0f0f",
-        borderTopLeftRadius: 32,
-        borderTopRightRadius: 32,
-        marginTop: -24,
         paddingBottom: "calc(104px + env(safe-area-inset-bottom, 0px))",
-        position: "relative",
       }}>
 
         {/* Section header */}
