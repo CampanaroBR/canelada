@@ -24,61 +24,60 @@ const ORDERED_SLUGS = [
   "firuleiro", "corpo-mole", "cone", "bagre",
 ];
 
-// Gradientes por trait — extraídos das screenshots do Figma
-// [topo, base] usados em linear-gradient(to bottom, topo, base)
-const GRADIENTS: Record<string, [string, string]> = {
-  categoria:       ["rgb(195,155,35)",  "rgb(95,65,6)"],
-  matador:         ["rgb(38,85,160)",   "rgb(12,40,95)"],
-  paredao:         ["rgb(175,22,22)",   "rgb(85,6,6)"],
-  racudo:          ["rgb(95,50,12)",    "rgb(42,20,4)"],
-  xerife:          ["rgb(145,88,18)",   "rgb(72,40,7)"],
-  garcom:          ["rgb(108,32,138)",  "rgb(52,10,72)"],
-  "resenha-forte": ["rgb(190,22,105)",  "rgb(100,8,52)"],
-  chorao:          ["rgb(28,72,138)",   "rgb(8,32,82)"],
-  reclamao:        ["rgb(72,22,132)",   "rgb(35,8,72)"],
-  paneleiro:       ["rgb(22,108,32)",   "rgb(8,58,14)"],
-  firuleiro:       ["rgb(162,122,16)",  "rgb(82,60,6)"],
-  "corpo-mole":    ["rgb(118,68,20)",   "rgb(58,30,7)"],
-  cone:            ["rgb(188,82,12)",   "rgb(92,38,5)"],
-  bagre:           ["rgb(16,52,128)",   "rgb(6,22,72)"],
+// Backgrounds reais do Figma — PNGs baixados de localhost:3845/assets/
+const BG_IMAGES: Record<string, string> = {
+  categoria:       "/votacao-bg/categoria.png",
+  matador:         "/votacao-bg/matador.png",
+  paredao:         "/votacao-bg/paredao.png",
+  racudo:          "/votacao-bg/racudo.png",
+  xerife:          "/votacao-bg/xerife.png",
+  garcom:          "/votacao-bg/garcom.png",
+  "resenha-forte": "/votacao-bg/resenha-forte.png",
+  chorao:          "/votacao-bg/chorao.png",
+  reclamao:        "/votacao-bg/reclamao.png",
+  paneleiro:       "/votacao-bg/paneleiro.png",
+  firuleiro:       "/votacao-bg/firuleiro.png",
+  "corpo-mole":    "/votacao-bg/corpo-mole.png",
+  cone:            "/votacao-bg/cone.png",
+  bagre:           "/votacao-bg/bagre.png",
 };
 
-// Mascotes: SVGs exportados do Figma em /public/traits/
+// Cores do glow atrás do mascote — extraídas do Figma
+const GLOW_COLORS: Record<string, string> = {
+  categoria:       "#5f450f",
+  matador:         "#0f375f",
+  paredao:         "#761010",
+  racudo:          "#392f2f",
+  xerife:          "#431406",
+  garcom:          "#1f1132",
+  "resenha-forte": "#7c1c4d",
+  chorao:          "#1a4259",
+  reclamao:        "#0c2648",
+  paneleiro:       "#043b11",
+  firuleiro:       "#594f19",
+  "corpo-mole":    "#3c2b17",
+  cone:            "#632d10",
+  bagre:           "#0e394f",
+};
+
+// Mascotes: PNGs do Figma em /public/votacao-mascot/
 const MASCOTE: Record<string, string> = {
-  categoria:       "/traits/Craque.svg",
-  matador:         "/traits/Matador.svg",
-  paredao:         "/traits/Paredao.svg",
-  racudo:          "/traits/Racudo.svg",
-  xerife:          "/traits/Xerife.svg",
-  garcom:          "/traits/Garcom.svg",
-  "resenha-forte": "/traits/So_resenha.svg",
-  chorao:          "/traits/Chorao.svg",
-  reclamao:        "/traits/Reclamao.svg",
-  paneleiro:       "/traits/Paneleiro.svg",
-  firuleiro:       "/traits/Firuleiro.svg",
-  "corpo-mole":    "/traits/Corpo_mole.svg",
-  cone:            "/traits/Cone.svg",
-  bagre:           "/traits/Bagre.svg",
+  categoria:       "/votacao-mascot/categoria.png",
+  matador:         "/votacao-mascot/matador.png",
+  paredao:         "/votacao-mascot/paredao.png",
+  racudo:          "/votacao-mascot/racudo.png",
+  xerife:          "/votacao-mascot/xerife.png",
+  garcom:          "/votacao-mascot/garcom.png",
+  "resenha-forte": "/votacao-mascot/resenha-forte.png",
+  chorao:          "/votacao-mascot/chorao.png",
+  reclamao:        "/votacao-mascot/reclamao.png",
+  paneleiro:       "/votacao-mascot/paneleiro.png",
+  firuleiro:       "/votacao-mascot/firuleiro.png",
+  "corpo-mole":    "/votacao-mascot/corpo-mole.png",
+  cone:            "/votacao-mascot/cone.png",
+  bagre:           "/votacao-mascot/bagre.png",
 };
 
-// Rotação de matiz aplicada na imagem de fundo (base = dourado/categoria) pra
-// recolorir o mesmo asset por trait, sem precisar de 14 imagens diferentes.
-const HUE_ROTATE: Record<string, number> = {
-  categoria: 0,
-  matador: 160,
-  paredao: 190,
-  racudo: -25,
-  xerife: 20,
-  garcom: 260,
-  "resenha-forte": 280,
-  chorao: 200,
-  reclamao: -35,
-  paneleiro: 10,
-  firuleiro: 250,
-  "corpo-mole": 180,
-  cone: 15,
-  bagre: 200,
-};
 
 function getInitial(apelido: string) {
   return apelido.trim()[0]?.toUpperCase() ?? "?";
@@ -109,8 +108,8 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
 
   const outros = jogadores.filter((j) => j.id !== meuId);
   const trait = steps[step];
-  const [c1, c2] = GRADIENTS[trait?.slug ?? ""] ?? ["rgb(60,60,65)", "rgb(30,30,35)"];
-  const hueRotate = HUE_ROTATE[trait?.slug ?? ""] ?? 0;
+  const bgImage = BG_IMAGES[trait?.slug ?? ""] ?? "";
+  const glowColor = GLOW_COLORS[trait?.slug ?? ""] ?? "#333";
   const mascot = MASCOTE[trait?.slug ?? ""] ?? "/ilustracoes/gato.png";
   const filtered = outros.filter((j) => j.apelido.toLowerCase().includes(search.toLowerCase()));
   const pendingPlayer = pending ? jogadores.find((j) => j.id === pending) ?? null : null;
@@ -223,63 +222,76 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
         overscrollBehavior: "contain",
         willChange: "scroll-position",
       }}>
-        {/* ── Hero (imagem de fundo real, recolorida por trait) ── */}
+        {/* ── Hero — estrutura exata do Figma ── */}
         <div
           key={trait.slug}
           style={{
             position: "relative", flexShrink: 0, overflow: "hidden",
-            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-            gap: 8, paddingTop: 128, paddingBottom: 24, paddingLeft: 16, paddingRight: 16,
+            height: 547,
+            paddingTop: 140, paddingBottom: 94,
+            display: "flex", flexDirection: "column", alignItems: "center",
             borderBottomLeftRadius: 48, borderBottomRightRadius: 48,
-            background: `linear-gradient(to bottom, ${c1}, ${c2})`,
+            background: "#090909",
           }}
         >
-          {/* PNG decorativo por cima do gradiente — opacidade baixa para não escurecer */}
+          {/* Background PNG real do Figma — object-cover full-bleed */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             aria-hidden
-            src="/ilustracoes/votacao-hero-bg.png"
+            src={bgImage}
             alt=""
-            style={{
-              position: "absolute", inset: 0,
-              width: "100%", height: "100%", objectFit: "cover",
-              opacity: 0.18,
-            }}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }}
           />
 
           <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-            <div style={{
-              background: "rgba(55,55,55,0.2)", border: "1px solid rgba(255,255,255,0.15)",
-              borderRadius: 100, padding: "4px 10px", whiteSpace: "nowrap",
-              marginBottom: 20,
-            }}>
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, color: "#fff", letterSpacing: "-0.4px" }}>
-                VOTAÇÃO DO BABA · {step + 1}/{total}
-              </span>
-            </div>
+            {/* Character container — 289×296, mb -20 (overlap com título) */}
+            <div style={{ position: "relative", width: 289, height: 296, marginBottom: -20, flexShrink: 0 }}>
 
-            <div style={{ position: "relative", width: 220, height: 220, marginBottom: 8 }}>
+              {/* Glow: 301×308, blur(104px), top:calc(50%+6px) — igual ao Figma */}
               <div aria-hidden style={{
-                position: "absolute", inset: 0, margin: "auto",
-                width: 230, height: 230, borderRadius: "50%",
-                background: "rgba(95,69,15,0.5)", filter: "blur(60px)",
+                position: "absolute",
+                left: "50%", top: "calc(50% + 6px)",
+                transform: "translate(-50%, -50%)",
+                width: 301, height: 308, borderRadius: "50%",
+                background: glowColor, filter: "blur(104px)",
               }} />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={mascot}
-                alt={trait.nome}
-                style={{ position: "relative", width: "100%", height: "100%", objectFit: "contain" }}
-              />
+
+              {/* Mascote: 264×264, top:18px, overflow:hidden */}
+              <div style={{
+                position: "absolute", left: "50%", top: 18,
+                transform: "translateX(-50%)",
+                width: 264, height: 264, overflow: "hidden",
+              }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={mascot}
+                  alt={trait.nome}
+                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }}
+                />
+              </div>
+
+              {/* Pill: top:-8px, centrado */}
+              <div style={{
+                position: "absolute", top: -8, left: "50%", transform: "translateX(-50%)",
+                background: "rgba(55,55,55,0.2)", border: "1px solid rgba(255,255,255,0.15)",
+                borderRadius: 100, padding: "4px 10px", whiteSpace: "nowrap",
+                display: "flex", alignItems: "center", gap: 10,
+              }}>
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, color: "#fff", letterSpacing: "-0.4px" }}>
+                  VOTAÇÃO DO BABA · {step + 1}/{total}
+                </span>
+              </div>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 0, width: "100%", maxWidth: 361 }}>
+            {/* Título + descrição */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center", width: "100%", maxWidth: 361 }}>
               <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 32, lineHeight: "36px", color: "#fff", textAlign: "center" }}>
                 {trait.nome.toUpperCase()} {trait.emoji}
               </p>
               <p style={{
-                margin: 0, paddingTop: 0, paddingLeft: 24, paddingRight: 24,
+                margin: 0, paddingTop: 4, paddingLeft: 24, paddingRight: 24,
                 fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 18, lineHeight: "22px",
-                color: "rgba(255,255,255,0.92)", letterSpacing: "-0.4px", textAlign: "center",
+                color: "rgba(255,255,255,0.92)", letterSpacing: "-0.8px", textAlign: "center",
               }}>
                 {trait.descricao ?? `Quem foi o ${trait.nome} dessa rodada?`}
               </p>
