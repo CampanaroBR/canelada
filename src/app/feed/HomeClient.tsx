@@ -413,7 +413,7 @@ export function HomeClient({
                 <Medal size={16} color="#9fe870" weight="fill" />
                 <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>MEDALHAS</span>
               </div>
-              <Link href="/ranking" style={{
+              <Link href="/medalhas" style={{
                 display: "flex", alignItems: "center", gap: 4, textDecoration: "none", flexShrink: 0,
                 background: "#2a2a2a", border: "1px solid #3a3a3a",
                 borderRadius: 9999, padding: "7px 13px",
