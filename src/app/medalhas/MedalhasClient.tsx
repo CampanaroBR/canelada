@@ -9,22 +9,24 @@ const BADGE_CATALOG = [
     id: "presenca",
     title: "PRESENÇA 🏅",
     badges: [
-      { slug: "primeira-vitoria", nome: "Primeiro Baba",  svg: "/conquistas/primeira-vitoria.svg" },
-      { slug: "veterano",         nome: "Veterano",        svg: "/conquistas/Veterano.svg" },
-      { slug: "mais-presente",    nome: "Mais Presente",   svg: "/conquistas/mais-presente.svg" },
-      { slug: "alma-do-grupo",    nome: "Alma do Grupo",   svg: "/conquistas/alma-do-grupo.svg" },
-      { slug: "jogador-invisivel",nome: "Invisível",       svg: "/conquistas/jogador-invisivel.svg" },
-      { slug: "lenda",            nome: "Lenda",           svg: "/conquistas/Lenda.svg" },
+      { slug: "primeiro-baba",  nome: "Primeiro Baba",  svg: "/conquistas/primeiro-baba.svg" },
+      { slug: "veterano",       nome: "Veterano",        svg: "/conquistas/veterano.svg" },
+      { slug: "casca-grossa",   nome: "Casca Grossa",   svg: "/conquistas/casca-grossa.svg" },
+      { slug: "mais-presente",  nome: "Mais Presente",  svg: "/conquistas/mais-presente.svg" },
+      { slug: "alma-do-grupo",  nome: "Alma do Grupo",  svg: "/conquistas/alma-do-grupo.svg" },
+      { slug: "hall-da-fama",   nome: "Hall da Fama",   svg: "/conquistas/hall-da-fama.svg" },
+      { slug: "lenda-do-baba",  nome: "Lenda do Baba",  svg: "/conquistas/lenda-do-baba.svg" },
     ],
   },
   {
     id: "performance",
     title: "PERFORMANCE ⭐",
     badges: [
-      { slug: "rei-absoluto",  nome: "Rei Absoluto",  svg: "/conquistas/rei-absoluto.svg" },
-      { slug: "rei-do-mes",    nome: "Rei do Mês",    svg: "/conquistas/rei-do-mes.svg" },
-      { slug: "trofeu-bagre",  nome: "Troféu Bagre",  svg: "/conquistas/trofeu-bagre.svg" },
-      { slug: "so-perde",      nome: "Só Perde",      svg: "/conquistas/so-perde.svg" },
+      { slug: "mvp",             nome: "MVP",             svg: "/conquistas/mvp.svg" },
+      { slug: "rei-absoluto",    nome: "Rei Absoluto",    svg: "/conquistas/rei-absoluto.svg" },
+      { slug: "craque-da-galera",nome: "Craque da Galera",svg: "/conquistas/craque-da-galera.svg" },
+      { slug: "rei-do-mes",      nome: "Rei do Mês",      svg: "/conquistas/rei-do-mes.svg" },
+      { slug: "craque-historico",nome: "Craque Histórico",svg: "/conquistas/craque-historico.svg" },
     ],
   },
   {
@@ -32,26 +34,29 @@ const BADGE_CATALOG = [
     title: "SEQUÊNCIAS 🔥",
     badges: [
       { slug: "em-chamas",      nome: "Em Chamas",      svg: "/conquistas/em-chamas.svg" },
-      { slug: "invicto",        nome: "Invicto",         svg: "/conquistas/Invicto.svg" },
+      { slug: "imparavel",      nome: "Imparável",       svg: "/conquistas/imparavel.svg" },
+      { slug: "invicto",        nome: "Invicto",         svg: "/conquistas/invicto.svg" },
       { slug: "virada-de-chave",nome: "Virada de Chave", svg: "/conquistas/virada-de-chave.svg" },
-      { slug: "consistente",    nome: "Consistente",     svg: "/conquistas/Consistente.svg" },
-      { slug: "ma-fase",        nome: "Má Fase",         svg: "/conquistas/ma-fase.svg" },
+      { slug: "consistente",    nome: "Consistente",     svg: "/conquistas/consistente.svg" },
     ],
   },
   {
     id: "reconhecimento",
     title: "RECONHECIMENTO 💪",
     badges: [
-      { slug: "racudo-do-mes", nome: "Raçudo do Mês",  svg: "/conquistas/racudo-do-mes.svg" },
-      { slug: "irregular",     nome: "Irregular",       svg: "/conquistas/Irregular.svg" },
-      { slug: "lanterna",      nome: "Lanterna",        svg: "/conquistas/Lanterna.svg" },
+      { slug: "operario",        nome: "Operário",        svg: "/conquistas/operario.svg" },
+      { slug: "racudo-do-mes",   nome: "Raçudo do Mês",   svg: "/conquistas/racudo-do-mes.svg" },
+      { slug: "resenha-forte",   nome: "Resenha Forte",   svg: "/conquistas/resenha-forte.svg" },
+      { slug: "querido-da-galera",nome: "Querido da Galera",svg: "/conquistas/querido-da-galera.svg" },
     ],
   },
   {
     id: "colecao",
     title: "COLEÇÃO 🎖️",
     badges: [
-      { slug: "completo", nome: "Completo!", svg: "/conquistas/Completo.svg" },
+      { slug: "colecionador",     nome: "Colecionador",     svg: "/conquistas/colecionador.svg" },
+      { slug: "mestre-da-resenha",nome: "Mestre da Resenha",svg: "/conquistas/mestre-da-resenha.svg" },
+      { slug: "completo",         nome: "Completo!",         svg: "/conquistas/completo.svg" },
     ],
   },
 ] as const;
@@ -137,12 +142,12 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
                 {lastConquista.descricao}
               </p>
             </div>
-            <div style={{ width: 72, height: 72, flexShrink: 0, overflow: "hidden", position: "relative" }}>
+            <div style={{ width: 72, height: 72, flexShrink: 0 }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 alt={lastConquista.nome}
                 src={BADGE_SVG[lastConquista.slug] ?? `/conquistas/${lastConquista.slug}.svg`}
-                style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "112%", objectFit: "cover", objectPosition: "top center" }}
+                style={{ width: "100%", height: "100%", objectFit: "contain" }}
               />
             </div>
           </div>
@@ -281,17 +286,15 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
                               }
                             </div>
 
-                            {/* Badge image — crops baked-in SVG text at bottom */}
-                            <div style={{ width: 64, height: 58, flexShrink: 0, overflow: "hidden", position: "relative" }}>
+                            {/* Badge image */}
+                            <div style={{ width: 64, height: 64, flexShrink: 0 }}>
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img
                                 alt={badge.nome}
                                 src={badge.svg}
                                 style={{
-                                  position: "absolute", top: 0, left: 0,
-                                  width: "100%", height: "115%",
-                                  objectFit: "cover",
-                                  objectPosition: "top center",
+                                  width: "100%", height: "100%",
+                                  objectFit: "contain",
                                   opacity: unlocked ? 1 : 0.3,
                                 }}
                               />
