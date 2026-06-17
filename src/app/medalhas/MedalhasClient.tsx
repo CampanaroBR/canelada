@@ -180,6 +180,7 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
       {/* ── MAIN CARD — contém tudo ── */}
       <div style={{
         background: "#171717",
+        border: "1px solid #2e2e2e",
         borderTopLeftRadius: 48,
         borderTopRightRadius: 48,
         paddingTop: 24,
