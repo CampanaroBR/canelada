@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { House, CheckCircle, SoccerBall, ChartBar } from "@phosphor-icons/react";
+import { House, SoccerBall, ChartBar, Medal } from "@phosphor-icons/react";
 
 const NAV_ITEMS = [
-  { href: "/feed", label: "Home", icon: House, matchActive: true },
-  { href: "/votacao", label: "Votos", icon: CheckCircle, matchActive: true },
-  { href: "/pelada", label: "Pelada", icon: SoccerBall, matchActive: true },
-  { href: "/ranking", label: "Ranking", icon: ChartBar, matchActive: true },
+  { href: "/feed",     label: "Home",     icon: House,      matchActive: true },
+  { href: "/pelada",   label: "Pelada",   icon: SoccerBall, matchActive: true },
+  { href: "/medalhas", label: "Medalhas", icon: Medal,      matchActive: true },
+  { href: "/ranking",  label: "Ranking",  icon: ChartBar,   matchActive: true },
 ];
 
 export function BottomNav() {

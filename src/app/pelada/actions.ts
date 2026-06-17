@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { sendPushToSubscriptions } from "@/lib/webpush";
 
 export type ParticipanteImportado = {
   nome: string;
@@ -57,6 +58,19 @@ export async function criarRodada(data: string, participantesIds: string[]) {
       data: new Date(data),
     },
   });
+
+  // Notificar todos do grupo sobre a votação aberta
+  const subs = await prisma.pushSubscription.findMany({
+    where: { jogador: { grupoId: jogador.grupoId } },
+    select: { endpoint: true, p256dh: true, auth: true },
+  });
+  if (subs.length > 0) {
+    await sendPushToSubscriptions(subs, {
+      title: "🏆 Votação aberta!",
+      body: "A votação do baba está aberta. Vote agora!",
+      url: "/votacao",
+    });
+  }
 
   redirect(`/feed?rodada=${rodada.id}`);
 }

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { PushInit } from "@/components/PushInit";
 
 export const metadata: Metadata = {
   title: "Canelada — O baba virou resenha.",
@@ -30,6 +31,7 @@ export default function RootLayout({
             paddingTop: "env(safe-area-inset-top, 0px)",
           }}
         >
+          <PushInit />
           {children}
         </div>
       </body>

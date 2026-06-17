@@ -89,6 +89,18 @@ model Jogador {
   votosRecebidos  Voto[]   @relation("VotadoVotos")
   votosEmitidos   Voto[]   @relation("VotanteVotos")
   traitsRecebidas JogadorTrait[]
+  pushSubscriptions PushSubscription[]
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  jogadorId String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  jogador   Jogador  @relation(fields: [jogadorId], references: [id], onDelete: Cascade)
 }
 
 model Rodada {
