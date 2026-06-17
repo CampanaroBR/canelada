@@ -24,22 +24,23 @@ const ORDERED_SLUGS = [
   "firuleiro", "corpo-mole", "cone", "bagre",
 ];
 
-// Gradientes temáticos por trait (256deg, claro nas pontas — mesma receita do Figma)
+// Gradientes por trait — cores calibradas para bater com o Figma
+// [topo, base] usados em linear-gradient(to bottom, topo, base)
 const GRADIENTS: Record<string, [string, string]> = {
-  categoria:       ["rgb(121,89,14)",  "rgb(229,186,102)"],
-  matador:         ["rgb(10,90,80)",   "rgb(70,200,180)"],
-  paredao:         ["rgb(15,50,90)",   "rgb(70,140,210)"],
-  racudo:          ["rgb(120,40,10)",  "rgb(224,120,60)"],
-  xerife:          ["rgb(90,60,15)",   "rgb(200,150,70)"],
-  garcom:          ["rgb(90,40,90)",   "rgb(200,120,200)"],
-  "resenha-forte": ["rgb(120,20,80)",  "rgb(230,90,170)"],
-  chorao:          ["rgb(20,55,90)",   "rgb(90,150,210)"],
-  reclamao:        ["rgb(110,15,15)",  "rgb(220,70,70)"],
-  paneleiro:       ["rgb(110,55,10)",  "rgb(230,140,40)"],
-  firuleiro:       ["rgb(70,20,110)",  "rgb(170,90,230)"],
-  "corpo-mole":    ["rgb(35,55,80)",   "rgb(110,140,170)"],
-  cone:            ["rgb(90,55,10)",   "rgb(200,130,30)"],
-  bagre:           ["rgb(10,40,90)",   "rgb(60,120,210)"],
+  categoria:       ["rgb(180,130,20)",  "rgb(100,70,8)"],
+  matador:         ["rgb(15,110,100)",  "rgb(8,55,50)"],
+  paredao:         ["rgb(180,20,20)",   "rgb(90,8,8)"],
+  racudo:          ["rgb(160,80,15)",   "rgb(90,40,8)"],
+  xerife:          ["rgb(160,100,25)",  "rgb(90,55,12)"],
+  garcom:          ["rgb(110,30,140)",  "rgb(55,12,75)"],
+  "resenha-forte": ["rgb(200,30,120)",  "rgb(110,12,65)"],
+  chorao:          ["rgb(30,80,160)",   "rgb(12,40,90)"],
+  reclamao:        ["rgb(80,25,140)",   "rgb(40,10,80)"],
+  paneleiro:       ["rgb(30,120,40)",   "rgb(12,65,20)"],
+  firuleiro:       ["rgb(170,120,15)",  "rgb(90,65,8)"],
+  "corpo-mole":    ["rgb(140,80,30)",   "rgb(75,40,12)"],
+  cone:            ["rgb(190,90,15)",   "rgb(100,45,8)"],
+  bagre:           ["rgb(15,60,140)",   "rgb(8,30,80)"],
 };
 
 // Mascotes: ilustrações PNG por trait (animais personagens do Figma)
@@ -108,7 +109,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
 
   const outros = jogadores.filter((j) => j.id !== meuId);
   const trait = steps[step];
-  const [c1] = GRADIENTS[trait?.slug ?? ""] ?? ["rgb(60,60,65)", "rgb(150,150,155)"];
+  const [c1, c2] = GRADIENTS[trait?.slug ?? ""] ?? ["rgb(60,60,65)", "rgb(30,30,35)"];
   const hueRotate = HUE_ROTATE[trait?.slug ?? ""] ?? 0;
   const mascot = MASCOTE[trait?.slug ?? ""] ?? "/ilustracoes/gato.png";
   const filtered = outros.filter((j) => j.apelido.toLowerCase().includes(search.toLowerCase()));
@@ -230,9 +231,10 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
             display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
             gap: 8, paddingTop: 128, paddingBottom: 24, paddingLeft: 16, paddingRight: 16,
             borderBottomLeftRadius: 48, borderBottomRightRadius: 48,
-            background: c1,
+            background: `linear-gradient(to bottom, ${c1}, ${c2})`,
           }}
         >
+          {/* PNG decorativo por cima do gradiente — opacidade baixa para não escurecer */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             aria-hidden
@@ -241,7 +243,8 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
             style={{
               position: "absolute", inset: 0,
               width: "100%", height: "100%", objectFit: "cover",
-              filter: `hue-rotate(${hueRotate}deg) saturate(1.05)`,
+              opacity: 0.35,
+              mixBlendMode: "screen",
             }}
           />
 
