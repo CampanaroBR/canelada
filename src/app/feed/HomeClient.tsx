@@ -477,7 +477,7 @@ export function HomeClient({
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             alt={c.traitNome}
-                            src={TRAIT_BADGE[c.traitSlug] ?? ""}
+                            src={TRAIT_BADGE[c.traitSlug] ?? `/conquistas/${c.traitSlug}.svg`}
                             style={{ position: "absolute", display: "block", inset: 0, width: "100%", height: "100%", maxWidth: "none", objectFit: "contain" }}
                           />
                         </div>
