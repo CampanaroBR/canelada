@@ -13,7 +13,23 @@ import { signOut } from "next-auth/react";
 import { BottomsheetMaisVotados } from "@/components/BottomsheetMaisVotados";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
 import { PersonagemShareModal } from "@/components/PersonagemShareModal";
-import { getMedalha } from "@/lib/assets";
+
+const TRAIT_MASCOTS: Record<string, string> = {
+  categoria:       "/votacao-mascot/categoria.png",
+  matador:         "/votacao-mascot/matador.png",
+  paredao:         "/votacao-mascot/paredao.png",
+  racudo:          "/votacao-mascot/racudo.png",
+  xerife:          "/votacao-mascot/xerife.png",
+  garcom:          "/votacao-mascot/garcom.png",
+  "resenha-forte": "/votacao-mascot/resenha-forte.png",
+  chorao:          "/votacao-mascot/chorao.png",
+  reclamao:        "/votacao-mascot/reclamao.png",
+  paneleiro:       "/votacao-mascot/paneleiro.png",
+  firuleiro:       "/votacao-mascot/firuleiro.png",
+  "corpo-mole":    "/votacao-mascot/corpo-mole.png",
+  cone:            "/votacao-mascot/cone.png",
+  bagre:           "/votacao-mascot/bagre.png",
+};
 
 const CAMPO      = "/campo.png";
 const LOGO       = "/logo.png";
@@ -417,7 +433,6 @@ export function HomeClient({
             {/* Achievement cards */}
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {conquistas.map((c, i) => {
-                const badgeSrc = getMedalha(c.traitNome);
                 return (
                   <div key={i} style={{ background: "#090909", border: "1px solid #2e2e2e", borderRadius: 16, padding: "9px 17px", display: "flex", alignItems: "flex-start" }}>
                     {/* flex-[1_0_0] min-w-px wrapper */}
@@ -458,18 +473,12 @@ export function HomeClient({
 
                         {/* Badge: size-72 overflow-clip shrink-0 */}
                         <div style={{ width: 72, height: 72, flexShrink: 0, position: "relative", overflow: "clip" }}>
-                          {badgeSrc ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              alt={c.traitNome}
-                              src={badgeSrc}
-                              style={{ position: "absolute", display: "block", inset: 0, width: "100%", height: "100%", maxWidth: "none" }}
-                            />
-                          ) : (
-                            <span style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40 }}>
-                              {c.traitEmoji ?? "🏅"}
-                            </span>
-                          )}
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            alt={c.traitNome}
+                            src={TRAIT_MASCOTS[c.traitSlug] ?? ""}
+                            style={{ position: "absolute", display: "block", inset: 0, width: "100%", height: "100%", maxWidth: "none", objectFit: "contain" }}
+                          />
                         </div>
                       </div>
                     </div>

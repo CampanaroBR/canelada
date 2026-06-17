@@ -3,14 +3,12 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { criarRodada } from "@/app/votacao/actions";
 import { HomeClient } from "./HomeClient";
-import { getMedalha } from "@/lib/assets";
 
 export const dynamic = "force-dynamic";
 
-type Jogador = { id: string; apelido: string; foto: string | null };
 type MaisVotado = { apelido: string; qtd: number; categoria: string };
-type Personagem = { tipo: string; apelido: string; texto: string; data: Date };
-type Conquista = { apelido: string; traitSlug: string; traitNome: string; traitEmoji: string | null; traitDesc: string | null; data: Date };
+type Personagem  = { tipo: string; apelido: string; texto: string; data: Date };
+type Conquista   = { apelido: string; traitSlug: string; traitNome: string; traitEmoji: string | null; traitDesc: string | null; data: Date };
 
 export default async function FeedPage() {
   const session = await auth();
@@ -25,25 +23,28 @@ export default async function FeedPage() {
   const grupoId = jogador.grupoId;
   const grupoNome = jogador.grupo?.nome ?? "";
 
-  const [rodadaAtiva, topVotadosRaw, recentStories, recentConquistas, allJogadores] = await Promise.all([
+  const [rodadaAtiva, topTraitsRaw, recentStories, recentTraits, ultimasRodadas] = await Promise.all([
     prisma.rodada.findFirst({
       where: { grupoId, encerrada: false },
       select: { id: true, data: true },
       orderBy: { createdAt: "desc" },
     }),
-    prisma.voto.groupBy({
-      by: ["votadoId"],
-      where: { rodada: { grupoId }, categoria: "MVP" },
-      _count: { votadoId: true },
-      orderBy: { _count: { votadoId: "desc" } },
+    // Mais votados: top jogadores por total de traits recebidos
+    prisma.jogadorTrait.groupBy({
+      by: ["jogadorId"],
+      where: { jogador: { grupoId } },
+      _sum: { contador: true },
+      orderBy: { _sum: { contador: "desc" } },
       take: 6,
     }),
+    // Personagem da semana: stories MVP/BAGRE mais recentes
     prisma.story.findMany({
       where: { rodada: { grupoId }, tipo: { in: ["MVP", "BAGRE"] } },
       include: { rodada: { select: { data: true } } },
       orderBy: { createdAt: "desc" },
       take: 3,
     }),
+    // Medalhas: traits mais recentes dos jogadores do grupo
     prisma.jogadorTrait.findMany({
       where: { jogador: { grupoId } },
       include: {
@@ -53,19 +54,34 @@ export default async function FeedPage() {
       orderBy: { updatedAt: "desc" },
       take: 3,
     }),
-    prisma.jogador.findMany({
+    prisma.rodada.findMany({
       where: { grupoId },
-      select: { id: true, apelido: true, foto: true },
+      orderBy: { data: "desc" },
+      take: 3,
+      select: { data: true },
     }),
   ]);
 
-  // Resolve mais votados names
-  const jogMap = Object.fromEntries(allJogadores.map((j: Jogador) => [j.id, j]));
-  const maisVotados: MaisVotado[] = topVotadosRaw.map(v => ({
-    apelido: jogMap[v.votadoId]?.apelido ?? "?",
-    qtd: v._count.votadoId,
+  // Resolve nomes dos mais votados por trait
+  const jogadoresIds = topTraitsRaw.map(t => t.jogadorId);
+  const jogadoresMap = jogadoresIds.length > 0
+    ? await prisma.jogador.findMany({
+        where: { id: { in: jogadoresIds } },
+        select: { id: true, apelido: true },
+      }).then(jogs => Object.fromEntries(jogs.map(j => [j.id, j.apelido])))
+    : {};
+
+  const maisVotados: MaisVotado[] = topTraitsRaw.map(t => ({
+    apelido: jogadoresMap[t.jogadorId] ?? "?",
+    qtd: t._sum.contador ?? 0,
     categoria: "MVP",
   }));
+
+  const PERSONAGEM_TITLES: Record<string, string> = {
+    MVP:    "MATADOR",
+    BAGRE:  "BAGRE DA NOITE",
+    RACUDO: "PREGUEIRO",
+  };
 
   const personagens: Personagem[] = recentStories.map(s => ({
     tipo: s.tipo,
@@ -74,16 +90,24 @@ export default async function FeedPage() {
     data: s.rodada.data,
   }));
 
-  const conquistas: Conquista[] = recentConquistas
-    .filter(c => getMedalha(c.trait.nome) !== null)
-    .map(c => ({
-      apelido: c.jogador.apelido,
-      traitSlug: c.traitSlug,
-      traitNome: c.trait.nome,
-      traitEmoji: c.trait.emoji,
-      traitDesc: c.trait.descricao ?? null,
-      data: c.updatedAt,
-    }));
+  // Fallback: se não há stories, monta personagens dos top traits
+  const personagensFinal: Personagem[] = personagens.length > 0
+    ? personagens
+    : recentTraits.slice(0, 3).map((jt, i) => ({
+        tipo: i === 0 ? "MVP" : i === 1 ? "BAGRE" : "RACUDO",
+        apelido: jt.jogador.apelido,
+        texto: `${jt.jogador.apelido} foi o ${PERSONAGEM_TITLES[i === 0 ? "MVP" : i === 1 ? "BAGRE" : "RACUDO"]}`,
+        data: jt.updatedAt,
+      }));
+
+  const conquistas: Conquista[] = recentTraits.map(c => ({
+    apelido: c.jogador.apelido,
+    traitSlug: c.traitSlug,
+    traitNome: c.trait.nome,
+    traitEmoji: c.trait.emoji,
+    traitDesc: c.trait.descricao ?? null,
+    data: c.updatedAt,
+  }));
 
   const jaVotou = rodadaAtiva
     ? !!(await prisma.voto.findFirst({
@@ -96,13 +120,6 @@ export default async function FeedPage() {
     ? new Date(rodadaAtiva.data).toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short" })
     : null;
 
-  // Last 3 rodada dates for filter pills
-  const ultimasRodadas = await prisma.rodada.findMany({
-    where: { grupoId },
-    orderBy: { data: "desc" },
-    take: 3,
-    select: { data: true },
-  });
   const datePills = ultimasRodadas.reverse().map(r =>
     new Date(r.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", "")
   );
@@ -114,7 +131,7 @@ export default async function FeedPage() {
       dataRodada={dataRodada}
       jaVotou={jaVotou}
       maisVotados={maisVotados}
-      personagens={personagens}
+      personagens={personagensFinal}
       conquistas={conquistas}
       datePills={datePills}
       grupoNome={grupoNome}
