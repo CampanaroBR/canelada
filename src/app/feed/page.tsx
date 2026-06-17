@@ -117,12 +117,34 @@ export default async function FeedPage() {
     data: c.updatedAt,
   }));
 
-  const jaVotou = rodadaAtiva
-    ? !!(await prisma.voto.findFirst({
-        where: { rodadaId: rodadaAtiva.id, votanteId: jogador.id },
-        select: { id: true },
-      }))
-    : false;
+  const [jaVotou, top5VotosRaw] = await Promise.all([
+    rodadaAtiva
+      ? prisma.voto.findFirst({
+          where: { rodadaId: rodadaAtiva.id, votanteId: jogador.id },
+          select: { id: true },
+        }).then(r => !!r)
+      : Promise.resolve(false),
+    rodadaAtiva
+      ? prisma.voto.groupBy({
+          by: ["votadoId"],
+          where: { rodadaId: rodadaAtiva.id },
+          _count: { id: true },
+          orderBy: { _count: { id: "desc" } },
+          take: 5,
+        })
+      : Promise.resolve([]),
+  ]);
+
+  // Resolve nomes dos top5 da rodada
+  const top5Ids = top5VotosRaw.map((v: { votadoId: string }) => v.votadoId);
+  const top5Jogadores = top5Ids.length > 0
+    ? await prisma.jogador.findMany({
+        where: { id: { in: top5Ids } },
+        select: { id: true, apelido: true },
+      })
+    : [];
+  const top5Map = Object.fromEntries(top5Jogadores.map(j => [j.id, j.apelido]));
+  const top5Rodada = top5Ids.map((id: string) => (top5Map[id] ?? "?").toUpperCase());
 
   const dataRodada = rodadaAtiva
     ? new Date(rodadaAtiva.data).toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short" })
@@ -138,6 +160,7 @@ export default async function FeedPage() {
       rodadaId={rodadaAtiva?.id ?? null}
       dataRodada={dataRodada}
       jaVotou={jaVotou}
+      top5Rodada={top5Rodada}
       maisVotados={maisVotados}
       personagens={personagensFinal}
       conquistas={conquistas}

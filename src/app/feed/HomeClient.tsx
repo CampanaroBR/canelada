@@ -14,9 +14,6 @@ import { BottomsheetMaisVotados } from "@/components/BottomsheetMaisVotados";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
 import { PersonagemShareModal } from "@/components/PersonagemShareModal";
 
-// Mapeia trait slug → badge SVG de conquista
-// Slugs de votação → badge correspondente
-// Slugs de conquista → arquivo direto (nome exato no filesystem)
 // Mapeia achievement slug → arquivo SVG exato no git (case-sensitive no Vercel/Linux)
 const TRAIT_BADGE: Record<string, string> = {
   "alma-do-grupo":    "/conquistas/alma-do-grupo.svg",
@@ -52,6 +49,7 @@ type Conquista   = { apelido: string; traitSlug: string; traitNome: string; trai
 interface Props {
   IMG: Record<string, string>;
   rodadaId: string | null;
+  top5Rodada: string[];
   dataRodada: string | null;
   jaVotou: boolean;
   maisVotados: MaisVotado[];
@@ -77,7 +75,7 @@ const PERSONAGEM_TITLES: Record<string, string> = {
 const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
 
 export function HomeClient({
-  rodadaId, dataRodada, jaVotou,
+  rodadaId, dataRodada, jaVotou, top5Rodada,
   maisVotados, personagens, conquistas, datePills, grupoNome,
   criarRodadaAction,
 }: Props) {
@@ -93,8 +91,6 @@ export function HomeClient({
     categoria: v.categoria,
   }));
 
-  // Top 5 para o campinho no estado "já votou"
-  const top5 = maisVotados.slice(0, 5).map(v => v.apelido.toUpperCase());
 
   return (
     <div style={{
@@ -196,7 +192,7 @@ export function HomeClient({
               {/* CF row */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 16, paddingBottom: 16 }}>
                 {jaVotou
-                  ? <PlayerNamed name={top5[0] ?? "?"} tshirt={TSHIRT} />
+                  ? <PlayerNamed name={top5Rodada[0] ?? "?"} tshirt={TSHIRT} />
                   : <PlayerSlot tshirt={TSHIRT} />}
               </div>
 
@@ -204,9 +200,9 @@ export function HomeClient({
               <div style={{ display: "flex", gap: 62, alignItems: "center", justifyContent: "center", width: "100%" }}>
                 {jaVotou ? (
                   <>
-                    <PlayerNamed name={top5[1] ?? "?"} tshirt={TSHIRT} />
-                    <PlayerNamed name={top5[2] ?? "?"} tshirt={TSHIRT} />
-                    <PlayerNamed name={top5[3] ?? "?"} tshirt={TSHIRT} />
+                    <PlayerNamed name={top5Rodada[1] ?? "?"} tshirt={TSHIRT} />
+                    <PlayerNamed name={top5Rodada[2] ?? "?"} tshirt={TSHIRT} />
+                    <PlayerNamed name={top5Rodada[3] ?? "?"} tshirt={TSHIRT} />
                   </>
                 ) : (
                   <>
@@ -220,7 +216,7 @@ export function HomeClient({
               {/* GK row */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 16, paddingBottom: 16 }}>
                 {jaVotou
-                  ? <PlayerNamed name={top5[4] ?? "?"} tshirt={TSHIRT_GK} />
+                  ? <PlayerNamed name={top5Rodada[4] ?? "?"} tshirt={TSHIRT_GK} />
                   : <PlayerSlot tshirt={TSHIRT_GK} />}
               </div>
             </div>
