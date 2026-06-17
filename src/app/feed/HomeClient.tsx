@@ -14,22 +14,22 @@ import { BottomsheetMaisVotados } from "@/components/BottomsheetMaisVotados";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
 import { PersonagemShareModal } from "@/components/PersonagemShareModal";
 
-// Mapeia trait slug → badge SVG de conquista
+// Mapeia trait slug → badge SVG de conquista (nomes slugificados sem espaços/acentos)
 const TRAIT_BADGE: Record<string, string> = {
-  matador:         "/conquistas/Em chamas.svg",
-  categoria:       "/conquistas/Rei do mês.svg",
-  bagre:           "/conquistas/Troféu bagre.svg",
-  racudo:          "/conquistas/Raçudo do mês.svg",
-  paredao:         "/conquistas/Mais presente.svg",
-  xerife:          "/conquistas/Completo.svg",
-  garcom:          "/conquistas/Invicto.svg",
-  "resenha-forte": "/conquistas/Alma do Grupo.svg",
-  chorao:          "/conquistas/Má fase.svg",
-  reclamao:        "/conquistas/Irregular.svg",
-  paneleiro:       "/conquistas/Consistente.svg",
-  firuleiro:       "/conquistas/Lenda.svg",
-  "corpo-mole":    "/conquistas/Só perde.svg",
-  cone:            "/conquistas/Lanterna.svg",
+  matador:         "/conquistas/em-chamas.svg",
+  categoria:       "/conquistas/rei-do-mes.svg",
+  bagre:           "/conquistas/trofeu-bagre.svg",
+  racudo:          "/conquistas/racudo-do-mes.svg",
+  paredao:         "/conquistas/mais-presente.svg",
+  xerife:          "/conquistas/completo.svg",
+  garcom:          "/conquistas/invicto.svg",
+  "resenha-forte": "/conquistas/alma-do-grupo.svg",
+  chorao:          "/conquistas/ma-fase.svg",
+  reclamao:        "/conquistas/irregular.svg",
+  paneleiro:       "/conquistas/consistente.svg",
+  firuleiro:       "/conquistas/lenda.svg",
+  "corpo-mole":    "/conquistas/so-perde.svg",
+  cone:            "/conquistas/lanterna.svg",
 };
 
 const CAMPO      = "/campo.png";
