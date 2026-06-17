@@ -318,15 +318,17 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
 
                             {/* Badge image + label */}
                             <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                              <div style={{ width: 72, height: 72, marginBottom: -8, flexShrink: 0, overflow: "clip", position: "relative" }}>
+                              {/* Container clips the bottom ~10% where SVG text is baked in */}
+                              <div style={{ width: 72, height: 64, flexShrink: 0, overflow: "hidden", position: "relative" }}>
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                   alt={badge.nome}
                                   src={badge.svg}
                                   style={{
-                                    position: "absolute", inset: 0,
-                                    width: "100%", height: "100%",
-                                    objectFit: "contain",
+                                    position: "absolute", top: 0, left: 0,
+                                    width: "100%", height: "112%",
+                                    objectFit: "cover",
+                                    objectPosition: "top center",
                                     opacity: unlocked ? 1 : 0.35,
                                   }}
                                 />

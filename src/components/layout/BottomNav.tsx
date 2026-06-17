@@ -7,7 +7,7 @@ import { House, SoccerBall, ChartBar, Medal } from "@phosphor-icons/react";
 const NAV_ITEMS = [
   { href: "/feed",     label: "Home",     icon: House,      matchActive: true },
   { href: "/pelada",   label: "Pelada",   icon: SoccerBall, matchActive: true },
-  { href: "/medalhas", label: "Medalhas", icon: Medal,      matchActive: true },
+  { href: "/medalhas", label: "Badges",   icon: Medal,      matchActive: true },
   { href: "/ranking",  label: "Ranking",  icon: ChartBar,   matchActive: true },
 ];
 
