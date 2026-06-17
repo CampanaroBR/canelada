@@ -26,7 +26,7 @@ const BADGE_CATALOG = [
       { slug: "rei-absoluto",     nome: "Rei Absoluto",     descricao: "Recebeu 5 MVPs acumulados.", svg: "/conquistas/rei-absoluto.svg" },
       { slug: "craque-da-galera", nome: "Craque da Galera", descricao: "Recebeu 10 MVPs acumulados.", svg: "/conquistas/craque-da-galera.svg" },
       { slug: "rei-do-mes",       nome: "Rei do Mês",       descricao: "Jogador com mais MVPs durante um mês.", svg: "/conquistas/rei-do-mes.svg" },
-      { slug: "craque-historico", nome: "Craque Histórico", descricao: "Recebeu 20 MVPs acumulados.", svg: "/conquistas/craque-historico.png" },
+      { slug: "craque-historico", nome: "Craque Histórico", descricao: "Recebeu 20 MVPs acumulados.", svg: "/conquistas/craque-historico.svg" },
     ],
   },
   {
