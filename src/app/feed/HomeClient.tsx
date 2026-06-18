@@ -556,21 +556,14 @@ export function HomeClient({
 
                         </div>
 
-                        {/* Badge: imagem + nome abaixo */}
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, flexShrink: 0, width: 72 }}>
-                          <div style={{ width: 72, height: 72, position: "relative" }}>
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                              alt={c.traitNome}
-                              src={TRAIT_BADGE[c.traitSlug] ?? `/conquistas/${c.traitSlug}.svg`}
-                              style={{ position: "absolute", display: "block", inset: 0, width: "100%", height: "100%", maxWidth: "none", objectFit: "contain" }}
-                            />
-                          </div>
-                          <span style={{
-                            fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 10,
-                            lineHeight: "12px", color: "#888", textAlign: "center",
-                            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: 80,
-                          }}>{c.traitNome}</span>
+                        {/* Badge: SVG já carrega o nome interno quando aplicável */}
+                        <div style={{ width: 80, height: 96, flexShrink: 0, position: "relative" }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            alt={c.traitNome}
+                            src={TRAIT_BADGE[c.traitSlug] ?? `/conquistas/${c.traitSlug}.svg`}
+                            style={{ position: "absolute", display: "block", inset: 0, width: "100%", height: "100%", maxWidth: "none", objectFit: "contain" }}
+                          />
                         </div>
                       </div>
                     </div>
