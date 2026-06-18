@@ -50,7 +50,7 @@ export function BottomNav() {
         }}
       >
         {/* Items centrados com gap fixo — sem flex-1 que estica */}
-        <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {NAV_ITEMS.map((item, i) => {
             const isActive = item.matchActive && (pathname === item.href || pathname.startsWith(item.href + "/"));
             const Icon = item.icon;
