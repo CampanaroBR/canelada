@@ -419,7 +419,6 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
               width: "min(100%, 430px)",
               zIndex: 50,
               background: "#171717",
-              border: "1px solid #424242",
               borderTopLeftRadius: 48,
               borderTopRightRadius: 48,
               boxShadow: sheetShadow,
@@ -554,8 +553,8 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
                   style={{
                     width: "100%",
                     padding: "17px",
-                    background: "#424242",
-                    border: "1px solid #ccc",
+                    background: "#0a0e0e",
+                    border: "1px solid #424242",
                     borderRadius: 16,
                     fontFamily: "var(--font-display)", fontWeight: 700,
                     fontSize: 16, lineHeight: "20px",
