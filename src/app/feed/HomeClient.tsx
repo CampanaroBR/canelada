@@ -17,8 +17,8 @@ import { PersonagemShareModal } from "@/components/PersonagemShareModal";
 // Mapeia achievement slug → arquivo SVG exato no git (case-sensitive no Vercel/Linux)
 const TRAIT_BADGE: Record<string, string> = {
   "alma-do-grupo":    "/conquistas/alma-do-grupo.svg",
-  "completo":         "/conquistas/Completo.svg",
-  "consistente":      "/conquistas/Consistente.svg",
+  "completo":         "/conquistas/completo.svg",
+  "consistente":      "/conquistas/consistente.svg",
   "em-chamas":        "/conquistas/em-chamas.svg",
   "invicto":          "/conquistas/Invicto.svg",
   "irregular":        "/conquistas/Irregular.svg",
@@ -33,7 +33,7 @@ const TRAIT_BADGE: Record<string, string> = {
   "rei-do-mes":       "/conquistas/rei-do-mes.svg",
   "so-perde":         "/conquistas/so-perde.svg",
   "trofeu-bagre":     "/conquistas/trofeu-bagre.svg",
-  "veterano":         "/conquistas/Veterano.svg",
+  "veterano":         "/conquistas/veterano.svg",
   "virada-de-chave":  "/conquistas/virada-de-chave.svg",
 };
 
