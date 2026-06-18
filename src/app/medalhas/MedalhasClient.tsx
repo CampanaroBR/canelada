@@ -373,7 +373,7 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
                             <div style={{ position: "absolute", top: unlocked ? 3 : 4, right: 4 }}>
                               {unlocked
                                 ? <CheckCircle size={24} color="#9fe870" weight="fill" />
-                                : <Lock size={14} color="rgba(255,255,255,0.35)" weight="fill" />
+                                : <Lock size={14} color="rgba(255,255,255,0.65)" weight="fill" />
                               }
                             </div>
 
