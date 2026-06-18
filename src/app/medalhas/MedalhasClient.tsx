@@ -325,27 +325,20 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
             return (
               <div key={cat.id} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {/* Category header */}
-                <div style={{ paddingLeft: 8, display: "flex", flexDirection: "column" }}>
-                  <p style={{ margin: "0 0 -2px", fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>
+                <div style={{ paddingLeft: 8, display: "flex", flexDirection: "column", gap: 0 }}>
+                  <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>
                     {cat.title}
                   </p>
-                  <div style={{ display: "flex", gap: 6, alignItems: "flex-end", whiteSpace: "nowrap" }}>
-                    <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 0, lineHeight: 0, color: "#999" }}>
-                      {catUnlocked > 0 ? (
-                        <>
-                          <span style={{ fontWeight: 700, fontSize: 18, lineHeight: "22px", color: "#9fe870" }}>{catUnlocked}</span>
-                          <span style={{ fontSize: 16, lineHeight: "18px", color: "#fff" }}>/{cat.badges.length}</span>
-                        </>
-                      ) : (
-                        <>
-                          <span style={{ fontWeight: 700, fontSize: 18, lineHeight: "22px", color: "#fff" }}>0</span>
-                          <span style={{ fontSize: 16, lineHeight: "18px", color: "#fff" }}>/{cat.badges.length}</span>
-                        </>
-                      )}
-                    </p>
-                    <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 16, lineHeight: "20px", color: "#999" }}>
+                  <div style={{ display: "flex", gap: 6, alignItems: "baseline", whiteSpace: "nowrap" }}>
+                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 18, lineHeight: "22px", color: catUnlocked > 0 ? "#9fe870" : "#fff" }}>
+                      {catUnlocked}
+                    </span>
+                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 16, lineHeight: "18px", color: "#fff" }}>
+                      /{cat.badges.length}
+                    </span>
+                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 16, lineHeight: "20px", color: "#999" }}>
                       Badges conquistadas
-                    </p>
+                    </span>
                   </div>
                 </div>
 
