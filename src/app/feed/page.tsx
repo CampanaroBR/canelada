@@ -162,7 +162,7 @@ export default async function FeedPage() {
     d.setHours(0, 0, 0, 0);
     const diasRestantes = Math.ceil((d.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
     const dataFormatada = new Date(rodadaAtiva.data).toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "short" });
-    const hora = new Date(rodadaAtiva.data).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    const hora = "20:00";
     return { dataFormatada, hora, diasRestantes };
   })() : null;
 
