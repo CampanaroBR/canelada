@@ -10,7 +10,7 @@ import { SealCheck, Lock, CheckCircle, MedalMilitary, List, Bell, X, User, Users
 const BADGE_CATALOG = [
   {
     id: "presenca",
-    title: "PRESENÇA 🏅",
+    title: "PRESENÇA🏅",
     badges: [
       { slug: "primeiro-baba",  nome: "Primeira Pelada", descricao: "Participou da primeira rodada registrada no Canelada.", svg: "/conquistas/primeiro-baba.svg", tagline: "PRIMEIRA DE MUITAS!", rara: false },
       { slug: "veterano",       nome: "Veterano",         descricao: "Participou de 10 rodadas.",                                                                    svg: "/conquistas/veterano.svg",       tagline: "10 PARTIDAS, QUE RAÇA!",       rara: false },
@@ -55,7 +55,7 @@ const BADGE_CATALOG = [
   },
   {
     id: "colecao",
-    title: "COLEÇÃO 🎖️",
+    title: "COLEÇÃO🎖️",
     badges: [
       { slug: "colecionador",      nome: "Colecionador",      descricao: "Desbloqueou 8 badges.",              svg: "/conquistas/colecionador.svg",      tagline: "8 BADGES DESBLOQUEADAS!", rara: false },
       { slug: "mestre-da-resenha", nome: "Mestre da Resenha", descricao: "Desbloqueou 16 badges.",             svg: "/conquistas/mestre-da-resenha.svg", tagline: "16 BADGES, MESTRE!",      rara: true  },
@@ -310,10 +310,10 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
           background: "#090909",
           border: "1px solid #2e2e2e",
           borderRadius: 20,
-          padding: "13px 9px",
+          padding: "17px 9px 9px",
           display: "flex",
           flexDirection: "column",
-          gap: 20,
+          gap: 24,
         }}>
           {BADGE_CATALOG.map(cat => {
             const visible = cat.badges.filter(b => shouldShow(b.slug));
@@ -327,9 +327,15 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
                   <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>
                     {cat.title}
                   </p>
-                  <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 14, lineHeight: "20px", color: "#999" }}>
-                    <span style={{ fontWeight: 700, color: catUnlocked > 0 ? "#9fe870" : "#fff" }}>{catUnlocked}</span>
-                    <span style={{ color: "#fff" }}>/{cat.badges.length}</span>
+                  <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 16, lineHeight: "20px", color: "#999" }}>
+                    {catUnlocked > 0 ? (
+                      <>
+                        <span style={{ fontWeight: 700, color: "#9fe870" }}>{catUnlocked}</span>
+                        <span style={{ color: "#fff" }}>/{cat.badges.length}</span>
+                      </>
+                    ) : (
+                      <span style={{ color: "#fff" }}>0/{cat.badges.length}</span>
+                    )}
                     {" medalhas conquistadas"}
                   </p>
                 </div>
