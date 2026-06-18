@@ -96,6 +96,22 @@ h1, h2, h3, h4, h5, h6 {
 /* Tabular nums para dados numéricos (make-interfaces-feel-better) */
 .tabular { font-variant-numeric: tabular-nums; }
 
+/* Bottom sheet entrance */
+@keyframes sheet-up {
+  from {
+    transform: translateX(-50%) translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
 /* Skeleton loading */
 @keyframes skeleton-pulse {
   0%, 100% { opacity: 0.35; }

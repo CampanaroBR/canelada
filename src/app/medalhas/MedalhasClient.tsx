@@ -409,6 +409,7 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
                 backdropFilter: "blur(4px)",
                 WebkitBackdropFilter: "blur(4px)",
                 zIndex: 40,
+                animation: "backdrop-in 260ms cubic-bezier(0.16,1,0.3,1) both",
               }}
             />
 
@@ -423,6 +424,7 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
               borderTopRightRadius: 48,
               boxShadow: sheetShadow,
               overflow: "hidden",
+              animation: "sheet-up 380ms cubic-bezier(0.16,1,0.3,1) both",
             }}>
               {/* Handle */}
               <div style={{
