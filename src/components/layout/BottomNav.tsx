@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { House, SoccerBall, Medal, ChartBar } from "@phosphor-icons/react";
 
 const NAV_ITEMS = [
-  { href: "/feed",     label: "Home",    icon: House,      matchActive: true },
-  { href: "/pelada",   label: "Baba",    icon: SoccerBall, matchActive: true },
-  { href: "/medalhas", label: "Badges",  icon: Medal,      matchActive: true },
-  { href: "/ranking",  label: "Ranking", icon: ChartBar,   matchActive: true },
+  { href: "/feed",    label: "Home",    iconActive: "/nav-home.svg",    iconInactive: "/nav-home.svg"    },
+  { href: "/pelada",  label: "Baba",    iconActive: "/nav-baba.svg",    iconInactive: "/nav-baba.svg"    },
+  { href: "/votos",   label: "Votos",   iconActive: "/nav-votos.svg",   iconInactive: "/nav-votos.svg"   },
+  { href: "/ranking", label: "Ranking", iconActive: "/nav-ranking.svg", iconInactive: "/nav-ranking.svg" },
 ];
 
 export function BottomNav() {
@@ -22,7 +21,6 @@ export function BottomNav() {
       transform: "translateX(-50%)",
       width: "min(100%, 430px)",
       zIndex: 30,
-      paddingBottom: "env(safe-area-inset-bottom, 0px)",
       display: "flex",
       justifyContent: "center",
       padding: "0 0 max(8px, env(safe-area-inset-bottom, 8px))",
@@ -30,7 +28,6 @@ export function BottomNav() {
       <nav
         aria-label="Navegação principal"
         style={{
-          /* iOS 27 liquid glass */
           display: "inline-flex",
           alignItems: "center",
           padding: "2px 8px",
@@ -49,11 +46,9 @@ export function BottomNav() {
           overflow: "clip",
         }}
       >
-        {/* Items centrados com gap fixo — sem flex-1 que estica */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           {NAV_ITEMS.map((item, i) => {
-            const isActive = item.matchActive && (pathname === item.href || pathname.startsWith(item.href + "/"));
-            const Icon = item.icon;
+            const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
             return (
               <Link
                 key={`${item.href}-${i}`}
@@ -76,14 +71,23 @@ export function BottomNav() {
                   transition: "background 180ms cubic-bezier(0.34,1.56,0.64,1), border-radius 180ms cubic-bezier(0.34,1.56,0.64,1)",
                 }}>
                   <div style={{
-                    width: 28, height: 28,
-                    display: "flex", alignItems: "center", justifyContent: "center",
+                    width: 28,
+                    height: 28,
+                    position: "relative",
                     marginBottom: isActive ? -4 : -2,
+                    flexShrink: 0,
                   }}>
-                    <Icon
-                      size={28}
-                      color={isActive ? "#000" : "#fff"}
-                      weight={isActive ? "fill" : "regular"}
+                    <img
+                      alt=""
+                      src={isActive ? item.iconActive : item.iconInactive}
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        width: "100%",
+                        height: "100%",
+                        display: "block",
+                        filter: isActive ? "brightness(0)" : "brightness(0) invert(1)",
+                      }}
                     />
                   </div>
                   <span style={{
