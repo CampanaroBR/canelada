@@ -280,8 +280,10 @@ export function HomeClient({
           <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 20, padding: "17px 9px", display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Header */}
             <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-              <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 4 }}>
-                <Trophy size={16} color="#9fe870" weight="fill" />
+              <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 8 }}>
+                <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <Trophy size={24} color="#9fe870" weight="fill" />
+                </div>
                 <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>MAIS VOTADOS</span>
               </div>
               <button onClick={() => setBsOpen(true)} style={{
@@ -328,8 +330,10 @@ export function HomeClient({
         {personagens.length > 0 && (
           <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 20, padding: "17px 9px", display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Header */}
-            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <CalendarStar size={16} color="#9fe870" weight="fill" />
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <CalendarStar size={24} color="#9fe870" weight="fill" />
+              </div>
               <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>PERSONAGEM DA SEMANA</span>
             </div>
 
@@ -409,8 +413,10 @@ export function HomeClient({
           <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 20, padding: "17px 9px", display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Header */}
             <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-              <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 4 }}>
-                <Medal size={16} color="#9fe870" weight="fill" />
+              <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 8 }}>
+                <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <Medal size={24} color="#9fe870" weight="fill" />
+                </div>
                 <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>MEDALHAS</span>
               </div>
               <Link href="/medalhas" style={{

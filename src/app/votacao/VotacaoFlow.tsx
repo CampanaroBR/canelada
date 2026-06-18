@@ -160,7 +160,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
     });
   }
 
-  if (done) return <DoneScreen total={total} />;
+  if (done) return <DoneScreen router={router} />;
   if (!trait) return null;
 
   return (
@@ -468,35 +468,84 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
   );
 }
 
-function DoneScreen({ total }: { total: number }) {
+function DoneScreen({ router }: { router: ReturnType<typeof useRouter> }) {
   return (
     <div style={{
       position: "fixed", top: 0, bottom: 0, left: "50%", transform: "translateX(-50%)",
       width: "min(100%, 430px)",
-      background: "#9fe870",
+      background: "#0a0e0e",
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
-      textAlign: "center", gap: 20, padding: "32px 24px",
+      overflow: "hidden",
     }}>
-      <div aria-hidden style={{
-        position: "absolute", inset: 0,
-        backgroundImage: "repeating-linear-gradient(90deg, transparent 0px, transparent 46px, rgba(0,0,0,0.07) 46px, rgba(0,0,0,0.07) 48px)",
-      }} />
-      <h1 style={{
-        fontFamily: "var(--font-display)", fontWeight: 900,
-        fontSize: "clamp(64px, 18vw, 88px)", lineHeight: 0.86,
-        letterSpacing: "-0.02em", textTransform: "uppercase" as const,
-        color: "#0d0d0d", position: "relative", margin: 0,
+      {/* Background decorativo */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        aria-hidden
+        src="/success-bg.png"
+        alt=""
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }}
+      />
+
+      {/* CheckCircle 124px */}
+      <div style={{
+        position: "relative",
+        width: 124, height: 124,
+        borderRadius: "50%",
+        background: "#7ed44e",
+        flexShrink: 0,
+        display: "flex", alignItems: "center", justifyContent: "center",
+        overflow: "hidden",
       }}>
-        É ISSO!
-      </h1>
-      <p style={{
-        fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13,
-        color: "rgba(20,48,0,0.55)", letterSpacing: "0.12em",
-        textTransform: "uppercase" as const, position: "relative", margin: 0,
+        <CheckCircle size={104} color="#fff" weight="fill" style={{ position: "absolute", top: 10, left: 10 }} />
+      </div>
+
+      {/* Spacer 56px */}
+      <div style={{ height: 56, flexShrink: 0 }} />
+
+      {/* Main content */}
+      <div style={{
+        position: "relative",
+        width: 313,
+        display: "flex", flexDirection: "column", alignItems: "center", gap: 58,
       }}>
-        Votos enviados pros {total} personagens
-      </p>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 32, width: "100%" }}>
+          <p style={{
+            margin: 0,
+            width: 300,
+            fontFamily: "var(--font-display)", fontWeight: 700,
+            fontSize: 56, lineHeight: "64px",
+            color: "#fff", textAlign: "center", letterSpacing: "-2px",
+          }}>
+            É isso!
+          </p>
+          <p style={{
+            margin: 0,
+            fontFamily: "var(--font-body)", fontWeight: 600,
+            fontSize: 24, lineHeight: "32px",
+            color: "#fff", textAlign: "center", letterSpacing: "-1px",
+          }}>
+            Votação enviada! Agora é aguardar a resenha! 😂
+          </p>
+        </div>
+
+        <button
+          onClick={() => router.push("/feed")}
+          style={{
+            background: "#9fe870",
+            border: "none",
+            borderRadius: 9999,
+            padding: "12px 24px",
+            fontFamily: "var(--font-display)", fontWeight: 700,
+            fontSize: 16, lineHeight: "20px",
+            color: "#090909",
+            cursor: "pointer",
+            whiteSpace: "nowrap",
+          }}
+        >
+          Ir para Home
+        </button>
+      </div>
     </div>
   );
 }

@@ -34,7 +34,7 @@ export default async function RankingPage() {
 
   const jogador = await prisma.jogador.findUnique({
     where: { userId: session.user.id },
-    select: { grupoId: true },
+    select: { grupoId: true, apelido: true, grupo: { select: { nome: true } } },
   });
   if (!jogador) redirect("/onboarding");
 
@@ -48,37 +48,45 @@ export default async function RankingPage() {
   const data: RankingData = { MVP: mvp, BAGRE: bagre, RACUDO: racudo, RESENHA: resenha };
 
   return (
-    <div style={{ minHeight: "100dvh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
-      <header style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 30,
-        height: "56px",
-        display: "flex",
-        alignItems: "center",
-        padding: "0 20px",
-        background: "rgba(18,18,18,0.60)",
-        backdropFilter: "blur(40px) saturate(200%) brightness(1.08)",
-        WebkitBackdropFilter: "blur(40px) saturate(200%) brightness(1.08)",
-        boxShadow: ["inset 0 1px 0 rgba(255,255,255,0.12)", "inset 0 -1px 0 rgba(255,255,255,0.08)", "0 1px 0 rgba(0,0,0,0.20)"].join(", "),
+    <div style={{ minHeight: "100dvh", background: "#090909", display: "flex", flexDirection: "column" }}>
+
+      {/* Header */}
+      <div style={{
+        paddingTop: "calc(env(safe-area-inset-top, 0px) + 20px)",
+        padding: "calc(env(safe-area-inset-top, 0px) + 20px) 20px 20px",
+        display: "flex", flexDirection: "column", gap: 2,
       }}>
-        <span style={{
-          fontFamily: "var(--font-display)",
-          fontWeight: 900,
-          fontSize: "20px",
-          letterSpacing: "0.08em",
-          color: "var(--color-accent)",
+        <div style={{
+          fontFamily: "var(--font-body)", fontWeight: 600,
+          fontSize: 12, letterSpacing: "0.14em",
           textTransform: "uppercase",
+          color: "rgba(255,255,255,0.3)",
         }}>
-          RANKING
-        </span>
-      </header>
+          {jogador.grupo.nome}
+        </div>
+        <h1 style={{
+          margin: 0,
+          fontFamily: "var(--font-display)", fontWeight: 900,
+          fontSize: 48, lineHeight: 0.9,
+          letterSpacing: "-0.02em", textTransform: "uppercase",
+          color: "#fff",
+        }}>
+          Ranking
+        </h1>
+        <div style={{
+          fontFamily: "var(--font-body)", fontWeight: 500,
+          fontSize: 14, color: "rgba(255,255,255,0.3)",
+          marginTop: 4,
+        }}>
+          Histórico de votos acumulados
+        </div>
+      </div>
 
       <main style={{
         flex: 1,
-        paddingBottom: "calc(72px + env(safe-area-inset-bottom, 0px))",
+        paddingBottom: "calc(88px + env(safe-area-inset-bottom, 0px))",
       }}>
-        <RankingTabs data={data} />
+        <RankingTabs data={data} meuApelido={jogador.apelido} />
       </main>
 
       <BottomNav />

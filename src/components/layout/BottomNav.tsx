@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { House, SoccerBall, ChartBar, Medal } from "@phosphor-icons/react";
+import { House, SoccerBall, CheckCircle, ChartBar } from "@phosphor-icons/react";
 
 const NAV_ITEMS = [
-  { href: "/feed",     label: "Home",     icon: House,      matchActive: true },
-  { href: "/pelada",   label: "Pelada",   icon: SoccerBall, matchActive: true },
-  { href: "/medalhas", label: "Badges",   icon: Medal,      matchActive: true },
-  { href: "/ranking",  label: "Ranking",  icon: ChartBar,   matchActive: true },
+  { href: "/feed",    label: "Home",    icon: House,        matchActive: true },
+  { href: "/pelada",  label: "Baba",    icon: SoccerBall,   matchActive: true },
+  { href: "/votacao", label: "Votos",   icon: CheckCircle,  matchActive: true },
+  { href: "/ranking", label: "Ranking", icon: ChartBar,     matchActive: true },
 ];
 
 export function BottomNav() {
@@ -29,8 +29,8 @@ export function BottomNav() {
         style={{
           margin: "0 8px 8px",
           display: "flex",
-          alignItems: "flex-start",
-          padding: "6px 15px",
+          alignItems: "center",
+          padding: "2px 8px",
           borderRadius: 32,
           background: "rgba(0,0,0,0.08)",
           border: "1px solid #393939",
@@ -53,23 +53,41 @@ export function BottomNav() {
                 style={{ textDecoration: "none", WebkitTapHighlightColor: "transparent" }}
               >
                 <div style={{
-                  width: 56, height: 56,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  /* pill ativo: padding lateral generoso; inativo: 56×56 */
+                  width: isActive ? undefined : 56,
+                  height: isActive ? undefined : 56,
+                  padding: isActive ? "4px 12px" : 8,
                   borderRadius: isActive ? 100 : 16,
                   background: isActive ? "#9fe870" : "transparent",
-                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                  padding: 8, overflow: "clip",
-                  transition: "background 180ms cubic-bezier(0.34,1.56,0.64,1), border-radius 180ms cubic-bezier(0.34,1.56,0.64,1), transform 120ms ease",
-                  willChange: "background, border-radius",
+                  overflow: "clip",
+                  transition: "background 180ms cubic-bezier(0.34,1.56,0.64,1), border-radius 180ms cubic-bezier(0.34,1.56,0.64,1)",
                 }}>
-                  <div style={{ width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Icon size={28} color={isActive ? "#000" : "#fff"} weight={isActive ? "fill" : "regular"} />
+                  {/* ícone — margem negativa aproxima o label */}
+                  <div style={{
+                    width: 28, height: 28,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    marginBottom: isActive ? -4 : -2,
+                  }}>
+                    <Icon
+                      size={28}
+                      color={isActive ? "#000" : "#fff"}
+                      weight={isActive ? "fill" : "regular"}
+                    />
                   </div>
                   <span style={{
-                    fontFamily: "var(--font-display)", fontWeight: isActive ? 800 : 600,
-                    fontSize: 10, lineHeight: "14px",
+                    fontFamily: "var(--font-display)",
+                    fontWeight: isActive ? 800 : 600,
+                    fontSize: 10,
+                    lineHeight: "14px",
+                    letterSpacing: "-0.2px",
                     color: isActive ? "#000" : "#fff",
-                    textAlign: "center", letterSpacing: "-0.2px", whiteSpace: "nowrap",
-                    display: "block", width: "100%",
+                    textAlign: "center",
+                    whiteSpace: "nowrap",
+                    display: "block",
                   }}>
                     {item.label}
                   </span>

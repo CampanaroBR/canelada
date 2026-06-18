@@ -11,181 +11,177 @@ export type RankingData = {
 };
 
 const TABS = [
-  { key: "MVP"     as const, label: "MVP",     color: "#B5FF4D", emoji: "⚽" },
-  { key: "BAGRE"   as const, label: "Bagre",   color: "#EF4444", emoji: "🐟" },
-  { key: "RACUDO"  as const, label: "Raçudo",  color: "#F59E0B", emoji: "💪" },
-  { key: "RESENHA" as const, label: "Resenha", color: "#60A5FA", emoji: "🎤" },
+  { key: "MVP"     as const, emoji: "⚽", label: "MVP",     tagline: "melhor do baba",   emptyMsg: "Nenhum MVP ainda." },
+  { key: "BAGRE"   as const, emoji: "🐟", label: "Bagre",   tagline: "pior do baba",     emptyMsg: "Nenhum bagre eleito ainda." },
+  { key: "RACUDO"  as const, emoji: "💪", label: "Raçudo",  tagline: "mais raçudo",      emptyMsg: "Nenhum raçudo votado ainda." },
+  { key: "RESENHA" as const, emoji: "🎤", label: "Resenha", tagline: "rei da resenha",   emptyMsg: "Ninguém levou a resenha ainda." },
 ];
 
-const AVATAR_COLORS = ["#B5FF4D", "#60A5FA", "#F59E0B", "#EF4444", "#A78BFA", "#34D399", "#F97316", "#EC4899"];
-function avatarColor(name: string) {
-  let h = 0;
-  for (const c of name) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
-  return AVATAR_COLORS[h % AVATAR_COLORS.length];
-}
 function getInitials(name: string) {
   const p = name.trim().split(/\s+/);
   return p.length >= 2 ? (p[0][0] + p[1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
 }
 
-function AvatarCircle({ name, size = 48, active = false, accentColor = "" }: {
-  name: string; size?: number; active?: boolean; accentColor?: string;
-}) {
-  const color = avatarColor(name);
-  const ring = active ? accentColor : color;
+function Avatar({ name, size = 48 }: { name: string; size?: number }) {
   return (
     <div style={{
       width: size, height: size, borderRadius: "50%",
-      background: `radial-gradient(circle at 35% 35%, ${color}35, ${color}12)`,
-      boxShadow: [
-        `0 0 0 ${active ? 2 : 1}px ${ring}${active ? "90" : "50"}`,
-        active ? `0 0 20px ${ring}30` : "",
-      ].filter(Boolean).join(", "),
+      background: "#1a1a1a",
+      border: "1px solid #2e2e2e",
       display: "flex", alignItems: "center", justifyContent: "center",
       fontFamily: "var(--font-display)", fontWeight: 900,
-      fontSize: size * 0.30, color, letterSpacing: "0.04em", flexShrink: 0,
+      fontSize: size * 0.30, color: "rgba(255,255,255,0.7)",
+      flexShrink: 0, letterSpacing: "-0.01em",
     }}>
       {getInitials(name)}
     </div>
   );
 }
 
-/* Primeiro lugar — hero card com cor preenchendo como o Login */
-function FirstPlaceCard({ entry, color, emoji }: { entry: RankingEntry; color: string; emoji: string }) {
-  const tabLabel = TABS.find(t => t.color === color)?.label ?? "ranking";
+function FirstCard({ entry, tab }: { entry: RankingEntry; tab: typeof TABS[number] }) {
   return (
     <div style={{
       position: "relative",
-      borderRadius: "var(--radius-lg)",
-      background: `linear-gradient(135deg, ${color}28 0%, ${color}10 60%, transparent 100%)`,
-      boxShadow: `0 0 0 1px ${color}50, inset 0 1px 0 rgba(255,255,255,0.10), 0 8px 40px ${color}25`,
-      padding: "24px 20px",
+      background: "#111",
+      border: "1px solid #2a2a2a",
+      borderRadius: 20,
+      padding: "22px 20px 20px",
       overflow: "hidden",
-      marginBottom: "8px",
     }}>
-      {/* Color fill strip on top */}
+      {/* Barra acento verde no topo */}
       <div aria-hidden style={{
-        position: "absolute",
-        top: 0, left: 0, right: 0,
-        height: "3px",
-        background: color,
-        opacity: 0.9,
-      }} />
-
-      {/* Radial glow behind avatar */}
-      <div aria-hidden style={{
-        position: "absolute",
-        left: "10px",
-        top: "50%",
-        transform: "translateY(-50%)",
-        width: "120px",
-        height: "120px",
-        borderRadius: "50%",
-        background: `radial-gradient(circle, ${color}25 0%, transparent 70%)`,
-        pointerEvents: "none",
+        position: "absolute", top: 0, left: 0, right: 0, height: 3,
+        background: "#9fe870",
       }} />
 
       {/* Watermark "1" */}
       <div aria-hidden style={{
-        position: "absolute",
-        right: "-4px",
-        top: "50%",
-        transform: "translateY(-50%)",
-        fontFamily: "var(--font-display)",
-        fontWeight: 900,
-        fontSize: "clamp(140px, 38vw, 180px)",
-        lineHeight: 1,
-        color: color,
-        opacity: 0.06,
-        userSelect: "none",
-        letterSpacing: "-0.04em",
-      }}>1</div>
+        position: "absolute", right: -8, bottom: -24,
+        fontFamily: "var(--font-display)", fontWeight: 900,
+        fontSize: 180, lineHeight: 1,
+        color: "#9fe870", opacity: 0.05,
+        letterSpacing: "-0.04em", userSelect: "none", pointerEvents: "none",
+      }}>
+        1
+      </div>
 
-      {/* Label topo */}
-      <p style={{
-        fontSize: "10px", fontWeight: 700, letterSpacing: "0.16em",
-        textTransform: "uppercase", color: color,
-        fontFamily: "var(--font-body)", marginBottom: "16px", opacity: 0.9,
+      {/* Rótulo da categoria */}
+      <div style={{
+        fontFamily: "var(--font-body)", fontWeight: 700,
+        fontSize: 11, letterSpacing: "0.16em",
+        textTransform: "uppercase" as const,
+        color: "#9fe870", marginBottom: 20, opacity: 0.9,
         position: "relative",
       }}>
-        {emoji} Líder do {tabLabel}
-      </p>
+        {tab.emoji} {tab.tagline}
+      </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "16px", position: "relative" }}>
+      {/* Linha principal */}
+      <div style={{ display: "flex", alignItems: "center", gap: 16, position: "relative" }}>
         <div style={{ position: "relative", flexShrink: 0 }}>
-          <AvatarCircle name={entry.apelido} size={72} active accentColor={color} />
+          <Avatar name={entry.apelido} size={64} />
           <div style={{
-            position: "absolute", bottom: "-4px", right: "-6px",
-            fontSize: "22px", lineHeight: 1,
-            filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.50))",
+            position: "absolute", bottom: -4, right: -8,
+            fontSize: 20, lineHeight: 1,
+            filter: "drop-shadow(0 1px 4px rgba(0,0,0,0.7))",
           }}>🥇</div>
         </div>
 
-        <h3 style={{
-          flex: 1, minWidth: 0,
-          fontFamily: "var(--font-display)", fontWeight: 900,
-          fontSize: "clamp(28px, 8vw, 40px)", lineHeight: 0.9,
-          letterSpacing: "-0.02em", textTransform: "uppercase",
-          color: "var(--color-text-primary)",
-          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-        }}>
-          {entry.apelido}
-        </h3>
-
-        {/* Contador dominante */}
-        <div style={{ textAlign: "right", flexShrink: 0 }}>
-          <div className="tabular" style={{
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{
             fontFamily: "var(--font-display)", fontWeight: 900,
-            fontSize: "clamp(64px, 18vw, 88px)", lineHeight: 0.85,
-            color: color,
-            letterSpacing: "-0.03em",
+            fontSize: "clamp(30px, 8.5vw, 44px)", lineHeight: 0.9,
+            letterSpacing: "-0.02em", textTransform: "uppercase" as const,
+            color: "#fff",
+            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
           }}>
-            {entry.count}
+            {entry.apelido}
           </div>
           <div style={{
-            fontSize: "9px", fontWeight: 700, letterSpacing: "0.12em",
-            textTransform: "uppercase", color: "var(--color-text-muted)",
-            fontFamily: "var(--font-body)", marginTop: "4px",
+            fontFamily: "var(--font-body)", fontWeight: 500,
+            fontSize: 13, color: "rgba(255,255,255,0.30)",
+            marginTop: 6,
           }}>
-            voto{entry.count !== 1 ? "s" : ""}
+            {entry.count} voto{entry.count !== 1 ? "s" : ""}
           </div>
+        </div>
+
+        {/* Número grande de votos */}
+        <div style={{
+          fontFamily: "var(--font-display)", fontWeight: 900,
+          fontSize: "clamp(52px, 14vw, 72px)", lineHeight: 1,
+          letterSpacing: "-0.04em", color: "#9fe870",
+          flexShrink: 0,
+        }}>
+          {entry.count}
         </div>
       </div>
     </div>
   );
 }
 
-/* 2º e 3º lugar — card compacto */
-function PodiumRow({ entry, rank, color }: { entry: RankingEntry; rank: 2 | 3; color: string }) {
+function PodiumRow({ entry, rank }: { entry: RankingEntry; rank: 2 | 3 }) {
   const medals = { 2: "🥈", 3: "🥉" };
   return (
     <div style={{
-      display: "flex", alignItems: "center", gap: "12px",
-      background: "var(--color-surface-1)",
-      borderRadius: "var(--radius-md)",
-      boxShadow: "var(--shadow-border)",
-      padding: "12px 16px",
-      position: "relative", overflow: "hidden",
+      flex: 1,
+      background: "#111",
+      border: "1px solid #1e1e1e",
+      borderRadius: 16,
+      padding: "16px 14px",
+      display: "flex", flexDirection: "column", alignItems: "center",
+      gap: 10,
     }}>
-      {/* Accent bar */}
-      <div aria-hidden style={{
-        position: "absolute", left: 0, top: 0, bottom: 0, width: "3px",
-        background: color, borderRadius: "3px 0 0 3px",
-      }} />
+      <span style={{ fontSize: 18 }}>{medals[rank]}</span>
+      <Avatar name={entry.apelido} size={44} />
+      <div style={{
+        fontFamily: "var(--font-display)", fontWeight: 900,
+        fontSize: 17, letterSpacing: "-0.01em",
+        textTransform: "uppercase" as const,
+        color: "rgba(255,255,255,0.85)", textAlign: "center",
+        overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+        width: "100%",
+      }}>
+        {entry.apelido}
+      </div>
+      <div style={{
+        fontFamily: "var(--font-display)", fontWeight: 900,
+        fontSize: 30, letterSpacing: "-0.03em",
+        color: "rgba(255,255,255,0.35)",
+      }}>
+        {entry.count}
+      </div>
+    </div>
+  );
+}
 
-      <span style={{ fontSize: "16px", lineHeight: 1 }}>{medals[rank]}</span>
-      <AvatarCircle name={entry.apelido} size={40} accentColor={color} />
+function ListRow({ entry, rank, isLast }: { entry: RankingEntry; rank: number; isLast: boolean }) {
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", gap: 12,
+      padding: "11px 0",
+      borderBottom: isLast ? "none" : "1px solid rgba(255,255,255,0.04)",
+    }}>
       <span style={{
-        flex: 1, fontSize: "14px", fontWeight: 700,
-        fontFamily: "var(--font-body)", color: "var(--color-text-primary)",
+        fontFamily: "var(--font-display)", fontWeight: 900,
+        fontSize: 14, color: "rgba(255,255,255,0.18)",
+        width: 22, textAlign: "center", flexShrink: 0,
+      }}>
+        {rank}
+      </span>
+      <Avatar name={entry.apelido} size={36} />
+      <span style={{
+        flex: 1,
+        fontFamily: "var(--font-body)", fontWeight: 600,
+        fontSize: 15, color: "rgba(255,255,255,0.6)",
         overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
       }}>
         {entry.apelido}
       </span>
-      <span className="tabular" style={{
+      <span style={{
         fontFamily: "var(--font-display)", fontWeight: 900,
-        fontSize: "32px", lineHeight: 1, color,
-        letterSpacing: "-0.02em",
+        fontSize: 20, color: "rgba(255,255,255,0.3)",
+        letterSpacing: "-0.02em", flexShrink: 0,
       }}>
         {entry.count}
       </span>
@@ -193,143 +189,121 @@ function PodiumRow({ entry, rank, color }: { entry: RankingEntry; rank: 2 | 3; c
   );
 }
 
-export function RankingTabs({ data }: { data: RankingData }) {
+export function RankingTabs({ data, meuApelido }: { data: RankingData; meuApelido?: string }) {
   const [active, setActive] = useState<keyof RankingData>("MVP");
   const tab = TABS.find((t) => t.key === active)!;
   const ranking = data[active];
 
   return (
-    <>
-      <style>{`
-        .rank-tab {
-          transition-property: background, box-shadow, color, transform;
-          transition-duration: 150ms;
-          transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
-        }
-        .rank-tab:active { transform: scale(0.96); }
-      `}</style>
+    <div style={{ display: "flex", flexDirection: "column" }}>
 
-      <div style={{ display: "flex", flexDirection: "column" }}>
-
-        {/* ── Tab bar — pills com shadow-as-border ── */}
+      {/* ── Tab bar ── */}
+      <div style={{
+        position: "sticky", top: 0, zIndex: 20,
+        background: "rgba(9,9,9,0.88)",
+        backdropFilter: "blur(24px)",
+        WebkitBackdropFilter: "blur(24px)",
+        borderBottom: "1px solid rgba(255,255,255,0.04)",
+        padding: "12px 16px",
+      }}>
         <div style={{
           display: "grid",
           gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "6px",
-          padding: "16px 16px 24px",
+          gap: 6,
         }}>
-          {TABS.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setActive(t.key)}
-              className="rank-tab"
-              style={{
-                height: "40px",
-                borderRadius: "var(--radius-pill)",
-                background: active === t.key ? t.color + "22" : "var(--color-surface-1)",
-                boxShadow: active === t.key
-                  ? `0 0 0 1px ${t.color}70, 0 0 12px ${t.color}20`
-                  : "var(--shadow-border)",
-                border: "none",
-                color: active === t.key ? t.color : "var(--color-text-muted)",
-                fontFamily: "var(--font-display)",
-                fontWeight: 900,
-                fontSize: "12px",
-                letterSpacing: "0.06em",
-                textTransform: "uppercase" as const,
-                cursor: "pointer",
-                WebkitTapHighlightColor: "transparent",
-              }}
-            >
-              {t.label}
-            </button>
-          ))}
+          {TABS.map((t) => {
+            const isActive = active === t.key;
+            return (
+              <button
+                key={t.key}
+                onClick={() => setActive(t.key)}
+                style={{
+                  height: 38,
+                  borderRadius: 9999,
+                  border: "none",
+                  background: isActive ? "rgba(159,232,112,0.12)" : "rgba(255,255,255,0.04)",
+                  boxShadow: isActive ? "0 0 0 1px rgba(159,232,112,0.35)" : "0 0 0 1px rgba(255,255,255,0.06)",
+                  color: isActive ? "#9fe870" : "rgba(255,255,255,0.35)",
+                  fontFamily: "var(--font-display)",
+                  fontWeight: 900,
+                  fontSize: 13,
+                  letterSpacing: "0.04em",
+                  textTransform: "uppercase" as const,
+                  cursor: "pointer",
+                  WebkitTapHighlightColor: "transparent",
+                  transition: "background 140ms, box-shadow 140ms, color 140ms",
+                }}
+              >
+                {t.label}
+              </button>
+            );
+          })}
         </div>
+      </div>
 
-        {/* ── Conteúdo ── */}
+      {/* ── Conteúdo ── */}
+      <div style={{ padding: "20px 16px", display: "flex", flexDirection: "column", gap: 8 }}>
+
         {ranking.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "80px 24px" }}>
-            <div style={{ fontSize: "64px", opacity: 0.06, marginBottom: "16px" }}>📊</div>
+          <div style={{
+            textAlign: "center",
+            padding: "72px 24px",
+            display: "flex", flexDirection: "column", alignItems: "center", gap: 16,
+          }}>
+            <div style={{ fontSize: 56, opacity: 0.12 }}>{tab.emoji}</div>
             <p style={{
               fontFamily: "var(--font-display)", fontWeight: 900,
-              fontSize: "clamp(32px, 9vw, 48px)", lineHeight: 0.9,
-              textTransform: "uppercase", color: "var(--color-text-muted)",
-              letterSpacing: "-0.01em", marginBottom: "8px",
+              fontSize: "clamp(28px, 8vw, 40px)", lineHeight: 0.95,
+              textTransform: "uppercase" as const,
+              color: "rgba(255,255,255,0.18)",
+              letterSpacing: "-0.01em", margin: 0,
             }}>
-              NENHUM<br />VOTO AINDA.
+              {tab.emptyMsg.split("\n").map((l, i) => <span key={i}>{l}<br /></span>)}
+            </p>
+            <p style={{
+              fontFamily: "var(--font-body)", fontSize: 14,
+              color: "rgba(255,255,255,0.2)", margin: 0,
+            }}>
+              Ainda não houve votação suficiente.
             </p>
           </div>
         ) : (
-          <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", gap: "8px" }}>
-            {/* 1º lugar — hero card */}
-            {ranking[0] && (
-              <FirstPlaceCard entry={ranking[0]} color={tab.color} emoji={tab.emoji} />
+          <>
+            {/* 1º lugar */}
+            {ranking[0] && <FirstCard entry={ranking[0]} tab={tab} />}
+
+            {/* 2º e 3º lado a lado */}
+            {(ranking[1] || ranking[2]) && (
+              <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+                {ranking[1] && <PodiumRow entry={ranking[1]} rank={2} />}
+                {ranking[2] && <PodiumRow entry={ranking[2]} rank={3} />}
+                {/* se só tiver 2 entradas, garante que 3 preenche o espaço igualmente */}
+                {ranking[1] && !ranking[2] && <div style={{ flex: 1 }} />}
+              </div>
             )}
-
-            {/* 2º lugar */}
-            {ranking[1] && <PodiumRow entry={ranking[1]} rank={2} color={tab.color} />}
-
-            {/* 3º lugar */}
-            {ranking[2] && <PodiumRow entry={ranking[2]} rank={3} color={tab.color} />}
 
             {/* 4º+ */}
             {ranking.length > 3 && (
-              <>
-                {/* Divisor */}
-                <div style={{
-                  display: "flex", alignItems: "center", gap: "12px",
-                  padding: "8px 0",
-                }}>
-                  <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
-                  <span style={{
-                    fontSize: "9px", fontWeight: 700, letterSpacing: "0.14em",
-                    color: "var(--color-text-muted)", fontFamily: "var(--font-body)",
-                    textTransform: "uppercase",
-                  }}>
-                    os demais
-                  </span>
-                  <div style={{ flex: 1, height: "1px", background: "rgba(255,255,255,0.06)" }} />
-                </div>
-
-                {ranking.slice(3).map((entry, i) => (
-                  <div
+              <div style={{
+                marginTop: 8,
+                background: "#111",
+                border: "1px solid #1e1e1e",
+                borderRadius: 16,
+                padding: "4px 16px",
+              }}>
+                {ranking.slice(3).map((entry, i, arr) => (
+                  <ListRow
                     key={entry.apelido}
-                    style={{
-                      display: "flex", alignItems: "center", gap: "12px",
-                      background: "var(--color-surface-1)",
-                      borderRadius: "var(--radius-md)",
-                      boxShadow: "var(--shadow-border)",
-                      padding: "10px 16px",
-                    }}
-                  >
-                    <span className="tabular" style={{
-                      fontFamily: "var(--font-display)", fontWeight: 900,
-                      fontSize: "14px", color: "var(--color-text-muted)",
-                      minWidth: "20px", textAlign: "center",
-                    }}>
-                      {i + 4}
-                    </span>
-                    <AvatarCircle name={entry.apelido} size={32} accentColor={tab.color} />
-                    <span style={{
-                      flex: 1, fontSize: "14px", fontWeight: 600,
-                      fontFamily: "var(--font-body)", color: "var(--color-text-primary)",
-                      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                    }}>
-                      {entry.apelido}
-                    </span>
-                    <span className="tabular" style={{
-                      fontFamily: "var(--font-display)", fontWeight: 900,
-                      fontSize: "18px", color: tab.color,
-                    }}>
-                      {entry.count}
-                    </span>
-                  </div>
+                    entry={entry}
+                    rank={i + 4}
+                    isLast={i === arr.length - 1}
+                  />
                 ))}
-              </>
+              </div>
             )}
-          </div>
+          </>
         )}
       </div>
-    </>
+    </div>
   );
 }
