@@ -556,8 +556,8 @@ export function HomeClient({
 
                         </div>
 
-                        {/* Badge: SVG já carrega o nome interno quando aplicável */}
-                        <div style={{ width: 80, height: 96, flexShrink: 0, position: "relative" }}>
+                        {/* Badge: overflow hidden para cortar o nome interno do SVG */}
+                        <div style={{ width: 72, height: 72, flexShrink: 0, position: "relative", overflow: "hidden" }}>
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             alt={c.traitNome}
