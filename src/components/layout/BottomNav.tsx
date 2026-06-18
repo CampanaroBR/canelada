@@ -13,7 +13,6 @@ const NAV_ITEMS: Array<{
   { href: "/feed",     label: "Home",    iconSvg: "/nav-home.svg"    },
   { href: "/pelada",   label: "Baba",    iconSvg: "/nav-baba.svg"    },
   { href: "/medalhas", label: "Badges",  PhosphorIcon: Medal         },
-  { href: "/votos",    label: "Votos",   iconSvg: "/nav-votos.svg"   },
   { href: "/ranking",  label: "Ranking", iconSvg: "/nav-ranking.svg" },
 ];
 
