@@ -1,8 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 import { BottomNav } from "@/components/layout/BottomNav";
-import { SealCheck, Lock, CheckCircle, MedalMilitary } from "@phosphor-icons/react";
+import { SealCheck, Lock, CheckCircle, MedalMilitary, List, Bell, X, User, UsersThree, SignOut } from "@phosphor-icons/react";
 
 const BADGE_CATALOG = [
   {
@@ -80,6 +83,7 @@ interface Props {
 export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
   const [filter, setFilter] = useState<Filter>("todas");
   const [selected, setSelected] = useState<BadgeEntry | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const unlockedSet = new Set(unlockedSlugs);
   const unlockedCount = ALL_SLUGS.filter(s => unlockedSet.has(s)).length;
 
@@ -98,22 +102,25 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
         position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)",
         width: "min(100%, 430px)", zIndex: 30,
         paddingTop: "env(safe-area-inset-top, 0px)",
-        background: "rgba(0,0,0,0.15)",
-        backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "4px 8px",
+        background: "rgba(255,255,255,0.1)",
+        backdropFilter: "blur(50px)", WebkitBackdropFilter: "blur(50px)",
+        borderBottom: "1px solid rgba(84,84,86,0.34)",
       }}>
-        <div style={{ width: 56, height: 56 }} />
-        <div style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 8px" }}>
+          <button onClick={() => setMenuOpen(true)} style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
+            <List size={24} color="#fff" weight="bold" />
+          </button>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo.png" alt="Canelada" style={{ width: 40, height: 40, objectFit: "contain" }} />
+          <img alt="Canelada" src="/logo.png" style={{ width: 56, height: 56, objectFit: "cover" }} />
+          <button style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
+            <Bell size={24} color="#fff" weight="bold" />
+          </button>
         </div>
-        <div style={{ width: 56, height: 56 }} />
       </div>
 
-      {/* ── TEAL HEADER + BANNER ── */}
+      {/* ── DARK HEADER + BANNER ── */}
       <div style={{
-        background: "#147787",
+        background: "#2c2c2c",
         paddingTop: "calc(env(safe-area-inset-top, 0px) + 72px)",
         paddingBottom: 36,
         paddingLeft: 16,
@@ -126,7 +133,7 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
         {lastConquista ? (
           <div style={{
             background: "#090909",
-            border: "1px solid #2e2e2e",
+            border: "1px solid #c5973a",
             borderRadius: 18,
             padding: "11px 9px 11px 17px",
             display: "flex",
@@ -578,7 +585,69 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
       })()}
 
       <BottomNav />
+
+      {/* ── Menu Hambúrguer Drawer ── */}
+      {menuOpen && (
+        <>
+          <div
+            aria-hidden
+            onClick={() => setMenuOpen(false)}
+            style={{
+              position: "fixed", top: 0, bottom: 0, left: "50%", transform: "translateX(-50%)",
+              width: "min(100%, 430px)", zIndex: 50,
+              background: "rgba(0,0,0,0.65)",
+              backdropFilter: "blur(2px)", WebkitBackdropFilter: "blur(2px)",
+            }}
+          />
+          <div style={{
+            position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)",
+            width: "min(100%, 430px)", zIndex: 51,
+            background: "#1a1a1a",
+            border: "1px solid #2e2e2e",
+            borderRadius: "32px 32px 0 0",
+            paddingBottom: "max(24px, env(safe-area-inset-bottom, 24px))",
+          }}>
+            <div style={{ display: "flex", justifyContent: "center", padding: "12px 0 8px" }}>
+              <div style={{ width: 40, height: 4, background: "#3a3a3a", borderRadius: 9999 }} />
+            </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 16px 16px" }}>
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#fff" }}>MENU</span>
+              <button
+                onClick={() => setMenuOpen(false)}
+                style={{ width: 40, height: 40, background: "#000", border: "1px solid #424242", borderRadius: 20, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
+              >
+                <X size={16} color="#fff" weight="bold" />
+              </button>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 2, padding: "0 16px" }}>
+              <MenuRow icon={<User size={20} color="#fff" weight="regular" />} label="Meu Perfil" href="/perfil" onClose={() => setMenuOpen(false)} />
+              <MenuRow icon={<UsersThree size={20} color="#fff" weight="regular" />} label="Meu Grupo" href="/grupo" onClose={() => setMenuOpen(false)} />
+              <div style={{ height: 1, background: "#2a2a2a", margin: "8px 0" }} />
+              <button
+                onClick={() => signOut({ callbackUrl: "/login" })}
+                style={{ display: "flex", alignItems: "center", gap: 12, background: "none", border: "none", cursor: "pointer", padding: "14px 8px", borderRadius: 12, width: "100%" }}
+              >
+                <div style={{ width: 40, height: 40, background: "#2a0a0a", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <SignOut size={20} color="#ef4444" weight="regular" />
+                </div>
+                <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 16, color: "#ef4444" }}>Sair</span>
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
+  );
+}
+
+function MenuRow({ icon, label, href, onClose }: { icon: React.ReactNode; label: string; href: string; onClose: () => void }) {
+  return (
+    <Link href={href} onClick={onClose} style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 8px", borderRadius: 12, textDecoration: "none" }}>
+      <div style={{ width: 40, height: 40, background: "#242424", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        {icon}
+      </div>
+      <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 16, color: "#fff" }}>{label}</span>
+    </Link>
   );
 }
 
