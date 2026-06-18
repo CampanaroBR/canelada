@@ -27,7 +27,7 @@ export function BottomNav() {
       <nav
         aria-label="Navegação principal"
         style={{
-          margin: "0 8px 16px",
+          margin: "0 8px 6px",
           display: "flex",
           alignItems: "flex-start",
           padding: "6px 15px",
