@@ -23,7 +23,7 @@ export default async function FeedPage() {
   const grupoId = jogador.grupoId;
   const grupoNome = jogador.grupo?.nome ?? "";
 
-  const [rodadaAtiva, topTraitsRaw, recentStories, recentTraits, ultimasRodadas] = await Promise.all([
+  const [rodadaAtiva, topTraitsRaw, recentTraits, rodadasComStories] = await Promise.all([
     prisma.rodada.findFirst({
       where: { grupoId, encerrada: false },
       select: { id: true, data: true },
@@ -36,13 +36,6 @@ export default async function FeedPage() {
       _sum: { contador: true },
       orderBy: { _sum: { contador: "desc" } },
       take: 6,
-    }),
-    // Personagem da semana: stories MVP/BAGRE mais recentes
-    prisma.story.findMany({
-      where: { rodada: { grupoId }, tipo: { in: ["MVP", "BAGRE"] } },
-      include: { rodada: { select: { data: true } } },
-      orderBy: { createdAt: "desc" },
-      take: 3,
     }),
     // Medalhas: só traits que têm badge SVG própria (conquistas, não votação)
     prisma.jogadorTrait.findMany({
@@ -62,11 +55,19 @@ export default async function FeedPage() {
       orderBy: { updatedAt: "desc" },
       take: 3,
     }),
+    // Rodadas com personagens: busca até 10 rodadas com suas stories MVP/BAGRE
     prisma.rodada.findMany({
       where: { grupoId },
       orderBy: { data: "desc" },
-      take: 3,
-      select: { data: true },
+      take: 10,
+      select: {
+        id: true,
+        data: true,
+        stories: {
+          where: { tipo: { in: ["MVP", "BAGRE"] } },
+          orderBy: { createdAt: "asc" },
+        },
+      },
     }),
   ]);
 
@@ -85,28 +86,20 @@ export default async function FeedPage() {
     categoria: "MVP",
   }));
 
-  const PERSONAGEM_TITLES: Record<string, string> = {
-    MVP:    "MATADOR",
-    BAGRE:  "BAGRE DA NOITE",
-    RACUDO: "PREGUEIRO",
-  };
-
-  const personagens: Personagem[] = recentStories.map(s => ({
-    tipo: s.tipo,
-    apelido: s.texto.split(" ").find(w => /\p{L}/u.test(w)) ?? "?",
-    texto: s.texto,
-    data: s.rodada.data,
-  }));
-
-  // Fallback: se não há stories, monta personagens dos top traits
-  const personagensFinal: Personagem[] = personagens.length > 0
-    ? personagens
-    : recentTraits.slice(0, 3).map((jt, i) => ({
-        tipo: i === 0 ? "MVP" : i === 1 ? "BAGRE" : "RACUDO",
-        apelido: jt.jogador.apelido,
-        texto: `${jt.jogador.apelido} foi o ${PERSONAGEM_TITLES[i === 0 ? "MVP" : i === 1 ? "BAGRE" : "RACUDO"]}`,
-        data: jt.updatedAt,
-      }));
+  // Monta rodadas com personagens (pills + filtro)
+  const rodadas = rodadasComStories
+    .filter(r => r.stories.length > 0)
+    .reverse()
+    .map(r => ({
+      id: r.id,
+      label: new Date(r.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", ""),
+      personagens: r.stories.map(s => ({
+        tipo: s.tipo,
+        apelido: s.texto.split(" ").find((w: string) => /\p{L}/u.test(w)) ?? "?",
+        texto: s.texto,
+        data: r.data,
+      } as Personagem)),
+    }));
 
   const conquistas: Conquista[] = recentTraits.map(c => ({
     apelido: c.jogador.apelido,
@@ -150,10 +143,6 @@ export default async function FeedPage() {
     ? new Date(rodadaAtiva.data).toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short" })
     : null;
 
-  const datePills = ultimasRodadas.reverse().map(r =>
-    new Date(r.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", "")
-  );
-
   return (
     <HomeClient
       IMG={{}}
@@ -162,9 +151,8 @@ export default async function FeedPage() {
       jaVotou={jaVotou}
       top5Rodada={top5Rodada}
       maisVotados={maisVotados}
-      personagens={personagensFinal}
+      rodadas={rodadas}
       conquistas={conquistas}
-      datePills={datePills}
       grupoNome={grupoNome}
       criarRodadaAction={criarRodada}
     />
