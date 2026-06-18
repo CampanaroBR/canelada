@@ -9,54 +9,54 @@ const BADGE_CATALOG = [
     id: "presenca",
     title: "PRESENÇA 🏅",
     badges: [
-      { slug: "primeiro-baba",  nome: "Primeira Pelada", descricao: "Participou da primeira rodada registrada no Canelada.", svg: "/conquistas/primeiro-baba.svg" },
-      { slug: "veterano",       nome: "Veterano",         descricao: "Participou de 10 rodadas.", svg: "/conquistas/veterano.svg" },
-      { slug: "casca-grossa",   nome: "Casca Grossa",     descricao: "Participou de 25 rodadas.", svg: "/conquistas/casca-grossa.svg" },
-      { slug: "mais-presente",  nome: "Mais Presente",    descricao: "Participou de 100% das rodadas de um mês.", svg: "/conquistas/mais-presente.svg" },
-      { slug: "alma-do-grupo",  nome: "Alma do Grupo",    descricao: "Participou de ao menos 80% das rodadas em 3 meses consecutivos.", svg: "/conquistas/alma-do-grupo.svg" },
-      { slug: "hall-da-fama",   nome: "Hall da Fama",     descricao: "Participou de 50 rodadas.", svg: "/conquistas/hall-da-fama.svg" },
-      { slug: "lenda-do-baba",  nome: "Lenda do Baba",    descricao: "Participou de 100 rodadas e tem pelo menos 5 MVPs.", svg: "/conquistas/lenda-do-baba.svg" },
+      { slug: "primeiro-baba",  nome: "Primeira Pelada", descricao: "Participou da primeira rodada registrada no Canelada.", svg: "/conquistas/primeiro-baba.svg", tagline: "PRIMEIRA DE MUITAS!", rara: false },
+      { slug: "veterano",       nome: "Veterano",         descricao: "Participou de 10 rodadas.",                                                                    svg: "/conquistas/veterano.svg",       tagline: "10 PARTIDAS, QUE RAÇA!",       rara: false },
+      { slug: "casca-grossa",   nome: "Casca Grossa",     descricao: "Participou de 25 rodadas.",                                                                    svg: "/conquistas/casca-grossa.svg",   tagline: "25 PARTIDAS CONCLUÍDAS!",      rara: false },
+      { slug: "mais-presente",  nome: "Mais Presente",    descricao: "Participou de 100% das rodadas de um mês.",                                                    svg: "/conquistas/mais-presente.svg",  tagline: "100% DE PRESENÇA!",            rara: false },
+      { slug: "alma-do-grupo",  nome: "Alma do Grupo",    descricao: "Participou de ao menos 80% das rodadas em 3 meses consecutivos.",                              svg: "/conquistas/alma-do-grupo.svg",  tagline: "PILAR DO GRUPO!",              rara: false },
+      { slug: "hall-da-fama",   nome: "Hall da Fama",     descricao: "Participou de 50 rodadas.",                                                                    svg: "/conquistas/hall-da-fama.svg",   tagline: "50 PARTIDAS, LENDÁRIO!",       rara: true  },
+      { slug: "lenda-do-baba",  nome: "Lenda do Baba",    descricao: "Participou de 100 rodadas e tem pelo menos 5 MVPs.",                                           svg: "/conquistas/lenda-do-baba.svg",  tagline: "O LENDÃO DO BABA!",            rara: true  },
     ],
   },
   {
     id: "performance",
     title: "PERFORMANCE ⭐",
     badges: [
-      { slug: "mvp",              nome: "MVP",              descricao: "Recebeu MVP pela primeira vez.", svg: "/conquistas/mvp.svg" },
-      { slug: "rei-absoluto",     nome: "Rei Absoluto",     descricao: "Recebeu 5 MVPs acumulados.", svg: "/conquistas/rei-absoluto.svg" },
-      { slug: "craque-da-galera", nome: "Craque da Galera", descricao: "Recebeu 10 MVPs acumulados.", svg: "/conquistas/craque-da-galera.svg" },
-      { slug: "rei-do-mes",       nome: "Rei do Mês",       descricao: "Jogador com mais MVPs durante um mês.", svg: "/conquistas/rei-do-mes.svg" },
-      { slug: "craque-historico", nome: "Craque Histórico", descricao: "Recebeu 20 MVPs acumulados.", svg: "/conquistas/craque-historico.svg" },
+      { slug: "mvp",              nome: "MVP",              descricao: "Recebeu MVP pela primeira vez.",                 svg: "/conquistas/mvp.svg",              tagline: "PRIMEIRO MVP!",              rara: false },
+      { slug: "rei-absoluto",     nome: "Rei Absoluto",     descricao: "Recebeu 5 MVPs acumulados.",                    svg: "/conquistas/rei-absoluto.svg",     tagline: "5 MVPs, É REI!",             rara: false },
+      { slug: "craque-da-galera", nome: "Craque da Galera", descricao: "Recebeu 10 MVPs acumulados.",                   svg: "/conquistas/craque-da-galera.svg", tagline: "10 MVPs E CRESCENDO!",       rara: true  },
+      { slug: "rei-do-mes",       nome: "Rei do Mês",       descricao: "Jogador com mais MVPs durante um mês.",         svg: "/conquistas/rei-do-mes.svg",       tagline: "MELHOR DO MÊS!",             rara: false },
+      { slug: "craque-historico", nome: "Craque Histórico", descricao: "Recebeu 20 MVPs acumulados.",                   svg: "/conquistas/craque-historico.svg", tagline: "20 MVPs, CRAQUE HISTÓRICO!", rara: true  },
     ],
   },
   {
     id: "sequencias",
     title: "SEQUÊNCIAS 🔥",
     badges: [
-      { slug: "em-chamas",       nome: "Em Chamas",       descricao: "Recebeu destaque positivo em 3 rodadas consecutivas.", svg: "/conquistas/em-chamas.svg" },
-      { slug: "imparavel",       nome: "Imparável",        descricao: "Recebeu destaque positivo em 5 rodadas consecutivas.", svg: "/conquistas/imparavel.svg" },
-      { slug: "invicto",         nome: "Invicto",          descricao: "Sem traits negativas por 5 rodadas consecutivas.", svg: "/conquistas/invicto.svg" },
-      { slug: "virada-de-chave", nome: "Virada de Chave",  descricao: "Recebeu trait negativa e conquistou destaque positivo na rodada seguinte.", svg: "/conquistas/virada-de-chave.svg" },
-      { slug: "consistente",     nome: "Consistente",      descricao: "Participou de 8 rodadas consecutivas.", svg: "/conquistas/consistente.svg" },
+      { slug: "em-chamas",       nome: "Em Chamas",       descricao: "Recebeu destaque positivo em 3 rodadas consecutivas.",                                svg: "/conquistas/em-chamas.svg",       tagline: "3 DESTAQUES SEGUIDOS!",  rara: false },
+      { slug: "imparavel",       nome: "Imparável",        descricao: "Recebeu destaque positivo em 5 rodadas consecutivas.",                                svg: "/conquistas/imparavel.svg",       tagline: "5 SEGUIDOS, IMPARÁVEL!", rara: true  },
+      { slug: "invicto",         nome: "Invicto",          descricao: "Sem traits negativas por 5 rodadas consecutivas.",                                    svg: "/conquistas/invicto.svg",         tagline: "LIMPO POR 5 RODADAS!",   rara: true  },
+      { slug: "virada-de-chave", nome: "Virada de Chave",  descricao: "Recebeu trait negativa e conquistou destaque positivo na rodada seguinte.",           svg: "/conquistas/virada-de-chave.svg", tagline: "QUE REVIRAVOLTA!",       rara: false },
+      { slug: "consistente",     nome: "Consistente",      descricao: "Participou de 8 rodadas consecutivas.",                                              svg: "/conquistas/consistente.svg",     tagline: "8 RODADAS SEGUIDAS!",    rara: false },
     ],
   },
   {
     id: "reconhecimento",
     title: "RECONHECIMENTO 💪",
     badges: [
-      { slug: "operario",          nome: "Operário",          descricao: "Recebeu a trait Raçudo 5 vezes.", svg: "/conquistas/operario.svg" },
-      { slug: "racudo-do-mes",     nome: "Raçudo do Mês",     descricao: "Recebeu mais votos para Raçudo durante um mês.", svg: "/conquistas/racudo-do-mes.svg" },
-      { slug: "resenha-forte",     nome: "Resenha Forte",     descricao: "Recebeu 20 traits sociais acumuladas.", svg: "/conquistas/resenha-forte.svg" },
-      { slug: "querido-da-galera", nome: "Querido da Galera", descricao: "Recebeu 50 destaques positivos acumulados.", svg: "/conquistas/querido-da-galera.svg" },
+      { slug: "operario",          nome: "Operário",          descricao: "Recebeu a trait Raçudo 5 vezes.",                    svg: "/conquistas/operario.svg",          tagline: "RAÇUDO ATÉ A ALMA!",    rara: false },
+      { slug: "racudo-do-mes",     nome: "Raçudo do Mês",     descricao: "Recebeu mais votos para Raçudo durante um mês.",     svg: "/conquistas/racudo-do-mes.svg",     tagline: "RAÇUDO DO MÊS!",        rara: false },
+      { slug: "resenha-forte",     nome: "Resenha Forte",     descricao: "Recebeu 20 traits sociais acumuladas.",              svg: "/conquistas/resenha-forte.svg",     tagline: "20 DESTAQUES SOCIAIS!", rara: false },
+      { slug: "querido-da-galera", nome: "Querido da Galera", descricao: "Recebeu 50 destaques positivos acumulados.",         svg: "/conquistas/querido-da-galera.svg", tagline: "50 DESTAQUES, É AMADO!", rara: true  },
     ],
   },
   {
     id: "colecao",
     title: "COLEÇÃO 🎖️",
     badges: [
-      { slug: "colecionador",      nome: "Colecionador",      descricao: "Desbloqueou 8 badges.", svg: "/conquistas/colecionador.svg" },
-      { slug: "mestre-da-resenha", nome: "Mestre da Resenha", descricao: "Desbloqueou 16 badges.", svg: "/conquistas/mestre-da-resenha.svg" },
-      { slug: "completo",          nome: "Completo!",          descricao: "Desbloqueou todas as badges do jogo.", svg: "/conquistas/completo.svg" },
+      { slug: "colecionador",      nome: "Colecionador",      descricao: "Desbloqueou 8 badges.",              svg: "/conquistas/colecionador.svg",      tagline: "8 BADGES DESBLOQUEADAS!", rara: false },
+      { slug: "mestre-da-resenha", nome: "Mestre da Resenha", descricao: "Desbloqueou 16 badges.",             svg: "/conquistas/mestre-da-resenha.svg", tagline: "16 BADGES, MESTRE!",      rara: true  },
+      { slug: "completo",          nome: "Completo!",          descricao: "Desbloqueou todas as badges do jogo.", svg: "/conquistas/completo.svg",         tagline: "TODAS AS BADGES! INCRÍVEL!", rara: true },
     ],
   },
 ] as const;
@@ -380,6 +380,24 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
       {/* ── BADGE BOTTOM SHEET ── */}
       {selected && (() => {
         const unlocked = unlockedSet.has(selected.slug);
+        const isRara = selected.rara;
+
+        const sheetShadow = !unlocked && isRara
+          ? "0px 2px 0px 0px rgba(206,156,84,0.16), 1px -12px 20px 0px rgba(206,156,84,0.24)"
+          : "0px 2px 8px 0px rgba(40,41,61,0.16), 0px 16px 24px 0px rgba(96,97,112,0.16)";
+
+        const nameColor = unlocked
+          ? "#fff"
+          : isRara
+          ? "rgba(212,168,67,0.3)"
+          : "rgba(255,255,255,0.4)";
+
+        const descColor = unlocked
+          ? "#b0b0b6"
+          : isRara
+          ? "rgba(197,151,58,0.4)"
+          : "rgba(176,176,182,0.4)";
+
         return (
           <>
             {/* Backdrop */}
@@ -396,101 +414,163 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
 
             {/* Sheet */}
             <div style={{
-              position: "fixed",
-              bottom: 0,
-              left: "50%",
-              transform: "translateX(-50%)",
+              position: "fixed", bottom: 0,
+              left: "50%", transform: "translateX(-50%)",
               width: "min(100%, 430px)",
               zIndex: 50,
-              background: "#111",
-              borderTopLeftRadius: 28,
-              borderTopRightRadius: 28,
-              padding: "12px 20px calc(32px + env(safe-area-inset-bottom, 0px))",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 0,
+              background: "#171717",
+              border: "1px solid #424242",
+              borderTopLeftRadius: 48,
+              borderTopRightRadius: 48,
+              boxShadow: sheetShadow,
+              overflow: "hidden",
             }}>
               {/* Handle */}
-              <div style={{ width: 36, height: 4, background: "#333", borderRadius: 100, marginBottom: 20 }} />
-
-              {/* Badge image */}
               <div style={{
-                width: 120, height: 120,
-                background: unlocked ? "rgba(159,232,112,0.06)" : "rgba(255,255,255,0.04)",
-                border: unlocked ? "1px solid rgba(159,232,112,0.2)" : "1px solid #2a2a2a",
-                borderRadius: 20,
+                height: 32,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                marginBottom: 16,
-                flexShrink: 0,
+                paddingTop: 12, paddingBottom: 12,
               }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={selected.svg}
-                  alt={selected.nome}
-                  style={{ width: 96, height: 96, objectFit: "contain", opacity: unlocked ? 1 : 0.3 }}
-                />
+                <div style={{ width: 40, height: 4, background: "#3a3a3a", borderRadius: 9999 }} />
               </div>
 
-              {/* Status pill */}
+              {/* Content */}
               <div style={{
-                display: "inline-flex", alignItems: "center", gap: 5,
-                background: unlocked ? "rgba(159,232,112,0.12)" : "rgba(255,255,255,0.06)",
-                border: unlocked ? "1px solid rgba(159,232,112,0.3)" : "1px solid #2a2a2a",
-                borderRadius: 100,
-                padding: "3px 10px",
-                marginBottom: 10,
+                display: "flex", flexDirection: "column", gap: 24,
+                alignItems: "center", padding: 16,
               }}>
-                {unlocked
-                  ? <CheckCircle size={13} color="#9fe870" weight="fill" />
-                  : <Lock size={11} color="rgba(255,255,255,0.35)" weight="fill" />
-                }
-                <span style={{
-                  fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11,
-                  color: unlocked ? "#9fe870" : "rgba(255,255,255,0.35)",
-                  letterSpacing: "0.5px",
-                  textTransform: "uppercase",
-                }}>
-                  {unlocked ? "Conquistada" : "Bloqueada"}
-                </span>
+
+                {/* Badge info block */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "center", width: "100%" }}>
+
+                  {/* Status pill */}
+                  <div style={{
+                    background: "#0a0e0e",
+                    border: "1px solid #2e2e2e",
+                    borderRadius: 9999,
+                    padding: "5px 13px",
+                    display: "inline-flex", alignItems: "center", gap: 8,
+                    flexShrink: 0,
+                  }}>
+                    {unlocked
+                      ? <CheckCircle size={18} color="#9fe870" weight="fill" />
+                      : <Lock size={18} color="#fff" weight="fill" />
+                    }
+                    <span style={{
+                      fontFamily: "var(--font-display)", fontWeight: 700,
+                      fontSize: 12, lineHeight: "18px",
+                      color: unlocked ? "#9fe870" : "#fff",
+                      whiteSpace: "nowrap",
+                    }}>
+                      {unlocked ? "DESBLOQUEADA" : "BLOQUEADO"}
+                    </span>
+                  </div>
+
+                  {/* Badge image 140×140 */}
+                  <div style={{ width: 140, height: 140, flexShrink: 0, marginBottom: isRara && !unlocked ? -8 : 0 }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={selected.svg}
+                      alt={selected.nome}
+                      style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                    />
+                  </div>
+
+                  {/* Text block */}
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-start", width: "100%" }}>
+                    {/* Tagline (unlocked only) */}
+                    {unlocked && (
+                      <p style={{
+                        margin: 0,
+                        fontFamily: "var(--font-display)", fontWeight: 700,
+                        fontSize: 12, lineHeight: "16px",
+                        color: "#8b8b93", letterSpacing: "1.4px",
+                        textAlign: "center", width: "100%",
+                      }}>
+                        {selected.tagline}
+                      </p>
+                    )}
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "center", width: "100%" }}>
+                      <p style={{
+                        margin: 0,
+                        fontFamily: "var(--font-display)", fontWeight: 900,
+                        fontSize: 28, lineHeight: "32px",
+                        color: nameColor, textAlign: "center", width: "100%",
+                      }}>
+                        {selected.nome}
+                      </p>
+                      <p style={{
+                        margin: 0,
+                        fontFamily: "var(--font-body)", fontWeight: 500,
+                        fontSize: 16, lineHeight: "20px",
+                        color: descColor, textAlign: "center", width: "100%",
+                      }}>
+                        {selected.descricao}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status box — locked only */}
+                {!unlocked && (
+                  <div style={{
+                    background: "#0a0e0e",
+                    border: "1px solid #232327",
+                    borderRadius: 18,
+                    padding: "11px 16px",
+                    display: "flex", flexDirection: "column", gap: 12,
+                    width: "100%", boxSizing: "border-box",
+                  }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%" }}>
+                      <p style={{
+                        margin: 0,
+                        fontFamily: "var(--font-display)", fontWeight: 700,
+                        fontSize: 16, lineHeight: "20px", color: "#fff",
+                      }}>
+                        Em andamento
+                      </p>
+                      {/* Progress bar */}
+                      <div style={{
+                        height: 8, background: "#26262b", borderRadius: 99,
+                        overflow: "hidden", width: "100%",
+                      }}>
+                        <div style={{ height: "100%", width: "0%", background: "#9fe870", borderRadius: 99 }} />
+                      </div>
+                    </div>
+                    <p style={{
+                      margin: 0,
+                      fontFamily: "var(--font-body)", fontWeight: 600,
+                      fontSize: 12, color: "#999",
+                    }}>
+                      {selected.descricao}
+                    </p>
+                  </div>
+                )}
+
+                {/* Close button */}
+                <button
+                  onClick={() => setSelected(null)}
+                  style={{
+                    width: "100%",
+                    padding: "17px",
+                    background: "#424242",
+                    border: "1px solid #ccc",
+                    borderRadius: 16,
+                    fontFamily: "var(--font-display)", fontWeight: 700,
+                    fontSize: 16, lineHeight: "20px",
+                    color: "#fff",
+                    cursor: "pointer", textAlign: "center",
+                    WebkitTapHighlightColor: "transparent",
+                    boxSizing: "border-box",
+                  }}
+                >
+                  Fechar
+                </button>
               </div>
 
-              {/* Name */}
-              <p style={{
-                margin: "0 0 8px",
-                fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 26, lineHeight: "30px",
-                color: "#fff", textAlign: "center",
-              }}>
-                {selected.nome}
-              </p>
-
-              {/* Description */}
-              <p style={{
-                margin: "0 0 24px",
-                fontFamily: "var(--font-body)", fontWeight: 400, fontSize: 14, lineHeight: "20px",
-                color: "#888", textAlign: "center",
-                maxWidth: 280,
-              }}>
-                {selected.descricao}
-              </p>
-
-              {/* Close button */}
-              <button
-                onClick={() => setSelected(null)}
-                style={{
-                  width: "100%",
-                  padding: "14px",
-                  background: "#1e1e1e",
-                  border: "1px solid #2a2a2a",
-                  borderRadius: 14,
-                  fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15,
-                  color: "#fff",
-                  cursor: "pointer",
-                  WebkitTapHighlightColor: "transparent",
-                }}
-              >
-                Fechar
-              </button>
+              {/* Footer safe-area spacer */}
+              <div style={{ height: "max(16px, env(safe-area-inset-bottom, 0px))", background: "#171717" }} />
             </div>
           </>
         );
