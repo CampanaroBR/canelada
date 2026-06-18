@@ -120,16 +120,52 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
 
       {/* ── DARK HEADER + BANNER ── */}
       <div style={{
-        background: "#2c2c2c",
-        paddingTop: "calc(env(safe-area-inset-top, 0px) + 72px)",
-        paddingBottom: 36,
+        background: "#424242",
+        paddingTop: "calc(env(safe-area-inset-top, 0px) + 96px)",
+        paddingBottom: 20,
         paddingLeft: 16,
         paddingRight: 16,
         borderBottomLeftRadius: 40,
         borderBottomRightRadius: 40,
         boxSizing: "border-box",
         width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        gap: 16,
       }}>
+
+        {/* Title row */}
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div style={{ flex: "1 0 0", minWidth: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 28, lineHeight: "32px", color: "#fff" }}>
+              Suas Badges
+            </p>
+            <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, lineHeight: "normal", color: "#fff" }}>
+              {unlockedCount} de {TOTAL} badges desbloqueadas
+            </p>
+          </div>
+          {/* Circular progress ring */}
+          <div style={{ flexShrink: 0, width: 48, height: 48, position: "relative" }}>
+            <svg width="48" height="48" viewBox="0 0 48 48" style={{ display: "block" }}>
+              <circle cx="24" cy="24" r="20" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="4" />
+              <circle
+                cx="24" cy="24" r="20" fill="none"
+                stroke="#9fe870" strokeWidth="4"
+                strokeLinecap="round"
+                strokeDasharray={`${(unlockedCount / TOTAL) * 125.66} 125.66`}
+                transform="rotate(-90 24 24)"
+              />
+            </svg>
+            <span style={{
+              position: "absolute", inset: 0,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 11, color: "#fff",
+            }}>
+              {Math.round(unlockedCount / TOTAL * 100)}%
+            </span>
+          </div>
+        </div>
+
         {lastConquista ? (
           <div style={{
             background: "#090909",
