@@ -40,7 +40,7 @@ export function BottomNav() {
           overflow: "clip",
         }}
       >
-        <div style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", flex: 1, alignItems: "center", justifyContent: "center", gap: 24 }}>
           {NAV_ITEMS.map((item, i) => {
             const isActive = item.matchActive && (pathname === item.href || pathname.startsWith(item.href + "/"));
             const Icon = item.icon;
