@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { BottomNav } from "@/components/layout/BottomNav";
-import { SealCheck, Lock, CheckCircle, MedalMilitary, List, Bell, X, User, UsersThree, SignOut } from "@phosphor-icons/react";
+import { Lock, CheckCircle, MedalMilitary, List, Bell, X, User, UsersThree, SignOut } from "@phosphor-icons/react";
 
 const BADGE_CATALOG = [
   {
@@ -120,7 +120,7 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
 
       {/* ── DARK HEADER + BANNER ── */}
       <div style={{
-        background: "#424242",
+        background: "#0e4a54",
         paddingTop: "calc(env(safe-area-inset-top, 0px) + 96px)",
         paddingBottom: 20,
         paddingLeft: 16,
@@ -254,7 +254,7 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
       }}>
 
         {/* Section header */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8, height: 42 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, height: 42, paddingLeft: 8 }}>
           <div style={{
             background: "#171717",
             border: "1px solid #2e2e2e",
@@ -263,11 +263,13 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            flexShrink: 0,
           }}>
-            <SealCheck size={24} color="#9fe870" weight="fill" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img alt="" src="/icon-medal-badge.svg" style={{ width: 24, height: 24, display: "block" }} />
           </div>
-          <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>
-            MEDALHAS CONQUISTADAS
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>
+            BADGES
           </span>
         </div>
 
@@ -285,7 +287,7 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
                 key={f}
                 onClick={() => setFilter(f)}
                 style={{
-                  background: active ? "#9fe870" : "transparent",
+                  background: active ? "#9fe870" : "#111",
                   border: active ? "none" : "1px solid #2e2e2e",
                   borderRadius: 9999,
                   padding: "5px 12px",
@@ -321,7 +323,7 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
             const catUnlocked = cat.badges.filter(b => unlockedSet.has(b.slug)).length;
 
             return (
-              <div key={cat.id} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div key={cat.id} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {/* Category header */}
                 <div style={{ paddingLeft: 4 }}>
                   <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>
@@ -336,7 +338,7 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
                     ) : (
                       <span style={{ color: "#fff" }}>0/{cat.badges.length}</span>
                     )}
-                    {" medalhas conquistadas"}
+                    {" Badges conquistadas"}
                   </p>
                 </div>
 
