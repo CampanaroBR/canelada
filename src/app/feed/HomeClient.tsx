@@ -46,6 +46,8 @@ type MaisVotado = { apelido: string; qtd: number; categoria: string };
 type Personagem  = { tipo: string; apelido: string; texto: string; data: Date };
 type Conquista   = { apelido: string; traitSlug: string; traitNome: string; traitEmoji: string | null; traitDesc: string | null; data: Date };
 
+type ProximoBaba = { dataFormatada: string; hora: string; diasRestantes: number };
+
 interface Props {
   IMG: Record<string, string>;
   rodadaId: string | null;
@@ -57,6 +59,7 @@ interface Props {
   conquistas: Conquista[];
   datePills: string[];
   grupoNome: string;
+  proximoBaba: ProximoBaba | null;
   criarRodadaAction: () => Promise<void>;
 }
 
@@ -77,7 +80,7 @@ const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
 export function HomeClient({
   rodadaId, dataRodada, jaVotou, top5Rodada,
   maisVotados, personagens, conquistas, datePills, grupoNome,
-  criarRodadaAction,
+  proximoBaba, criarRodadaAction,
 }: Props) {
   const [bsOpen, setBsOpen] = useState(false);
   const [activePill, setActivePill] = useState(datePills.length > 0 ? datePills.length - 1 : 0);
@@ -274,6 +277,77 @@ export function HomeClient({
 
       {/* ── Page sections ── */}
       <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "0 8px", width: "100%", boxSizing: "border-box" }}>
+
+        {/* ── PRÓXIMO BABA ── */}
+        {proximoBaba && (
+          <div style={{
+            background: "#171717",
+            border: "1px solid #2e2e2e",
+            borderRadius: 20,
+            padding: "13px 9px",
+            display: "flex",
+            alignItems: "center",
+            gap: 16,
+          }}>
+            {/* Left: icon + info */}
+            <div style={{ display: "flex", alignItems: "center", gap: 12, flex: 1, minWidth: 0 }}>
+              {/* Calendar icon box */}
+              <div style={{
+                background: "#171717",
+                border: "1px solid #2e2e2e",
+                borderRadius: 12,
+                padding: 8,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img alt="" src="/icon-calendar.svg" width={28} height={28} />
+              </div>
+
+              {/* Text */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <span style={{
+                  fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 10,
+                  lineHeight: "14px", letterSpacing: "0.5px", textTransform: "uppercase",
+                  color: "#9fe870", whiteSpace: "nowrap",
+                }}>PRÓXIMO BABA</span>
+                <span style={{
+                  fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 18,
+                  lineHeight: "22px", color: "#fff", whiteSpace: "nowrap", textTransform: "capitalize",
+                }}>
+                  {proximoBaba.dataFormatada}
+                </span>
+                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img alt="" src="/icon-clock.svg" width={16} height={16} />
+                  <span style={{
+                    fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12,
+                    lineHeight: "16px", color: "#fff", letterSpacing: "-0.48px",
+                  }}>{proximoBaba.hora}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: days badge */}
+            {proximoBaba.diasRestantes > 0 && (
+              <div style={{
+                background: "rgba(25,152,173,0.13)",
+                borderRadius: 14,
+                padding: "9px 12px",
+                flexShrink: 0,
+              }}>
+                <span style={{
+                  fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12,
+                  lineHeight: "18px", color: "#9fe870", whiteSpace: "nowrap",
+                }}>
+                  {proximoBaba.diasRestantes} dia{proximoBaba.diasRestantes !== 1 ? "s" : ""}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ── 2. MAIS VOTADOS ── */}
         {maisVotados.length > 0 && (

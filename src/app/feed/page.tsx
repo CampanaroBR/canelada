@@ -154,6 +154,18 @@ export default async function FeedPage() {
     new Date(r.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", "")
   );
 
+  // Próximo baba card
+  const proximoBaba = rodadaAtiva ? (() => {
+    const d = new Date(rodadaAtiva.data);
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    d.setHours(0, 0, 0, 0);
+    const diasRestantes = Math.ceil((d.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
+    const dataFormatada = new Date(rodadaAtiva.data).toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "short" });
+    const hora = new Date(rodadaAtiva.data).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    return { dataFormatada, hora, diasRestantes };
+  })() : null;
+
   return (
     <HomeClient
       IMG={{}}
@@ -166,6 +178,7 @@ export default async function FeedPage() {
       conquistas={conquistas}
       datePills={datePills}
       grupoNome={grupoNome}
+      proximoBaba={proximoBaba}
       criarRodadaAction={criarRodada}
     />
   );
