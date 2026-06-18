@@ -2,12 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Medal } from "@phosphor-icons/react";
 
-const NAV_ITEMS = [
-  { href: "/feed",    label: "Home",    iconActive: "/nav-home.svg",    iconInactive: "/nav-home.svg"    },
-  { href: "/pelada",  label: "Baba",    iconActive: "/nav-baba.svg",    iconInactive: "/nav-baba.svg"    },
-  { href: "/votos",   label: "Votos",   iconActive: "/nav-votos.svg",   iconInactive: "/nav-votos.svg"   },
-  { href: "/ranking", label: "Ranking", iconActive: "/nav-ranking.svg", iconInactive: "/nav-ranking.svg" },
+const NAV_ITEMS: Array<{
+  href: string;
+  label: string;
+  iconSvg?: string;
+  PhosphorIcon?: typeof Medal;
+}> = [
+  { href: "/feed",     label: "Home",    iconSvg: "/nav-home.svg"    },
+  { href: "/pelada",   label: "Baba",    iconSvg: "/nav-baba.svg"    },
+  { href: "/medalhas", label: "Badges",  PhosphorIcon: Medal         },
+  { href: "/votos",    label: "Votos",   iconSvg: "/nav-votos.svg"   },
+  { href: "/ranking",  label: "Ranking", iconSvg: "/nav-ranking.svg" },
 ];
 
 export function BottomNav() {
@@ -76,19 +83,30 @@ export function BottomNav() {
                     position: "relative",
                     marginBottom: isActive ? -4 : -2,
                     flexShrink: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}>
-                    <img
-                      alt=""
-                      src={isActive ? item.iconActive : item.iconInactive}
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        width: "100%",
-                        height: "100%",
-                        display: "block",
-                        filter: isActive ? "brightness(0)" : "brightness(0) invert(1)",
-                      }}
-                    />
+                    {item.iconSvg ? (
+                      <img
+                        alt=""
+                        src={item.iconSvg}
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          width: "100%",
+                          height: "100%",
+                          display: "block",
+                          filter: isActive ? "brightness(0)" : "brightness(0) invert(1)",
+                        }}
+                      />
+                    ) : item.PhosphorIcon ? (
+                      <item.PhosphorIcon
+                        size={28}
+                        color={isActive ? "#000" : "#fff"}
+                        weight={isActive ? "fill" : "regular"}
+                      />
+                    ) : null}
                   </div>
                   <span style={{
                     fontFamily: "var(--font-display)",
