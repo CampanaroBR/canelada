@@ -45,7 +45,6 @@ const TSHIRT_GK  = "/tshirt-alt.svg";
 type MaisVotado = { apelido: string; qtd: number; categoria: string };
 type Personagem  = { tipo: string; apelido: string; texto: string; data: Date };
 type Conquista   = { apelido: string; traitSlug: string; traitNome: string; traitEmoji: string | null; traitDesc: string | null; data: Date };
-type RodadaData  = { id: string; label: string; personagens: Personagem[] };
 
 interface Props {
   IMG: Record<string, string>;
@@ -54,8 +53,9 @@ interface Props {
   dataRodada: string | null;
   jaVotou: boolean;
   maisVotados: MaisVotado[];
-  rodadas: RodadaData[];
+  personagens: Personagem[];
   conquistas: Conquista[];
+  datePills: string[];
   grupoNome: string;
   criarRodadaAction: () => Promise<void>;
 }
@@ -76,16 +76,13 @@ const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
 
 export function HomeClient({
   rodadaId, dataRodada, jaVotou, top5Rodada,
-  maisVotados, rodadas, conquistas, grupoNome,
+  maisVotados, personagens, conquistas, datePills, grupoNome,
   criarRodadaAction,
 }: Props) {
   const [bsOpen, setBsOpen] = useState(false);
-  const [activePill, setActivePill] = useState(rodadas.length > 0 ? rodadas.length - 1 : 0);
+  const [activePill, setActivePill] = useState(datePills.length > 0 ? datePills.length - 1 : 0);
   const [sharePersonagem, setSharePersonagem] = useState<number | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
-
-  // Personagens da rodada selecionada
-  const personagens = rodadas[activePill]?.personagens ?? [];
 
   const lbEntries: LeaderboardEntry[] = maisVotados.slice(0, 6).map((v, i) => ({
     rank: i + 1,
@@ -330,7 +327,7 @@ export function HomeClient({
         )}
 
         {/* ── 3. PERSONAGEM DA SEMANA ── */}
-        {rodadas.length > 0 && (
+        {personagens.length > 0 && (
           <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 20, padding: "17px 9px", display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Header */}
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -340,32 +337,28 @@ export function HomeClient({
               <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>PERSONAGEM DA SEMANA</span>
             </div>
 
-            {/* Date pills — scrolláveis */}
-            <div style={{
-              height: 38,
-              display: "flex", gap: 8, alignItems: "center",
-              overflowX: "auto", overflowY: "hidden",
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-            } as React.CSSProperties}>
-              {rodadas.map((r, i) => {
-                const active = i === activePill;
-                return (
-                  <button key={r.id} onClick={() => setActivePill(i)} style={{
-                    background: active ? "#9fe870" : "#111",
-                    border: active ? "none" : "1px solid #2e2e2e",
-                    borderRadius: 9999,
-                    padding: active ? "6px 12px" : "7px 13px",
-                    height: "100%",
-                    fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "18px",
-                    color: active ? "#090909" : "#555",
-                    cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap",
-                  }}>{r.label}</button>
-                );
-              })}
-            </div>
+            {/* Date pills */}
+            {datePills.length > 0 && (
+              <div style={{ height: 38, display: "flex", gap: 8, alignItems: "flex-start", overflow: "clip" }}>
+                {datePills.map((d, i) => {
+                  const active = i === activePill;
+                  return (
+                    <button key={i} onClick={() => setActivePill(i)} style={{
+                      background: active ? "#9fe870" : "#111",
+                      border: active ? "none" : "1px solid #2e2e2e",
+                      borderRadius: 9999,
+                      padding: active ? "6px 12px" : "7px 13px",
+                      height: "100%",
+                      fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "18px",
+                      color: active ? "#090909" : "#555",
+                      cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap",
+                    }}>{d}</button>
+                  );
+                })}
+              </div>
+            )}
 
-            {/* Cards da rodada selecionada */}
+            {/* Cards */}
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {personagens.map((p, i) => {
                 const title   = PERSONAGEM_TITLES[p.tipo] ?? p.tipo;
@@ -537,8 +530,8 @@ export function HomeClient({
         open={bsOpen}
         onClose={() => setBsOpen(false)}
         entries={lbEntries}
-        datas={rodadas.map(r => r.label)}
-        dataAtiva={rodadas.length - 1}
+        datas={datePills}
+        dataAtiva={datePills.length - 1}
       />
 
       {sharePersonagem !== null && personagens[sharePersonagem] && (
