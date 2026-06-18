@@ -27,7 +27,7 @@ export function BottomNav() {
       <nav
         aria-label="Navegação principal"
         style={{
-          margin: "0 8px 6px",
+          margin: "0 8px 8px",
           display: "flex",
           alignItems: "flex-start",
           padding: "6px 15px",
@@ -54,11 +54,12 @@ export function BottomNav() {
               >
                 <div style={{
                   width: 56, height: 56,
-                  borderRadius: isActive ? 100 : undefined,
-                  background: isActive ? "#9fe870" : undefined,
+                  borderRadius: isActive ? 100 : 16,
+                  background: isActive ? "#9fe870" : "transparent",
                   display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
                   padding: 8, overflow: "clip",
-                  transition: "background 150ms cubic-bezier(0.23,1,0.32,1)",
+                  transition: "background 180ms cubic-bezier(0.34,1.56,0.64,1), border-radius 180ms cubic-bezier(0.34,1.56,0.64,1), transform 120ms ease",
+                  willChange: "background, border-radius",
                 }}>
                   <div style={{ width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <Icon size={28} color={isActive ? "#000" : "#fff"} weight={isActive ? "fill" : "regular"} />
