@@ -16,57 +16,24 @@ export default async function PeladaPage() {
   const isAdmin = jogador?.role === "ADMIN" || jogador?.role === "SUPER_ADMIN";
 
   return (
-    <div style={{ minHeight: "100dvh", background: "var(--color-bg)", paddingBottom: 100 }}>
-      {/* Header */}
-      <div style={{
-        padding: "calc(env(safe-area-inset-top, 0px) + 20px) 16px 16px",
-        borderBottom: "1px solid #1a1a1a",
-      }}>
-        <h1 style={{
-          fontFamily: "var(--font-display)",
-          fontWeight: 900,
-          fontSize: 32,
-          letterSpacing: "-0.01em",
-          textTransform: "uppercase",
-          color: "var(--color-text-primary)",
-          margin: 0,
-        }}>
-          PELADA
-        </h1>
-        <p style={{
-          fontFamily: "var(--font-body)",
-          fontSize: 13,
-          color: "var(--color-text-muted)",
-          marginTop: 4,
-        }}>
-          {isAdmin ? "Crie uma rodada para abrir a votação." : "Aguarde o admin abrir a votação."}
-        </p>
+    <div style={{ minHeight: "100dvh", background: "#08080a" }}>
+      <div style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
+        {isAdmin ? (
+          <NovaRodadaForm />
+        ) : (
+          <div style={{ padding: "calc(env(safe-area-inset-top, 0px) + 80px) 24px 80px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 16, minHeight: "80dvh" }}>
+            <span style={{ fontSize: 52 }}>⚽</span>
+            <div>
+              <p style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 22, color: "#fff", letterSpacing: "-.01em", margin: "0 0 6px" }}>
+                AGUARDANDO RODADA
+              </p>
+              <p style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 14, color: "#7a7a7e", lineHeight: 1.5, margin: 0 }}>
+                Nenhuma rodada aberta no momento.<br />O admin vai criar quando o baba acabar.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
-
-      {isAdmin ? (
-        <NovaRodadaForm />
-      ) : (
-        <div style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "80px 24px",
-          textAlign: "center",
-          gap: 12,
-        }}>
-          <span style={{ fontSize: 48 }}>⚽</span>
-          <p style={{
-            fontFamily: "var(--font-body)",
-            fontSize: 15,
-            color: "var(--color-text-muted)",
-            lineHeight: 1.5,
-          }}>
-            Nenhuma rodada aberta no momento.<br />
-            O admin vai criar quando o baba acabar.
-          </p>
-        </div>
-      )}
 
       <BottomNav />
     </div>
