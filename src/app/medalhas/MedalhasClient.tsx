@@ -206,21 +206,30 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
         ) : (
           <div style={{
             background: "#090909",
-            border: "1px solid #2e2e2e",
+            border: "1px solid #c5973a",
             borderRadius: 18,
-            padding: "17px",
+            padding: "11px 9px 11px 17px",
             display: "flex",
             alignItems: "center",
-            gap: 12,
+            justifyContent: "space-between",
           }}>
-            <MedalMilitary size={32} color="#9fe870" weight="fill" />
-            <div>
-              <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#9fe870" }}>
-                NENHUMA CONQUISTA AINDA
+            <div style={{ height: 80, display: "flex", flexDirection: "column", gap: 6, justifyContent: "center", flex: "0 0 auto", maxWidth: "calc(100% - 88px)" }}>
+              <div>
+                <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: "#9fe870" }}>
+                  ÚLTIMA CONQUISTA
+                </p>
+                <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, lineHeight: "24px", color: "#fff" }}>
+                  Nenhuma ainda
+                </p>
+              </div>
+              <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#ccc" }}>
+                Vote na pelada para desbloquear badges!
               </p>
-              <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 16, lineHeight: "20px", color: "#fff" }}>
-                Vote na pelada para desbloquear!
-              </p>
+            </div>
+            <div style={{ flex: "1 0 0", minWidth: 1, height: 80, display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+              <div style={{ width: 72, height: 72, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <MedalMilitary size={48} color="rgba(197,151,58,0.4)" weight="fill" />
+              </div>
             </div>
           </div>
         )}
