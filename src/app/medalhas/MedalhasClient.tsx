@@ -139,26 +139,32 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            gap: 8,
           }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 4, flex: 1, minWidth: 0 }}>
-              <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#9fe870" }}>
-                ÚLTIMA CONQUISTA
-              </p>
-              <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, lineHeight: "24px", color: "#fff" }}>
-                {lastConquista.nome}
-              </p>
-              <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#9a9aa1" }}>
+            {/* Left text — fixed height 80px como no Figma */}
+            <div style={{ height: 80, display: "flex", flexDirection: "column", gap: 6, justifyContent: "center", flex: "0 0 auto", maxWidth: "calc(100% - 88px)" }}>
+              <div>
+                <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: "#9fe870" }}>
+                  ÚLTIMA CONQUISTA
+                </p>
+                <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, lineHeight: "24px", color: "#fff" }}>
+                  {lastConquista.nome}
+                </p>
+              </div>
+              <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#ccc" }}>
                 {lastConquista.descricao}
               </p>
             </div>
-            <div style={{ width: 72, height: 72, flexShrink: 0 }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                alt={lastConquista.nome}
-                src={BADGE_SVG[lastConquista.slug] ?? `/conquistas/${lastConquista.slug}.svg`}
-                style={{ width: "100%", height: "100%", objectFit: "contain" }}
-              />
+
+            {/* Right: badge image + tiny name overlay */}
+            <div style={{ flex: "1 0 0", minWidth: 1, height: 80, display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+              <div style={{ width: 72, height: 72, flexShrink: 0, position: "relative" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  alt={lastConquista.nome}
+                  src={BADGE_SVG[lastConquista.slug] ?? `/conquistas/${lastConquista.slug}.svg`}
+                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }}
+                />
+              </div>
             </div>
           </div>
         ) : (
