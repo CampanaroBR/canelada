@@ -330,11 +330,10 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
                     {cat.title}
                   </p>
                   <div style={{ display: "flex", gap: 6, alignItems: "baseline", whiteSpace: "nowrap" }}>
-                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 18, lineHeight: "22px", color: catUnlocked > 0 ? "#9fe870" : "#fff" }}>
-                      {catUnlocked}
-                    </span>
-                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 16, lineHeight: "18px", color: "#fff" }}>
-                      /{cat.badges.length}
+                    {/* número + /N inline, sem gap entre eles */}
+                    <span style={{ fontFamily: "var(--font-display)", lineHeight: 0 }}>
+                      <span style={{ fontWeight: 700, fontSize: 18, lineHeight: "22px", color: catUnlocked > 0 ? "#9fe870" : "#fff" }}>{catUnlocked}</span>
+                      <span style={{ fontWeight: 500, fontSize: 16, lineHeight: "18px", color: "#fff" }}>/{cat.badges.length}</span>
                     </span>
                     <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 16, lineHeight: "20px", color: "#999" }}>
                       Badges conquistadas
