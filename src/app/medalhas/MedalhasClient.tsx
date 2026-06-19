@@ -98,13 +98,10 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
     <div style={{ minHeight: "100dvh", background: "#090909" }}>
 
       {/* ── TOPBAR ── */}
-      <div style={{
+      <div className="glass-bar" style={{
         position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)",
         width: "min(100%, 430px)", zIndex: 30,
         paddingTop: "env(safe-area-inset-top, 0px)",
-        background: "rgba(255,255,255,0.1)",
-        backdropFilter: "blur(50px)", WebkitBackdropFilter: "blur(50px)",
-        borderBottom: "1px solid rgba(84,84,86,0.34)",
       }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 8px" }}>
           <button onClick={() => setMenuOpen(true)} style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>

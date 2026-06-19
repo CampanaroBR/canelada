@@ -198,12 +198,8 @@ export function RankingTabs({ data, meuApelido }: { data: RankingData; meuApelid
     <div style={{ display: "flex", flexDirection: "column" }}>
 
       {/* ── Tab bar ── */}
-      <div style={{
+      <div className="glass-bar" style={{
         position: "sticky", top: 0, zIndex: 20,
-        background: "rgba(9,9,9,0.88)",
-        backdropFilter: "blur(24px)",
-        WebkitBackdropFilter: "blur(24px)",
-        borderBottom: "1px solid rgba(255,255,255,0.04)",
         padding: "12px 16px",
       }}>
         <div style={{

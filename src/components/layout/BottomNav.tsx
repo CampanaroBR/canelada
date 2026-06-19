@@ -33,22 +33,12 @@ export function BottomNav() {
     }}>
       <nav
         aria-label="Navegação principal"
+        className="glass-nav"
         style={{
           display: "inline-flex",
           alignItems: "center",
           padding: "2px 8px",
           borderRadius: 32,
-          background: "rgba(30, 30, 32, 0.55)",
-          backdropFilter: "blur(48px) saturate(200%) brightness(1.12)",
-          WebkitBackdropFilter: "blur(48px) saturate(200%) brightness(1.12)",
-          border: "1px solid rgba(255,255,255,0.13)",
-          boxShadow: [
-            "0 8px 40px rgba(0,0,0,0.55)",
-            "inset 0 1.5px 0 rgba(255,255,255,0.22)",
-            "inset 0 -1px 0 rgba(255,255,255,0.04)",
-            "inset 1px 0 0 rgba(255,255,255,0.06)",
-            "inset -1px 0 0 rgba(255,255,255,0.06)",
-          ].join(", "),
           overflow: "clip",
         }}
       >
