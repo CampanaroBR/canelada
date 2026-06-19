@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import {
-  Trophy, Medal, CaretRight, Check,
+  Lightning, Medal, CaretRight, Check,
   CalendarBlank, Alarm, CalendarStar,
   List, Bell, MedalMilitary,
   User, UsersThree, SignOut, X,
@@ -333,21 +333,25 @@ export function HomeClient({
             </div>
 
             {/* Right: days badge */}
-            {proximoBaba.diasRestantes > 0 && (
-              <div style={{
-                background: "rgba(25,152,173,0.13)",
-                borderRadius: 14,
-                padding: "9px 12px",
-                flexShrink: 0,
+            <div style={{
+              background: "rgba(214,255,188,0.12)",
+              borderRadius: 14,
+              width: 55,
+              height: 36,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexShrink: 0,
+            }}>
+              <span style={{
+                fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12,
+                lineHeight: "18px", color: "#9fe870", whiteSpace: "nowrap",
               }}>
-                <span style={{
-                  fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12,
-                  lineHeight: "18px", color: "#9fe870", whiteSpace: "nowrap",
-                }}>
-                  {proximoBaba.diasRestantes} dia{proximoBaba.diasRestantes !== 1 ? "s" : ""}
-                </span>
-              </div>
-            )}
+                {proximoBaba.diasRestantes > 0
+                  ? `${proximoBaba.diasRestantes} dia${proximoBaba.diasRestantes !== 1 ? "s" : ""}`
+                  : "hoje"}
+              </span>
+            </div>
           </div>
         )}
 
@@ -358,9 +362,9 @@ export function HomeClient({
             <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
               <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 8 }}>
                 <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <Trophy size={24} color="#9fe870" weight="fill" />
+                  <Lightning size={24} color="#9fe870" weight="fill" />
                 </div>
-                <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>MAIS VOTADOS</span>
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>PARCIAL DA RODADA</span>
               </div>
               <button onClick={() => setBsOpen(true)} style={{
                 display: "flex", alignItems: "center", gap: 4, flexShrink: 0,
