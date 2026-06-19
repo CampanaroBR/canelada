@@ -1,1 +1,4 @@
-Error getting image
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <path d="M11 3 L6 6 L3 10 L7 11.5 L7 27 L25 27 L25 11.5 L29 10 L26 6 L21 3 C20 5 18.2 6 16 6 C13.8 6 12 5 11 3Z" fill="#EF4444" stroke="#DC2626" stroke-width="1" stroke-linejoin="round"/>
+  <rect x="12" y="12" width="8" height="5" rx="1" fill="#DC2626"/>
+</svg>
