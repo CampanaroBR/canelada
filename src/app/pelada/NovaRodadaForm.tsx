@@ -455,24 +455,34 @@ export function NovaRodadaForm() {
             }}>
               Data do baba
             </span>
-            <label style={{
-              display: "block",
-              background: "#111",
-              border: "1px solid #2a2a2d",
-              borderRadius: 14,
-              padding: "13px 16px",
-              cursor: "pointer",
-              position: "relative",
-            }}>
+            <label
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                background: "#111",
+                border: "1px solid #2a2a2d",
+                borderRadius: 14,
+                padding: "13px 16px",
+                cursor: "pointer",
+                position: "relative",
+              }}
+            >
+              <img src="/baba-clock.svg" alt="" style={{ width: 18, height: 18, flexShrink: 0, opacity: 0.7 }} />
               <span style={{
+                flex: 1,
                 fontFamily: "var(--font-body)",
                 fontWeight: 400,
                 fontSize: 14,
                 lineHeight: "18px",
                 color: data ? "#f5f5f5" : "#666",
+                textTransform: "capitalize",
               }}>
                 {data ? formatDate(data) : "Selecione a data"}
               </span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+                <path d="M8 2v3M16 2v3M3.5 9.5h17M5 4.5h14a1.5 1.5 0 0 1 1.5 1.5v13A1.5 1.5 0 0 1 19 20.5H5A1.5 1.5 0 0 1 3.5 19V6A1.5 1.5 0 0 1 5 4.5Z" stroke="#9fe870" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
               <input
                 type="date"
                 value={data}
