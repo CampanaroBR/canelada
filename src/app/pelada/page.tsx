@@ -17,7 +17,7 @@ export default async function PeladaPage() {
 
   return (
     <div style={{ minHeight: "100dvh", background: "#08080a" }}>
-      <div style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
+      <div>
         {isAdmin ? (
           <NovaRodadaForm />
         ) : (

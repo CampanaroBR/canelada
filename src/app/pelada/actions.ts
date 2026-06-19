@@ -72,5 +72,5 @@ export async function criarRodada(data: string, participantesIds: string[]) {
     });
   }
 
-  redirect(`/feed?rodada=${rodada.id}`);
+  return { rodadaId: rodada.id, totalJogadores: participantesIds.length };
 }

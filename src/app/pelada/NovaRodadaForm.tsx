@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { parseLista, criarRodada, type ParticipanteImportado } from "./actions";
 
-type Step = "lista" | "confirmacao";
+type Step = "lista" | "confirmacao" | "sucesso";
 
 function formatDate(iso: string) {
   const d = new Date(iso + "T12:00:00");
-  return d.toLocaleDateString("pt-BR", { day: "numeric", month: "long", year: "numeric" });
+  return d.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
 }
 
 function initial(name: string) {
@@ -20,6 +21,7 @@ export function NovaRodadaForm() {
   const [data, setData] = useState(() => new Date().toISOString().slice(0, 10));
   const [participantes, setParticipantes] = useState<ParticipanteImportado[]>([]);
   const [excluidos, setExcluidos] = useState<Set<string>>(new Set());
+  const [totalCriados, setTotalCriados] = useState(0);
   const [isParsing, startParse] = useTransition();
   const [isSaving, startSave] = useTransition();
   const [error, setError] = useState("");
@@ -43,7 +45,12 @@ export function NovaRodadaForm() {
     const ids = incluidos.map((p) => p.jogadorId!);
     startSave(async () => {
       const result = await criarRodada(data, ids);
-      if (result?.error) setError(result.error);
+      if (result?.error) {
+        setError(result.error);
+      } else if (result?.rodadaId) {
+        setTotalCriados(result.totalJogadores ?? ids.length);
+        setStep("sucesso");
+      }
     });
   }
 
@@ -55,260 +62,502 @@ export function NovaRodadaForm() {
     });
   }
 
-  /* ─── STEP 1: Colar lista ─── */
-  if (step === "lista") {
-    const canImport = !isParsing && lista.trim().length > 0;
+  /* ─── STEP: SUCESSO ─── */
+  if (step === "sucesso") {
     return (
-      <div style={{ padding: "6px 20px 120px" }}>
-        {/* Title */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 3, marginBottom: 4 }}>
-          <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 38, color: "#fff", letterSpacing: "-.02em", lineHeight: .95 }}>
-            PELADA
-          </span>
-          <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 14, color: "#7a7a7e" }}>
-            Crie uma rodada pra abrir a votação.
-          </span>
-        </div>
+      <div style={{
+        minHeight: "100dvh",
+        background: "#090909",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+        overflow: "hidden",
+      }}>
+        {/* Stripe decoration */}
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: "repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(255,255,255,0.045) 48px, rgba(255,255,255,0.045) 56px)",
+          pointerEvents: "none",
+        }} />
 
-        <div style={{ height: 1, background: "#1a1a1d", margin: "16px 0" }} />
-
-        {/* Data */}
-        <span style={labelStyle}>DATA DA RODADA</span>
-        <div style={{ marginTop: 8, display: "flex", alignItems: "center", justifyContent: "space-between", background: "#131316", border: "1px solid #26262b", borderRadius: 16, padding: "15px 18px" }}>
-          <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 16, color: "#fff" }}>
-            {formatDate(data)}
-          </span>
-          <input
-            type="date"
-            value={data}
-            onChange={(e) => setData(e.target.value)}
-            style={{ position: "absolute", opacity: 0, width: 1, height: 1 }}
-            aria-hidden
+        {/* Check circle */}
+        <div style={{
+          width: 124,
+          height: 124,
+          borderRadius: "50%",
+          background: "#fff",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          position: "relative",
+          zIndex: 1,
+          flexShrink: 0,
+        }}>
+          <img
+            src="/baba-check-circle.svg"
+            alt=""
+            style={{ width: 104, height: 104 }}
           />
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7a7a7e" strokeWidth="2" strokeLinecap="round" style={{ cursor: "pointer", flexShrink: 0 }}>
-            <rect x="3" y="4" width="18" height="18" rx="3" />
-            <path d="M3 9h18M8 2v4M16 2v4" />
-          </svg>
         </div>
 
-        {/* Lista */}
-        <div style={{ marginTop: 20, display: "flex", flexDirection: "column", gap: 3 }}>
-          <span style={labelStyle}>LISTA DO WHATSAPP</span>
-          <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12.5, lineHeight: 1.4, color: "#6f6f76" }}>
-            Cole a lista de presença do grupo. Pode incluir os números (1. 2. 3.).
-          </span>
+        <div style={{ height: 56, flexShrink: 0 }} />
+
+        {/* Content */}
+        <div style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 58,
+          width: 313,
+          position: "relative",
+          zIndex: 1,
+        }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24, width: "100%" }}>
+            <p style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 700,
+              fontSize: 48,
+              lineHeight: "64px",
+              letterSpacing: "-2px",
+              color: "#fff",
+              textAlign: "center",
+              margin: 0,
+              width: 300,
+            }}>
+              Rodada criada!
+            </p>
+            <p style={{
+              fontFamily: "var(--font-body)",
+              fontWeight: 500,
+              fontSize: 18,
+              lineHeight: "24px",
+              letterSpacing: "-1px",
+              color: "#fff",
+              textAlign: "center",
+              margin: 0,
+              width: "100%",
+            }}>
+              {totalCriados} jogadores relacionados para o baba.
+              Aguardar a votação!
+            </p>
+          </div>
+
+          <Link href="/feed" style={{ textDecoration: "none", width: "100%" }}>
+            <div style={{
+              background: "#9fe870",
+              borderRadius: 16,
+              padding: "16px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "100%",
+              boxSizing: "border-box",
+            }}>
+              <span style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 700,
+                fontSize: 16,
+                lineHeight: "20px",
+                color: "#090909",
+                textAlign: "center",
+              }}>
+                Ir para a Home
+              </span>
+            </div>
+          </Link>
         </div>
-        <textarea
-          value={lista}
-          onChange={(e) => setLista(e.target.value)}
-          spellCheck={false}
-          placeholder={"1. Arthur\n2. João\n3. Brunão\n4. Galego"}
-          style={{
-            marginTop: 10,
-            width: "100%",
-            height: 230,
-            resize: "none",
-            background: "#131316",
-            border: "1px solid #26262b",
-            borderRadius: 18,
-            padding: 16,
-            fontFamily: "var(--font-body)",
-            fontWeight: 500,
-            fontSize: 16,
-            lineHeight: 1.55,
-            color: "#e7e7ea",
-            outline: "none",
-            boxSizing: "border-box",
-          }}
-        />
-
-        {error && (
-          <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "#ff4a4a", marginTop: 8 }}>{error}</p>
-        )}
-
-        <button
-          onClick={handleImportar}
-          disabled={!canImport}
-          style={{
-            appearance: "none",
-            cursor: canImport ? "pointer" : "not-allowed",
-            marginTop: 14,
-            width: "100%",
-            padding: 17,
-            border: "none",
-            borderRadius: 18,
-            background: canImport ? "#9fe870" : "#1a1a1e",
-            fontFamily: "var(--font-display)",
-            fontWeight: 800,
-            fontSize: 15,
-            letterSpacing: ".06em",
-            color: canImport ? "#0a1a06" : "#4a4a52",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 9,
-            transition: "background .2s ease",
-          }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="8" y="3" width="8" height="4" rx="1" />
-            <path d="M9 5H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3" />
-          </svg>
-          {isParsing ? "ANALISANDO..." : "IMPORTAR LISTA"}
-        </button>
       </div>
     );
   }
 
-  /* ─── STEP 2: Confirmar presenças ─── */
-  const canConfirm = !isSaving && incluidos.length > 0;
-  return (
-    <div>
-      <div style={{ padding: "6px 20px 140px" }}>
-        {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
-          <button
-            onClick={() => setStep("lista")}
-            style={{
-              appearance: "none",
-              cursor: "pointer",
-              width: 40,
-              height: 40,
-              borderRadius: "50%",
-              background: "#161619",
-              border: "1px solid #2a2a2f",
-              color: "#fff",
-              fontSize: 20,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            ‹
-          </button>
-          <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
-            <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 11, letterSpacing: ".16em", color: "#9fe870" }}>
-              VINCULAÇÃO AUTOMÁTICA
-            </span>
-            <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 24, color: "#fff", letterSpacing: "-.01em", lineHeight: 1 }}>
-              Confira a galera
-            </span>
+  /* ─── STEP: CONFIRMAÇÃO ─── */
+  if (step === "confirmacao") {
+    const canConfirm = !isSaving && incluidos.length > 0;
+    return (
+      <div style={{ minHeight: "100dvh", background: "#08080a" }}>
+        {/* Teal header — reutilizado para manter consistência */}
+        <div style={{
+          background: "#0e4a54",
+          borderRadius: "0 0 40px 40px",
+          paddingTop: "calc(env(safe-area-inset-top, 0px) + 60px)",
+          paddingBottom: 28,
+          paddingLeft: 16,
+          paddingRight: 16,
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
+            <button
+              onClick={() => setStep("lista")}
+              style={{
+                appearance: "none",
+                background: "rgba(255,255,255,0.15)",
+                border: "none",
+                borderRadius: "50%",
+                width: 36,
+                height: 36,
+                color: "#fff",
+                fontSize: 20,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              ‹
+            </button>
+            <div>
+              <p style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 24, color: "#fff", margin: 0, letterSpacing: "-.01em" }}>
+                Confira a galera
+              </p>
+              <p style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "rgba(255,255,255,0.7)", margin: 0 }}>
+                Vinculação automática
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Stats */}
-        <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
-          <StatCard value={participantes.length} label="na lista" color="#fff" bg="#101013" border="#232327" />
-          <StatCard value={encontrados.length} label="vinculados" color="#9fe870" bg="rgba(159,232,112,.08)" border="rgba(159,232,112,.3)" />
-          <StatCard value={pendentes.length} label="pendentes" color="#f2c84b" bg="rgba(242,200,75,.08)" border="rgba(242,200,75,.3)" />
-        </div>
+        {/* Card body */}
+        <div style={{
+          background: "#171717",
+          border: "1px solid #2e2e2e",
+          borderRadius: "48px 48px 0 0",
+          marginTop: -20,
+          minHeight: "calc(100dvh - 80px)",
+          padding: "24px 16px 140px",
+        }}>
+          {/* Stats */}
+          <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+            <StatCard value={participantes.length} label="na lista" color="#fff" bg="#101013" border="#232327" />
+            <StatCard value={encontrados.length} label="vinculados" color="#9fe870" bg="rgba(159,232,112,.08)" border="rgba(159,232,112,.3)" />
+            <StatCard value={pendentes.length} label="pendentes" color="#f2c84b" bg="rgba(242,200,75,.08)" border="rgba(242,200,75,.3)" />
+          </div>
 
-        {/* Encontrados */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {encontrados.map((p) => {
-            const off = excluidos.has(p.jogadorId!);
-            return (
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {encontrados.map((p) => {
+              const off = excluidos.has(p.jogadorId!);
+              return (
+                <div
+                  key={p.jogadorId}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    background: off ? "#101013" : "rgba(159,232,112,.05)",
+                    border: `1px solid ${off ? "#232327" : "rgba(159,232,112,.2)"}`,
+                    borderRadius: 16,
+                    padding: "11px 13px",
+                    transition: "background .18s, border-color .18s",
+                  }}
+                >
+                  <Avatar name={p.apelido || p.nome} off={off} />
+                  <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, gap: 1 }}>
+                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15.5, color: off ? "#555" : "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {p.apelido || p.nome}
+                    </span>
+                    <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 11.5, color: "#6f6f76" }}>
+                      {p.apelido && p.apelido !== p.nome ? p.nome : "vinculado"}
+                    </span>
+                  </div>
+                  <Toggle on={!off} onToggle={() => toggle(p.jogadorId!)} />
+                </div>
+              );
+            })}
+
+            {pendentes.map((p, i) => (
               <div
-                key={p.jogadorId}
+                key={i}
                 style={{
                   display: "flex",
                   alignItems: "center",
                   gap: 12,
-                  background: off ? "#101013" : "rgba(159,232,112,.05)",
-                  border: `1px solid ${off ? "#232327" : "rgba(159,232,112,.2)"}`,
+                  background: "#101013",
+                  border: "1px solid #232327",
                   borderRadius: 16,
                   padding: "11px 13px",
-                  transition: "background .18s, border-color .18s",
                 }}
               >
-                <Avatar name={p.apelido || p.nome} off={off} />
-                <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, gap: 1 }}>
-                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15.5, color: off ? "#555" : "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {p.apelido || p.nome}
-                  </span>
-                  <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 11.5, color: "#6f6f76" }}>
-                    {p.apelido && p.apelido !== p.nome ? p.nome : "vinculado"}
-                  </span>
+                <div style={{ width: 42, height: 42, flexShrink: 0, borderRadius: "50%", background: "#1c1c20", border: "1px solid #2a2a2f", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 17, color: "#f2c84b" }}>
+                  {initial(p.nome)}
                 </div>
-                <Toggle on={!off} onToggle={() => toggle(p.jogadorId!)} />
+                <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, gap: 1 }}>
+                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15.5, color: "#888", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    {p.nome}
+                  </span>
+                  <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 11.5, color: "#6f6f76" }}>não encontrado</span>
+                </div>
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 9.5, letterSpacing: ".08em", color: "#f2c84b", border: "1px solid rgba(242,200,75,.4)", borderRadius: 99, padding: "4px 9px", flexShrink: 0, whiteSpace: "nowrap" }}>
+                  PENDENTE
+                </span>
               </div>
-            );
-          })}
+            ))}
+          </div>
 
-          {/* Pendentes */}
-          {pendentes.map((p, i) => (
-            <div
-              key={i}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-                background: "#101013",
-                border: "1px solid #232327",
-                borderRadius: 16,
-                padding: "11px 13px",
-              }}
-            >
-              <div style={{ width: 42, height: 42, flexShrink: 0, borderRadius: "50%", background: "#1c1c20", border: "1px solid #2a2a2f", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 17, color: "#f2c84b" }}>
-                {initial(p.nome)}
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, gap: 1 }}>
-                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15.5, color: "#888", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {p.nome}
-                </span>
-                <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 11.5, color: "#6f6f76" }}>
-                  não encontrado
-                </span>
-              </div>
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 9.5, letterSpacing: ".08em", color: "#f2c84b", border: "1px solid rgba(242,200,75,.4)", borderRadius: 99, padding: "4px 9px", flexShrink: 0, whiteSpace: "nowrap" }}>
-                PENDENTE
+          {pendentes.length > 0 && (
+            <div style={{ marginTop: 14, display: "flex", gap: 8, alignItems: "flex-start", background: "#101013", border: "1px solid #232327", borderRadius: 14, padding: "12px 14px" }}>
+              <span style={{ fontSize: 15, lineHeight: 1.2, flexShrink: 0 }}>💡</span>
+              <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, lineHeight: 1.4, color: "#8b8b93" }}>
+                Pendentes ficam de fora da votação por enquanto. Quando criarem conta, o app vincula sozinho.
               </span>
             </div>
-          ))}
+          )}
+
+          {error && (
+            <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "#ff4a4a", marginTop: 12 }}>{error}</p>
+          )}
         </div>
 
-        {/* Dica */}
-        {pendentes.length > 0 && (
-          <div style={{ marginTop: 14, display: "flex", gap: 8, alignItems: "flex-start", background: "#101013", border: "1px solid #232327", borderRadius: 14, padding: "12px 14px" }}>
-            <span style={{ fontSize: 15, lineHeight: 1.2, flexShrink: 0 }}>💡</span>
-            <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, lineHeight: 1.4, color: "#8b8b93" }}>
-              Pendentes ficam de fora da votação por enquanto. Quando criarem conta, o app vincula sozinho.
-            </span>
-          </div>
-        )}
+        {/* CTA fixo */}
+        <div style={{ position: "fixed", left: 0, right: 0, bottom: "max(80px, calc(env(safe-area-inset-bottom, 0px) + 80px))", padding: "0 16px", zIndex: 10 }}>
+          <button
+            onClick={handleCriar}
+            disabled={!canConfirm}
+            style={{
+              appearance: "none",
+              cursor: canConfirm ? "pointer" : "not-allowed",
+              width: "100%",
+              padding: 17,
+              border: "none",
+              borderRadius: 20,
+              background: canConfirm ? "#9fe870" : "#1a1a1e",
+              fontFamily: "var(--font-display)",
+              fontWeight: 800,
+              fontSize: 15,
+              letterSpacing: ".04em",
+              color: canConfirm ? "#0a1a06" : "#4a4a52",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+            }}
+          >
+            {isSaving ? "CRIANDO RODADA..." : `CONFIRMAR PRESENÇA · ${incluidos.length}`}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
-        {error && (
-          <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "#ff4a4a", marginTop: 12 }}>{error}</p>
-        )}
+  /* ─── STEP: LISTA ─── */
+  const canImport = !isParsing && lista.trim().length > 0;
+  return (
+    <div style={{ minHeight: "100dvh", background: "#090909" }}>
+      {/* Teal header */}
+      <div style={{
+        background: "#0e4a54",
+        borderRadius: "0 0 40px 40px",
+        paddingTop: "calc(env(safe-area-inset-top, 0px) + 56px)",
+        paddingBottom: 32,
+        paddingLeft: 16,
+        paddingRight: 16,
+      }}>
+        <p style={{
+          fontFamily: "var(--font-display)",
+          fontWeight: 900,
+          fontSize: 28,
+          lineHeight: "32px",
+          color: "#fff",
+          margin: "0 0 4px",
+        }}>
+          Crie seu Baba
+        </p>
+        <p style={{
+          fontFamily: "var(--font-body)",
+          fontWeight: 500,
+          fontSize: 14,
+          lineHeight: "18px",
+          color: "#fff",
+          margin: 0,
+        }}>
+          Cria a rodada para começar a votação
+        </p>
       </div>
 
-      {/* CTA fixo */}
-      <div style={{ position: "fixed", left: 0, right: 0, bottom: "max(80px, calc(env(safe-area-inset-bottom, 0px) + 80px))", padding: "0 16px", zIndex: 10 }}>
-        <button
-          onClick={handleCriar}
-          disabled={!canConfirm}
-          style={{
-            appearance: "none",
-            cursor: canConfirm ? "pointer" : "not-allowed",
-            width: "100%",
-            padding: 17,
-            border: "none",
-            borderRadius: 20,
-            background: canConfirm ? "#9fe870" : "#1a1a1e",
-            fontFamily: "var(--font-display)",
-            fontWeight: 800,
-            fontSize: 15,
-            letterSpacing: ".04em",
-            color: canConfirm ? "#0a1a06" : "#4a4a52",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 8,
-          }}
-        >
-          {isSaving ? "CRIANDO RODADA..." : `CONFIRMAR PRESENÇA · ${incluidos.length}`}
-        </button>
+      {/* Card body */}
+      <div style={{
+        background: "#171717",
+        border: "1px solid #2e2e2e",
+        borderRadius: "48px 48px 0 0",
+        marginTop: -20,
+        minHeight: "calc(100dvh - 80px)",
+        display: "flex",
+        flexDirection: "column",
+        gap: 24,
+        padding: "24px 8px 120px",
+        boxSizing: "border-box",
+      }}>
+        {/* Section header — LISTA */}
+        <div style={{ display: "flex", height: 42, alignItems: "center", paddingLeft: 8 }}>
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <div style={{
+              background: "#171717",
+              border: "1px solid #2e2e2e",
+              borderRadius: 12,
+              padding: 8,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}>
+              <img src="/baba-list-checks.svg" alt="" style={{ width: 24, height: 24 }} />
+            </div>
+            <span style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 800,
+              fontSize: 16,
+              lineHeight: "20px",
+              color: "#fff",
+              letterSpacing: ".04em",
+            }}>
+              LISTA
+            </span>
+          </div>
+        </div>
+
+        {/* Time pill */}
+        <div style={{
+          background: "#090909",
+          borderRadius: 12,
+          padding: "10px 16px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginLeft: 8,
+          marginRight: 8,
+        }}>
+          <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+            <img src="/baba-clock.svg" alt="" style={{ width: 16, height: 16 }} />
+            <span style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 600,
+              fontSize: 16,
+              lineHeight: "16px",
+              letterSpacing: "-0.64px",
+              color: "#fff",
+              whiteSpace: "nowrap",
+            }}>
+              {formatDate(data)}
+            </span>
+          </div>
+        </div>
+
+        {/* Form fields */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "0 8px" }}>
+          {/* Data do baba */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <span style={{
+              fontFamily: "var(--font-body)",
+              fontWeight: 600,
+              fontSize: 16,
+              lineHeight: "20px",
+              color: "#f5f5f5",
+            }}>
+              Data do baba
+            </span>
+            <label style={{
+              display: "block",
+              background: "#111",
+              border: "1px solid #2a2a2d",
+              borderRadius: 14,
+              padding: "13px 16px",
+              cursor: "pointer",
+              position: "relative",
+            }}>
+              <span style={{
+                fontFamily: "var(--font-body)",
+                fontWeight: 400,
+                fontSize: 14,
+                lineHeight: "18px",
+                color: data ? "#f5f5f5" : "#666",
+              }}>
+                {data ? formatDate(data) : "Selecione a data"}
+              </span>
+              <input
+                type="date"
+                value={data}
+                onChange={(e) => setData(e.target.value)}
+                style={{ position: "absolute", opacity: 0, inset: 0, width: "100%", height: "100%", cursor: "pointer" }}
+              />
+            </label>
+          </div>
+
+          {/* Lista do WhatsApp */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <span style={{
+                fontFamily: "var(--font-body)",
+                fontWeight: 600,
+                fontSize: 16,
+                lineHeight: "20px",
+                color: "#f5f5f5",
+              }}>
+                Lista do WhatsApp
+              </span>
+              <span style={{
+                fontFamily: "var(--font-body)",
+                fontWeight: 500,
+                fontSize: 12,
+                lineHeight: 1.4,
+                color: "#6f6f76",
+              }}>
+                Cole a lista de presença do grupo. Pode incluir os números (1. 2. 3.).
+              </span>
+            </div>
+            <textarea
+              value={lista}
+              onChange={(e) => setLista(e.target.value)}
+              spellCheck={false}
+              placeholder={"Insira aqui as pessoas do baba."}
+              style={{
+                width: "100%",
+                height: 196,
+                resize: "none",
+                background: "#111",
+                border: "1px solid #2a2a2d",
+                borderRadius: 14,
+                padding: "13px 16px",
+                fontFamily: "var(--font-body)",
+                fontWeight: 400,
+                fontSize: 14,
+                lineHeight: "18px",
+                color: "#e7e7ea",
+                outline: "none",
+                boxSizing: "border-box",
+              }}
+            />
+          </div>
+        </div>
+
+        {error && (
+          <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "#ff4a4a", margin: "0 16px" }}>{error}</p>
+        )}
+
+        {/* Criar rodada button */}
+        <div style={{ padding: "0 8px" }}>
+          <button
+            onClick={handleImportar}
+            disabled={!canImport}
+            style={{
+              appearance: "none",
+              cursor: canImport ? "pointer" : "not-allowed",
+              width: "100%",
+              padding: 16,
+              border: "none",
+              borderRadius: 16,
+              background: canImport ? "#9fe870" : "#1a1a1e",
+              fontFamily: "var(--font-display)",
+              fontWeight: 700,
+              fontSize: 16,
+              lineHeight: "20px",
+              color: canImport ? "#090909" : "#4a4a52",
+              textAlign: "center",
+              transition: "background .2s ease",
+            }}
+          >
+            {isParsing ? "Analisando..." : "Criar rodada"}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -371,12 +620,3 @@ function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
     </button>
   );
 }
-
-const labelStyle: React.CSSProperties = {
-  display: "block",
-  fontFamily: "var(--font-display)",
-  fontWeight: 800,
-  fontSize: 11,
-  letterSpacing: ".18em",
-  color: "#6f6f76",
-};
