@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { List, Bell } from "@phosphor-icons/react";
+import { MenuSheet } from "@/components/MenuSheet";
 import { parseLista, criarRodada, type ParticipanteImportado } from "./actions";
 
 type Step = "lista" | "confirmacao" | "sucesso";
@@ -36,6 +37,7 @@ export function NovaRodadaForm() {
   const [isParsing, startParse] = useTransition();
   const [isSaving, startSave] = useTransition();
   const [error, setError] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const encontrados = participantes.filter((p) => p.status === "encontrado");
   const pendentes = participantes.filter((p) => p.status === "nao_encontrado");
@@ -367,9 +369,9 @@ export function NovaRodadaForm() {
         paddingTop: "env(safe-area-inset-top, 0px)",
       }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 8px" }}>
-          <Link href="/feed" aria-label="Menu" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <button aria-label="Abrir menu" onClick={() => setMenuOpen(true)} style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
             <List size={24} color="#fff" weight="bold" />
-          </Link>
+          </button>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img alt="Canelada" src="/logo.png" style={{ width: 56, height: 56, objectFit: "cover" }} />
           <button aria-label="Notificações" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
@@ -580,6 +582,9 @@ export function NovaRodadaForm() {
           {isParsing ? "Analisando..." : "Criar Rodada"}
         </button>
       </div>
+
+      {/* Menu hambúrguer (bottom sheet) */}
+      <MenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} />
     </div>
   );
 }
