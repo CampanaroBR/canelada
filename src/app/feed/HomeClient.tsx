@@ -57,7 +57,7 @@ interface Props {
   dataRodada: string | null;
   jaVotou: boolean;
   maisVotados: MaisVotado[];
-  personagens: Personagem[];
+  personagensPorRodada: Personagem[][];
   conquistas: Conquista[];
   datePills: string[];
   grupoNome: string;
@@ -81,13 +81,16 @@ const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
 
 export function HomeClient({
   rodadaId, dataRodada, jaVotou, top5Rodada,
-  maisVotados, personagens, conquistas, datePills, grupoNome,
+  maisVotados, personagensPorRodada, conquistas, datePills, grupoNome,
   proximoBaba, criarRodadaAction,
 }: Props) {
   const [bsOpen, setBsOpen] = useState(false);
   const [activePill, setActivePill] = useState(datePills.length > 0 ? datePills.length - 1 : 0);
   const [sharePersonagem, setSharePersonagem] = useState<number | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // Personagens da rodada selecionada pela pill
+  const personagens = personagensPorRodada[activePill] ?? [];
 
   const lbEntries: LeaderboardEntry[] = maisVotados.slice(0, 6).map((v, i) => ({
     rank: i + 1,
@@ -407,7 +410,7 @@ export function HomeClient({
         )}
 
         {/* ── 3. PERSONAGEM DA SEMANA ── */}
-        {personagens.length > 0 && (
+        {personagensPorRodada.length > 0 && (
           <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 20, padding: "17px 9px", display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Header */}
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

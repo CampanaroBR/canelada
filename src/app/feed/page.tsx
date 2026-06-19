@@ -23,7 +23,7 @@ export default async function FeedPage() {
   const grupoId = jogador.grupoId;
   const grupoNome = jogador.grupo?.nome ?? "";
 
-  const [rodadaAtiva, topTraitsRaw, recentStories, recentTraits, ultimasRodadas] = await Promise.all([
+  const [rodadaAtiva, topTraitsRaw, recentStories, recentTraits] = await Promise.all([
     prisma.rodada.findFirst({
       where: { grupoId, encerrada: false },
       select: { id: true, data: true },
@@ -37,12 +37,12 @@ export default async function FeedPage() {
       orderBy: { _sum: { contador: "desc" } },
       take: 6,
     }),
-    // Personagem da semana: stories MVP/BAGRE mais recentes
+    // Personagem da semana: stories MVP/BAGRE agrupados por rodada
     prisma.story.findMany({
       where: { rodada: { grupoId }, tipo: { in: ["MVP", "BAGRE"] } },
-      include: { rodada: { select: { data: true } } },
+      include: { rodada: { select: { id: true, data: true } } },
       orderBy: { createdAt: "desc" },
-      take: 3,
+      take: 30,
     }),
     // Medalhas: só traits que têm badge SVG própria (conquistas, não votação)
     prisma.jogadorTrait.findMany({
@@ -61,12 +61,6 @@ export default async function FeedPage() {
       },
       orderBy: { updatedAt: "desc" },
       take: 3,
-    }),
-    prisma.rodada.findMany({
-      where: { grupoId },
-      orderBy: { data: "desc" },
-      take: 3,
-      select: { data: true },
     }),
   ]);
 
@@ -91,22 +85,39 @@ export default async function FeedPage() {
     RACUDO: "PREGUEIRO",
   };
 
-  const personagens: Personagem[] = recentStories.map(s => ({
-    tipo: s.tipo,
-    apelido: s.texto.split(" ").find(w => /\p{L}/u.test(w)) ?? "?",
-    texto: s.texto,
-    data: s.rodada.data,
-  }));
+  // Agrupa personagens por rodada
+  const gruposMap = new Map<string, { data: Date; personagens: Personagem[] }>();
+  for (const s of recentStories) {
+    if (!gruposMap.has(s.rodada.id)) {
+      gruposMap.set(s.rodada.id, { data: s.rodada.data, personagens: [] });
+    }
+    gruposMap.get(s.rodada.id)!.personagens.push({
+      tipo: s.tipo,
+      apelido: s.texto.split(" ").find(w => /\p{L}/u.test(w)) ?? "?",
+      texto: s.texto,
+      data: s.rodada.data,
+    });
+  }
 
-  // Fallback: se não há stories, monta personagens dos top traits
-  const personagensFinal: Personagem[] = personagens.length > 0
-    ? personagens
-    : recentTraits.slice(0, 3).map((jt, i) => ({
+  // Ordena por data asc (rodada mais recente fica por último = pill ativa) e pega as últimas 3
+  let grupos = [...gruposMap.values()]
+    .sort((a, b) => a.data.getTime() - b.data.getTime())
+    .slice(-3);
+
+  // Fallback: se não há stories, monta um único grupo com os top traits
+  if (grupos.length === 0 && recentTraits.length > 0) {
+    grupos = [{
+      data: recentTraits[0].updatedAt,
+      personagens: recentTraits.slice(0, 3).map((jt, i) => ({
         tipo: i === 0 ? "MVP" : i === 1 ? "BAGRE" : "RACUDO",
         apelido: jt.jogador.apelido,
         texto: `${jt.jogador.apelido} foi o ${PERSONAGEM_TITLES[i === 0 ? "MVP" : i === 1 ? "BAGRE" : "RACUDO"]}`,
         data: jt.updatedAt,
-      }));
+      })),
+    }];
+  }
+
+  const personagensPorRodada: Personagem[][] = grupos.map(g => g.personagens);
 
   const conquistas: Conquista[] = recentTraits.map(c => ({
     apelido: c.jogador.apelido,
@@ -150,8 +161,8 @@ export default async function FeedPage() {
     ? new Date(rodadaAtiva.data).toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short" })
     : null;
 
-  const datePills = ultimasRodadas.reverse().map(r =>
-    new Date(r.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", "")
+  const datePills = grupos.map(g =>
+    new Date(g.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", "")
   );
 
   // Próximo baba card
@@ -174,7 +185,7 @@ export default async function FeedPage() {
       jaVotou={jaVotou}
       top5Rodada={top5Rodada}
       maisVotados={maisVotados}
-      personagens={personagensFinal}
+      personagensPorRodada={personagensPorRodada}
       conquistas={conquistas}
       datePills={datePills}
       grupoNome={grupoNome}
