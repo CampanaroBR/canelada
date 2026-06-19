@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Trophy, X, ShareNetwork, MedalMilitary } from "@phosphor-icons/react";
+import { Lightning, X, ShareNetwork, MedalMilitary } from "@phosphor-icons/react";
 
 export type LeaderboardEntry = {
   rank: number;
@@ -116,12 +116,12 @@ export function BottomsheetMaisVotados({
             <div style={{ width: 40, height: 40 }} />
 
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <Trophy size={16} color="#9fe870" weight="fill" />
+              <Lightning size={16} color="#9fe870" weight="regular" />
               <span style={{
                 fontFamily: "var(--font-display)", fontWeight: 800,
                 fontSize: 18, lineHeight: "20px", color: "#fff",
               }}>
-                MAIS VOTADOS
+                PARCIAL DA RODADA
               </span>
             </div>
 
