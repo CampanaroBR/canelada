@@ -398,69 +398,70 @@ export function NovaRodadaForm() {
         padding: "20px 8px 20px",
         boxSizing: "border-box",
       }}>
-        {/* Section header — LISTA */}
-        <div style={{ display: "flex", height: 42, alignItems: "center", paddingLeft: 8 }}>
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <div style={{
-              background: "#171717",
-              border: "1px solid #2e2e2e",
-              borderRadius: 12,
-              padding: 8,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}>
-              <img src="/baba-list-checks.svg" alt="" style={{ width: 24, height: 24 }} />
+        {/* LISTA header + time pill (gap 16) */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          {/* Section header — LISTA */}
+          <div style={{ display: "flex", height: 42, alignItems: "center", paddingLeft: 8 }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <div style={{
+                background: "#171717",
+                border: "1px solid #2e2e2e",
+                borderRadius: 12,
+                padding: 8,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}>
+                <img src="/baba-list-checks.svg" alt="" style={{ width: 24, height: 24 }} />
+              </div>
+              <h2 style={{
+                margin: 0,
+                fontFamily: "var(--font-display)",
+                fontWeight: 800,
+                fontSize: 16,
+                lineHeight: "20px",
+                color: "#fff",
+              }}>
+                LISTA
+              </h2>
             </div>
-            <h2 style={{
-              margin: 0,
-              fontFamily: "var(--font-display)",
-              fontWeight: 800,
-              fontSize: 16,
-              lineHeight: "20px",
-              color: "#fff",
-              letterSpacing: ".04em",
-            }}>
-              LISTA
-            </h2>
           </div>
-        </div>
 
-        {/* Time pill */}
-        <div style={{
-          background: "#090909",
-          borderRadius: 12,
-          padding: "10px 16px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          marginLeft: 8,
-          marginRight: 8,
-        }}>
-          <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
-            <img src="/baba-clock.svg" alt="" style={{ width: 16, height: 16 }} />
-            <span style={{
-              fontFamily: "var(--font-display)",
-              fontWeight: 600,
-              fontSize: 16,
-              lineHeight: "16px",
-              letterSpacing: "-0.64px",
-              color: "#fff",
-              whiteSpace: "nowrap",
-            }}>
-              Votação inicia às 22:30
-            </span>
+          {/* Time pill */}
+          <div style={{
+            background: "#090909",
+            borderRadius: 12,
+            height: 36,
+            padding: "0 16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+            <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+              <img src="/baba-clock.svg" alt="" style={{ width: 16, height: 16 }} />
+              <span style={{
+                fontFamily: "var(--font-display)",
+                fontWeight: 600,
+                fontSize: 16,
+                lineHeight: "16px",
+                letterSpacing: "-0.64px",
+                color: "#fff",
+                whiteSpace: "nowrap",
+              }}>
+                Votação inicia às 22:30
+              </span>
+            </div>
           </div>
         </div>
 
         {/* Form fields */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "0 8px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           {/* Data do baba */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <span style={{
               fontFamily: "var(--font-body)",
               fontWeight: 600,
-              fontSize: 16,
+              fontSize: 14,
               lineHeight: "20px",
               color: "#f5f5f5",
             }}>
@@ -470,27 +471,16 @@ export function NovaRodadaForm() {
           </div>
 
           {/* Lista do WhatsApp */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <span style={{
-                fontFamily: "var(--font-body)",
-                fontWeight: 600,
-                fontSize: 16,
-                lineHeight: "20px",
-                color: "#f5f5f5",
-              }}>
-                Lista do WhatsApp
-              </span>
-              <span style={{
-                fontFamily: "var(--font-body)",
-                fontWeight: 500,
-                fontSize: 12,
-                lineHeight: 1.4,
-                color: "#6f6f76",
-              }}>
-                Cole a lista de presença do grupo. Pode incluir os números (1. 2. 3.).
-              </span>
-            </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <span style={{
+              fontFamily: "var(--font-body)",
+              fontWeight: 600,
+              fontSize: 14,
+              lineHeight: "20px",
+              color: "#f5f5f5",
+            }}>
+              Lista do WhatsApp
+            </span>
             <textarea
               value={lista}
               onChange={(e) => setLista(e.target.value)}
@@ -498,13 +488,13 @@ export function NovaRodadaForm() {
               placeholder={"Cole aqui as pessoas do baba"}
               style={{
                 width: "100%",
-                height: 196,
+                height: 120,
                 minHeight: 120,
                 resize: "vertical",
                 background: "#111",
                 border: "1px solid #2a2a2d",
-                borderRadius: 14,
-                padding: "13px 16px",
+                borderRadius: 16,
+                padding: "12px 16px",
                 fontFamily: "var(--font-body)",
                 fontWeight: 400,
                 fontSize: 14,
@@ -514,6 +504,15 @@ export function NovaRodadaForm() {
                 boxSizing: "border-box",
               }}
             />
+            <span style={{
+              fontFamily: "var(--font-body)",
+              fontWeight: 500,
+              fontSize: 12,
+              lineHeight: "16px",
+              color: "#6f6f76",
+            }}>
+              Cole a lista de presença do grupo. Pode incluir os números (1. 2. 3.).
+            </span>
           </div>
         </div>
 
@@ -522,30 +521,29 @@ export function NovaRodadaForm() {
         )}
 
         {/* Criar rodada button */}
-        <div style={{ padding: "0 8px" }}>
-          <button
-            onClick={handleImportar}
-            disabled={!canImport}
-            style={{
-              appearance: "none",
-              cursor: canImport ? "pointer" : "not-allowed",
-              width: "100%",
-              padding: 16,
-              border: canImport ? "none" : "1px solid #34343a",
-              borderRadius: 16,
-              background: canImport ? "#9fe870" : "#26262b",
-              fontFamily: "var(--font-display)",
-              fontWeight: 700,
-              fontSize: 16,
-              lineHeight: "20px",
-              color: canImport ? "#090909" : "#7a7a7a",
-              textAlign: "center",
-              transition: "background .2s ease",
-            }}
-          >
-            {isParsing ? "Analisando..." : "Criar Rodada"}
-          </button>
-        </div>
+        <button
+          onClick={handleImportar}
+          disabled={!canImport}
+          style={{
+            appearance: "none",
+            cursor: canImport ? "pointer" : "not-allowed",
+            width: "100%",
+            height: 54,
+            padding: "0 20px",
+            border: canImport ? "none" : "1px solid #34343a",
+            borderRadius: 16,
+            background: canImport ? "#9fe870" : "#26262b",
+            fontFamily: "var(--font-display)",
+            fontWeight: 700,
+            fontSize: 15,
+            lineHeight: "20px",
+            color: canImport ? "#090909" : "#7a7a7a",
+            textAlign: "center",
+            transition: "background .2s ease",
+          }}
+        >
+          {isParsing ? "Analisando..." : "Criar Rodada"}
+        </button>
       </div>
     </div>
   );
