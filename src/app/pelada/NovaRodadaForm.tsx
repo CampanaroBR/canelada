@@ -363,7 +363,7 @@ export function NovaRodadaForm() {
         paddingLeft: 16,
         paddingRight: 16,
       }}>
-        <p style={{
+        <h1 style={{
           fontFamily: "var(--font-display)",
           fontWeight: 900,
           fontSize: 28,
@@ -372,7 +372,7 @@ export function NovaRodadaForm() {
           margin: "0 0 4px",
         }}>
           Crie seu Baba
-        </p>
+        </h1>
         <p style={{
           fontFamily: "var(--font-body)",
           fontWeight: 500,
@@ -412,7 +412,8 @@ export function NovaRodadaForm() {
             }}>
               <img src="/baba-list-checks.svg" alt="" style={{ width: 24, height: 24 }} />
             </div>
-            <span style={{
+            <h2 style={{
+              margin: 0,
               fontFamily: "var(--font-display)",
               fontWeight: 800,
               fontSize: 16,
@@ -421,7 +422,7 @@ export function NovaRodadaForm() {
               letterSpacing: ".04em",
             }}>
               LISTA
-            </span>
+            </h2>
           </div>
         </div>
 

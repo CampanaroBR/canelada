@@ -163,7 +163,7 @@ export function HomeClient({
                 {/* Título */}
                 <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0 }}>
                   <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 14, lineHeight: "20px", color: "#fff" }}>VOTAÇÃO DO</p>
-                  <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 32, lineHeight: "32px", color: "#fff" }}>BABA</p>
+                  <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 32, lineHeight: "32px", color: "#fff" }}>BABA</h1>
                 </div>
                 {/* Date + time chips */}
                 {dataRodada && (
@@ -367,7 +367,7 @@ export function HomeClient({
                 <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <Lightning size={24} color="#9fe870" weight="regular" />
                 </div>
-                <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>PARCIAL DA RODADA</span>
+                <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>PARCIAL DA RODADA</h2>
               </div>
               <button onClick={() => setBsOpen(true)} style={{
                 display: "flex", alignItems: "center", gap: 4, flexShrink: 0,
@@ -417,7 +417,7 @@ export function HomeClient({
               <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                 <CalendarStar size={24} color="#9fe870" weight="regular" />
               </div>
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>PERSONAGEM DA SEMANA</span>
+              <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>PERSONAGEM DA SEMANA</h2>
             </div>
 
             {/* Date pills */}
@@ -500,7 +500,7 @@ export function HomeClient({
                 <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <Medal size={24} color="#9fe870" weight="fill" />
                 </div>
-                <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>MEDALHAS</span>
+                <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>MEDALHAS</h2>
               </div>
               <Link href="/medalhas" style={{
                 display: "flex", alignItems: "center", gap: 4, textDecoration: "none", flexShrink: 0,
