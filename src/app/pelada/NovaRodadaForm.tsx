@@ -437,7 +437,7 @@ export function NovaRodadaForm() {
               color: "#fff",
               whiteSpace: "nowrap",
             }}>
-              {formatDate(data)}
+              Votação inicia às 22:30
             </span>
           </div>
         </div>
