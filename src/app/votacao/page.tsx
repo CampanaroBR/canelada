@@ -18,7 +18,7 @@ export default async function VotacaoPage() {
   if (!jogador) redirect("/onboarding");
 
   const rodada = await prisma.rodada.findFirst({
-    where: { grupoId: jogador.grupoId, encerrada: false },
+    where: { grupoId: jogador.grupoId, encerrada: false, votacaoAberta: true },
     orderBy: { createdAt: "desc" },
   });
 

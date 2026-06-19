@@ -104,11 +104,12 @@ model PushSubscription {
 }
 
 model Rodada {
-  id          String       @id @default(cuid())
-  grupoId     String
-  data        DateTime     @default(now())
-  encerrada   Boolean      @default(false)
-  createdAt   DateTime     @default(now())
+  id             String       @id @default(cuid())
+  grupoId        String
+  data           DateTime     @default(now())
+  encerrada      Boolean      @default(false)
+  votacaoAberta  Boolean      @default(false)
+  createdAt      DateTime     @default(now())
 
   grupo       Grupo        @relation(fields: [grupoId], references: [id])
   votos       Voto[]

@@ -3,7 +3,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { sendPushToSubscriptions } from "@/lib/webpush";
 
 export type ParticipanteImportado = {
   nome: string;
@@ -59,18 +58,6 @@ export async function criarRodada(data: string, participantesIds: string[]) {
     },
   });
 
-  // Notificar todos do grupo sobre a votação aberta
-  const subs = await prisma.pushSubscription.findMany({
-    where: { jogador: { grupoId: jogador.grupoId } },
-    select: { endpoint: true, p256dh: true, auth: true },
-  });
-  if (subs.length > 0) {
-    await sendPushToSubscriptions(subs, {
-      title: "🏆 Votação aberta!",
-      body: "Vote nos melhores e piores do baba de hoje!",
-      url: "/votacao",
-    });
-  }
-
+  // Notificações serão enviadas automaticamente às 22:30 pelo cron /api/cron/abrir-votacao
   return { rodadaId: rodada.id, totalJogadores: participantesIds.length };
 }
