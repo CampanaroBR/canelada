@@ -362,7 +362,7 @@ export function HomeClient({
             <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
               <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 8 }}>
                 <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <Lightning size={24} color="#9fe870" weight="fill" />
+                  <Lightning size={24} color="#9fe870" weight="regular" />
                 </div>
                 <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>PARCIAL DA RODADA</span>
               </div>
