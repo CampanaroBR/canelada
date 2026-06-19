@@ -389,13 +389,13 @@ export function NovaRodadaForm() {
       <div style={{
         background: "#171717",
         border: "1px solid #2e2e2e",
-        borderRadius: "48px 48px 0 0",
-        marginTop: -20,
-        minHeight: "calc(100dvh - 80px)",
+        borderRadius: "48px 48px 16px 16px",
+        margin: "0 8px calc(96px + env(safe-area-inset-bottom, 0px))",
+        boxShadow: "0px 4px 4px rgba(0,0,0,0.25)",
         display: "flex",
         flexDirection: "column",
         gap: 24,
-        padding: "24px 8px 120px",
+        padding: "20px 8px 20px",
         boxSizing: "border-box",
       }}>
         {/* Section header — LISTA */}
@@ -495,7 +495,7 @@ export function NovaRodadaForm() {
               value={lista}
               onChange={(e) => setLista(e.target.value)}
               spellCheck={false}
-              placeholder={"Insira aqui as pessoas do baba."}
+              placeholder={"Cole aqui as pessoas do baba"}
               style={{
                 width: "100%",
                 height: 196,
@@ -543,7 +543,7 @@ export function NovaRodadaForm() {
               transition: "background .2s ease",
             }}
           >
-            {isParsing ? "Analisando..." : "Criar rodada"}
+            {isParsing ? "Analisando..." : "Criar Rodada"}
           </button>
         </div>
       </div>
