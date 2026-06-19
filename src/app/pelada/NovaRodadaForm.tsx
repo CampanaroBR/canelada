@@ -11,6 +11,16 @@ function formatDate(iso: string) {
   return d.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
 }
 
+function toISO(d: Date) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+const WEEKDAYS_ABBR = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
+const MONTHS_ABBR = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+
 function initial(name: string) {
   return (name || "?").charAt(0).toUpperCase();
 }
@@ -455,41 +465,7 @@ export function NovaRodadaForm() {
             }}>
               Data do baba
             </span>
-            <label
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                background: "#111",
-                border: "1px solid #2a2a2d",
-                borderRadius: 14,
-                padding: "13px 16px",
-                cursor: "pointer",
-                position: "relative",
-              }}
-            >
-              <img src="/baba-clock.svg" alt="" style={{ width: 18, height: 18, flexShrink: 0, opacity: 0.7 }} />
-              <span style={{
-                flex: 1,
-                fontFamily: "var(--font-body)",
-                fontWeight: 400,
-                fontSize: 14,
-                lineHeight: "18px",
-                color: data ? "#f5f5f5" : "#666",
-                textTransform: "capitalize",
-              }}>
-                {data ? formatDate(data) : "Selecione a data"}
-              </span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
-                <path d="M8 2v3M16 2v3M3.5 9.5h17M5 4.5h14a1.5 1.5 0 0 1 1.5 1.5v13A1.5 1.5 0 0 1 19 20.5H5A1.5 1.5 0 0 1 3.5 19V6A1.5 1.5 0 0 1 5 4.5Z" stroke="#9fe870" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <input
-                type="date"
-                value={data}
-                onChange={(e) => setData(e.target.value)}
-                style={{ position: "absolute", opacity: 0, inset: 0, width: "100%", height: "100%", cursor: "pointer" }}
-              />
-            </label>
+            <MiniCalendar value={data} onChange={setData} />
           </div>
 
           {/* Lista do WhatsApp */}
@@ -574,6 +550,139 @@ export function NovaRodadaForm() {
 }
 
 /* ─── Sub-componentes ─── */
+
+function MiniCalendar({ value, onChange }: { value: string; onChange: (iso: string) => void }) {
+  const VISIBLE = 5;
+
+  const today = new Date();
+  today.setHours(12, 0, 0, 0);
+  const todayISO = toISO(today);
+
+  // Primeiro dia visível na tira
+  const [start, setStart] = useState<Date>(() => {
+    const sel = new Date(value + "T12:00:00");
+    const base = isNaN(sel.getTime()) ? today : sel;
+    // garante que o dia selecionado fique visível, sem mostrar passado
+    return base < today ? today : base;
+  });
+
+  const days = Array.from({ length: VISIBLE }, (_, i) => {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    return d;
+  });
+
+  const firstVisibleISO = toISO(days[0]);
+  const canGoBack = firstVisibleISO > todayISO;
+
+  function shift(n: number) {
+    setStart((prev) => {
+      const d = new Date(prev);
+      d.setDate(prev.getDate() + n);
+      // não deixa retroceder antes de hoje
+      return d < today ? today : d;
+    });
+  }
+
+  const mesLabel = `${MONTHS_ABBR[days[0].getMonth()]}${
+    days[0].getMonth() !== days[VISIBLE - 1].getMonth() ? ` – ${MONTHS_ABBR[days[VISIBLE - 1].getMonth()]}` : ""
+  } ${days[VISIBLE - 1].getFullYear()}`;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      {/* Mês/ano */}
+      <span style={{
+        fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12,
+        color: "#6f6f76", textTransform: "capitalize", paddingLeft: 2,
+      }}>
+        {mesLabel}
+      </span>
+
+      {/* Tira de dias */}
+      <div style={{ display: "flex", alignItems: "stretch", gap: 6 }}>
+        {/* Prev */}
+        <button
+          type="button"
+          onClick={() => shift(-VISIBLE)}
+          disabled={!canGoBack}
+          aria-label="Dias anteriores"
+          style={{
+            appearance: "none", border: "1px solid #2a2a2d", background: "#111",
+            borderRadius: 12, width: 36, flexShrink: 0, cursor: canGoBack ? "pointer" : "not-allowed",
+            color: canGoBack ? "#fff" : "#3a3a3f", fontSize: 18, lineHeight: 1,
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}
+        >
+          ‹
+        </button>
+
+        {/* Dias */}
+        <div style={{ display: "flex", gap: 6, flex: 1, minWidth: 0 }}>
+          {days.map((d) => {
+            const iso = toISO(d);
+            const selected = iso === value;
+            const isToday = iso === todayISO;
+            return (
+              <button
+                key={iso}
+                type="button"
+                onClick={() => onChange(iso)}
+                style={{
+                  appearance: "none", cursor: "pointer",
+                  flex: 1, minWidth: 0,
+                  display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
+                  padding: "10px 0",
+                  borderRadius: 12,
+                  background: selected ? "#9fe870" : "#111",
+                  border: `1px solid ${selected ? "#9fe870" : isToday ? "rgba(159,232,112,.4)" : "#2a2a2d"}`,
+                  transition: "background .15s, border-color .15s",
+                }}
+              >
+                <span style={{
+                  fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 11,
+                  color: selected ? "#0a1a06" : "#6f6f76", textTransform: "uppercase",
+                }}>
+                  {WEEKDAYS_ABBR[d.getDay()]}
+                </span>
+                <span style={{
+                  fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "20px",
+                  color: selected ? "#090909" : "#fff",
+                }}>
+                  {d.getDate()}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Next */}
+        <button
+          type="button"
+          onClick={() => shift(VISIBLE)}
+          aria-label="Próximos dias"
+          style={{
+            appearance: "none", border: "1px solid #2a2a2d", background: "#111",
+            borderRadius: 12, width: 36, flexShrink: 0, cursor: "pointer",
+            color: "#fff", fontSize: 18, lineHeight: 1,
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}
+        >
+          ›
+        </button>
+      </div>
+
+      {/* Data escolhida por extenso */}
+      {value && (
+        <span style={{
+          fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12,
+          color: "#9fe870", textTransform: "capitalize", paddingLeft: 2,
+        }}>
+          {formatDate(value)}
+        </span>
+      )}
+    </div>
+  );
+}
 
 function StatCard({ value, label, color, bg, border }: { value: number; label: string; color: string; bg: string; border: string }) {
   return (
