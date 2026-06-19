@@ -37,10 +37,12 @@ const TRAIT_BADGE: Record<string, string> = {
   "virada-de-chave":  "/conquistas/virada-de-chave.svg",
 };
 
-const CAMPO      = "/campo.png";
-const LOGO       = "/logo.png";
-const TSHIRT     = "/tshirt.svg";
-const TSHIRT_GK  = "/tshirt-alt.svg";
+const CAMPO           = "/campo.png";
+const LOGO            = "/logo.png";
+const TSHIRT_OUTLINE  = "/tshirt-outline.svg";
+const TSHIRT_GK_OUT   = "/tshirt-gk-outline.svg";
+const TSHIRT_FILLED   = "/tshirt-filled.svg";
+const TSHIRT_GK_FILL  = "/tshirt-gk-filled.svg";
 
 type MaisVotado = { apelido: string; qtd: number; categoria: string };
 type Personagem  = { tipo: string; apelido: string; texto: string; data: Date };
@@ -175,9 +177,9 @@ export function HomeClient({
                 )}
               </div>
 
-              {/* Status pill */}
+              {/* Status pill — centralizada */}
               <div style={{
-                display: "inline-flex", alignSelf: "flex-start",
+                display: "inline-flex", alignSelf: "center",
                 alignItems: "center", gap: 6,
                 background: "rgba(55,55,55,0.2)",
                 border: "1px solid rgba(255,255,255,0.15)",
@@ -185,7 +187,7 @@ export function HomeClient({
               }}>
                 <div style={{ width: 6, height: 6, borderRadius: "50%", background: jaVotou ? "#e56767" : "#9fe870", flexShrink: 0 }} />
                 <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#fff", letterSpacing: "-0.4px", whiteSpace: "nowrap" }}>
-                  {jaVotou ? "Votação encerrada!" : rodadaId ? "Votação aberta até às 15h" : "Nenhuma rodada aberta"}
+                  {jaVotou ? "Votação encerrada!" : rodadaId ? "Votação aberta até às 22:30" : "Nenhuma rodada aberta"}
                 </span>
               </div>
             </div>
@@ -195,23 +197,23 @@ export function HomeClient({
               {/* CF row */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 16, paddingBottom: 16 }}>
                 {jaVotou
-                  ? <PlayerNamed name={top5Rodada[0] ?? "?"} tshirt={TSHIRT} />
-                  : <PlayerSlot tshirt={TSHIRT} />}
+                  ? <PlayerNamed name={top5Rodada[0] ?? "?"} tshirt={TSHIRT_FILLED} />
+                  : <PlayerSlot tshirt={TSHIRT_OUTLINE} />}
               </div>
 
               {/* Meio campo: 3 slots */}
               <div style={{ display: "flex", gap: 62, alignItems: "center", justifyContent: "center", width: "100%" }}>
                 {jaVotou ? (
                   <>
-                    <PlayerNamed name={top5Rodada[1] ?? "?"} tshirt={TSHIRT} />
-                    <PlayerNamed name={top5Rodada[2] ?? "?"} tshirt={TSHIRT} />
-                    <PlayerNamed name={top5Rodada[3] ?? "?"} tshirt={TSHIRT} />
+                    <PlayerNamed name={top5Rodada[1] ?? "?"} tshirt={TSHIRT_FILLED} />
+                    <PlayerNamed name={top5Rodada[2] ?? "?"} tshirt={TSHIRT_FILLED} />
+                    <PlayerNamed name={top5Rodada[3] ?? "?"} tshirt={TSHIRT_FILLED} />
                   </>
                 ) : (
                   <>
-                    <PlayerSlot tshirt={TSHIRT} />
-                    <PlayerSlot tshirt={TSHIRT} />
-                    <PlayerSlot tshirt={TSHIRT} />
+                    <PlayerSlot tshirt={TSHIRT_OUTLINE} />
+                    <PlayerSlot tshirt={TSHIRT_OUTLINE} />
+                    <PlayerSlot tshirt={TSHIRT_OUTLINE} />
                   </>
                 )}
               </div>
@@ -219,8 +221,8 @@ export function HomeClient({
               {/* GK row */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 16, paddingBottom: 16 }}>
                 {jaVotou
-                  ? <PlayerNamed name={top5Rodada[4] ?? "?"} tshirt={TSHIRT_GK} />
-                  : <PlayerSlot tshirt={TSHIRT_GK} />}
+                  ? <PlayerNamed name={top5Rodada[4] ?? "?"} tshirt={TSHIRT_GK_FILL} />
+                  : <PlayerSlot tshirt={TSHIRT_GK_OUT} />}
               </div>
             </div>
 
@@ -234,10 +236,10 @@ export function HomeClient({
                   borderRadius: 10, padding: "12px 16px",
                   display: "flex", alignItems: "center", gap: 8,
                 }}>
-                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 18, lineHeight: "22px", color: "#fff", letterSpacing: "-0.5px", flex: 1 }}>
+                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 16, lineHeight: "20px", color: "#fff", letterSpacing: "-0.5px", flex: 1 }}>
                     Você já votou nesta rodada!
                   </span>
-                  <Check size={32} color="#9fe870" weight="bold" />
+                  <img src="/check-circle-green.svg" alt="" style={{ width: 24, height: 24, flexShrink: 0 }} />
                 </div>
               ) : rodadaId ? (
                 /* Votar agora */
