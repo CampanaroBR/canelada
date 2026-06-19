@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { List, Bell } from "@phosphor-icons/react";
 import { parseLista, criarRodada, type ParticipanteImportado } from "./actions";
 
 type Step = "lista" | "confirmacao" | "sucesso";
@@ -353,12 +354,35 @@ export function NovaRodadaForm() {
   /* ─── STEP: LISTA ─── */
   const canImport = !isParsing && lista.trim().length > 0;
   return (
-    <div style={{ minHeight: "100dvh", background: "#090909" }}>
+    <div style={{
+      minHeight: "100dvh",
+      background: "#090909",
+      position: "relative",
+      paddingBottom: "calc(100px + env(safe-area-inset-bottom, 0px))",
+    }}>
+      {/* ── TOPBAR (fixed, glass) ── */}
+      <div className="glass-bar" style={{
+        position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)",
+        width: "min(100%, 430px)", zIndex: 30,
+        paddingTop: "env(safe-area-inset-top, 0px)",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 8px" }}>
+          <Link href="/feed" aria-label="Menu" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <List size={24} color="#fff" weight="bold" />
+          </Link>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img alt="Canelada" src="/logo.png" style={{ width: 56, height: 56, objectFit: "cover" }} />
+          <button aria-label="Notificações" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
+            <Bell size={24} color="#fff" weight="bold" />
+          </button>
+        </div>
+      </div>
+
       {/* Teal header */}
       <div style={{
         background: "#0e4a54",
         borderRadius: "0 0 40px 40px",
-        paddingTop: "calc(env(safe-area-inset-top, 0px) + 56px)",
+        paddingTop: "calc(env(safe-area-inset-top, 0px) + 80px)",
         paddingBottom: 32,
         paddingLeft: 16,
         paddingRight: 16,
@@ -390,7 +414,7 @@ export function NovaRodadaForm() {
         background: "#171717",
         border: "1px solid #2e2e2e",
         borderRadius: "48px 48px 16px 16px",
-        margin: "0 8px calc(96px + env(safe-area-inset-bottom, 0px))",
+        margin: "0 8px",
         boxShadow: "0px 4px 4px rgba(0,0,0,0.25)",
         display: "flex",
         flexDirection: "column",
@@ -481,29 +505,40 @@ export function NovaRodadaForm() {
             }}>
               Lista do WhatsApp
             </span>
-            <textarea
-              value={lista}
-              onChange={(e) => setLista(e.target.value)}
-              spellCheck={false}
-              placeholder={"Cole aqui as pessoas do baba"}
-              style={{
-                width: "100%",
-                height: 120,
-                minHeight: 120,
-                resize: "vertical",
-                background: "#111",
-                border: "1px solid #2a2a2d",
-                borderRadius: 16,
-                padding: "12px 16px",
-                fontFamily: "var(--font-body)",
-                fontWeight: 400,
-                fontSize: 14,
-                lineHeight: "18px",
-                color: "#e7e7ea",
-                outline: "none",
-                boxSizing: "border-box",
-              }}
-            />
+            <div style={{ position: "relative", width: "100%" }}>
+              <textarea
+                value={lista}
+                onChange={(e) => setLista(e.target.value)}
+                spellCheck={false}
+                placeholder={"Cole aqui as pessoas do baba"}
+                style={{
+                  width: "100%",
+                  height: 120,
+                  minHeight: 120,
+                  resize: "vertical",
+                  background: "#111",
+                  border: "1px solid #2a2a2d",
+                  borderRadius: 16,
+                  padding: "12px 16px",
+                  fontFamily: "var(--font-body)",
+                  fontWeight: 400,
+                  fontSize: 14,
+                  lineHeight: "18px",
+                  color: "#e7e7ea",
+                  outline: "none",
+                  boxSizing: "border-box",
+                  display: "block",
+                }}
+              />
+              {/* Resize grip (tracinhos) — visível no iOS, onde o nativo não aparece */}
+              <svg
+                aria-hidden
+                width="12" height="12" viewBox="0 0 12 12" fill="none"
+                style={{ position: "absolute", right: 7, bottom: 9, pointerEvents: "none" }}
+              >
+                <path d="M11 3 L3 11 M11 7 L7 11" stroke="#6f6f76" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
+            </div>
             <span style={{
               fontFamily: "var(--font-body)",
               fontWeight: 500,
