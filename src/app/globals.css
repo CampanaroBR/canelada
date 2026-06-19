@@ -22,7 +22,7 @@
   /* ── Text ── */
   --color-text-primary:   #ffffff;
   --color-text-secondary: #8d908d;
-  --color-text-muted:     #555555;
+  --color-text-muted:     #7a7a7a;  /* ~4.7:1 sobre o fundo base (WCAG AA) */
 
   /* ── Semantic ── */
   --color-success: #9fe870;

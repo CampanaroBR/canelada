@@ -595,12 +595,12 @@ export function HomeClient({
         borderBottom: "1px solid rgba(84,84,86,0.34)",
       }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 8px" }}>
-          <button onClick={() => setMenuOpen(true)} style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 4px", background: "none", border: "none", cursor: "pointer", overflow: "clip" }}>
+          <button aria-label="Abrir menu" onClick={() => setMenuOpen(true)} style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 4px", background: "none", border: "none", cursor: "pointer", overflow: "clip" }}>
             <List size={24} color="#fff" weight="bold" />
           </button>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img alt="Canelada" src={LOGO} style={{ width: 56, height: 56, objectFit: "cover" }} />
-          <button style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 4px", background: "none", border: "none", cursor: "pointer", overflow: "clip" }}>
+          <button aria-label="Notificações" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 4px", background: "none", border: "none", cursor: "pointer", overflow: "clip" }}>
             <Bell size={24} color="#fff" weight="bold" />
           </button>
         </div>
