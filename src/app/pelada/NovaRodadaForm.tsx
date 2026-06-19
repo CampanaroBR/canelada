@@ -498,7 +498,8 @@ export function NovaRodadaForm() {
               style={{
                 width: "100%",
                 height: 196,
-                resize: "none",
+                minHeight: 120,
+                resize: "vertical",
                 background: "#111",
                 border: "1px solid #2a2a2d",
                 borderRadius: 14,
