@@ -172,15 +172,11 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
       {/* ── Status Bar (glass, fixo) ── */}
       {/* pointerEvents:none no wrapper + auto só no botão: permite que o swipe-scroll
           atravesse a área do topbar sem ficar "travando" o gesto (mobile UX) */}
-      <div style={{
+      <div className="glass-bar" style={{
         position: "absolute", top: 0, left: 0, right: 0, zIndex: 20,
         pointerEvents: "none",
         paddingTop: "calc(env(safe-area-inset-top, 0px) + 26px)",
         padding: "calc(env(safe-area-inset-top, 0px) + 26px) 16px 16px",
-        background: "rgba(15,14,10,0.55)",
-        backdropFilter: "blur(10px)",
-        WebkitBackdropFilter: "blur(10px)",
-        boxShadow: "inset 0 -1px 0 rgba(255,255,255,0.08)",
         willChange: "transform",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

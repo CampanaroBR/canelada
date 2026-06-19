@@ -150,7 +150,7 @@ export default async function PerfilPage({
     <div style={{ minHeight: "100dvh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
 
       {/* ── Sticky header — liquid glass ── */}
-      <header style={{
+      <header className="glass-bar" style={{
         position: "sticky",
         top: 0,
         zIndex: 30,
@@ -159,14 +159,6 @@ export default async function PerfilPage({
         alignItems: "center",
         padding: "0 20px",
         gap: "12px",
-        background: "rgba(18,18,18,0.60)",
-        backdropFilter: "blur(40px) saturate(200%) brightness(1.08)",
-        WebkitBackdropFilter: "blur(40px) saturate(200%) brightness(1.08)",
-        boxShadow: [
-          "inset 0 1px 0 rgba(255,255,255,0.12)",
-          "inset 0 -1px 0 rgba(255,255,255,0.08)",
-          "0 1px 0 rgba(0,0,0,0.20)",
-        ].join(", "),
       }}>
         <Link
           href="/feed"
