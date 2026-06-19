@@ -26,7 +26,7 @@ export default function RootLayout({
             maxWidth: "430px",
             marginInline: "auto",
             minHeight: "100dvh",
-            background: "#0A0A0A",
+            background: "var(--color-bg)",
             position: "relative",
             paddingTop: "env(safe-area-inset-top, 0px)",
           }}

@@ -2,58 +2,44 @@
 @import "tailwindcss";
 
 :root {
-  /* Background */
-  --color-bg:           #0A0A0A;
-  --color-bg-alt:       #050505;
-  --color-surface-1:    #141414;
-  --color-surface-2:    #1C1C1C;
-  --color-surface-3:    #242424;
-  --color-border:       rgba(255,255,255,0.08);
-  --color-border-muted: rgba(255,255,255,0.04);
+  /* ── Surfaces ── */
+  --color-bg:        #090909;  /* fundo base do app */
+  --color-surface-1: #171717;  /* cards */
+  --color-surface-2: #1e1e1e;  /* avatares, chips, slots */
+  --color-input:     #111111;  /* fundo de inputs */
 
-  /* Accent — verde do designer #9fe870 */
-  --color-accent:       #9fe870;
-  --color-accent-hover: #7ed44e;
-  --color-accent-muted: rgba(159,232,112,0.12);
-  --color-on-accent:    #090909;
+  /* ── Borders ── */
+  --color-border:        #2e2e2e;               /* borda de card */
+  --color-border-muted:  rgba(255,255,255,0.06);
+  --color-border-input:  #2a2a2d;               /* borda de input */
 
-  /* Text */
-  --color-text-primary:   rgba(255,255,255,0.87);
-  --color-text-secondary: rgba(255,255,255,0.45);
-  --color-text-muted:     rgba(255,255,255,0.25);
-  --color-text-inverse:   #0D0D0D;
+  /* ── Brand ── */
+  --color-accent:         #9fe870;  /* verde Canelada */
+  --color-accent-pressed: #8fd460;
+  --color-on-accent:      #090909;  /* texto sobre o verde */
+  --color-teal:           #0e4a54;  /* header do Baba */
 
-  /* Semantic */
-  --color-success: #22C55E;
-  --color-danger:  #EF4444;
-  --color-warning: #F59E0B;
-  --color-mvp:     #9fe870;
+  /* ── Text ── */
+  --color-text-primary:   #ffffff;
+  --color-text-secondary: #8d908d;
+  --color-text-muted:     #555555;
+
+  /* ── Semantic ── */
+  --color-success: #9fe870;
+  --color-danger:  #ef4444;
+  --color-warning: #f59e0b;
   --color-bagre:   #d42020;
 
-  /* Traits */
-  --trait-futebol:       #9fe870;
-  --trait-personalidade: #F59E0B;
-  --trait-resenha:       #EF4444;
-
-  /* Shadows — layered, sem solid borders (make-interfaces-feel-better) */
-  --shadow-sm:     0 1px 2px rgba(0,0,0,0.4);
-  --shadow-md:     0 2px 8px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.3);
-  --shadow-lg:     0 8px 24px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
-  --shadow-accent: 0 0 24px rgba(159,232,112,0.22);
-  /* Shadow-as-border para dark mode (surfaces.md) */
-  --shadow-border:       0 0 0 1px rgba(255,255,255,0.08);
-  --shadow-border-hover: 0 0 0 1px rgba(255,255,255,0.13);
-
-  /* Border Radius */
-  --radius-xs:   4px;
-  --radius-sm:   8px;
+  /* ── Radius ── */
   --radius-md:   12px;
   --radius-lg:   16px;
   --radius-xl:   20px;
-  --radius-2xl:  24px;
   --radius-pill: 9999px;
 
-  /* Typography */
+  /* ── Elevation ── */
+  --shadow-border: 0 0 0 1px rgba(255,255,255,0.08);
+
+  /* ── Typography ── */
   --font-display: 'Barlow Condensed', sans-serif;
   --font-body:    'Inter', sans-serif;
 
@@ -72,7 +58,7 @@
 }
 
 html {
-  background: #0A0A0A;
+  background: var(--color-bg);
   height: 100%;
   /* Font smoothing (make-interfaces-feel-better — typography.md) */
   -webkit-font-smoothing: antialiased;
@@ -82,8 +68,8 @@ html {
 }
 
 body {
-  background: #0A0A0A;
-  color: rgba(255,255,255,0.87);
+  background: var(--color-bg);
+  color: var(--color-text-primary);
   font-family: var(--font-body);
   overflow-x: hidden;
 }
