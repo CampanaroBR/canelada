@@ -30,6 +30,7 @@ const CONFIGS: Record<string, {
   categoria: {
     title: "CATEGORIA",
     bgImg:     "/votacao-bg/categoria.png",
+    bakedImg:  "/premio/categoria.jpg",
     mascotImg: "/ilustracoes/corpo-mole.png",
     glowColor: "#5f450f",
     nameColor: "#d6ffbc",
@@ -39,6 +40,7 @@ const CONFIGS: Record<string, {
   paredao: {
     title: "PAREDÃO",
     bgImg:     "/votacao-bg/paredao.png",
+    bakedImg:  "/premio/paredao.jpg",
     mascotImg: "/ilustracoes/bagre.png",
     glowColor: "#5f0005",
     nameColor: "#d6ffbc",
