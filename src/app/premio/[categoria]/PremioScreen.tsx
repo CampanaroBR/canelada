@@ -13,12 +13,13 @@ interface Props {
   vencedorNome: string;
   vencedorQtd: number;
   categoriaLabel: string;
+  grupoNome: string;
   data: string;
 }
 
 export function PremioScreen({
   title, bgImg, mascotImg, glowColor, nameColor, footerBorder,
-  vencedorNome, vencedorQtd, categoriaLabel, data,
+  vencedorNome, vencedorQtd, categoriaLabel, grupoNome, data,
 }: Props) {
   const router = useRouter();
 
@@ -99,7 +100,7 @@ export function PremioScreen({
           <span style={{ color: nameColor }}>{vencedorNome}</span>
           {" foi eleito o "}
           <span style={{ color: nameColor }}>{categoriaLabel}</span>
-          {` do jogo por ${vencedorQtd} jogadores do Baba do PJ.`}
+          {` do jogo por ${vencedorQtd} jogadores do ${grupoNome}.`}
         </p>
 
         {/* Share button — padrão do app */}

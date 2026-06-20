@@ -55,9 +55,10 @@ export default async function PremioPage({ params }: { params: Promise<{ categor
 
   const jogador = await prisma.jogador.findUnique({
     where: { userId: session.user.id },
-    select: { grupoId: true },
+    select: { grupoId: true, grupo: { select: { nome: true } } },
   });
   if (!jogador) redirect("/onboarding");
+  const grupoNome = jogador.grupo?.nome ?? "Baba";
 
   // Most voted player for this category in the latest closed rodada
   const ultimaRodada = await prisma.rodada.findFirst({
@@ -99,6 +100,7 @@ export default async function PremioPage({ params }: { params: Promise<{ categor
       vencedorNome={vencedor?.apelido ?? "?"}
       vencedorQtd={vencedor?.qtd ?? 0}
       categoriaLabel={config.title.charAt(0) + config.title.slice(1).toLowerCase()}
+      grupoNome={grupoNome}
       data={dataStr}
     />
   );
