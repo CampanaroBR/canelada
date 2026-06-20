@@ -18,8 +18,8 @@ const CONFIGS: Record<string, {
 }> = {
   matador: {
     title: "MATADOR",
-    bgImg:     "http://localhost:3845/assets/f74fade6fc6767e403334c2dc14b3a353d92a41a.png",
-    mascotImg: "http://localhost:3845/assets/320508786458480dbbb96170e84a70d16c6f69f9.png",
+    bgImg:     "/votacao-bg/matador.png",
+    mascotImg: "/ilustracoes/tubarao.png",
     glowColor: "#0a5c69",
     nameColor: "#9fe870",
     footerBorder: "#42bace",
@@ -27,8 +27,8 @@ const CONFIGS: Record<string, {
   },
   categoria: {
     title: "CATEGORIA",
-    bgImg:     "http://localhost:3845/assets/28a255783b0bfaaf9da8ad12e253ae6152379a87.png",
-    mascotImg: "http://localhost:3845/assets/ea43f1e4c2d741fe0f7f1c2273851f53a43f2eac.png",
+    bgImg:     "/votacao-bg/categoria.png",
+    mascotImg: "/ilustracoes/corpo-mole.png",
     glowColor: "#5f450f",
     nameColor: "#d6ffbc",
     footerBorder: "#c5c5c5",
@@ -36,8 +36,8 @@ const CONFIGS: Record<string, {
   },
   paredao: {
     title: "PAREDÃO",
-    bgImg:     "http://localhost:3845/assets/55d235c3d92ccafc1bbccb41171b31218dcbd5c3.png",
-    mascotImg: "http://localhost:3845/assets/4e99a84e61c4195f74f6f5d73d4f9d2145cacbd8.png",
+    bgImg:     "/votacao-bg/paredao.png",
+    mascotImg: "/ilustracoes/bagre.png",
     glowColor: "#5f0005",
     nameColor: "#d6ffbc",
     footerBorder: "#c5c5c5",
