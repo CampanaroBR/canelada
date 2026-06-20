@@ -77,20 +77,31 @@ type Filter = "todas" | "desbloqueadas" | "andamento";
 
 interface Props {
   unlockedSlugs: string[];
+  progress?: Record<string, { current: number; meta: number }>;
   lastConquista: { slug: string; nome: string; descricao: string } | null;
 }
 
-export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
+export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: Props) {
   const [filter, setFilter] = useState<Filter>("todas");
   const [selected, setSelected] = useState<BadgeEntry | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const unlockedSet = new Set(unlockedSlugs);
   const unlockedCount = ALL_SLUGS.filter(s => unlockedSet.has(s)).length;
 
+  // % de progresso de uma badge bloqueada (capado em 0.95 p/ nunca parecer "completa porém travada")
+  function pctFor(slug: string): number {
+    if (unlockedSet.has(slug)) return 1;
+    const p = progress[slug];
+    if (!p || p.meta <= 0) return 0;
+    return Math.min(p.current / p.meta, 0.95);
+  }
+  // "Em andamento" = bloqueada com algum progresso real
+  const andamentoCount = ALL_SLUGS.filter(s => !unlockedSet.has(s) && pctFor(s) > 0).length;
+
   function shouldShow(slug: string): boolean {
     if (filter === "todas") return true;
     if (filter === "desbloqueadas") return unlockedSet.has(slug);
-    if (filter === "andamento") return !unlockedSet.has(slug);
+    if (filter === "andamento") return !unlockedSet.has(slug) && pctFor(slug) > 0;
     return true;
   }
 
@@ -278,7 +289,7 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
               ? `Todas (${TOTAL})`
               : f === "desbloqueadas"
               ? `Desbloqueadas (${unlockedCount})`
-              : `Em andamento (${TOTAL - unlockedCount})`;
+              : `Em andamento (${andamentoCount})`;
             return (
               <button
                 key={f}
@@ -408,8 +419,8 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
                               </p>
                             </div>
 
-                            {/* Progress bar (locked only) */}
-                            {!unlocked && (
+                            {/* Progress bar — só em badges bloqueadas com progresso real */}
+                            {!unlocked && progress[badge.slug] && (
                               <div style={{
                                 width: 72,
                                 height: 6,
@@ -421,7 +432,7 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
                               }}>
                                 <div style={{
                                   height: "100%",
-                                  width: "0%",
+                                  width: `${Math.round(pctFor(badge.slug) * 100)}%`,
                                   background: "#9fe870",
                                   borderRadius: 100,
                                 }} />
