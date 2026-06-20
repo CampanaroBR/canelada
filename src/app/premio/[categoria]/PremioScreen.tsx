@@ -32,35 +32,20 @@ export function PremioScreen({
   }
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 60, background: "#0a0e0e", overflow: "hidden" }}>
+    <div style={{ position: "fixed", inset: 0, zIndex: 60, background: "#0a0e0e", overflow: "hidden", display: "flex", flexDirection: "column" }}>
 
       {/* Background gradient image */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img alt="" aria-hidden src={bgImg} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
 
-      {/* Glow blur behind mascot */}
-      <div aria-hidden style={{
-        position: "absolute",
-        left: "50%", top: "calc(50% - 196px)",
-        transform: "translate(-50%, -50%)",
-        width: 289, height: 296,
-        background: glowColor,
-        filter: "blur(88.6px)",
-        borderRadius: "50%",
-        pointerEvents: "none",
-      }} />
-
-      {/* Mascot */}
-      <div style={{ position: "absolute", left: "50%", top: 100, transform: "translateX(-50%)", width: 264, height: 264 }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt={title} src={mascotImg} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-      </div>
-
-      {/* Close button */}
+      {/* Close button — respiro do topo via safe-area */}
       <button
         onClick={() => router.back()}
         style={{
-          position: "absolute", top: 70, right: 64,
+          position: "absolute",
+          top: "calc(env(safe-area-inset-top, 0px) + 16px)",
+          right: 16,
+          zIndex: 2,
           width: 48, height: 48,
           background: "#000",
           border: "1px solid #424242",
@@ -73,84 +58,95 @@ export function PremioScreen({
         <X size={16} color="#fff" weight="bold" />
       </button>
 
-      {/* Title */}
-      <p style={{
-        position: "absolute",
-        top: 390,
-        left: "50%",
-        transform: "translateX(-50%)",
-        margin: 0,
-        fontFamily: "var(--font-display)",
-        fontWeight: 700,
-        fontSize: 56,
-        lineHeight: "64px",
-        color: "#fff",
-        letterSpacing: "-2px",
-        whiteSpace: "nowrap",
+      {/* Conteúdo centralizado verticalmente, preenchendo a tela */}
+      <div style={{
+        position: "relative",
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 28,
+        padding: "calc(env(safe-area-inset-top, 0px) + 80px) 24px 24px",
       }}>
-        {title}
-      </p>
+        {/* Mascot + glow */}
+        <div style={{ position: "relative", width: 264, height: 264, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <div aria-hidden style={{
+            position: "absolute", width: 289, height: 296,
+            background: glowColor, filter: "blur(88.6px)", borderRadius: "50%", pointerEvents: "none",
+          }} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img alt={title} src={mascotImg} style={{ position: "relative", width: "100%", height: "100%", objectFit: "contain" }} />
+        </div>
 
-      {/* Subtitle */}
-      <div style={{ position: "absolute", top: 512, left: 40, width: 313, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 20, lineHeight: "24px", color: "#fff", letterSpacing: "-1px" }}>
+        {/* Title */}
+        <h1 style={{
+          margin: 0,
+          fontFamily: "var(--font-display)",
+          fontWeight: 700,
+          fontSize: 56,
+          lineHeight: "60px",
+          color: "#ffffff",
+          letterSpacing: "-2px",
+          textAlign: "center",
+          textShadow: "0 2px 14px rgba(0,0,0,0.22)",
+        }}>
+          {title}
+        </h1>
+
+        {/* Subtitle */}
+        <p style={{ margin: 0, maxWidth: 320, fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 20, lineHeight: "24px", color: "#fff", letterSpacing: "-1px", textAlign: "center" }}>
           <span style={{ color: nameColor }}>{vencedorNome}</span>
           {" foi eleito o "}
           <span style={{ color: nameColor }}>{categoriaLabel}</span>
           {` do jogo por ${vencedorQtd} jogadores do Baba do PJ.`}
         </p>
+
+        {/* Share button — padrão do app */}
+        <button
+          onClick={handleShare}
+          style={{
+            marginTop: 12,
+            background: "#2a2a2a",
+            border: "1px solid #3a3a3a",
+            borderRadius: 16,
+            height: 54,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            padding: "0 24px",
+            cursor: "pointer",
+            boxShadow: "0px 4px 9.8px 2px rgba(0,0,0,0.25)",
+            WebkitTapHighlightColor: "transparent",
+          }}
+        >
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#9fe870" }}>Compartilhar</span>
+          <ShareNetwork size={20} color="#9fe870" weight="bold" />
+        </button>
       </div>
 
-      {/* Share button — padrão do app (secondary) */}
-      <button
-        onClick={handleShare}
-        style={{
-          position: "absolute",
-          top: 648,
-          left: "50%",
-          transform: "translateX(-50%)",
-          background: "#2a2a2a",
-          border: "1px solid #3a3a3a",
-          borderRadius: 16,
-          height: 54,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 8,
-          padding: "0 24px",
-          cursor: "pointer",
-          boxShadow: "0px 4px 9.8px 2px rgba(0,0,0,0.25)",
-          WebkitTapHighlightColor: "transparent",
-        }}
-      >
-        <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#9fe870" }}>Compartilhar</span>
-        <ShareNetwork size={20} color="#9fe870" weight="bold" />
-      </button>
-
-      {/* Footer */}
+      {/* Footer fixo na base */}
       <div style={{
-        position: "absolute",
-        top: 796, left: 0,
-        width: "100%", height: 56,
+        position: "relative",
+        flexShrink: 0,
+        width: "100%",
         borderTop: `1px solid ${footerBorder}`,
         display: "flex", alignItems: "center", justifyContent: "center",
-        padding: "16px 14px",
-        overflow: "hidden",
+        padding: "16px 14px calc(env(safe-area-inset-bottom, 0px) + 20px)",
       }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "4px 0" }}>
-          <p style={{
-            margin: 0,
-            fontFamily: "var(--font-display)",
-            fontWeight: 600,
-            fontSize: 12,
-            lineHeight: "15px",
-            color: "#fff",
-            letterSpacing: "0.5px",
-            whiteSpace: "nowrap",
-          }}>
-            CONCLUÍDO · {data}
-          </p>
-        </div>
+        <p style={{
+          margin: 0,
+          fontFamily: "var(--font-display)",
+          fontWeight: 600,
+          fontSize: 12,
+          lineHeight: "15px",
+          color: "#fff",
+          letterSpacing: "0.5px",
+          whiteSpace: "nowrap",
+        }}>
+          CONCLUÍDO · {data}
+        </p>
       </div>
     </div>
   );
