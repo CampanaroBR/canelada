@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
   Lightning, Medal, CaretRight, Check,
@@ -8,10 +9,21 @@ import {
   List, Bell, MedalMilitary,
 } from "@phosphor-icons/react";
 import { BottomNav } from "@/components/layout/BottomNav";
-import { BottomsheetMaisVotados } from "@/components/BottomsheetMaisVotados";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
-import { PersonagemShareModal } from "@/components/PersonagemShareModal";
-import { MenuSheet } from "@/components/MenuSheet";
+
+// Carregados sob demanda (abrem só na interação) — reduz o JS inicial da Home
+const BottomsheetMaisVotados = dynamic(
+  () => import("@/components/BottomsheetMaisVotados").then(m => m.BottomsheetMaisVotados),
+  { ssr: false }
+);
+const PersonagemShareModal = dynamic(
+  () => import("@/components/PersonagemShareModal").then(m => m.PersonagemShareModal),
+  { ssr: false }
+);
+const MenuSheet = dynamic(
+  () => import("@/components/MenuSheet").then(m => m.MenuSheet),
+  { ssr: false }
+);
 
 // Mapeia achievement slug → arquivo SVG exato no git (case-sensitive no Vercel/Linux)
 const TRAIT_BADGE: Record<string, string> = {
@@ -84,6 +96,7 @@ export function HomeClient({
   proximoBaba, criarRodadaAction,
 }: Props) {
   const [bsOpen, setBsOpen] = useState(false);
+  const [bsMounted, setBsMounted] = useState(false); // só monta o sheet após 1ª abertura
   const [activePill, setActivePill] = useState(datePills.length > 0 ? datePills.length - 1 : 0);
   const [sharePersonagem, setSharePersonagem] = useState<number | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -368,7 +381,7 @@ export function HomeClient({
                 </div>
                 <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>PARCIAL DA RODADA</h2>
               </div>
-              <button onClick={() => setBsOpen(true)} style={{
+              <button onClick={() => { setBsMounted(true); setBsOpen(true); }} style={{
                 display: "flex", alignItems: "center", gap: 4, flexShrink: 0,
                 background: "#2a2a2a", border: "1px solid #3a3a3a",
                 borderRadius: 9999, padding: "7px 13px", cursor: "pointer",
@@ -605,13 +618,15 @@ export function HomeClient({
       {/* ── BOTTOM NAV (fixed) ── */}
       <BottomNav />
 
-      <BottomsheetMaisVotados
-        open={bsOpen}
-        onClose={() => setBsOpen(false)}
-        entries={lbEntries}
-        datas={datePills}
-        dataAtiva={datePills.length - 1}
-      />
+      {bsMounted && (
+        <BottomsheetMaisVotados
+          open={bsOpen}
+          onClose={() => setBsOpen(false)}
+          entries={lbEntries}
+          datas={datePills}
+          dataAtiva={datePills.length - 1}
+        />
+      )}
 
       {sharePersonagem !== null && personagens[sharePersonagem] && (
         <PersonagemShareModal
@@ -627,7 +642,7 @@ export function HomeClient({
       )}
 
       {/* ── Menu Hambúrguer (bottom sheet compartilhado) ── */}
-      <MenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} />
+      {menuOpen && <MenuSheet open onClose={() => setMenuOpen(false)} />}
     </div>
   );
 }
