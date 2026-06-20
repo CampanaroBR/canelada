@@ -10,6 +10,7 @@ export const dynamic = "force-dynamic";
 const CONFIGS: Record<string, {
   title: string;
   bgImg: string;
+  bakedImg?: string;
   mascotImg: string;
   glowColor: string;
   nameColor: string;
@@ -19,6 +20,7 @@ const CONFIGS: Record<string, {
   matador: {
     title: "MATADOR",
     bgImg:     "/votacao-bg/matador.png",
+    bakedImg:  "/premio/matador.jpg",
     mascotImg: "/ilustracoes/tubarao.png",
     glowColor: "#0a5c69",
     nameColor: "#9fe870",
@@ -93,6 +95,7 @@ export default async function PremioPage({ params }: { params: Promise<{ categor
     <PremioScreen
       title={config.title}
       bgImg={config.bgImg}
+      bakedImg={config.bakedImg}
       mascotImg={config.mascotImg}
       glowColor={config.glowColor}
       nameColor={config.nameColor}
