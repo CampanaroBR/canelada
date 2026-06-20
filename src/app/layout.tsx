@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Barlow_Condensed } from "next/font/google";
+import { Inter, Barlow } from "next/font/google";
 import "./globals.css";
 import { PushInit } from "@/components/PushInit";
 
@@ -9,7 +9,7 @@ const inter = Inter({
   display: "swap",
 });
 
-const barlowCondensed = Barlow_Condensed({
+const barlow = Barlow({
   subsets: ["latin"],
   weight: ["500", "600", "700", "800", "900"],
   variable: "--font-barlow",
@@ -31,7 +31,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${barlowCondensed.variable}`}>
+    <html lang="pt-BR" className={`${inter.variable} ${barlow.variable}`}>
       <body>
         <div
           id="app-shell"
