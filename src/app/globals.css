@@ -166,6 +166,20 @@ h1, h2, h3, h4, h5, h6 {
   .glass-nav { background: rgba(28, 28, 30, 0.95); }
 }
 
+/* ── Estado de foco dos campos de formulário (Figma: borda accent) ──
+   Feedback claro de que o usuário está interagindo com o campo. */
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 1px var(--color-accent);
+  caret-color: var(--color-accent);
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
 /* Bottom sheet entrance */
 @keyframes sheet-up {
   from {
