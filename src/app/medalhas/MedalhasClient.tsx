@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -118,8 +119,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
           <button onClick={() => setMenuOpen(true)} style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
             <List size={24} color="#fff" weight="bold" />
           </button>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt="Canelada" src="/logo.png" style={{ width: 56, height: 56, objectFit: "cover" }} />
+          <Image alt="Canelada" src="/logo.png" width={56} height={56} priority style={{ objectFit: "cover" }} />
           <button style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
             <Bell size={24} color="#fff" weight="bold" />
           </button>
@@ -202,11 +202,12 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
             {/* Right: badge image + tiny name overlay */}
             <div style={{ flex: "1 0 0", minWidth: 1, height: 80, display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
               <div style={{ width: 72, height: 72, flexShrink: 0, position: "relative" }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   alt={lastConquista.nome}
                   src={BADGE_SVG[lastConquista.slug] ?? `/conquistas/${lastConquista.slug}.png`}
-                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }}
+                  fill
+                  sizes="72px"
+                  style={{ objectFit: "contain" }}
                 />
               </div>
             </div>
@@ -388,13 +389,13 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                             {/* Player: image + label */}
                             <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                               {/* Badge image with -8px bottom margin */}
-                              <div style={{ width: 72, height: 72, flexShrink: 0, marginBottom: -8 }}>
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
+                              <div style={{ width: 72, height: 72, flexShrink: 0, marginBottom: -8, position: "relative" }}>
+                                <Image
                                   alt={badge.nome}
                                   src={badge.svg}
+                                  fill
+                                  sizes="72px"
                                   style={{
-                                    width: "100%", height: "100%",
                                     objectFit: "contain",
                                     opacity: unlocked ? 1 : 0.3,
                                   }}
@@ -544,12 +545,13 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                   </div>
 
                   {/* Badge image 140×140 */}
-                  <div style={{ width: 140, height: 140, flexShrink: 0, marginBottom: isRara && !unlocked ? -8 : 0 }}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                  <div style={{ width: 140, height: 140, flexShrink: 0, marginBottom: isRara && !unlocked ? -8 : 0, position: "relative" }}>
+                    <Image
                       src={selected.svg}
                       alt={selected.nome}
-                      style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                      fill
+                      sizes="140px"
+                      style={{ objectFit: "contain" }}
                     />
                   </div>
 

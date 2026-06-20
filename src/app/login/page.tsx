@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
@@ -44,10 +45,9 @@ export default function LoginPage() {
             position: "absolute", left: 38, top: 48, width: 246,
             display: "flex", flexDirection: "column", alignItems: "center",
           }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              alt="Canelada" src="/logo.png"
-              style={{ width: 116, height: 116, objectFit: "contain", marginBottom: -8, display: "block" }}
+            <Image
+              alt="Canelada" src="/logo.png" width={116} height={116} priority
+              style={{ objectFit: "contain", marginBottom: -8, display: "block" }}
             />
             <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center", width: "100%" }}>
               <p style={{

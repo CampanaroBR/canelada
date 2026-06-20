@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { X, ShareNetwork } from "@phosphor-icons/react";
 
@@ -36,8 +37,7 @@ export function PremioScreen({
     <div style={{ position: "fixed", inset: 0, zIndex: 60, background: "#0a0e0e", overflow: "hidden", display: "flex", flexDirection: "column" }}>
 
       {/* Background gradient image */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img alt="" aria-hidden src={bgImg} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
+      <Image alt="" aria-hidden src={bgImg} fill priority sizes="430px" style={{ objectFit: "cover", pointerEvents: "none" }} />
 
       {/* Close button — respiro do topo via safe-area */}
       <button
@@ -76,8 +76,7 @@ export function PremioScreen({
             position: "absolute", width: 289, height: 296,
             background: glowColor, filter: "blur(88.6px)", borderRadius: "50%", pointerEvents: "none",
           }} />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt={title} src={mascotImg} style={{ position: "relative", width: "100%", height: "100%", objectFit: "contain" }} />
+          <Image alt={title} src={mascotImg} width={264} height={264} priority style={{ position: "relative", width: "100%", height: "100%", objectFit: "contain" }} />
         </div>
 
         {/* Title */}

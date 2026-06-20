@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { List, Bell } from "@phosphor-icons/react";
 import { MenuSheet } from "@/components/MenuSheet";
 import { parseLista, criarRodada, type ParticipanteImportado } from "./actions";
@@ -372,8 +373,7 @@ export function NovaRodadaForm() {
           <button aria-label="Abrir menu" onClick={() => setMenuOpen(true)} style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
             <List size={24} color="#fff" weight="bold" />
           </button>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt="Canelada" src="/logo.png" style={{ width: 56, height: 56, objectFit: "cover" }} />
+          <Image alt="Canelada" src="/logo.png" width={56} height={56} priority style={{ objectFit: "cover" }} />
           <button aria-label="Notificações" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
             <Bell size={24} color="#fff" weight="bold" />
           </button>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import Link from "next/link";
 import {
   Lightning, Medal, CaretRight, Check,
@@ -164,8 +165,7 @@ export function HomeClient({
             boxSizing: "border-box",
           }}>
             {/* Background field image */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img aria-hidden alt="" src={CAMPO} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none", borderRadius: 40 }} />
+            <Image aria-hidden alt="" src={CAMPO} fill sizes="400px" style={{ objectFit: "cover", pointerEvents: "none", borderRadius: 40 }} />
             <div aria-hidden style={{ position: "absolute", inset: 0, background: "rgba(35,52,0,0.34)", borderRadius: 40, pointerEvents: "none" }} />
 
             {/* Header info: título + data/hora + status */}
@@ -492,8 +492,7 @@ export function HomeClient({
                     {/* Right: flex:1 self-stretch → definite height for mascot h:100% */}
                     <div style={{ flex: 1, minWidth: 1, alignSelf: "stretch", position: "relative", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
                       <div style={{ position: "relative", height: "100%", aspectRatio: "1920/1920", overflow: "clip", flexShrink: 0 }}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img alt={title} src={mascot} style={{ position: "absolute", display: "block", inset: 0, width: "100%", height: "100%", maxWidth: "none", pointerEvents: "none" }} />
+                        <Image alt={title} src={mascot} fill sizes="130px" style={{ display: "block", objectFit: "contain", pointerEvents: "none" }} />
                       </div>
                     </div>
                   </div>
@@ -579,11 +578,12 @@ export function HomeClient({
 
                         {/* Badge: overflow hidden para cortar o nome interno do SVG */}
                         <div style={{ width: 72, height: 72, flexShrink: 0, position: "relative", overflow: "hidden" }}>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
+                          <Image
                             alt={c.traitNome}
                             src={TRAIT_BADGE[c.traitSlug] ?? `/conquistas/${c.traitSlug}.png`}
-                            style={{ position: "absolute", display: "block", inset: 0, width: "100%", height: "100%", maxWidth: "none", objectFit: "contain" }}
+                            fill
+                            sizes="72px"
+                            style={{ display: "block", objectFit: "contain" }}
                           />
                         </div>
                       </div>
@@ -607,8 +607,7 @@ export function HomeClient({
           <button aria-label="Abrir menu" onClick={() => setMenuOpen(true)} style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 4px", background: "none", border: "none", cursor: "pointer", overflow: "clip" }}>
             <List size={24} color="#fff" weight="bold" />
           </button>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt="Canelada" src={LOGO} style={{ width: 56, height: 56, objectFit: "cover" }} />
+          <Image alt="Canelada" src={LOGO} width={56} height={56} priority style={{ objectFit: "cover" }} />
           <button aria-label="Notificações" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 4px", background: "none", border: "none", cursor: "pointer", overflow: "clip" }}>
             <Bell size={24} color="#fff" weight="bold" />
           </button>
