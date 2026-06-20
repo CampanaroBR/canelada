@@ -7,22 +7,23 @@ import Link from "next/link";
 import {
   Lightning, Medal, CaretRight, Check,
   CalendarBlank, Alarm, CalendarStar,
-  List, Bell, MedalMilitary,
+  List, Bell, MedalMilitary, X,
 } from "@phosphor-icons/react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
+import type { PersonagemSemana } from "@/components/ShareCardModal";
 
 // Carregados sob demanda (abrem só na interação) — reduz o JS inicial da Home
 const BottomsheetMaisVotados = dynamic(
   () => import("@/components/BottomsheetMaisVotados").then(m => m.BottomsheetMaisVotados),
   { ssr: false }
 );
-const PersonagemShareModal = dynamic(
-  () => import("@/components/PersonagemShareModal").then(m => m.PersonagemShareModal),
-  { ssr: false }
-);
 const MenuSheet = dynamic(
   () => import("@/components/MenuSheet").then(m => m.MenuSheet),
+  { ssr: false }
+);
+const ShareCardModal = dynamic(
+  () => import("@/components/ShareCardModal").then(m => m.ShareCardModal),
   { ssr: false }
 );
 
@@ -70,6 +71,7 @@ interface Props {
   jaVotou: boolean;
   maisVotados: MaisVotado[];
   personagensPorRodada: Personagem[][];
+  personagensSemana: PersonagemSemana[];
   conquistas: Conquista[];
   datePills: string[];
   grupoNome: string;
@@ -77,33 +79,19 @@ interface Props {
   criarRodadaAction: () => Promise<void>;
 }
 
-const PERSONAGEM_MASCOTS: Record<string, string> = {
-  MVP:    "/ilustracoes/tubarao-share.png",
-  BAGRE:  "/ilustracoes/bagre.png",
-  RACUDO: "/ilustracoes/corpo-mole.png",
-};
-
-const PERSONAGEM_TITLES: Record<string, string> = {
-  MVP:    "MATADOR",
-  BAGRE:  "BAGRE DA NOITE",
-  RACUDO: "PREGUEIRO",
-};
-
 const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
 
 export function HomeClient({
   rodadaId, dataRodada, jaVotou, top5Rodada,
-  maisVotados, personagensPorRodada, conquistas, datePills, grupoNome,
+  maisVotados, personagensPorRodada, personagensSemana, conquistas, datePills, grupoNome,
   proximoBaba, criarRodadaAction,
 }: Props) {
   const [bsOpen, setBsOpen] = useState(false);
   const [bsMounted, setBsMounted] = useState(false); // só monta o sheet após 1ª abertura
-  const [activePill, setActivePill] = useState(datePills.length > 0 ? datePills.length - 1 : 0);
-  const [sharePersonagem, setSharePersonagem] = useState<number | null>(null);
+  const [shareCard, setShareCard] = useState<PersonagemSemana | null>(null);
+  const [verMaisOpen, setVerMaisOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Personagens da rodada selecionada pela pill
-  const personagens = personagensPorRodada[activePill] ?? [];
 
   const lbEntries: LeaderboardEntry[] = maisVotados.slice(0, 6).map((v, i) => ({
     rank: i + 1,
@@ -422,82 +410,60 @@ export function HomeClient({
         )}
 
         {/* ── 3. PERSONAGEM DA SEMANA ── */}
-        {personagensPorRodada.length > 0 && (
+        {personagensSemana.length > 0 && (
           <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 20, padding: "17px 9px", display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Header */}
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <CalendarStar size={24} color="#9fe870" weight="regular" />
+              <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 8 }}>
+                <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <CalendarStar size={24} color="#9fe870" weight="regular" />
+                </div>
+                <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>PERSONAGEM DA SEMANA</h2>
               </div>
-              <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>PERSONAGEM DA SEMANA</h2>
+              {personagensSemana.length > 3 && (
+                <button onClick={() => setVerMaisOpen(true)} style={{
+                  display: "flex", alignItems: "center", gap: 4, flexShrink: 0,
+                  background: "#2a2a2a", border: "1px solid #3a3a3a", borderRadius: 9999, padding: "7px 13px", cursor: "pointer",
+                }}>
+                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "18px", color: "#fff", whiteSpace: "nowrap" }}>Ver mais</span>
+                  <CaretRight size={12} color="#fff" weight="bold" />
+                </button>
+              )}
             </div>
 
-            {/* Date pills */}
-            {datePills.length > 0 && (
-              <div style={{ height: 38, display: "flex", gap: 8, alignItems: "flex-start", overflow: "clip" }}>
-                {datePills.map((d, i) => {
-                  const active = i === activePill;
-                  return (
-                    <button key={i} onClick={() => setActivePill(i)} style={{
-                      background: active ? "#9fe870" : "#111",
-                      border: active ? "none" : "1px solid #2e2e2e",
-                      borderRadius: 9999,
-                      padding: active ? "6px 12px" : "7px 13px",
-                      height: "100%",
-                      fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "18px",
-                      color: active ? "#090909" : "#555",
-                      cursor: "pointer", flexShrink: 0, whiteSpace: "nowrap",
-                    }}>{d}</button>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Cards */}
+            {/* Top 3 cards */}
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {personagens.map((p, i) => {
-                const title   = PERSONAGEM_TITLES[p.tipo] ?? p.tipo;
-                const mascot  = PERSONAGEM_MASCOTS[p.tipo] ?? "/ilustracoes/corpo-mole.png";
-                const dateStr = new Date(p.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
-                const qtd     = Math.max(5, 8 - i);
-                return (
-                  <div key={i} style={{ background: "#090909", border: "1px solid #2e2e2e", borderRadius: 16, padding: 17, display: "flex", gap: 16, alignItems: "flex-start", overflow: "hidden" }}>
-                    {/* Left: Award Container — flexShrink:0, width = content */}
-                    <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start" }}>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-start", justifyContent: "center" }}>
-                        {/* Title + name block h:46 */}
-                        <div style={{ height: 46, display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-start" }}>
-                          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, lineHeight: "24px", color: "#fff", whiteSpace: "nowrap" }}>{title}</p>
-                          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "18px", color: "#f9a8d4", whiteSpace: "nowrap" }}>{p.apelido}</p>
-                        </div>
-                        {/* Stats h:21 pt:4 */}
-                        <div style={{ height: 21, paddingTop: 4 }}>
-                          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 0, lineHeight: 0, color: "#9fe870" }}>
-                            <span style={{ fontSize: 11, lineHeight: "16.5px" }}>Votado {qtd}x · </span>
-                            <span style={{ fontSize: 11, lineHeight: "16.5px", color: "#838383" }}>{dateStr}</span>
-                          </p>
-                        </div>
+              {personagensSemana.slice(0, 3).map((p) => (
+                <button
+                  key={p.slug}
+                  onClick={() => setShareCard(p)}
+                  style={{ textAlign: "left", cursor: "pointer", background: "#090909", border: "1px solid #2e2e2e", borderRadius: 16, padding: 17, display: "flex", gap: 16, alignItems: "flex-start", overflow: "hidden", WebkitTapHighlightColor: "transparent" }}
+                >
+                  <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-start" }}>
+                      <div style={{ height: 46, display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-start" }}>
+                        <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, lineHeight: "24px", color: "#fff", whiteSpace: "nowrap", textTransform: "uppercase" }}>{p.nome}</p>
+                        <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "18px", color: "#f9a8d4", whiteSpace: "nowrap" }}>{p.vencedor}</p>
                       </div>
-                      {/* Ver mais */}
-                      <button onClick={() => setSharePersonagem(i)} style={{
-                        display: "inline-flex", alignItems: "center", gap: 4,
-                        background: "#2a2a2a", border: "1px solid #3a3a3a",
-                        borderRadius: 9999, padding: "7px 13px", cursor: "pointer",
-                      }}>
-                        <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "18px", color: "#fff", whiteSpace: "nowrap" }}>Ver mais</span>
-                        <CaretRight size={12} color="#fff" weight="bold" />
-                      </button>
+                      <div style={{ height: 21, paddingTop: 4 }}>
+                        <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 11, lineHeight: "16.5px", color: "#9fe870" }}>Votado {p.votos}x</span>
+                      </div>
                     </div>
-
-                    {/* Right: flex:1 self-stretch → definite height for mascot h:100% */}
-                    <div style={{ flex: 1, minWidth: 1, alignSelf: "stretch", position: "relative", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
-                      <div style={{ position: "relative", height: "100%", aspectRatio: "1920/1920", overflow: "clip", flexShrink: 0 }}>
-                        <Image alt={title} src={mascot} fill sizes="130px" style={{ display: "block", objectFit: "contain", pointerEvents: "none" }} />
-                      </div>
+                    <div style={{
+                      display: "inline-flex", alignItems: "center", gap: 4,
+                      background: "#2a2a2a", border: "1px solid #3a3a3a", borderRadius: 9999, padding: "7px 13px",
+                    }}>
+                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "18px", color: "#fff", whiteSpace: "nowrap" }}>Compartilhar</span>
+                      <CaretRight size={12} color="#fff" weight="bold" />
                     </div>
                   </div>
-                );
-              })}
+                  <div style={{ flex: 1, minWidth: 1, alignSelf: "stretch", position: "relative", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+                    <div style={{ position: "relative", height: "100%", aspectRatio: "1/1", overflow: "clip", flexShrink: 0 }}>
+                      <Image alt={p.nome} src={`/votacao-mascot/${p.slug}.png`} fill sizes="130px" style={{ display: "block", objectFit: "contain", pointerEvents: "none" }} />
+                    </div>
+                  </div>
+                </button>
+              ))}
             </div>
           </div>
         )}
@@ -627,17 +593,55 @@ export function HomeClient({
         />
       )}
 
-      {sharePersonagem !== null && personagens[sharePersonagem] && (
-        <PersonagemShareModal
-          open
-          onClose={() => setSharePersonagem(null)}
-          tipo={personagens[sharePersonagem].tipo}
-          apelido={personagens[sharePersonagem].apelido}
-          data={personagens[sharePersonagem].data}
-          mascot={PERSONAGEM_MASCOTS[personagens[sharePersonagem].tipo] ?? "/ilustracoes/corpo-mole.png"}
-          qtd={maisVotados[sharePersonagem]?.qtd ?? Math.max(5, 8 - sharePersonagem)}
-          grupoNome={grupoNome}
-        />
+      {/* Card premium do personagem (full-screen) */}
+      {shareCard && (
+        <ShareCardModal personagem={shareCard} grupoNome={grupoNome} onClose={() => setShareCard(null)} />
+      )}
+
+      {/* Ver mais — lista completa dos personagens da semana */}
+      {verMaisOpen && (
+        <>
+          <div aria-hidden onClick={() => setVerMaisOpen(false)} style={{
+            position: "fixed", top: 0, bottom: 0, left: "50%", transform: "translateX(-50%)",
+            width: "min(100%, 430px)", zIndex: 50, background: "rgba(0,0,0,0.65)",
+            backdropFilter: "blur(2px)", WebkitBackdropFilter: "blur(2px)",
+          }} />
+          <div role="dialog" aria-modal="true" style={{
+            position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)",
+            width: "min(100%, 430px)", zIndex: 51, maxHeight: "85dvh",
+            background: "#1a1a1a", border: "1px solid #2e2e2e", borderRadius: "32px 32px 0 0",
+            display: "flex", flexDirection: "column",
+            paddingBottom: "max(24px, env(safe-area-inset-bottom, 24px))",
+            animation: "sheet-up 0.32s cubic-bezier(0.32, 0.72, 0, 1)",
+          }}>
+            <div style={{ display: "flex", justifyContent: "center", padding: "12px 0 8px", flexShrink: 0 }}>
+              <div style={{ width: 40, height: 4, background: "#3a3a3a", borderRadius: 9999 }} />
+            </div>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 16px 12px", flexShrink: 0 }}>
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#fff" }}>PERSONAGENS DA SEMANA</span>
+              <button onClick={() => setVerMaisOpen(false)} aria-label="Fechar" style={{ width: 40, height: 40, background: "#000", border: "1px solid #424242", borderRadius: 20, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+                <X size={16} color="#fff" weight="bold" />
+              </button>
+            </div>
+            <div style={{ overflowY: "auto", display: "flex", flexDirection: "column", gap: 8, padding: "0 16px" }}>
+              {personagensSemana.map((p) => (
+                <button key={p.slug} onClick={() => { setVerMaisOpen(false); setShareCard(p); }} style={{
+                  textAlign: "left", cursor: "pointer", display: "flex", alignItems: "center", gap: 12,
+                  background: "#090909", border: "1px solid #2e2e2e", borderRadius: 14, padding: "8px 12px", WebkitTapHighlightColor: "transparent",
+                }}>
+                  <div style={{ width: 48, height: 48, position: "relative", flexShrink: 0 }}>
+                    <Image alt={p.nome} src={`/votacao-mascot/${p.slug}.png`} fill sizes="48px" style={{ objectFit: "contain" }} />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 15, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", textTransform: "uppercase" }}>{p.nome}</p>
+                    <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, color: "#9fe870" }}>{p.vencedor} · {p.votos} votos</p>
+                  </div>
+                  <CaretRight size={16} color="#555" weight="bold" />
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
       )}
 
       {/* ── Menu Hambúrguer (bottom sheet compartilhado) ── */}

@@ -79,6 +79,57 @@ export default async function FeedPage() {
     categoria: "MVP",
   }));
 
+  // ── Personagens da Semana: traits mais votados na rodada atual ──
+  // Filtro de relevância: líder com ≥40% dos votos do personagem E ≥3 votos.
+  const ART_BY_SLUG: Record<string, string> = {
+    matador: "/premio/matador.jpg", categoria: "/premio/categoria.jpg", paredao: "/premio/paredao.jpg",
+    racudo: "/premio/racudo.jpg", xerife: "/premio/xerife.jpg", garcom: "/premio/garcom.jpg",
+    "resenha-forte": "/premio/soresenha.jpg", chorao: "/premio/chorao.jpg", reclamao: "/premio/reclamao.jpg",
+    paneleiro: "/premio/paneleiro.jpg", firuleiro: "/premio/firuleiro.jpg", "corpo-mole": "/premio/pregueiro.jpg",
+    cone: "/premio/cone.jpg", bagre: "/premio/bagredanoite.jpg",
+  };
+  type PersonagemSemana = { slug: string; nome: string; emoji: string | null; art: string; vencedor: string; votos: number };
+  let personagensSemana: PersonagemSemana[] = [];
+  if (rodadaAtiva) {
+    const votosTrait = await prisma.voto.findMany({
+      where: { rodadaId: rodadaAtiva.id, categoria: "TRAIT", traitSlug: { not: null } },
+      select: { traitSlug: true, votadoId: true },
+    });
+    const perTrait = new Map<string, { total: number; players: Map<string, number> }>();
+    for (const v of votosTrait) {
+      const slug = v.traitSlug as string;
+      if (!perTrait.has(slug)) perTrait.set(slug, { total: 0, players: new Map() });
+      const e = perTrait.get(slug)!;
+      e.total++;
+      e.players.set(v.votadoId, (e.players.get(v.votadoId) ?? 0) + 1);
+    }
+    const raw: { slug: string; vencedorId: string; votos: number }[] = [];
+    for (const [slug, e] of perTrait) {
+      let topId: string | null = null, topN = 0;
+      for (const [pid, n] of e.players) if (n > topN) { topN = n; topId = pid; }
+      if (topId && topN >= 3 && topN / e.total >= 0.4 && ART_BY_SLUG[slug]) {
+        raw.push({ slug, vencedorId: topId, votos: topN });
+      }
+    }
+    raw.sort((a, b) => b.votos - a.votos);
+    const vIds = [...new Set(raw.map(r => r.vencedorId))];
+    const nmeMap = vIds.length
+      ? Object.fromEntries((await prisma.jogador.findMany({ where: { id: { in: vIds } }, select: { id: true, apelido: true } })).map(j => [j.id, j.apelido]))
+      : {};
+    const tSlugs = raw.map(r => r.slug);
+    const tMeta = tSlugs.length
+      ? Object.fromEntries((await prisma.trait.findMany({ where: { slug: { in: tSlugs } }, select: { slug: true, nome: true, emoji: true } })).map(t => [t.slug, t]))
+      : {};
+    personagensSemana = raw.map(r => ({
+      slug: r.slug,
+      nome: tMeta[r.slug]?.nome ?? r.slug,
+      emoji: tMeta[r.slug]?.emoji ?? null,
+      art: ART_BY_SLUG[r.slug],
+      vencedor: nmeMap[r.vencedorId] ?? "?",
+      votos: r.votos,
+    }));
+  }
+
   const PERSONAGEM_TITLES: Record<string, string> = {
     MVP:    "MATADOR",
     BAGRE:  "BAGRE DA NOITE",
@@ -186,6 +237,7 @@ export default async function FeedPage() {
       top5Rodada={top5Rodada}
       maisVotados={maisVotados}
       personagensPorRodada={personagensPorRodada}
+      personagensSemana={personagensSemana}
       conquistas={conquistas}
       datePills={datePills}
       grupoNome={grupoNome}
