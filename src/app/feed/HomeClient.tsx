@@ -72,6 +72,7 @@ interface Props {
   maisVotados: MaisVotado[];
   personagensPorRodada: Personagem[][];
   personagensSemana: PersonagemSemana[];
+  selecao: (PersonagemSemana | null)[];
   conquistas: Conquista[];
   datePills: string[];
   grupoNome: string;
@@ -83,7 +84,7 @@ const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
 
 export function HomeClient({
   rodadaId, dataRodada, jaVotou, top5Rodada,
-  maisVotados, personagensPorRodada, personagensSemana, conquistas, datePills, grupoNome,
+  maisVotados, personagensPorRodada, personagensSemana, selecao, conquistas, datePills, grupoNome,
   proximoBaba, criarRodadaAction,
 }: Props) {
   const [bsOpen, setBsOpen] = useState(false);
@@ -200,7 +201,7 @@ export function HomeClient({
               {/* CF row */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 16, paddingBottom: 16 }}>
                 {jaVotou
-                  ? <PlayerNamed name={top5Rodada[0] ?? "?"} tshirt={TSHIRT_FILLED} />
+                  ? <PlayerNamed p={selecao[0]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
                   : <PlayerSlot tshirt={TSHIRT_OUTLINE} />}
               </div>
 
@@ -208,9 +209,9 @@ export function HomeClient({
               <div style={{ display: "flex", gap: 62, alignItems: "center", justifyContent: "center", width: "100%" }}>
                 {jaVotou ? (
                   <>
-                    <PlayerNamed name={top5Rodada[1] ?? "?"} tshirt={TSHIRT_FILLED} />
-                    <PlayerNamed name={top5Rodada[2] ?? "?"} tshirt={TSHIRT_FILLED} />
-                    <PlayerNamed name={top5Rodada[3] ?? "?"} tshirt={TSHIRT_FILLED} />
+                    <PlayerNamed p={selecao[1]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
+                    <PlayerNamed p={selecao[2]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
+                    <PlayerNamed p={selecao[3]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
                   </>
                 ) : (
                   <>
@@ -224,7 +225,7 @@ export function HomeClient({
               {/* GK row */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 16, paddingBottom: 16 }}>
                 {jaVotou
-                  ? <PlayerNamed name={top5Rodada[4] ?? "?"} tshirt={TSHIRT_GK_FILL} />
+                  ? <PlayerNamed p={selecao[4]} tshirt={TSHIRT_GK_FILL} onShare={setShareCard} />
                   : <PlayerSlot tshirt={TSHIRT_GK_OUT} />}
               </div>
             </div>
@@ -671,9 +672,19 @@ function PlayerSlot({ tshirt }: { tshirt: string }) {
 }
 
 /* Slot com nome do jogador (estado pós-votação) */
-function PlayerNamed({ name, tshirt }: { name: string; tshirt: string }) {
+function PlayerNamed({ p, tshirt, onShare }: { p: PersonagemSemana | null; tshirt: string; onShare: (p: PersonagemSemana) => void }) {
+  const name = p?.vencedor ?? "?";
+  const clickable = !!p;
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1 }}>
+    <button
+      onClick={() => p && onShare(p)}
+      disabled={!clickable}
+      style={{
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1,
+        background: "none", border: "none", padding: 0, cursor: clickable ? "pointer" : "default",
+        WebkitTapHighlightColor: "transparent",
+      }}
+    >
       <div style={{
         background: "#1e1e1e", border: "1px solid #555", borderRadius: 22,
         width: 48, height: 48,
@@ -686,7 +697,7 @@ function PlayerNamed({ name, tshirt }: { name: string; tshirt: string }) {
         <img alt="" src={tshirt} style={{ width: 24, height: 24 }} />
       </div>
       <p style={{ margin: 0, marginTop: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12, lineHeight: "normal", color: "#fff", textAlign: "center", whiteSpace: "nowrap", maxWidth: 72, overflow: "hidden", textOverflow: "ellipsis" }}>{name}</p>
-    </div>
+    </button>
   );
 }
 
