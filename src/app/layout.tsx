@@ -1,6 +1,20 @@
 import type { Metadata, Viewport } from "next";
+import { Inter, Barlow_Condensed } from "next/font/google";
 import "./globals.css";
 import { PushInit } from "@/components/PushInit";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const barlowCondensed = Barlow_Condensed({
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800", "900"],
+  variable: "--font-barlow",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Canelada — O baba virou resenha.",
@@ -17,7 +31,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className={`${inter.variable} ${barlowCondensed.variable}`}>
       <body>
         <div
           id="app-shell"
