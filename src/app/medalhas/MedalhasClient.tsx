@@ -10,7 +10,7 @@ import { Lock, CheckCircle, MedalMilitary, List, Bell, X, User, UsersThree, Sign
 const BADGE_CATALOG = [
   {
     id: "presenca",
-    title: "PRESENÇA🏅",
+    title: "PRESENÇA",
     badges: [
       { slug: "primeiro-baba",  nome: "Primeira Pelada", descricao: "Participou da primeira rodada registrada no Canelada.", svg: "/conquistas/primeiro-baba.svg", tagline: "PRIMEIRA DE MUITAS!", rara: false },
       { slug: "veterano",       nome: "Veterano",         descricao: "Participou de 10 rodadas.",                                                                    svg: "/conquistas/veterano.svg",       tagline: "10 PARTIDAS, QUE RAÇA!",       rara: false },
@@ -23,7 +23,7 @@ const BADGE_CATALOG = [
   },
   {
     id: "performance",
-    title: "PERFORMANCE ⭐",
+    title: "PERFORMANCE",
     badges: [
       { slug: "mvp",              nome: "MVP",              descricao: "Recebeu MVP pela primeira vez.",                 svg: "/conquistas/mvp.svg",              tagline: "PRIMEIRO MVP!",              rara: false },
       { slug: "rei-absoluto",     nome: "Rei Absoluto",     descricao: "Recebeu 5 MVPs acumulados.",                    svg: "/conquistas/rei-absoluto.svg",     tagline: "5 MVPs, É REI!",             rara: false },
@@ -34,7 +34,7 @@ const BADGE_CATALOG = [
   },
   {
     id: "sequencias",
-    title: "SEQUÊNCIAS 🔥",
+    title: "SEQUÊNCIAS",
     badges: [
       { slug: "em-chamas",       nome: "Em Chamas",       descricao: "Recebeu destaque positivo em 3 rodadas consecutivas.",                                svg: "/conquistas/em-chamas.svg",       tagline: "3 DESTAQUES SEGUIDOS!",  rara: false },
       { slug: "imparavel",       nome: "Imparável",        descricao: "Recebeu destaque positivo em 5 rodadas consecutivas.",                                svg: "/conquistas/imparavel.svg",       tagline: "5 SEGUIDOS, IMPARÁVEL!", rara: true  },
@@ -45,7 +45,7 @@ const BADGE_CATALOG = [
   },
   {
     id: "reconhecimento",
-    title: "RECONHECIMENTO 💪",
+    title: "RECONHECIMENTO",
     badges: [
       { slug: "operario",          nome: "Operário",          descricao: "Recebeu a trait Raçudo 5 vezes.",                    svg: "/conquistas/operario.svg",          tagline: "RAÇUDO ATÉ A ALMA!",    rara: false },
       { slug: "racudo-do-mes",     nome: "Raçudo do Mês",     descricao: "Recebeu mais votos para Raçudo durante um mês.",     svg: "/conquistas/racudo-do-mes.svg",     tagline: "RAÇUDO DO MÊS!",        rara: false },
@@ -55,7 +55,7 @@ const BADGE_CATALOG = [
   },
   {
     id: "colecao",
-    title: "COLEÇÃO🎖️",
+    title: "COLEÇÃO",
     badges: [
       { slug: "colecionador",      nome: "Colecionador",      descricao: "Desbloqueou 8 badges.",              svg: "/conquistas/colecionador.svg",      tagline: "8 BADGES DESBLOQUEADAS!", rara: false },
       { slug: "mestre-da-resenha", nome: "Mestre da Resenha", descricao: "Desbloqueou 16 badges.",             svg: "/conquistas/mestre-da-resenha.svg", tagline: "16 BADGES, MESTRE!",      rara: true  },
