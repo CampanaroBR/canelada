@@ -12,54 +12,54 @@ const BADGE_CATALOG = [
     id: "presenca",
     title: "PRESENÇA",
     badges: [
-      { slug: "primeiro-baba",  nome: "Primeira Pelada", descricao: "Participou da primeira rodada registrada no Canelada.", svg: "/conquistas/primeiro-baba.svg", tagline: "PRIMEIRA DE MUITAS!", rara: false },
-      { slug: "veterano",       nome: "Veterano",         descricao: "Participou de 10 rodadas.",                                                                    svg: "/conquistas/veterano.svg",       tagline: "10 PARTIDAS, QUE RAÇA!",       rara: false },
-      { slug: "casca-grossa",   nome: "Casca Grossa",     descricao: "Participou de 25 rodadas.",                                                                    svg: "/conquistas/casca-grossa.svg",   tagline: "25 PARTIDAS CONCLUÍDAS!",      rara: false },
-      { slug: "mais-presente",  nome: "Mais Presente",    descricao: "Participou de 100% das rodadas de um mês.",                                                    svg: "/conquistas/mais-presente.svg",  tagline: "100% DE PRESENÇA!",            rara: false },
-      { slug: "alma-do-grupo",  nome: "Alma do Grupo",    descricao: "Participou de ao menos 80% das rodadas em 3 meses consecutivos.",                              svg: "/conquistas/alma-do-grupo.svg",  tagline: "PILAR DO GRUPO!",              rara: false },
-      { slug: "hall-da-fama",   nome: "Hall da Fama",     descricao: "Participou de 50 rodadas.",                                                                    svg: "/conquistas/hall-da-fama.svg",   tagline: "50 PARTIDAS, LENDÁRIO!",       rara: true  },
-      { slug: "lenda-do-baba",  nome: "Lenda do Baba",    descricao: "Participou de 100 rodadas e tem pelo menos 5 MVPs.",                                           svg: "/conquistas/lenda-do-baba.svg",  tagline: "O LENDÃO DO BABA!",            rara: true  },
+      { slug: "primeiro-baba",  nome: "Primeira Pelada", descricao: "Participou da primeira rodada registrada no Canelada.", svg: "/conquistas/primeiro-baba.png", tagline: "PRIMEIRA DE MUITAS!", rara: false },
+      { slug: "veterano",       nome: "Veterano",         descricao: "Participou de 10 rodadas.",                                                                    svg: "/conquistas/veterano.png",       tagline: "10 PARTIDAS, QUE RAÇA!",       rara: false },
+      { slug: "casca-grossa",   nome: "Casca Grossa",     descricao: "Participou de 25 rodadas.",                                                                    svg: "/conquistas/casca-grossa.png",   tagline: "25 PARTIDAS CONCLUÍDAS!",      rara: false },
+      { slug: "mais-presente",  nome: "Mais Presente",    descricao: "Participou de 100% das rodadas de um mês.",                                                    svg: "/conquistas/mais-presente.png",  tagline: "100% DE PRESENÇA!",            rara: false },
+      { slug: "alma-do-grupo",  nome: "Alma do Grupo",    descricao: "Participou de ao menos 80% das rodadas em 3 meses consecutivos.",                              svg: "/conquistas/alma-do-grupo.png",  tagline: "PILAR DO GRUPO!",              rara: false },
+      { slug: "hall-da-fama",   nome: "Hall da Fama",     descricao: "Participou de 50 rodadas.",                                                                    svg: "/conquistas/hall-da-fama.png",   tagline: "50 PARTIDAS, LENDÁRIO!",       rara: true  },
+      { slug: "lenda-do-baba",  nome: "Lenda do Baba",    descricao: "Participou de 100 rodadas e tem pelo menos 5 MVPs.",                                           svg: "/conquistas/lenda-do-baba.png",  tagline: "O LENDÃO DO BABA!",            rara: true  },
     ],
   },
   {
     id: "performance",
     title: "PERFORMANCE",
     badges: [
-      { slug: "mvp",              nome: "MVP",              descricao: "Recebeu MVP pela primeira vez.",                 svg: "/conquistas/mvp.svg",              tagline: "PRIMEIRO MVP!",              rara: false },
-      { slug: "rei-absoluto",     nome: "Rei Absoluto",     descricao: "Recebeu 5 MVPs acumulados.",                    svg: "/conquistas/rei-absoluto.svg",     tagline: "5 MVPs, É REI!",             rara: false },
-      { slug: "craque-da-galera", nome: "Craque da Galera", descricao: "Recebeu 10 MVPs acumulados.",                   svg: "/conquistas/craque-da-galera.svg", tagline: "10 MVPs E CRESCENDO!",       rara: true  },
-      { slug: "rei-do-mes",       nome: "Rei do Mês",       descricao: "Jogador com mais MVPs durante um mês.",         svg: "/conquistas/rei-do-mes.svg",       tagline: "MELHOR DO MÊS!",             rara: false },
-      { slug: "craque-historico", nome: "Craque Histórico", descricao: "Recebeu 20 MVPs acumulados.",                   svg: "/conquistas/craque-historico.svg", tagline: "20 MVPs, CRAQUE HISTÓRICO!", rara: true  },
+      { slug: "mvp",              nome: "MVP",              descricao: "Recebeu MVP pela primeira vez.",                 svg: "/conquistas/mvp.png",              tagline: "PRIMEIRO MVP!",              rara: false },
+      { slug: "rei-absoluto",     nome: "Rei Absoluto",     descricao: "Recebeu 5 MVPs acumulados.",                    svg: "/conquistas/rei-absoluto.png",     tagline: "5 MVPs, É REI!",             rara: false },
+      { slug: "craque-da-galera", nome: "Craque da Galera", descricao: "Recebeu 10 MVPs acumulados.",                   svg: "/conquistas/craque-da-galera.png", tagline: "10 MVPs E CRESCENDO!",       rara: true  },
+      { slug: "rei-do-mes",       nome: "Rei do Mês",       descricao: "Jogador com mais MVPs durante um mês.",         svg: "/conquistas/rei-do-mes.png",       tagline: "MELHOR DO MÊS!",             rara: false },
+      { slug: "craque-historico", nome: "Craque Histórico", descricao: "Recebeu 20 MVPs acumulados.",                   svg: "/conquistas/craque-historico.png", tagline: "20 MVPs, CRAQUE HISTÓRICO!", rara: true  },
     ],
   },
   {
     id: "sequencias",
     title: "SEQUÊNCIAS",
     badges: [
-      { slug: "em-chamas",       nome: "Em Chamas",       descricao: "Recebeu destaque positivo em 3 rodadas consecutivas.",                                svg: "/conquistas/em-chamas.svg",       tagline: "3 DESTAQUES SEGUIDOS!",  rara: false },
-      { slug: "imparavel",       nome: "Imparável",        descricao: "Recebeu destaque positivo em 5 rodadas consecutivas.",                                svg: "/conquistas/imparavel.svg",       tagline: "5 SEGUIDOS, IMPARÁVEL!", rara: true  },
-      { slug: "invicto",         nome: "Invicto",          descricao: "Sem traits negativas por 5 rodadas consecutivas.",                                    svg: "/conquistas/invicto.svg",         tagline: "LIMPO POR 5 RODADAS!",   rara: true  },
-      { slug: "virada-de-chave", nome: "Virada de Chave",  descricao: "Recebeu trait negativa e conquistou destaque positivo na rodada seguinte.",           svg: "/conquistas/virada-de-chave.svg", tagline: "QUE REVIRAVOLTA!",       rara: false },
-      { slug: "consistente",     nome: "Consistente",      descricao: "Participou de 8 rodadas consecutivas.",                                              svg: "/conquistas/consistente.svg",     tagline: "8 RODADAS SEGUIDAS!",    rara: false },
+      { slug: "em-chamas",       nome: "Em Chamas",       descricao: "Recebeu destaque positivo em 3 rodadas consecutivas.",                                svg: "/conquistas/em-chamas.png",       tagline: "3 DESTAQUES SEGUIDOS!",  rara: false },
+      { slug: "imparavel",       nome: "Imparável",        descricao: "Recebeu destaque positivo em 5 rodadas consecutivas.",                                svg: "/conquistas/imparavel.png",       tagline: "5 SEGUIDOS, IMPARÁVEL!", rara: true  },
+      { slug: "invicto",         nome: "Invicto",          descricao: "Sem traits negativas por 5 rodadas consecutivas.",                                    svg: "/conquistas/invicto.png",         tagline: "LIMPO POR 5 RODADAS!",   rara: true  },
+      { slug: "virada-de-chave", nome: "Virada de Chave",  descricao: "Recebeu trait negativa e conquistou destaque positivo na rodada seguinte.",           svg: "/conquistas/virada-de-chave.png", tagline: "QUE REVIRAVOLTA!",       rara: false },
+      { slug: "consistente",     nome: "Consistente",      descricao: "Participou de 8 rodadas consecutivas.",                                              svg: "/conquistas/consistente.png",     tagline: "8 RODADAS SEGUIDAS!",    rara: false },
     ],
   },
   {
     id: "reconhecimento",
     title: "RECONHECIMENTO",
     badges: [
-      { slug: "operario",          nome: "Operário",          descricao: "Recebeu a trait Raçudo 5 vezes.",                    svg: "/conquistas/operario.svg",          tagline: "RAÇUDO ATÉ A ALMA!",    rara: false },
-      { slug: "racudo-do-mes",     nome: "Raçudo do Mês",     descricao: "Recebeu mais votos para Raçudo durante um mês.",     svg: "/conquistas/racudo-do-mes.svg",     tagline: "RAÇUDO DO MÊS!",        rara: false },
-      { slug: "resenha-forte",     nome: "Resenha Forte",     descricao: "Recebeu 20 traits sociais acumuladas.",              svg: "/conquistas/resenha-forte.svg",     tagline: "20 DESTAQUES SOCIAIS!", rara: false },
-      { slug: "querido-da-galera", nome: "Querido da Galera", descricao: "Recebeu 50 destaques positivos acumulados.",         svg: "/conquistas/querido-da-galera.svg", tagline: "50 DESTAQUES, É AMADO!", rara: true  },
+      { slug: "operario",          nome: "Operário",          descricao: "Recebeu a trait Raçudo 5 vezes.",                    svg: "/conquistas/operario.png",          tagline: "RAÇUDO ATÉ A ALMA!",    rara: false },
+      { slug: "racudo-do-mes",     nome: "Raçudo do Mês",     descricao: "Recebeu mais votos para Raçudo durante um mês.",     svg: "/conquistas/racudo-do-mes.png",     tagline: "RAÇUDO DO MÊS!",        rara: false },
+      { slug: "resenha-forte",     nome: "Resenha Forte",     descricao: "Recebeu 20 traits sociais acumuladas.",              svg: "/conquistas/resenha-forte.png",     tagline: "20 DESTAQUES SOCIAIS!", rara: false },
+      { slug: "querido-da-galera", nome: "Querido da Galera", descricao: "Recebeu 50 destaques positivos acumulados.",         svg: "/conquistas/querido-da-galera.png", tagline: "50 DESTAQUES, É AMADO!", rara: true  },
     ],
   },
   {
     id: "colecao",
     title: "COLEÇÃO",
     badges: [
-      { slug: "colecionador",      nome: "Colecionador",      descricao: "Desbloqueou 8 badges.",              svg: "/conquistas/colecionador.svg",      tagline: "8 BADGES DESBLOQUEADAS!", rara: false },
-      { slug: "mestre-da-resenha", nome: "Mestre da Resenha", descricao: "Desbloqueou 16 badges.",             svg: "/conquistas/mestre-da-resenha.svg", tagline: "16 BADGES, MESTRE!",      rara: true  },
-      { slug: "completo",          nome: "Completo!",          descricao: "Desbloqueou todas as badges do jogo.", svg: "/conquistas/completo.svg",         tagline: "TODAS AS BADGES! INCRÍVEL!", rara: true },
+      { slug: "colecionador",      nome: "Colecionador",      descricao: "Desbloqueou 8 badges.",              svg: "/conquistas/colecionador.png",      tagline: "8 BADGES DESBLOQUEADAS!", rara: false },
+      { slug: "mestre-da-resenha", nome: "Mestre da Resenha", descricao: "Desbloqueou 16 badges.",             svg: "/conquistas/mestre-da-resenha.png", tagline: "16 BADGES, MESTRE!",      rara: true  },
+      { slug: "completo",          nome: "Completo!",          descricao: "Desbloqueou todas as badges do jogo.", svg: "/conquistas/completo.png",         tagline: "TODAS AS BADGES! INCRÍVEL!", rara: true },
     ],
   },
 ] as const;
@@ -194,7 +194,7 @@ export function MedalhasClient({ unlockedSlugs, lastConquista }: Props) {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   alt={lastConquista.nome}
-                  src={BADGE_SVG[lastConquista.slug] ?? `/conquistas/${lastConquista.slug}.svg`}
+                  src={BADGE_SVG[lastConquista.slug] ?? `/conquistas/${lastConquista.slug}.png`}
                   style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }}
                 />
               </div>

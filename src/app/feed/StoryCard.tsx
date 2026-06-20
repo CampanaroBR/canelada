@@ -13,7 +13,7 @@ const TIPO_CONFIG = {
     color: "var(--color-accent)",
     colorRaw: "rgba(159,232,112,",
     accentBar: "var(--color-accent)",
-    illustration: "/traits/Craque.svg",
+    illustration: "/traits/Craque.png",
   },
   BAGRE: {
     label: "BAGRE",
@@ -21,7 +21,7 @@ const TIPO_CONFIG = {
     color: "var(--color-bagre)",
     colorRaw: "rgba(239,68,68,",
     accentBar: "var(--color-bagre)",
-    illustration: "/traits/Bagre.svg",
+    illustration: "/traits/Bagre.png",
   },
   TRAIT_CONQUISTADA: {
     label: "CONQUISTA",
@@ -29,7 +29,7 @@ const TIPO_CONFIG = {
     color: "var(--color-warning)",
     colorRaw: "rgba(245,158,11,",
     accentBar: "var(--color-warning)",
-    illustration: "/traits/Firuleiro.svg",
+    illustration: "/traits/Firuleiro.png",
   },
   SELECAO: {
     label: "SELEÇÃO",
@@ -37,7 +37,7 @@ const TIPO_CONFIG = {
     color: "var(--color-success)",
     colorRaw: "rgba(34,197,94,",
     accentBar: "var(--color-success)",
-    illustration: "/traits/Xerife.svg",
+    illustration: "/traits/Xerife.png",
   },
   SEQUENCIA: {
     label: "SEQUÊNCIA",
@@ -45,7 +45,7 @@ const TIPO_CONFIG = {
     color: "var(--color-accent)",
     colorRaw: "rgba(159,232,112,",
     accentBar: "var(--color-accent)",
-    illustration: "/traits/Racudo.svg",
+    illustration: "/traits/Racudo.png",
   },
 } as const;
 

@@ -15,25 +15,25 @@ import { MenuSheet } from "@/components/MenuSheet";
 
 // Mapeia achievement slug → arquivo SVG exato no git (case-sensitive no Vercel/Linux)
 const TRAIT_BADGE: Record<string, string> = {
-  "alma-do-grupo":    "/conquistas/alma-do-grupo.svg",
-  "completo":         "/conquistas/completo.svg",
-  "consistente":      "/conquistas/consistente.svg",
-  "em-chamas":        "/conquistas/em-chamas.svg",
-  "invicto":          "/conquistas/Invicto.svg",
-  "irregular":        "/conquistas/Irregular.svg",
-  "jogador-invisivel":"/conquistas/jogador-invisivel.svg",
-  "lanterna":         "/conquistas/Lanterna.svg",
-  "lenda":            "/conquistas/Lenda.svg",
-  "ma-fase":          "/conquistas/ma-fase.svg",
-  "mais-presente":    "/conquistas/mais-presente.svg",
-  "primeira-vitoria": "/conquistas/primeira-vitoria.svg",
-  "racudo-do-mes":    "/conquistas/racudo-do-mes.svg",
-  "rei-absoluto":     "/conquistas/rei-absoluto.svg",
-  "rei-do-mes":       "/conquistas/rei-do-mes.svg",
-  "so-perde":         "/conquistas/so-perde.svg",
-  "trofeu-bagre":     "/conquistas/trofeu-bagre.svg",
-  "veterano":         "/conquistas/veterano.svg",
-  "virada-de-chave":  "/conquistas/virada-de-chave.svg",
+  "alma-do-grupo":    "/conquistas/alma-do-grupo.png",
+  "completo":         "/conquistas/completo.png",
+  "consistente":      "/conquistas/consistente.png",
+  "em-chamas":        "/conquistas/em-chamas.png",
+  "invicto":          "/conquistas/Invicto.png",
+  "irregular":        "/conquistas/Irregular.png",
+  "jogador-invisivel":"/conquistas/jogador-invisivel.png",
+  "lanterna":         "/conquistas/Lanterna.png",
+  "lenda":            "/conquistas/Lenda.png",
+  "ma-fase":          "/conquistas/ma-fase.png",
+  "mais-presente":    "/conquistas/mais-presente.png",
+  "primeira-vitoria": "/conquistas/primeira-vitoria.png",
+  "racudo-do-mes":    "/conquistas/racudo-do-mes.png",
+  "rei-absoluto":     "/conquistas/rei-absoluto.png",
+  "rei-do-mes":       "/conquistas/rei-do-mes.png",
+  "so-perde":         "/conquistas/so-perde.png",
+  "trofeu-bagre":     "/conquistas/trofeu-bagre.png",
+  "veterano":         "/conquistas/veterano.png",
+  "virada-de-chave":  "/conquistas/virada-de-chave.png",
 };
 
 const CAMPO           = "/campo.png";
@@ -569,7 +569,7 @@ export function HomeClient({
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             alt={c.traitNome}
-                            src={TRAIT_BADGE[c.traitSlug] ?? `/conquistas/${c.traitSlug}.svg`}
+                            src={TRAIT_BADGE[c.traitSlug] ?? `/conquistas/${c.traitSlug}.png`}
                             style={{ position: "absolute", display: "block", inset: 0, width: "100%", height: "100%", maxWidth: "none", objectFit: "contain" }}
                           />
                         </div>
