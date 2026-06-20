@@ -1,9 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-
-const imgX     = "http://localhost:3845/assets/c6048d3d966a755882e18ffea09b55b0e4f3cf24.svg";
-const imgShare = "http://localhost:3845/assets/72c12c8d6913f07e65f6886afcdbe05e62f2eb6d.svg";
+import { X, ShareNetwork } from "@phosphor-icons/react";
 
 interface Props {
   title: string;
@@ -34,7 +32,7 @@ export function PremioScreen({
   }
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "100dvh", background: "#0a0e0e", overflow: "hidden" }}>
+    <div style={{ position: "fixed", inset: 0, zIndex: 60, background: "#0a0e0e", overflow: "hidden" }}>
 
       {/* Background gradient image */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -70,9 +68,9 @@ export function PremioScreen({
           display: "flex", alignItems: "center", justifyContent: "center",
           cursor: "pointer",
         }}
+        aria-label="Fechar"
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt="Fechar" src={imgX} style={{ width: 16, height: 16 }} />
+        <X size={16} color="#fff" weight="bold" />
       </button>
 
       {/* Title */}
@@ -103,27 +101,31 @@ export function PremioScreen({
         </p>
       </div>
 
-      {/* Share button */}
-      <div style={{
-        position: "absolute",
-        top: 648,
-        left: "50%",
-        transform: "translateX(-50%)",
-        background: "#171717",
-        borderRadius: 22,
-        height: 64,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "16px 24px",
-        boxShadow: "4px 8px 8px 4px rgba(0,0,0,0.08)",
-      }}>
-        <button onClick={handleShare} style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", cursor: "pointer" }}>
-          <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 18, lineHeight: "24px", color: "#9fe870" }}>Compartilhar</span>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt="" src={imgShare} style={{ width: 20, height: 20 }} />
-        </button>
-      </div>
+      {/* Share button — padrão do app (secondary) */}
+      <button
+        onClick={handleShare}
+        style={{
+          position: "absolute",
+          top: 648,
+          left: "50%",
+          transform: "translateX(-50%)",
+          background: "#2a2a2a",
+          border: "1px solid #3a3a3a",
+          borderRadius: 16,
+          height: 54,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 8,
+          padding: "0 24px",
+          cursor: "pointer",
+          boxShadow: "0px 4px 9.8px 2px rgba(0,0,0,0.25)",
+          WebkitTapHighlightColor: "transparent",
+        }}
+      >
+        <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#9fe870" }}>Compartilhar</span>
+        <ShareNetwork size={20} color="#9fe870" weight="bold" />
+      </button>
 
       {/* Footer */}
       <div style={{
