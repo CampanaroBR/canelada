@@ -252,9 +252,9 @@ export default async function FeedPage() {
     const inicio = new Date(rodadaAtiva.data); inicio.setHours(22, 30, 0, 0);
     const fim = new Date(rodadaAtiva.data); fim.setDate(fim.getDate() + 1); fim.setHours(15, 0, 0, 0);
     const agora = new Date();
-    if (agora < inicio) return { aberta: false, texto: "Votação abre às 22:30" };
-    if (agora >= fim)   return { aberta: false, texto: "Votação encerrada" };
-    return { aberta: true, texto: "Votação aberta até às 15h" };
+    if (agora < inicio) return { fase: "antes" as const, aberta: false, texto: "Votação abre às 22:30" };
+    if (agora >= fim)   return { fase: "encerrada" as const, aberta: false, texto: "Votação encerrada" };
+    return { fase: "aberta" as const, aberta: true, texto: "Votação aberta até às 15h" };
   })() : null;
 
   const datePills = grupos.map(g =>

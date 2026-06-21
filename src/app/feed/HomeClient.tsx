@@ -70,7 +70,7 @@ interface Props {
   top5Rodada: string[];
   dataRodada: string | null;
   horarioJogo: string;
-  votacao: { aberta: boolean; texto: string } | null;
+  votacao: { fase: "antes" | "aberta" | "encerrada"; aberta: boolean; texto: string } | null;
   jaVotou: boolean;
   maisVotados: MaisVotado[];
   personagensPorRodada: Personagem[][];
@@ -99,6 +99,9 @@ export function HomeClient({
 
   // Campinho: conjunto ativo conforme a aba
   const campoSel = campoTab === "melhores" ? selecao : selecaoPiores;
+  // Janela de votação: resultados só após encerrar (15h); botão só ativo na janela aberta
+  const mostrarResultados = votacao?.fase === "encerrada";
+  const podeVotar = votacao?.fase === "aberta" && !jaVotou;
   const [menuOpen, setMenuOpen] = useState(false);
 
 
@@ -238,14 +241,14 @@ export function HomeClient({
             <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 16, alignItems: "center", width: "100%" }}>
               {/* CF row */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 16, paddingBottom: 16 }}>
-                {jaVotou
+                {mostrarResultados
                   ? <PlayerNamed p={campoSel[0]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
                   : <PlayerSlot tshirt={TSHIRT_OUTLINE} />}
               </div>
 
               {/* Meio campo: 3 slots */}
               <div style={{ display: "flex", gap: 62, alignItems: "center", justifyContent: "center", width: "100%" }}>
-                {jaVotou ? (
+                {mostrarResultados ? (
                   <>
                     <PlayerNamed p={campoSel[1]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
                     <PlayerNamed p={campoSel[2]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
@@ -262,7 +265,7 @@ export function HomeClient({
 
               {/* GK row (só faz sentido GK nos "melhores" = Paredão) */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 16, paddingBottom: 16 }}>
-                {jaVotou
+                {mostrarResultados
                   ? <PlayerNamed p={campoSel[4]} tshirt={campoTab === "melhores" ? TSHIRT_GK_FILL : TSHIRT_FILLED} onShare={setShareCard} />
                   : <PlayerSlot tshirt={TSHIRT_GK_OUT} />}
               </div>
@@ -270,8 +273,18 @@ export function HomeClient({
 
             {/* CTA */}
             <div style={{ position: "relative", width: "100%" }}>
-              {jaVotou ? (
-                /* Banner frosted */
+              {!rodadaId ? (
+                /* Criar rodada */
+                <form action={criarRodadaAction}>
+                  <button type="submit" style={{
+                    width: "100%", background: "#0d0d0d", border: "1px solid #090909",
+                    borderRadius: 14, padding: "13px 16px",
+                    fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#9fe870",
+                    cursor: "pointer", letterSpacing: "-0.8px",
+                  }}>⚽ BABA ROLOU HOJE</button>
+                </form>
+              ) : mostrarResultados ? (
+                /* Encerrada — resultados na seleção acima */
                 <div style={{
                   backdropFilter: "blur(4.9px)", WebkitBackdropFilter: "blur(4.9px)",
                   background: "rgba(13,13,13,0.25)",
@@ -279,12 +292,25 @@ export function HomeClient({
                   display: "flex", alignItems: "center", gap: 8,
                 }}>
                   <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 16, lineHeight: "20px", color: "#fff", letterSpacing: "-0.5px", flex: 1 }}>
-                    Você já votou nesta rodada!
+                    Votação encerrada — confira a seleção!
                   </span>
                   <img src="/check-circle-green.svg" alt="" style={{ width: 24, height: 24, flexShrink: 0 }} />
                 </div>
-              ) : rodadaId ? (
-                /* Votar agora */
+              ) : jaVotou ? (
+                /* Já votou (aguardando encerrar) */
+                <div style={{
+                  backdropFilter: "blur(4.9px)", WebkitBackdropFilter: "blur(4.9px)",
+                  background: "rgba(13,13,13,0.25)",
+                  borderRadius: 10, padding: "12px 16px",
+                  display: "flex", alignItems: "center", gap: 8,
+                }}>
+                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 16, lineHeight: "20px", color: "#fff", letterSpacing: "-0.5px", flex: 1 }}>
+                    Você já votou! Resultado às 15h.
+                  </span>
+                  <img src="/check-circle-green.svg" alt="" style={{ width: 24, height: 24, flexShrink: 0 }} />
+                </div>
+              ) : podeVotar ? (
+                /* Votar agora (janela aberta) */
                 <Link href="/votacao" style={{
                   display: "flex", textDecoration: "none",
                   background: "#0d0d0d",
@@ -304,15 +330,24 @@ export function HomeClient({
                   </div>
                 </Link>
               ) : (
-                /* Criar rodada */
-                <form action={criarRodadaAction}>
-                  <button type="submit" style={{
-                    width: "100%", background: "#0d0d0d", border: "1px solid #090909",
-                    borderRadius: 14, padding: "13px 16px",
-                    fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#9fe870",
-                    cursor: "pointer", letterSpacing: "-0.8px",
-                  }}>⚽ BABA ROLOU HOJE</button>
-                </form>
+                /* Antes de abrir (22:30) — botão desativado */
+                <div aria-disabled style={{
+                  display: "flex",
+                  background: "#0d0d0d",
+                  border: "1px solid #26262b",
+                  borderRadius: 14, padding: "8px 16px",
+                  overflow: "clip", opacity: 0.85, cursor: "not-allowed",
+                }}>
+                  <div style={{ display: "flex", gap: 8, height: 52, alignItems: "center", paddingTop: 8, paddingBottom: 8, borderRadius: 12, width: "100%" }}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1, minWidth: 0 }}>
+                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#7a7a7a", letterSpacing: "-0.4px" }}>Votar agora!</span>
+                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#7a7a7a" }}>{votacao?.texto ?? "Votação abre às 22:30"}</span>
+                    </div>
+                    <div style={{ background: "#26262b", borderRadius: 12, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 4, overflow: "clip" }}>
+                      <CaretRight size={20} weight="bold" color="#7a7a7a" />
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
           </div>
