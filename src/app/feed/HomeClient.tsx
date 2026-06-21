@@ -50,7 +50,7 @@ const TRAIT_BADGE: Record<string, string> = {
   "virada-de-chave":  "/conquistas/virada-de-chave.png",
 };
 
-const CAMPO           = "/campo.png";
+const CAMPO           = "/campo.jpg";
 const LOGO            = "/logo.png";
 const TSHIRT_OUTLINE  = "/tshirt-outline.svg";
 const TSHIRT_GK_OUT   = "/tshirt-gk-outline.svg";
@@ -119,15 +119,13 @@ export function HomeClient({
       position: "relative",
     }}>
 
-      {/* ── 1. TEAL HEADER ── */}
+      {/* ── 1. HEADER (dark, sem teal) ── */}
       <div style={{
-        background: "#1998ad",
+        background: "transparent",
         paddingTop: "calc(env(safe-area-inset-top, 0px) + 80px)",
-        paddingBottom: 20,
+        paddingBottom: 0,
         paddingLeft: 16,
         paddingRight: 16,
-        borderBottomLeftRadius: 40,
-        borderBottomRightRadius: 40,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
