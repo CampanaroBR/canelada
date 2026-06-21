@@ -148,6 +148,8 @@ export function HomeClient({
         width: "100%",
         boxSizing: "border-box",
         overflow: "clip",
+        border: "1px solid #666",
+        borderTop: "none",
         borderBottomLeftRadius: 48,
         borderBottomRightRadius: 48,
       }}>
