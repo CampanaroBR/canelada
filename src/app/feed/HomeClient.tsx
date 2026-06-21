@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
@@ -102,6 +103,14 @@ export function HomeClient({
   // Janela de votação: parcial ao vivo na fase aberta, oficial após encerrar (15h); botão só ativo na janela aberta
   const mostrarResultados = votacao ? votacao.fase !== "antes" : false;
   const podeVotar = votacao?.fase === "aberta" && !jaVotou;
+
+  // Auto-refresh da parcial enquanto a votação está aberta
+  const router = useRouter();
+  useEffect(() => {
+    if (votacao?.fase !== "aberta") return;
+    const id = setInterval(() => router.refresh(), 30000);
+    return () => clearInterval(id);
+  }, [votacao?.fase, router]);
   const [menuOpen, setMenuOpen] = useState(false);
 
 

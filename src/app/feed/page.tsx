@@ -241,9 +241,10 @@ export default async function FeedPage() {
   const top5Map = Object.fromEntries(top5Jogadores.map(j => [j.id, j.apelido]));
   const top5Rodada = top5Ids.map((id: string) => (top5Map[id] ?? "?").toUpperCase());
 
-  const dataRodada = rodadaAtiva
-    ? new Date(rodadaAtiva.data).toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short" })
-    : null;
+  const dataRodada = rodadaAtiva ? (() => {
+    const s = new Date(rodadaAtiva.data).toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  })() : null;
 
   // Regras de horário (derivadas da data do jogo):
   // jogo 20:00 · votação abre 22:30 (mesmo dia) · fecha 15h (dia seguinte)
