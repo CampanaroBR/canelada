@@ -569,7 +569,9 @@ export function HomeClient({
           <button aria-label="Abrir menu" onClick={() => setMenuOpen(true)} style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 4px", background: "none", border: "none", cursor: "pointer", overflow: "clip" }}>
             <List size={24} color="#fff" weight="bold" />
           </button>
-          <Image alt="Canelada" src={LOGO} width={56} height={56} priority style={{ objectFit: "cover", borderRadius: 14 }} />
+          <div style={{ padding: 4, display: "flex", overflow: "clip" }}>
+            <Image alt="Canelada" src={LOGO} width={48} height={48} priority style={{ objectFit: "cover", borderRadius: "50%" }} />
+          </div>
           <button aria-label="Notificações" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 4px", background: "none", border: "none", cursor: "pointer", overflow: "clip" }}>
             <Bell size={24} color="#fff" weight="bold" />
           </button>
