@@ -210,8 +210,8 @@ export function HomeClient({
             overflow: "clip",
           }}>
             {/* Background field image */}
-            <Image aria-hidden alt="" src={CAMPO} fill sizes="400px" style={{ objectFit: "cover", pointerEvents: "none", borderRadius: 36 }} />
-            <div aria-hidden style={{ position: "absolute", inset: 0, background: "rgba(58,87,0,0.25)", borderRadius: 36, pointerEvents: "none" }} />
+            <Image aria-hidden alt="" src={CAMPO} fill sizes="400px" style={{ objectFit: "cover", objectPosition: "center", transform: "scale(1.35)", pointerEvents: "none", borderRadius: 36 }} />
+            <div aria-hidden style={{ position: "absolute", inset: 0, background: "rgba(40,62,0,0.42)", borderRadius: 36, pointerEvents: "none" }} />
 
             {/* Header info: título + data/hora + status */}
             <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 4, alignItems: "center", width: "100%" }}>
