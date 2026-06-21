@@ -246,6 +246,10 @@ export default async function FeedPage() {
     return s.charAt(0).toUpperCase() + s.slice(1);
   })() : null;
 
+  const dataCurta = rodadaAtiva
+    ? new Date(rodadaAtiva.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })
+    : null;
+
   // Regras de horário (derivadas da data do jogo):
   // jogo 20:00 · votação abre 22:30 (mesmo dia) · fecha 15h (dia seguinte)
   const horarioJogo = "20:00";
@@ -281,6 +285,7 @@ export default async function FeedPage() {
       dataRodada={dataRodada}
       horarioJogo={horarioJogo}
       votacao={votacao}
+      dataCurta={dataCurta}
       jaVotou={jaVotou}
       top5Rodada={top5Rodada}
       maisVotados={maisVotados}
