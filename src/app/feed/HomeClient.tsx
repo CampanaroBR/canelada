@@ -99,8 +99,8 @@ export function HomeClient({
 
   // Campinho: conjunto ativo conforme a aba
   const campoSel = campoTab === "melhores" ? selecao : selecaoPiores;
-  // Janela de votação: resultados só após encerrar (15h); botão só ativo na janela aberta
-  const mostrarResultados = votacao?.fase === "encerrada";
+  // Janela de votação: parcial ao vivo na fase aberta, oficial após encerrar (15h); botão só ativo na janela aberta
+  const mostrarResultados = votacao ? votacao.fase !== "antes" : false;
   const podeVotar = votacao?.fase === "aberta" && !jaVotou;
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -305,7 +305,7 @@ export function HomeClient({
                   display: "flex", alignItems: "center", gap: 8,
                 }}>
                   <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 16, lineHeight: "20px", color: "#fff", letterSpacing: "-0.5px", flex: 1 }}>
-                    Você já votou! Resultado às 15h.
+                    Você já votou! Parcial ao vivo · oficial às 15h.
                   </span>
                   <img src="/check-circle-green.svg" alt="" style={{ width: 24, height: 24, flexShrink: 0 }} />
                 </div>
