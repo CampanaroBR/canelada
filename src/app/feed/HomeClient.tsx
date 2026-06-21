@@ -151,9 +151,12 @@ export function HomeClient({
         borderBottomLeftRadius: 48,
         borderBottomRightRadius: 48,
       }}>
-        {/* Fundo: estádio + overlay escuro */}
-        <Image aria-hidden alt="" src={ESTADIO} fill priority sizes="430px" style={{ objectFit: "cover", opacity: 0.76, pointerEvents: "none" }} />
-        <div aria-hidden style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)", pointerEvents: "none" }} />
+        {/* Fundo: estádio (enquadramento do Figma) + overlay escuro */}
+        <div aria-hidden style={{ position: "absolute", inset: 0, overflow: "hidden", borderBottomLeftRadius: 48, borderBottomRightRadius: 48, opacity: 0.76, pointerEvents: "none" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={ESTADIO} alt="" style={{ position: "absolute", height: "151.86%", width: "155.59%", left: "-26.58%", top: "-13.45%", maxWidth: "none", objectFit: "cover" }} />
+        </div>
+        <div aria-hidden style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)", borderBottomLeftRadius: 48, borderBottomRightRadius: 48, pointerEvents: "none" }} />
 
         {/* Título */}
         <p style={{ position: "relative", margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 18, lineHeight: "20px", color: "#fff", textAlign: "center", width: "100%" }}>
