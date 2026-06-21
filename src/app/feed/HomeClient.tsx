@@ -147,7 +147,7 @@ export function HomeClient({
         </p>
 
         {/* Tabs: Os melhores / Os piores (aba ativa branca) */}
-        {jaVotou && (
+        {(
           <div style={{ position: "relative", display: "flex", alignItems: "center", gap: 4, background: "#171717", border: "1px solid #2c2c2c", borderRadius: 12, padding: 4 }}>
             {([["melhores", "Os melhores", ThumbsUp], ["piores", "Os piores", ThumbsDown]] as const).map(([key, label, Icon]) => {
               const active = campoTab === key;
@@ -227,7 +227,7 @@ export function HomeClient({
               }}>
                 <div style={{ width: 6, height: 6, borderRadius: "50%", background: jaVotou ? "#e56767" : "#9fe870", flexShrink: 0 }} />
                 <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#fff", letterSpacing: "-0.4px", whiteSpace: "nowrap" }}>
-                  {jaVotou ? "Votação encerrada!" : rodadaId ? "Votação aberta até às 22:30" : "Nenhuma rodada aberta"}
+                  {jaVotou ? "Votação encerrada!" : rodadaId ? "Votação aberta até às 15h" : "Nenhuma rodada aberta"}
                 </span>
               </div>
             </div>
