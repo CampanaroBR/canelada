@@ -69,6 +69,8 @@ interface Props {
   rodadaId: string | null;
   top5Rodada: string[];
   dataRodada: string | null;
+  horarioJogo: string;
+  votacao: { aberta: boolean; texto: string } | null;
   jaVotou: boolean;
   maisVotados: MaisVotado[];
   personagensPorRodada: Personagem[][];
@@ -85,7 +87,7 @@ interface Props {
 const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
 
 export function HomeClient({
-  rodadaId, dataRodada, jaVotou, top5Rodada,
+  rodadaId, dataRodada, horarioJogo, votacao, jaVotou, top5Rodada,
   maisVotados, personagensPorRodada, personagensSemana, selecao, selecaoPiores, conquistas, datePills, grupoNome,
   proximoBaba, criarRodadaAction,
 }: Props) {
@@ -211,7 +213,7 @@ export function HomeClient({
                     </div>
                     <div style={{ background: "#1c1c1c", display: "flex", alignItems: "center", gap: 4, padding: "4px 8px", borderRadius: 48, overflow: "clip" }}>
                       <Alarm size={16} color="#fff" weight="bold" />
-                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#fff", whiteSpace: "nowrap" }}>20:00</span>
+                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#fff", whiteSpace: "nowrap" }}>{horarioJogo}</span>
                     </div>
                   </div>
                 </div>
@@ -225,9 +227,9 @@ export function HomeClient({
                 border: "1px solid rgba(255,255,255,0.15)",
                 borderRadius: 100, padding: "4px 6px",
               }}>
-                <div style={{ width: 6, height: 6, borderRadius: "50%", background: jaVotou ? "#e56767" : "#9fe870", flexShrink: 0 }} />
+                <div style={{ width: 6, height: 6, borderRadius: "50%", background: votacao?.aberta ? "#9fe870" : "#e56767", flexShrink: 0 }} />
                 <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#fff", letterSpacing: "-0.4px", whiteSpace: "nowrap" }}>
-                  {jaVotou ? "Votação encerrada!" : rodadaId ? "Votação aberta até às 15h" : "Nenhuma rodada aberta"}
+                  {votacao ? votacao.texto : "Nenhuma rodada aberta"}
                 </span>
               </div>
             </div>

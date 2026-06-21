@@ -245,6 +245,18 @@ export default async function FeedPage() {
     ? new Date(rodadaAtiva.data).toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short" })
     : null;
 
+  // Regras de horário (derivadas da data do jogo):
+  // jogo 20:00 · votação abre 22:30 (mesmo dia) · fecha 15h (dia seguinte)
+  const horarioJogo = "20:00";
+  const votacao = rodadaAtiva ? (() => {
+    const inicio = new Date(rodadaAtiva.data); inicio.setHours(22, 30, 0, 0);
+    const fim = new Date(rodadaAtiva.data); fim.setDate(fim.getDate() + 1); fim.setHours(15, 0, 0, 0);
+    const agora = new Date();
+    if (agora < inicio) return { aberta: false, texto: "Votação abre às 22:30" };
+    if (agora >= fim)   return { aberta: false, texto: "Votação encerrada" };
+    return { aberta: true, texto: "Votação aberta até às 15h" };
+  })() : null;
+
   const datePills = grupos.map(g =>
     new Date(g.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", "")
   );
@@ -266,6 +278,8 @@ export default async function FeedPage() {
       IMG={{}}
       rodadaId={rodadaAtiva?.id ?? null}
       dataRodada={dataRodada}
+      horarioJogo={horarioJogo}
+      votacao={votacao}
       jaVotou={jaVotou}
       top5Rodada={top5Rodada}
       maisVotados={maisVotados}
