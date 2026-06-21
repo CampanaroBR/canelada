@@ -303,24 +303,27 @@ export function HomeClient({
                   }}>⚽ BABA ROLOU HOJE</button>
                 </form>
               ) : (votacao?.fase === "encerrada" || jaVotou) ? (
-                /* Resultados (parcial ou encerrada) — compartilhar a seleção */
-                <div style={{
-                  backdropFilter: "blur(4.9px)", WebkitBackdropFilter: "blur(4.9px)",
-                  background: "rgba(13,13,13,0.25)",
-                  borderRadius: 10, padding: "8px 12px",
-                  display: "flex", alignItems: "center", gap: 8,
-                }}>
+                /* Resultados — botão compartilhar separado, alinhado à faixa (Figma 529-155) */
+                <div style={{ display: "flex", gap: 8, alignItems: "stretch", width: "100%" }}>
                   <button onClick={() => setShareSelecao(true)} aria-label="Compartilhar seleção" style={{
-                    flexShrink: 0, width: 40, height: 40, borderRadius: 12, cursor: "pointer",
-                    background: "#0d0d0d", border: "1px solid #2c2c2c",
+                    flexShrink: 0, width: 56, borderRadius: 16, cursor: "pointer",
+                    background: "#0d0d0d", border: "1px solid #090909",
+                    boxShadow: "0px 4px 9.8px 2px rgba(0,0,0,0.25)",
                     display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent",
                   }}>
-                    <Export size={20} color="#fff" weight="bold" />
+                    <Export size={22} color="#fff" weight="bold" />
                   </button>
-                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 16, lineHeight: "20px", color: "#fff", letterSpacing: "-0.5px", flex: 1 }}>
-                    {votacao?.fase === "aberta" ? "Compartilhe a parcial!" : "Confira a seleção!"}
-                  </span>
-                  <img src="/check-circle-green.svg" alt="" style={{ width: 24, height: 24, flexShrink: 0 }} />
+                  <div style={{
+                    flex: 1, minWidth: 0,
+                    backdropFilter: "blur(4.9px)", WebkitBackdropFilter: "blur(4.9px)",
+                    background: "rgba(13,13,13,0.25)", borderRadius: 16, padding: "12px 16px",
+                    display: "flex", alignItems: "center", gap: 8,
+                  }}>
+                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 16, lineHeight: "20px", color: "#fff", letterSpacing: "-0.5px", flex: 1 }}>
+                      {votacao?.fase === "aberta" ? "Compartilhe a parcial!" : "Confira a seleção!"}
+                    </span>
+                    <img src="/check-circle-green.svg" alt="" style={{ width: 24, height: 24, flexShrink: 0 }} />
+                  </div>
                 </div>
               ) : podeVotar ? (
                 /* Votar agora (janela aberta) */
