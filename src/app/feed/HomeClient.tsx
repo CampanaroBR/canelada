@@ -119,60 +119,59 @@ export function HomeClient({
       position: "relative",
     }}>
 
-      {/* ── Tabs: Os melhores / Os piores (acima do campinho) ── */}
-      {jaVotou && (
-        <div style={{
-          display: "flex", alignItems: "center", alignSelf: "center", gap: 4,
-          background: "#171717", borderRadius: 12, padding: 4,
-          marginTop: "calc(env(safe-area-inset-top, 0px) + 72px)",
-        }}>
-          {([["melhores", "Os melhores", ThumbsUp], ["piores", "Os piores", ThumbsDown]] as const).map(([key, label, Icon]) => {
-            const active = campoTab === key;
-            return (
-              <button
-                key={key}
-                onClick={() => setCampoTab(key)}
-                style={{
-                  display: "flex", alignItems: "center", gap: 8, cursor: "pointer",
-                  borderRadius: 10, padding: "8px 10px",
-                  background: active ? "#090909" : "transparent",
-                  border: active ? "1px solid #424242" : "1px solid transparent",
-                  boxShadow: active ? "0px 1px 2px rgba(0,0,0,0.2)" : "none",
-                }}
-              >
-                <Icon size={20} color={active ? "#fff" : "#7a7a7a"} weight="regular" />
-                <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, lineHeight: "20px", color: active ? "#fff" : "#7a7a7a", whiteSpace: "nowrap" }}>{label}</span>
-              </button>
-            );
-          })}
-        </div>
-      )}
-
       {/* ── 1. TEAL HEADER ── */}
       <div style={{
         background: "#1998ad",
-        paddingTop: jaVotou ? 20 : "calc(env(safe-area-inset-top, 0px) + 80px)",
+        paddingTop: "calc(env(safe-area-inset-top, 0px) + 80px)",
         paddingBottom: 20,
         paddingLeft: 16,
         paddingRight: 16,
         borderBottomLeftRadius: 40,
         borderBottomRightRadius: 40,
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
+        gap: 16,
         width: "100%",
         boxSizing: "border-box",
         overflow: "clip",
       }}>
+        {/* Tabs: Os melhores / Os piores (dentro da área azul, acima do campinho) */}
+        {jaVotou && (
+          <div style={{ display: "flex", alignItems: "center", gap: 4, background: "#171717", borderRadius: 12, padding: 4 }}>
+            {([["melhores", "Os melhores", ThumbsUp], ["piores", "Os piores", ThumbsDown]] as const).map(([key, label, Icon]) => {
+              const active = campoTab === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => setCampoTab(key)}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 8, cursor: "pointer",
+                    borderRadius: 10, padding: "8px 10px",
+                    background: active ? "#090909" : "transparent",
+                    border: active ? "1px solid #424242" : "1px solid transparent",
+                    boxShadow: active ? "0px 1px 2px rgba(0,0,0,0.2)" : "none",
+                  }}
+                >
+                  <Icon size={20} color={active ? "#fff" : "#7a7a7a"} weight="regular" />
+                  <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, lineHeight: "20px", color: active ? "#fff" : "#7a7a7a", whiteSpace: "nowrap" }}>{label}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         {/* White outer card */}
         <div style={{
           background: "#fff",
           borderRadius: 48,
           padding: "16px 12px",
-          flex: 1,
+          width: "100%",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           overflow: "clip",
+          boxSizing: "border-box",
         }}>
           {/* Campo */}
           <div style={{
@@ -570,7 +569,7 @@ export function HomeClient({
           <button aria-label="Abrir menu" onClick={() => setMenuOpen(true)} style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 4px", background: "none", border: "none", cursor: "pointer", overflow: "clip" }}>
             <List size={24} color="#fff" weight="bold" />
           </button>
-          <Image alt="Canelada" src={LOGO} width={56} height={56} priority style={{ objectFit: "cover" }} />
+          <Image alt="Canelada" src={LOGO} width={56} height={56} priority style={{ objectFit: "cover", borderRadius: 14 }} />
           <button aria-label="Notificações" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 4px", background: "none", border: "none", cursor: "pointer", overflow: "clip" }}>
             <Bell size={24} color="#fff" weight="bold" />
           </button>

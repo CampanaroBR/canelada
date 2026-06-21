@@ -47,7 +47,7 @@ export default function LoginPage() {
           }}>
             <Image
               alt="Canelada" src="/logo.png" width={116} height={116} priority
-              style={{ objectFit: "contain", marginBottom: -8, display: "block" }}
+              style={{ objectFit: "cover", borderRadius: 28, marginBottom: -8, display: "block" }}
             />
             <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center", width: "100%" }}>
               <p style={{

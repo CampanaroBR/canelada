@@ -119,7 +119,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
           <button onClick={() => setMenuOpen(true)} style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
             <List size={24} color="#fff" weight="bold" />
           </button>
-          <Image alt="Canelada" src="/logo.png" width={56} height={56} priority style={{ objectFit: "cover" }} />
+          <Image alt="Canelada" src="/logo.png" width={56} height={56} priority style={{ objectFit: "cover", borderRadius: 14 }} />
           <button style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
             <Bell size={24} color="#fff" weight="bold" />
           </button>
