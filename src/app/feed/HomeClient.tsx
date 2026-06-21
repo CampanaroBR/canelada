@@ -7,7 +7,7 @@ import Link from "next/link";
 import {
   Lightning, Medal, CaretRight, Check,
   CalendarBlank, Alarm, CalendarStar,
-  List, Bell, MedalMilitary, X,
+  List, Bell, MedalMilitary, X, ThumbsUp, ThumbsDown,
 } from "@phosphor-icons/react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
@@ -96,7 +96,6 @@ export function HomeClient({
 
   // Campinho: conjunto ativo conforme a aba
   const campoSel = campoTab === "melhores" ? selecao : selecaoPiores;
-  const pioresCount = selecaoPiores.filter(Boolean).length;
   const [menuOpen, setMenuOpen] = useState(false);
 
 
@@ -120,10 +119,39 @@ export function HomeClient({
       position: "relative",
     }}>
 
+      {/* ── Tabs: Os melhores / Os piores (acima do campinho) ── */}
+      {jaVotou && (
+        <div style={{
+          display: "flex", alignItems: "center", alignSelf: "center", gap: 4,
+          background: "#171717", borderRadius: 12, padding: 4,
+          marginTop: "calc(env(safe-area-inset-top, 0px) + 72px)",
+        }}>
+          {([["melhores", "Os melhores", ThumbsUp], ["piores", "Os piores", ThumbsDown]] as const).map(([key, label, Icon]) => {
+            const active = campoTab === key;
+            return (
+              <button
+                key={key}
+                onClick={() => setCampoTab(key)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 8, cursor: "pointer",
+                  borderRadius: 10, padding: "8px 10px",
+                  background: active ? "#090909" : "transparent",
+                  border: active ? "1px solid #424242" : "1px solid transparent",
+                  boxShadow: active ? "0px 1px 2px rgba(0,0,0,0.2)" : "none",
+                }}
+              >
+                <Icon size={20} color={active ? "#fff" : "#7a7a7a"} weight="regular" />
+                <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, lineHeight: "20px", color: active ? "#fff" : "#7a7a7a", whiteSpace: "nowrap" }}>{label}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
       {/* ── 1. TEAL HEADER ── */}
       <div style={{
         background: "#1998ad",
-        paddingTop: "calc(env(safe-area-inset-top, 0px) + 80px)",
+        paddingTop: jaVotou ? 20 : "calc(env(safe-area-inset-top, 0px) + 80px)",
         paddingBottom: 20,
         paddingLeft: 16,
         paddingRight: 16,
@@ -201,30 +229,6 @@ export function HomeClient({
                 </span>
               </div>
             </div>
-
-            {/* Tab Melhores / Piores — só após votar (resultados) */}
-            {jaVotou && (
-              <div style={{ position: "relative", display: "flex", gap: 6, alignSelf: "center", background: "rgba(0,0,0,0.25)", borderRadius: 9999, padding: 3 }}>
-                <button onClick={() => setCampoTab("melhores")} style={{
-                  border: "none", cursor: "pointer", borderRadius: 9999, padding: "6px 14px",
-                  fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, whiteSpace: "nowrap",
-                  background: campoTab === "melhores" ? "#9fe870" : "transparent",
-                  color: campoTab === "melhores" ? "#0a1a06" : "#fff",
-                }}>Melhores</button>
-                <button onClick={() => setCampoTab("piores")} style={{
-                  border: "none", cursor: "pointer", borderRadius: 9999, padding: "6px 14px",
-                  fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, whiteSpace: "nowrap",
-                  display: "flex", alignItems: "center", gap: 6,
-                  background: campoTab === "piores" ? "#e24b4a" : "transparent",
-                  color: campoTab === "piores" ? "#fff" : "#fff",
-                }}>
-                  Piores
-                  {pioresCount > 0 && (
-                    <span style={{ background: campoTab === "piores" ? "rgba(0,0,0,0.25)" : "#e24b4a", color: "#fff", borderRadius: 9999, minWidth: 16, height: 16, fontSize: 10, lineHeight: "16px", textAlign: "center", padding: "0 4px" }}>{pioresCount}</span>
-                  )}
-                </button>
-              </div>
-            )}
 
             {/* Players formation */}
             <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 16, alignItems: "center", width: "100%" }}>
