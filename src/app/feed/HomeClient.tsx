@@ -191,7 +191,7 @@ export function HomeClient({
         {/* Wrapper do campo (sem card branco) */}
         <div style={{
           position: "relative",
-          padding: "16px 0",
+          padding: "8px 16px",
           width: "100%",
           display: "flex",
           flexDirection: "column",
@@ -252,7 +252,7 @@ export function HomeClient({
             {/* Players formation */}
             <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 16, alignItems: "center", width: "100%" }}>
               {/* CF row */}
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 16, paddingBottom: 16 }}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 8, paddingBottom: 8 }}>
                 {mostrarResultados
                   ? <PlayerNamed p={campoSel[0]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
                   : <PlayerSlot tshirt={TSHIRT_OUTLINE} />}
@@ -276,7 +276,7 @@ export function HomeClient({
               </div>
 
               {/* GK row (só faz sentido GK nos "melhores" = Paredão) */}
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 16, paddingBottom: 16 }}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 8, paddingBottom: 8 }}>
                 {mostrarResultados
                   ? <PlayerNamed p={campoSel[4]} tshirt={campoTab === "melhores" ? TSHIRT_GK_FILL : TSHIRT_FILLED} onShare={setShareCard} />
                   : <PlayerSlot tshirt={TSHIRT_GK_OUT} />}
