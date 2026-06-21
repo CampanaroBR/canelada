@@ -5,8 +5,7 @@ import { X, ShareNetwork, CalendarBlank, Alarm } from "@phosphor-icons/react";
 import { toBlob } from "html-to-image";
 import type { PersonagemSemana } from "./ShareCardModal";
 
-const ESTADIO = "/estadio.jpg";
-const CAMPO = "/campo.jpg";
+const SHARE_BG = "/share-campo.jpg"; // estádio + gramado já compostos
 const TSHIRT_FILLED = "/tshirt-filled.svg";
 const TSHIRT_GK_FILL = "/tshirt-gk-filled.svg";
 
@@ -88,16 +87,13 @@ export function SelecaoShareModal({ selecao, grupoNome, dataRodada, horarioJogo,
         <div ref={cardRef} style={{
           position: "relative", width: "100%", maxWidth: 430, aspectRatio: "393 / 852",
           background: "#0a0e0e", overflow: "hidden",
-          display: "flex", flexDirection: "column", alignItems: "center",
-          paddingTop: 56, paddingLeft: 16, paddingRight: 16,
         }}>
-          {/* Fundo estádio + overlay */}
+          {/* Fundo: estádio + gramado já compostos */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={ESTADIO} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-          <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.4)" }} />
+          <img src={SHARE_BG} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
 
           {/* Título */}
-          <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", gap: 8, width: "100%" }}>
+          <div style={{ position: "absolute", top: "7.5%", left: 0, right: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
               <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 28, lineHeight: "32px", color: "#fff", textAlign: "center", textTransform: "uppercase" }}>{grupoNome}</p>
               <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#fff", textAlign: "center" }}>{parcial ? "Time parcial" : "Time da rodada"}</p>
@@ -116,26 +112,18 @@ export function SelecaoShareModal({ selecao, grupoNome, dataRodada, horarioJogo,
             )}
           </div>
 
-          {/* Campo + escalação */}
-          <div style={{ position: "relative", flex: 1, width: "100%", marginTop: 16, marginBottom: 24, borderRadius: 24, overflow: "hidden", border: "1px solid #777575" }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={CAMPO} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", transform: "scale(1.2)" }} />
-            <div style={{ position: "absolute", inset: 0, background: "rgba(40,62,0,0.30)" }} />
-            <div style={{ position: "relative", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-around", alignItems: "center", padding: "32px 24px" }}>
-              {/* CF */}
-              <div style={{ display: "flex", justifyContent: "center", width: 292 }}>
-                <Shirt p={selecao[0]} tshirt={TSHIRT_FILLED} />
-              </div>
-              {/* Meio */}
-              <div style={{ display: "flex", gap: 40, justifyContent: "center", width: "100%" }}>
-                <Shirt p={selecao[1]} tshirt={TSHIRT_FILLED} />
-                <Shirt p={selecao[2]} tshirt={TSHIRT_FILLED} />
-                <Shirt p={selecao[3]} tshirt={TSHIRT_FILLED} />
-              </div>
-              {/* GK */}
-              <div style={{ display: "flex", justifyContent: "center", width: 292 }}>
-                <Shirt p={selecao[4]} tshirt={gkVermelho ? TSHIRT_GK_FILL : TSHIRT_FILLED} />
-              </div>
+          {/* Escalação sobre o gramado */}
+          <div style={{ position: "absolute", left: "13%", right: "13%", top: "39%", bottom: "27%", display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ display: "flex", justifyContent: "center", width: "60%" }}>
+              <Shirt p={selecao[0]} tshirt={TSHIRT_FILLED} />
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+              <Shirt p={selecao[1]} tshirt={TSHIRT_FILLED} />
+              <Shirt p={selecao[2]} tshirt={TSHIRT_FILLED} />
+              <Shirt p={selecao[3]} tshirt={TSHIRT_FILLED} />
+            </div>
+            <div style={{ display: "flex", justifyContent: "center", width: "60%" }}>
+              <Shirt p={selecao[4]} tshirt={gkVermelho ? TSHIRT_GK_FILL : TSHIRT_FILLED} />
             </div>
           </div>
         </div>
