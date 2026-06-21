@@ -73,6 +73,7 @@ interface Props {
   personagensPorRodada: Personagem[][];
   personagensSemana: PersonagemSemana[];
   selecao: (PersonagemSemana | null)[];
+  selecaoPiores: (PersonagemSemana | null)[];
   conquistas: Conquista[];
   datePills: string[];
   grupoNome: string;
@@ -84,13 +85,18 @@ const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
 
 export function HomeClient({
   rodadaId, dataRodada, jaVotou, top5Rodada,
-  maisVotados, personagensPorRodada, personagensSemana, selecao, conquistas, datePills, grupoNome,
+  maisVotados, personagensPorRodada, personagensSemana, selecao, selecaoPiores, conquistas, datePills, grupoNome,
   proximoBaba, criarRodadaAction,
 }: Props) {
   const [bsOpen, setBsOpen] = useState(false);
   const [bsMounted, setBsMounted] = useState(false); // só monta o sheet após 1ª abertura
   const [shareCard, setShareCard] = useState<PersonagemSemana | null>(null);
   const [verMaisOpen, setVerMaisOpen] = useState(false);
+  const [campoTab, setCampoTab] = useState<"melhores" | "piores">("melhores");
+
+  // Campinho: conjunto ativo conforme a aba
+  const campoSel = campoTab === "melhores" ? selecao : selecaoPiores;
+  const pioresCount = selecaoPiores.filter(Boolean).length;
   const [menuOpen, setMenuOpen] = useState(false);
 
 
@@ -196,12 +202,36 @@ export function HomeClient({
               </div>
             </div>
 
+            {/* Tab Melhores / Piores — só após votar (resultados) */}
+            {jaVotou && (
+              <div style={{ position: "relative", display: "flex", gap: 6, alignSelf: "center", background: "rgba(0,0,0,0.25)", borderRadius: 9999, padding: 3 }}>
+                <button onClick={() => setCampoTab("melhores")} style={{
+                  border: "none", cursor: "pointer", borderRadius: 9999, padding: "6px 14px",
+                  fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, whiteSpace: "nowrap",
+                  background: campoTab === "melhores" ? "#9fe870" : "transparent",
+                  color: campoTab === "melhores" ? "#0a1a06" : "#fff",
+                }}>Melhores</button>
+                <button onClick={() => setCampoTab("piores")} style={{
+                  border: "none", cursor: "pointer", borderRadius: 9999, padding: "6px 14px",
+                  fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, whiteSpace: "nowrap",
+                  display: "flex", alignItems: "center", gap: 6,
+                  background: campoTab === "piores" ? "#e24b4a" : "transparent",
+                  color: campoTab === "piores" ? "#fff" : "#fff",
+                }}>
+                  Piores
+                  {pioresCount > 0 && (
+                    <span style={{ background: campoTab === "piores" ? "rgba(0,0,0,0.25)" : "#e24b4a", color: "#fff", borderRadius: 9999, minWidth: 16, height: 16, fontSize: 10, lineHeight: "16px", textAlign: "center", padding: "0 4px" }}>{pioresCount}</span>
+                  )}
+                </button>
+              </div>
+            )}
+
             {/* Players formation */}
             <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 16, alignItems: "center", width: "100%" }}>
               {/* CF row */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 16, paddingBottom: 16 }}>
                 {jaVotou
-                  ? <PlayerNamed p={selecao[0]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
+                  ? <PlayerNamed p={campoSel[0]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
                   : <PlayerSlot tshirt={TSHIRT_OUTLINE} />}
               </div>
 
@@ -209,9 +239,9 @@ export function HomeClient({
               <div style={{ display: "flex", gap: 62, alignItems: "center", justifyContent: "center", width: "100%" }}>
                 {jaVotou ? (
                   <>
-                    <PlayerNamed p={selecao[1]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
-                    <PlayerNamed p={selecao[2]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
-                    <PlayerNamed p={selecao[3]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
+                    <PlayerNamed p={campoSel[1]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
+                    <PlayerNamed p={campoSel[2]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
+                    <PlayerNamed p={campoSel[3]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
                   </>
                 ) : (
                   <>
@@ -222,10 +252,10 @@ export function HomeClient({
                 )}
               </div>
 
-              {/* GK row */}
+              {/* GK row (só faz sentido GK nos "melhores" = Paredão) */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 16, paddingBottom: 16 }}>
                 {jaVotou
-                  ? <PlayerNamed p={selecao[4]} tshirt={TSHIRT_GK_FILL} onShare={setShareCard} />
+                  ? <PlayerNamed p={campoSel[4]} tshirt={campoTab === "melhores" ? TSHIRT_GK_FILL : TSHIRT_FILLED} onShare={setShareCard} />
                   : <PlayerSlot tshirt={TSHIRT_GK_OUT} />}
               </div>
             </div>
@@ -410,63 +440,25 @@ export function HomeClient({
           </div>
         )}
 
-        {/* ── 3. PERSONAGEM DA SEMANA ── */}
+        {/* ── 3. VER TODOS OS PERSONAGENS (catálogo da rodada) ── */}
         {personagensSemana.length > 0 && (
-          <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 20, padding: "17px 9px", display: "flex", flexDirection: "column", gap: 16 }}>
-            {/* Header */}
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 8 }}>
-                <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <CalendarStar size={24} color="#9fe870" weight="regular" />
-                </div>
-                <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>PERSONAGEM DA SEMANA</h2>
-              </div>
-              {personagensSemana.length > 3 && (
-                <button onClick={() => setVerMaisOpen(true)} style={{
-                  display: "flex", alignItems: "center", gap: 4, flexShrink: 0,
-                  background: "#2a2a2a", border: "1px solid #3a3a3a", borderRadius: 9999, padding: "7px 13px", cursor: "pointer",
-                }}>
-                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "18px", color: "#fff", whiteSpace: "nowrap" }}>Ver mais</span>
-                  <CaretRight size={12} color="#fff" weight="bold" />
-                </button>
-              )}
+          <button
+            onClick={() => setVerMaisOpen(true)}
+            style={{
+              cursor: "pointer", WebkitTapHighlightColor: "transparent",
+              background: "#171717", border: "1px solid #2e2e2e", borderRadius: 20, padding: "13px 9px",
+              display: "flex", alignItems: "center", gap: 12, textAlign: "left",
+            }}
+          >
+            <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <CalendarStar size={24} color="#9fe870" weight="regular" />
             </div>
-
-            {/* Top 3 cards */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {personagensSemana.slice(0, 3).map((p) => (
-                <button
-                  key={p.slug}
-                  onClick={() => setShareCard(p)}
-                  style={{ textAlign: "left", cursor: "pointer", background: "#090909", border: "1px solid #2e2e2e", borderRadius: 16, padding: 17, display: "flex", gap: 16, alignItems: "flex-start", overflow: "hidden", WebkitTapHighlightColor: "transparent" }}
-                >
-                  <div style={{ flexShrink: 0, display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start" }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-start" }}>
-                      <div style={{ height: 46, display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-start" }}>
-                        <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, lineHeight: "24px", color: "#fff", whiteSpace: "nowrap", textTransform: "uppercase" }}>{p.nome}</p>
-                        <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "18px", color: "#f9a8d4", whiteSpace: "nowrap" }}>{p.vencedor}</p>
-                      </div>
-                      <div style={{ height: 21, paddingTop: 4 }}>
-                        <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 11, lineHeight: "16.5px", color: "#9fe870" }}>Votado {p.votos}x</span>
-                      </div>
-                    </div>
-                    <div style={{
-                      display: "inline-flex", alignItems: "center", gap: 4,
-                      background: "#2a2a2a", border: "1px solid #3a3a3a", borderRadius: 9999, padding: "7px 13px",
-                    }}>
-                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "18px", color: "#fff", whiteSpace: "nowrap" }}>Compartilhar</span>
-                      <CaretRight size={12} color="#fff" weight="bold" />
-                    </div>
-                  </div>
-                  <div style={{ flex: 1, minWidth: 1, alignSelf: "stretch", position: "relative", display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
-                    <div style={{ position: "relative", height: "100%", aspectRatio: "1/1", overflow: "clip", flexShrink: 0 }}>
-                      <Image alt={p.nome} src={`/votacao-mascot/${p.slug}.png`} fill sizes="130px" style={{ display: "block", objectFit: "contain", pointerEvents: "none" }} />
-                    </div>
-                  </div>
-                </button>
-              ))}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>PERSONAGENS DA SEMANA</p>
+              <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, color: "#9fe870" }}>{personagensSemana.length} personagens · ver todos</p>
             </div>
-          </div>
+            <CaretRight size={16} color="#555" weight="bold" />
+          </button>
         )}
 
         {/* ── 4. MEDALHAS ── */}

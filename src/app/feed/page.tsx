@@ -91,6 +91,7 @@ export default async function FeedPage() {
   type PersonagemSemana = { slug: string; nome: string; emoji: string | null; art: string; vencedor: string; votos: number };
   let personagensSemana: PersonagemSemana[] = [];
   let selecao: (PersonagemSemana | null)[] = [];
+  let selecaoPiores: (PersonagemSemana | null)[] = [];
   if (rodadaAtiva) {
     const votosTrait = await prisma.voto.findMany({
       where: { rodadaId: rodadaAtiva.id, categoria: "TRAIT", traitSlug: { not: null } },
@@ -117,20 +118,27 @@ export default async function FeedPage() {
     // Seleção da Rodada: 1 vencedor por posição (CF, mid, mid, mid, GK).
     // Sem filtro estrito (basta ≥1 voto) — é a escalação da rodada.
     const POSITION_TRAITS = ["matador", "categoria", "racudo", "garcom", "paredao"];
-    const selRaw = POSITION_TRAITS.map((slug) => {
+    const NEG_TRAITS = ["bagre", "cone", "chorao", "reclamao", "paneleiro"];
+    const topPorTrait = (slug: string) => {
       const e = perTrait.get(slug);
       if (!e || e.total === 0) return null;
       let topId: string | null = null, topN = 0;
       for (const [pid, n] of e.players) if (n > topN) { topN = n; topId = pid; }
       return topId ? { slug, vencedorId: topId, votos: topN } : null;
-    });
+    };
+    const selRaw = POSITION_TRAITS.map(topPorTrait);
+    const selRawPiores = NEG_TRAITS.map(topPorTrait);
 
-    // Resolve nomes + meta de TODOS (personagens + seleção) numa tacada
-    const vIds = [...new Set([...raw.map(r => r.vencedorId), ...selRaw.filter(Boolean).map(s => s!.vencedorId)])];
+    // Resolve nomes + meta de TODOS (personagens + seleção + piores) numa tacada
+    const vIds = [...new Set([
+      ...raw.map(r => r.vencedorId),
+      ...selRaw.filter(Boolean).map(s => s!.vencedorId),
+      ...selRawPiores.filter(Boolean).map(s => s!.vencedorId),
+    ])];
     const nmeMap = vIds.length
       ? Object.fromEntries((await prisma.jogador.findMany({ where: { id: { in: vIds } }, select: { id: true, apelido: true } })).map(j => [j.id, j.apelido]))
       : {};
-    const tSlugs = [...new Set([...raw.map(r => r.slug), ...POSITION_TRAITS])];
+    const tSlugs = [...new Set([...raw.map(r => r.slug), ...POSITION_TRAITS, ...NEG_TRAITS])];
     const tMeta = tSlugs.length
       ? Object.fromEntries((await prisma.trait.findMany({ where: { slug: { in: tSlugs } }, select: { slug: true, nome: true, emoji: true } })).map(t => [t.slug, t]))
       : {};
@@ -142,14 +150,17 @@ export default async function FeedPage() {
       vencedor: nmeMap[r.vencedorId] ?? "?",
       votos: r.votos,
     }));
-    selecao = selRaw.map((s) => s && ART_BY_SLUG[s.slug] ? {
-      slug: s.slug,
-      nome: tMeta[s.slug]?.nome ?? s.slug,
-      emoji: tMeta[s.slug]?.emoji ?? null,
-      art: ART_BY_SLUG[s.slug],
-      vencedor: nmeMap[s.vencedorId] ?? "?",
-      votos: s.votos,
-    } : null);
+    const toSlot = (s: { slug: string; vencedorId: string; votos: number } | null) =>
+      s && ART_BY_SLUG[s.slug] ? {
+        slug: s.slug,
+        nome: tMeta[s.slug]?.nome ?? s.slug,
+        emoji: tMeta[s.slug]?.emoji ?? null,
+        art: ART_BY_SLUG[s.slug],
+        vencedor: nmeMap[s.vencedorId] ?? "?",
+        votos: s.votos,
+      } : null;
+    selecao = selRaw.map(toSlot);
+    selecaoPiores = selRawPiores.map(toSlot);
   }
 
   const PERSONAGEM_TITLES: Record<string, string> = {
@@ -261,6 +272,7 @@ export default async function FeedPage() {
       personagensPorRodada={personagensPorRodada}
       personagensSemana={personagensSemana}
       selecao={selecao}
+      selecaoPiores={selecaoPiores}
       conquistas={conquistas}
       datePills={datePills}
       grupoNome={grupoNome}
