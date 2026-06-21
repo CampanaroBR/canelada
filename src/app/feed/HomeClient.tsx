@@ -191,7 +191,7 @@ export function HomeClient({
         {/* Wrapper do campo (sem card branco) */}
         <div style={{
           position: "relative",
-          padding: "8px 0",
+          padding: "8px 16px",
           width: "100%",
           display: "flex",
           flexDirection: "column",
