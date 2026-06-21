@@ -109,7 +109,8 @@ export default async function FeedPage() {
     for (const [slug, e] of perTrait) {
       let topId: string | null = null, topN = 0;
       for (const [pid, n] of e.players) if (n > topN) { topN = n; topId = pid; }
-      if (topId && topN >= 3 && topN / e.total >= 0.4 && ART_BY_SLUG[slug]) {
+      // Relevância: precisa ter arte e pelo menos 1 voto (filtro estrito ≥3+40% pode ser reativado depois)
+      if (topId && topN >= 1 && ART_BY_SLUG[slug]) {
         raw.push({ slug, vencedorId: topId, votos: topN });
       }
     }
