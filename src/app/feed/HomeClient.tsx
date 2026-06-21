@@ -527,27 +527,27 @@ export function HomeClient({
                 <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <Medal size={24} color="#9fe870" weight="fill" />
                 </div>
-                <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>MEDALHAS</h2>
+                <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>BADGES</h2>
               </div>
               <Link href="/medalhas" style={{
                 display: "flex", alignItems: "center", gap: 4, textDecoration: "none", flexShrink: 0,
-                background: "#2a2a2a", border: "1px solid #3a3a3a",
-                borderRadius: 9999, padding: "7px 13px",
+                background: "#2c2c2c", border: "1px solid #424242",
+                borderRadius: 9999, padding: "9px 13px",
               }}>
-                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "18px", color: "#fff", whiteSpace: "nowrap" }}>Ver todas</span>
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: "#fff", whiteSpace: "nowrap" }}>Ver mais</span>
                 <CaretRight size={12} color="#fff" weight="bold" />
               </Link>
             </div>
 
             {/* Stats bar */}
-            <div style={{ background: "#111", border: "1px solid #1e1e1e", borderRadius: 12, padding: "9px 13px", display: "flex", gap: 12, alignItems: "center" }}>
+            <div style={{ background: "#242424", border: "1px solid #424242", borderRadius: 12, padding: "9px 13px", display: "flex", gap: 12, alignItems: "center" }}>
               <span style={{ fontFamily: "var(--font-body)", fontSize: 18, lineHeight: "27px", letterSpacing: "-0.44px", flexShrink: 0 }}>🏅</span>
               <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 4 }}>
-                <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 0, lineHeight: 0, color: "#fff", whiteSpace: "nowrap" }}>
-                  <span style={{ fontSize: 18, lineHeight: "20px" }}>{conquistas.length} </span>
-                  <span style={{ fontWeight: 500, fontSize: 16, lineHeight: "20px", color: "#555" }}>de 15 jogadores</span>
+                <p style={{ margin: 0, whiteSpace: "nowrap" }}>
+                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#fff" }}>{conquistas.length}/</span>
+                  <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 16, lineHeight: "1.4", color: "#7a7a7a" }}>15 jogadores</span>
                 </p>
-                <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 14, lineHeight: "18px", color: "#555", whiteSpace: "nowrap" }}>já conquistaram uma medalha</p>
+                <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, lineHeight: "20px", color: "#666", whiteSpace: "nowrap" }}>já conquistaram uma medalha</p>
               </div>
             </div>
 
