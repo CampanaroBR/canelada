@@ -154,7 +154,7 @@ export function HomeClient({
         {/* Fundo: estádio (enquadramento do Figma) + overlay escuro */}
         <div aria-hidden style={{ position: "absolute", inset: 0, overflow: "hidden", borderBottomLeftRadius: 48, borderBottomRightRadius: 48, opacity: 0.76, pointerEvents: "none" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={ESTADIO} alt="" style={{ position: "absolute", height: "151.86%", width: "155.59%", left: "-26.58%", top: "-13.45%", maxWidth: "none", objectFit: "cover" }} />
+          <img src={ESTADIO} alt="" style={{ position: "absolute", height: "132%", width: "135%", left: "-17.5%", top: "-9%", maxWidth: "none", objectFit: "cover" }} />
         </div>
         <div aria-hidden style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)", borderBottomLeftRadius: 48, borderBottomRightRadius: 48, pointerEvents: "none" }} />
 
