@@ -51,6 +51,7 @@ const TRAIT_BADGE: Record<string, string> = {
 };
 
 const CAMPO           = "/campo.jpg";
+const ESTADIO         = "/estadio.jpg";
 const LOGO            = "/logo.png";
 const TSHIRT_OUTLINE  = "/tshirt-outline.svg";
 const TSHIRT_GK_OUT   = "/tshirt-gk-outline.svg";
@@ -119,24 +120,35 @@ export function HomeClient({
       position: "relative",
     }}>
 
-      {/* ── 1. HEADER (dark, sem teal) ── */}
+      {/* ── 1. SEÇÃO VOTAÇÃO (fundo estádio) ── */}
       <div style={{
-        background: "transparent",
-        paddingTop: "calc(env(safe-area-inset-top, 0px) + 80px)",
-        paddingBottom: 0,
+        position: "relative",
+        paddingTop: "calc(env(safe-area-inset-top, 0px) + 100px)",
+        paddingBottom: 20,
         paddingLeft: 16,
         paddingRight: 16,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        gap: 16,
+        gap: 8,
         width: "100%",
         boxSizing: "border-box",
         overflow: "clip",
+        borderBottomLeftRadius: 48,
+        borderBottomRightRadius: 48,
       }}>
-        {/* Tabs: Os melhores / Os piores (dentro da área azul, acima do campinho) */}
+        {/* Fundo: estádio + overlay escuro */}
+        <Image aria-hidden alt="" src={ESTADIO} fill priority sizes="430px" style={{ objectFit: "cover", opacity: 0.76, pointerEvents: "none" }} />
+        <div aria-hidden style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)", pointerEvents: "none" }} />
+
+        {/* Título */}
+        <p style={{ position: "relative", margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 18, lineHeight: "20px", color: "#fff", textAlign: "center", width: "100%" }}>
+          Votação da rodada
+        </p>
+
+        {/* Tabs: Os melhores / Os piores (aba ativa branca) */}
         {jaVotou && (
-          <div style={{ display: "flex", alignItems: "center", gap: 4, background: "#171717", borderRadius: 12, padding: 4 }}>
+          <div style={{ position: "relative", display: "flex", alignItems: "center", gap: 4, background: "#171717", border: "1px solid #2c2c2c", borderRadius: 12, padding: 4 }}>
             {([["melhores", "Os melhores", ThumbsUp], ["piores", "Os piores", ThumbsDown]] as const).map(([key, label, Icon]) => {
               const active = campoTab === key;
               return (
@@ -145,36 +157,34 @@ export function HomeClient({
                   onClick={() => setCampoTab(key)}
                   style={{
                     display: "flex", alignItems: "center", gap: 8, cursor: "pointer",
-                    borderRadius: 10, padding: "8px 10px",
-                    background: active ? "#090909" : "transparent",
-                    border: active ? "1px solid #424242" : "1px solid transparent",
-                    boxShadow: active ? "0px 1px 2px rgba(0,0,0,0.2)" : "none",
+                    borderRadius: 10, padding: "10px 12px",
+                    background: active ? "#fff" : "transparent",
+                    border: active ? "1px solid #2c2c2c" : "1px solid transparent",
+                    boxShadow: active ? "0px 1px 1.5px rgba(0,0,0,0.1)" : "none",
                   }}
                 >
-                  <Icon size={20} color={active ? "#fff" : "#7a7a7a"} weight="regular" />
-                  <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, lineHeight: "20px", color: active ? "#fff" : "#7a7a7a", whiteSpace: "nowrap" }}>{label}</span>
+                  <Icon size={20} color={active ? "#090909" : "#7a7a7a"} weight="regular" />
+                  <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, lineHeight: "20px", color: active ? "#090909" : "#7a7a7a", whiteSpace: "nowrap" }}>{label}</span>
                 </button>
               );
             })}
           </div>
         )}
 
-        {/* White outer card */}
+        {/* Wrapper do campo (sem card branco) */}
         <div style={{
-          background: "#fff",
-          borderRadius: 48,
-          padding: "16px 12px",
+          position: "relative",
+          padding: "16px 0",
           width: "100%",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          overflow: "clip",
           boxSizing: "border-box",
         }}>
           {/* Campo */}
           <div style={{
             border: "1px solid #777575",
-            borderRadius: 40,
+            borderRadius: 36,
             padding: "16px 24px",
             display: "flex",
             flexDirection: "column",
@@ -183,34 +193,29 @@ export function HomeClient({
             position: "relative",
             width: "100%",
             boxSizing: "border-box",
+            overflow: "clip",
           }}>
             {/* Background field image */}
-            <Image aria-hidden alt="" src={CAMPO} fill sizes="400px" style={{ objectFit: "cover", pointerEvents: "none", borderRadius: 40 }} />
-            <div aria-hidden style={{ position: "absolute", inset: 0, background: "rgba(35,52,0,0.34)", borderRadius: 40, pointerEvents: "none" }} />
+            <Image aria-hidden alt="" src={CAMPO} fill sizes="400px" style={{ objectFit: "cover", pointerEvents: "none", borderRadius: 36 }} />
+            <div aria-hidden style={{ position: "absolute", inset: 0, background: "rgba(58,87,0,0.25)", borderRadius: 36, pointerEvents: "none" }} />
 
             {/* Header info: título + data/hora + status */}
             <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 4, alignItems: "center", width: "100%" }}>
-              {/* Row: título + date chips */}
-              <div style={{ display: "flex", gap: 24, alignItems: "flex-start", justifyContent: "center", width: "100%" }}>
-                {/* Título */}
-                <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0 }}>
-                  <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 14, lineHeight: "20px", color: "#fff" }}>VOTAÇÃO DO</p>
-                  <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 32, lineHeight: "32px", color: "#fff" }}>BABA</h1>
-                </div>
-                {/* Date + time chips */}
-                {dataRodada && (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end", flexShrink: 0 }}>
-                    <div style={{ background: "#1e1e1e", display: "flex", alignItems: "center", gap: 4, padding: "4px 8px", borderRadius: 48, overflow: "clip" }}>
+              {/* Row: data/hora à esquerda */}
+              {dataRodada && (
+                <div style={{ display: "flex", width: "100%" }}>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-start", flexShrink: 0 }}>
+                    <div style={{ background: "#1c1c1c", display: "flex", alignItems: "center", gap: 4, padding: "4px 8px", borderRadius: 48, overflow: "clip" }}>
                       <CalendarBlank size={16} color="#9fe870" weight="bold" />
-                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "20px", color: "#9fe870", letterSpacing: "-0.48px", whiteSpace: "nowrap" }}>{dataRodada}</span>
+                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#9fe870", whiteSpace: "nowrap" }}>{dataRodada}</span>
                     </div>
-                    <div style={{ background: "#1e1e1e", display: "flex", alignItems: "center", gap: 4, padding: "4px 8px", borderRadius: 48, overflow: "clip" }}>
+                    <div style={{ background: "#1c1c1c", display: "flex", alignItems: "center", gap: 4, padding: "4px 8px", borderRadius: 48, overflow: "clip" }}>
                       <Alarm size={16} color="#fff" weight="bold" />
-                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "20px", color: "#fff", letterSpacing: "-0.48px", whiteSpace: "nowrap" }}>20:00</span>
+                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#fff", whiteSpace: "nowrap" }}>20:00</span>
                     </div>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
 
               {/* Status pill — centralizada */}
               <div style={{
