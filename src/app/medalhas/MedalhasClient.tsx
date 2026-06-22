@@ -417,21 +417,13 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
         const unlocked = unlockedSet.has(selected.slug);
         const isRara = tierOf(selected.slug) === "epica";
 
-        const sheetShadow = !unlocked && isRara
-          ? "0px 2px 0px 0px rgba(206,156,84,0.16), 1px -12px 20px 0px rgba(206,156,84,0.24)"
+        const sheetShadow = isRara
+          ? "0px 0px 64px 6px rgba(226,196,133,0.55), 0px -10px 40px 2px rgba(226,196,133,0.45)"
           : "0px 2px 8px 0px rgba(40,41,61,0.16), 0px 16px 24px 0px rgba(96,97,112,0.16)";
 
-        const nameColor = unlocked
-          ? "#fff"
-          : isRara
-          ? "rgba(212,168,67,0.3)"
-          : "rgba(255,255,255,0.4)";
-
-        const descColor = unlocked
-          ? "#b0b0b6"
-          : isRara
-          ? "rgba(197,151,58,0.4)"
-          : "rgba(176,176,182,0.4)";
+        // Título e subtítulo em muted quando bloqueado (incl. épica)
+        const nameColor = unlocked ? "#fff" : "#8b8b93";
+        const descColor = unlocked ? "#b0b0b6" : "#7a7a7a";
 
         return (
           <>
@@ -509,7 +501,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                       alt={selected.nome}
                       fill
                       sizes="140px"
-                      style={{ objectFit: "contain" }}
+                      style={{ objectFit: "contain", opacity: unlocked ? 1 : 0.65 }}
                     />
                   </div>
 
