@@ -337,7 +337,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                                 ))
                               : (
                                 <div style={{ position: "absolute", top: 6, right: 6 }}>
-                                  <LockSimple size={14} color={dourada ? "#a07d33" : "#cfcfcf"} weight="fill" />
+                                  <LockSimple size={14} color={dourada ? "#e2c485" : "#e0e0e0"} weight="fill" />
                                 </div>
                               )}
 
@@ -376,8 +376,8 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                               </p>
                             </div>
 
-                            {/* Progress bar — só em badges bloqueadas com progresso real */}
-                            {!unlocked && progress[badge.slug] && (
+                            {/* Progress bar — só em badges bloqueadas com progresso real (Primeira Pelada é binária, sem barra) */}
+                            {!unlocked && badge.slug !== "primeiro-baba" && progress[badge.slug] && (
                               <div style={{
                                 width: 72,
                                 height: 6,
