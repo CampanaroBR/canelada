@@ -315,8 +315,10 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                               display: "flex",
                               flexDirection: "column",
                               alignItems: "center",
-                              justifyContent: "center",
-                              padding: unlocked ? "11px 4px" : "10px 4px",
+                              justifyContent: "flex-start",
+                              height: 116,
+                              boxSizing: "border-box",
+                              padding: "14px 4px 12px",
                               gap: 0,
                               overflow: "hidden",
                               cursor: "pointer",
@@ -383,7 +385,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                                 borderRadius: 100,
                                 overflow: "hidden",
                                 flexShrink: 0,
-                                marginTop: 8,
+                                marginTop: "auto",
                               }}>
                                 <div style={{
                                   height: "100%",
