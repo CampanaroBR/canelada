@@ -345,12 +345,12 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                               borderRadius: 12,
                               boxSizing: "border-box",
                               height: 118,
-                              padding: "26px 8px 10px",
+                              padding: "20px 8px 8px",
                               display: "flex",
                               flexDirection: "column",
                               alignItems: "center",
                               justifyContent: "flex-start",
-                              gap: 4,
+                              gap: 3,
                               cursor: "pointer",
                               WebkitTapHighlightColor: "transparent",
                             }}
@@ -369,12 +369,12 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                               )}
 
                             {/* Badge image */}
-                            <div style={{ width: 56, height: 56, flexShrink: 0, position: "relative" }}>
+                            <div style={{ width: 54, height: 54, flexShrink: 0, position: "relative" }}>
                               <Image
                                 alt={badge.nome}
                                 src={badge.svg}
                                 fill
-                                sizes="56px"
+                                sizes="54px"
                                 style={{ objectFit: "contain", filter: unlocked ? "none" : "brightness(0.5)" }}
                               />
                             </div>
