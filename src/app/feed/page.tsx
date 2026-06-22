@@ -273,9 +273,17 @@ export default async function FeedPage() {
     return { fase: "aberta" as const, aberta: true, texto: "Votação aberta até às 15h" };
   })() : null;
 
-  const datePills = grupos.map(g =>
-    new Date(g.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", "")
-  );
+  // Tabs de datas da Personagem da Semana: últimas 3 rodadas do grupo (asc → última = ativa)
+  const rodadasRecentes = await prisma.rodada.findMany({
+    where: { grupoId },
+    orderBy: { data: "desc" },
+    take: 3,
+    select: { data: true },
+  });
+  const datePills = rodadasRecentes
+    .slice()
+    .reverse()
+    .map(r => new Date(r.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", ""));
 
   // Próximo baba card
   const proximoBaba = rodadaAtiva ? (() => {
