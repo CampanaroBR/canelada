@@ -90,8 +90,28 @@ type BadgeEntry = typeof BADGE_CATALOG[number]["badges"][number];
 const ALL_SLUGS = BADGE_CATALOG.flatMap(c => c.badges.map(b => b.slug));
 const TOTAL = ALL_SLUGS.length;
 
-// Únicas douradas (borda + cadeado dourado) = raridade "Lendária"
-const GOLDEN_SLUGS = new Set(["lenda-do-baba", "craque-historico", "mestre-da-resenha", "completo"]);
+// Raridade por badge (ver docs/gamificacao.md). cor = clara (cadeado/chip), borda = mais escura (tile)
+type Tier = "comum" | "incomum" | "rara" | "epica";
+const TIER_META: Record<Tier, { label: string; cor: string; borda: string }> = {
+  comum:   { label: "Comum",   cor: "#cfcfcf", borda: "#2c2c2c" },
+  incomum: { label: "Incomum", cor: "#5aa9e6", borda: "#3f6f99" },
+  rara:    { label: "Rara",    cor: "#a978f0", borda: "#6f4f9e" },
+  epica:   { label: "Épica",   cor: "#e2c485", borda: "#7a5c28" },
+};
+const RARITY: Record<string, Tier> = {
+  // Comum (9)
+  "primeiro-baba": "comum", "mvp": "comum", "virada-de-chave": "comum", "em-chamas": "comum",
+  "veterano": "comum", "operario": "comum", "consistente": "comum", "rei-do-mes": "comum", "colecionador": "comum",
+  // Incomum (6)
+  "mais-presente": "incomum", "racudo-do-mes": "incomum", "rei-absoluto": "incomum",
+  "resenha-forte": "incomum", "casca-grossa": "incomum", "imparavel": "incomum",
+  // Rara (5)
+  "alma-do-grupo": "rara", "invicto": "rara", "craque-da-galera": "rara",
+  "hall-da-fama": "rara", "querido-da-galera": "rara",
+  // Épica (4)
+  "lenda-do-baba": "epica", "craque-historico": "epica", "mestre-da-resenha": "epica", "completo": "epica",
+};
+const tierOf = (slug: string): Tier => RARITY[slug] ?? "comum";
 
 // slug → categoria (em title case p/ o chip)
 const BADGE_CATEGORY: Record<string, string> = Object.fromEntries(
@@ -311,7 +331,8 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                     <div key={ri} style={{ display: "flex", gap: 8, alignItems: "stretch" }}>
                       {row.map(badge => {
                         const unlocked = unlockedSet.has(badge.slug);
-                        const dourada = GOLDEN_SLUGS.has(badge.slug);
+                        const tier = tierOf(badge.slug);
+                        const meta = TIER_META[tier];
                         return (
                           <div
                             key={badge.slug}
@@ -321,7 +342,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                               minWidth: 0,
                               position: "relative",
                               background: unlocked ? "#0a0e0e" : "#171717",
-                              border: dourada ? "1px solid #7a5c28" : unlocked ? "1px solid #2c2c2c" : "none",
+                              border: tier !== "comum" ? `1px solid ${meta.borda}` : unlocked ? "1px solid #2c2c2c" : "none",
                               borderRadius: 12,
                               display: "flex",
                               flexDirection: "column",
@@ -345,7 +366,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                                 ))
                               : (
                                 <div style={{ position: "absolute", top: 6, right: 6 }}>
-                                  <LockSimple size={14} color={dourada ? "#e2c485" : "#e0e0e0"} weight="fill" />
+                                  <LockSimple size={14} color={meta.cor} weight="fill" />
                                 </div>
                               )}
 
@@ -421,7 +442,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
       {/* ── BADGE BOTTOM SHEET ── */}
       {selected && (() => {
         const unlocked = unlockedSet.has(selected.slug);
-        const isRara = selected.rara;
+        const isRara = tierOf(selected.slug) === "epica";
 
         const sheetShadow = !unlocked && isRara
           ? "0px 2px 0px 0px rgba(206,156,84,0.16), 1px -12px 20px 0px rgba(206,156,84,0.24)"
@@ -562,12 +583,12 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                     <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: "#fff" }}>{BADGE_CATEGORY[selected.slug] ?? "—"}</span>
                   </div>
                   {(() => {
-                    const lendaria = GOLDEN_SLUGS.has(selected.slug);
+                    const m = TIER_META[tierOf(selected.slug)];
                     return (
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0a0e0e", border: `1px solid ${lendaria ? "#7a5c28" : "#2c2c2c"}`, borderRadius: 9999, padding: "6px 12px" }}>
-                        <span style={{ width: 6, height: 6, borderRadius: "50%", background: lendaria ? "#e2c485" : "#7a7a7a", flexShrink: 0 }} />
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0a0e0e", border: `1px solid ${m.borda}`, borderRadius: 9999, padding: "6px 12px" }}>
+                        <span style={{ width: 6, height: 6, borderRadius: "50%", background: m.cor, flexShrink: 0 }} />
                         <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#9b9b9b" }}>Raridade</span>
-                        <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: lendaria ? "#e2c485" : "#fff" }}>{lendaria ? "Lendária" : "Comum"}</span>
+                        <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: m.cor }}>{m.label}</span>
                       </div>
                     );
                   })()}
