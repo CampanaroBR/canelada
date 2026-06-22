@@ -300,6 +300,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                     <div key={ri} style={{ display: "flex", gap: 8, alignItems: "stretch" }}>
                       {row.map(badge => {
                         const unlocked = unlockedSet.has(badge.slug);
+                        const rara = badge.rara;
                         return (
                           <div
                             key={badge.slug}
@@ -309,7 +310,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                               minWidth: 0,
                               position: "relative",
                               background: unlocked ? "#0a0e0e" : "#171717",
-                              border: unlocked ? "1px solid #2c2c2c" : "none",
+                              border: rara ? "1px solid #c5973a" : unlocked ? "1px solid #2c2c2c" : "none",
                               borderRadius: 12,
                               display: "flex",
                               flexDirection: "column",
@@ -331,7 +332,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                                 ))
                               : (
                                 <div style={{ position: "absolute", top: 6, right: 6 }}>
-                                  <LockSimple size={14} color="#7a7a7a" weight="fill" />
+                                  <LockSimple size={14} color={rara ? "#d6a83e" : "#cfcfcf"} weight="fill" />
                                 </div>
                               )}
 
@@ -346,7 +347,11 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                                   sizes="72px"
                                   style={{
                                     objectFit: "contain",
-                                    opacity: unlocked ? 1 : 0.4,
+                                    filter: unlocked
+                                      ? "none"
+                                      : rara
+                                      ? "grayscale(1) sepia(1) saturate(4) brightness(1.05) hue-rotate(2deg)"
+                                      : "grayscale(1) brightness(1.9) opacity(0.7)",
                                   }}
                                 />
                               </div>
