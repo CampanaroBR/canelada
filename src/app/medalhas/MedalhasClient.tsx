@@ -351,7 +351,6 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                               alignItems: "center",
                               justifyContent: "center",
                               gap: 4,
-                              overflow: "hidden",
                               cursor: "pointer",
                               WebkitTapHighlightColor: "transparent",
                             }}
@@ -365,7 +364,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                                 ))
                               : (
                                 <div style={{ position: "absolute", top: 6, right: 6, zIndex: 1 }}>
-                                  <LockSimple size={14} color="#fff" weight="fill" />
+                                  <LockSimple size={14} color={tier === "epica" ? "#e2c485" : "#fff"} weight="fill" />
                                 </div>
                               )}
 
