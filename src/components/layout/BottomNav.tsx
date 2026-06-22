@@ -2,18 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Medal } from "@phosphor-icons/react";
+import { House, SoccerBall, Medal, ChartBar } from "@phosphor-icons/react";
 
 const NAV_ITEMS: Array<{
   href: string;
   label: string;
-  iconSvg?: string;
-  PhosphorIcon?: typeof Medal;
+  Icon: typeof Medal;
 }> = [
-  { href: "/feed",     label: "Home",    iconSvg: "/nav-home.svg"    },
-  { href: "/pelada",   label: "Baba",    iconSvg: "/nav-baba.svg"    },
-  { href: "/medalhas", label: "Badges",  PhosphorIcon: Medal         },
-  { href: "/ranking",  label: "Ranking", iconSvg: "/nav-ranking.svg" },
+  { href: "/feed",     label: "Home",    Icon: House      },
+  { href: "/pelada",   label: "Baba",    Icon: SoccerBall },
+  { href: "/medalhas", label: "Badges",  Icon: Medal      },
+  { href: "/ranking",  label: "Ranking", Icon: ChartBar   },
 ];
 
 export function BottomNav() {
@@ -70,33 +69,13 @@ export function BottomNav() {
                   <div style={{
                     width: 28,
                     height: 28,
-                    position: "relative",
                     marginBottom: -2,
                     flexShrink: 0,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                   }}>
-                    {item.iconSvg ? (
-                      <img
-                        alt=""
-                        src={item.iconSvg}
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          width: "100%",
-                          height: "100%",
-                          display: "block",
-                          filter: isActive ? "brightness(0)" : "brightness(0) invert(1)",
-                        }}
-                      />
-                    ) : item.PhosphorIcon ? (
-                      <item.PhosphorIcon
-                        size={28}
-                        color={isActive ? "#000" : "#fff"}
-                        weight={isActive ? "fill" : "regular"}
-                      />
-                    ) : null}
+                    <item.Icon size={28} color={isActive ? "#000" : "#fff"} weight="regular" />
                   </div>
                   <span style={{
                     fontFamily: "var(--font-display)",
