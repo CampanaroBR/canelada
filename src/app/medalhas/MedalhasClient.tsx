@@ -349,11 +349,8 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                                   sizes="72px"
                                   style={{
                                     objectFit: "contain",
-                                    filter: unlocked
-                                      ? "none"
-                                      : rara
-                                      ? "grayscale(1) sepia(1) saturate(4) brightness(1.05) hue-rotate(2deg)"
-                                      : "grayscale(1) brightness(1.9) opacity(0.7)",
+                                    // Bloqueado = badge colorido escurecido (igual ao Figma); raro fica quase cheio pro dourado brilhar
+                                    filter: unlocked ? "none" : rara ? "brightness(0.92)" : "brightness(0.5)",
                                   }}
                                 />
                               </div>
