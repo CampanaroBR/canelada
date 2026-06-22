@@ -37,12 +37,13 @@ export function BottomNav() {
         style={{
           display: "inline-flex",
           alignItems: "center",
-          padding: "2px 8px",
+          padding: "8px 16px",
           borderRadius: 32,
+          border: "1px solid #393939",
           overflow: "clip",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {NAV_ITEMS.map((item, i) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
             return (
@@ -58,10 +59,10 @@ export function BottomNav() {
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
-                  width: isActive ? undefined : 56,
-                  height: isActive ? undefined : 56,
-                  padding: isActive ? "4px 12px" : 8,
-                  borderRadius: isActive ? 100 : 16,
+                  width: 56,
+                  height: 56,
+                  padding: 8,
+                  borderRadius: isActive ? 9999 : 16,
                   background: isActive ? "#9fe870" : "transparent",
                   overflow: "clip",
                   transition: "background 180ms cubic-bezier(0.34,1.56,0.64,1), border-radius 180ms cubic-bezier(0.34,1.56,0.64,1)",
@@ -70,7 +71,7 @@ export function BottomNav() {
                     width: 28,
                     height: 28,
                     position: "relative",
-                    marginBottom: isActive ? -4 : -2,
+                    marginBottom: -2,
                     flexShrink: 0,
                     display: "flex",
                     alignItems: "center",
