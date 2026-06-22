@@ -313,7 +313,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                               minWidth: 0,
                               position: "relative",
                               background: unlocked ? "#0a0e0e" : "#171717",
-                              border: dourada ? "1px solid #c5973a" : unlocked ? "1px solid #2c2c2c" : "none",
+                              border: dourada ? "1px solid #7a5c28" : unlocked ? "1px solid #2c2c2c" : "none",
                               borderRadius: 12,
                               display: "flex",
                               flexDirection: "column",
@@ -337,7 +337,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                                 ))
                               : (
                                 <div style={{ position: "absolute", top: 6, right: 6 }}>
-                                  <LockSimple size={14} color={dourada ? "#d6a83e" : "#cfcfcf"} weight="fill" />
+                                  <LockSimple size={14} color={dourada ? "#a07d33" : "#cfcfcf"} weight="fill" />
                                 </div>
                               )}
 
@@ -352,8 +352,8 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                                   sizes="72px"
                                   style={{
                                     objectFit: "contain",
-                                    // Bloqueado = badge colorido escurecido (igual ao Figma); dourado fica quase cheio pro ouro brilhar
-                                    filter: unlocked ? "none" : dourada ? "brightness(0.92)" : "brightness(0.5)",
+                                    // Bloqueado = badge colorido escurecido (igual ao Figma) — douradas escurecem igual às outras
+                                    filter: unlocked ? "none" : "brightness(0.5)",
                                   }}
                                 />
                               </div>
