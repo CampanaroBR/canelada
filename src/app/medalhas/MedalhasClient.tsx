@@ -358,8 +358,8 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                             {/* Tag NOVO (conquista recente) ou cadeado (bloqueada) — selo no canto, sem encostar na medalha */}
                             {unlocked
                               ? (novosSet.has(badge.slug) && (
-                                  <div style={{ position: "absolute", top: 6, right: 6, background: "#9fe870", borderRadius: 5, padding: "1px 5px", zIndex: 2 }}>
-                                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 8, lineHeight: "11px", letterSpacing: "0.2px", color: "#0a1a06" }}>NOVO</span>
+                                  <div style={{ position: "absolute", top: 6, right: 6, background: "#9fe870", borderRadius: 5, padding: "0px 5px", display: "flex", alignItems: "center", zIndex: 2 }}>
+                                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 9, lineHeight: "15px", letterSpacing: "0.2px", color: "#0a1a06" }}>NOVO</span>
                                   </div>
                                 ))
                               : (
