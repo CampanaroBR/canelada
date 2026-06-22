@@ -90,8 +90,16 @@ type BadgeEntry = typeof BADGE_CATALOG[number]["badges"][number];
 const ALL_SLUGS = BADGE_CATALOG.flatMap(c => c.badges.map(b => b.slug));
 const TOTAL = ALL_SLUGS.length;
 
-// Únicas douradas (borda + cadeado dourado + brilho do dourado)
+// Únicas douradas (borda + cadeado dourado) = raridade "Lendária"
 const GOLDEN_SLUGS = new Set(["lenda-do-baba", "craque-historico", "mestre-da-resenha", "completo"]);
+
+// slug → categoria (em title case p/ o chip)
+const BADGE_CATEGORY: Record<string, string> = Object.fromEntries(
+  BADGE_CATALOG.flatMap(c => {
+    const nome = c.title.charAt(0) + c.title.slice(1).toLowerCase();
+    return c.badges.map(b => [b.slug, nome]);
+  })
+);
 
 const BADGE_SVG: Record<string, string> = Object.fromEntries(
   BADGE_CATALOG.flatMap(c => c.badges.map(b => [b.slug, b.svg]))
@@ -545,6 +553,24 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                       </p>
                     </div>
                   </div>
+                </div>
+
+                {/* Chips: Categoria + Raridade */}
+                <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap", width: "100%" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 9999, padding: "6px 12px" }}>
+                    <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#9b9b9b" }}>Categoria</span>
+                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: "#fff" }}>{BADGE_CATEGORY[selected.slug] ?? "—"}</span>
+                  </div>
+                  {(() => {
+                    const lendaria = GOLDEN_SLUGS.has(selected.slug);
+                    return (
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0a0e0e", border: `1px solid ${lendaria ? "#7a5c28" : "#2c2c2c"}`, borderRadius: 9999, padding: "6px 12px" }}>
+                        <span style={{ width: 6, height: 6, borderRadius: "50%", background: lendaria ? "#e2c485" : "#7a7a7a", flexShrink: 0 }} />
+                        <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#9b9b9b" }}>Raridade</span>
+                        <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: lendaria ? "#e2c485" : "#fff" }}>{lendaria ? "Lendária" : "Comum"}</span>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Status box — locked only */}
