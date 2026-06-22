@@ -340,20 +340,21 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                             key={badge.slug}
                             onClick={() => setSelected(badge)}
                             style={{
-                              flex: "1 0 0",
+                              flex: "1 1 0",
                               minWidth: 0,
                               position: "relative",
-                              background: unlocked ? "#0a0e0e" : "#171717",
+                              background: "#0a0e0e",
                               // Todas com borda (comum cinza, raridades coloridas) — grid uniforme
                               border: `1px solid ${tier !== "comum" ? meta.borda : "#2c2c2c"}`,
                               borderRadius: 12,
                               boxSizing: "border-box",
                               height: 118,
-                              padding: "12px 6px",
+                              padding: "8px",
                               display: "flex",
                               flexDirection: "column",
                               alignItems: "center",
-                              justifyContent: "space-between",
+                              justifyContent: "center",
+                              gap: 4,
                               overflow: "hidden",
                               cursor: "pointer",
                               WebkitTapHighlightColor: "transparent",
@@ -372,50 +373,45 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                                 </div>
                               )}
 
-                            {/* Topo: imagem + nome */}
-                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-                              <div style={{ width: 64, height: 64, flexShrink: 0, position: "relative" }}>
-                                <Image
-                                  alt={badge.nome}
-                                  src={badge.svg}
-                                  fill
-                                  sizes="64px"
-                                  style={{
-                                    objectFit: "contain",
-                                    filter: unlocked ? "none" : "brightness(0.5)",
-                                  }}
-                                />
-                              </div>
-                              <p style={{
-                                margin: 0,
-                                fontFamily: "var(--font-display)",
-                                fontWeight: 800,
-                                fontSize: 12,
-                                lineHeight: "14px",
-                                color: unlocked ? "#fff" : "#7a7a7a",
-                                textAlign: "center",
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                                maxWidth: "100%",
-                              }}>
-                                {badge.nome}
-                              </p>
+                            {/* Badge image */}
+                            <div style={{ width: 64, height: 64, flexShrink: 0, position: "relative" }}>
+                              <Image
+                                alt={badge.nome}
+                                src={badge.svg}
+                                fill
+                                sizes="64px"
+                                style={{ objectFit: "contain", filter: unlocked ? "none" : "brightness(0.5)" }}
+                              />
                             </div>
 
-                            {/* Base: barra de progresso (ou espaço reservado p/ manter altura igual) */}
-                            <div style={{ height: 6, width: 64, flexShrink: 0 }}>
-                              {temBarra && (
-                                <div style={{ height: 6, width: "100%", background: "rgba(120,120,120,0.2)", borderRadius: 100, overflow: "hidden" }}>
-                                  <div style={{ height: "100%", width: `${Math.round(pctFor(badge.slug) * 100)}%`, background: "#9fe870", borderRadius: 100 }} />
-                                </div>
-                              )}
-                            </div>
+                            {/* Nome */}
+                            <p style={{
+                              margin: 0,
+                              fontFamily: "var(--font-display)",
+                              fontWeight: 800,
+                              fontSize: 12,
+                              lineHeight: "14px",
+                              color: unlocked ? "#fff" : "#7a7a7a",
+                              textAlign: "center",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              maxWidth: "100%",
+                            }}>
+                              {badge.nome}
+                            </p>
+
+                            {/* Barra de progresso (parte do conteúdo centralizado) */}
+                            {temBarra && (
+                              <div style={{ height: 6, width: 64, background: "rgba(120,120,120,0.2)", borderRadius: 100, overflow: "hidden", flexShrink: 0 }}>
+                                <div style={{ height: "100%", width: `${Math.round(pctFor(badge.slug) * 100)}%`, background: "#9fe870", borderRadius: 100 }} />
+                              </div>
+                            )}
                           </div>
                         );
                       })}
                       {row.length < 3 && Array.from({ length: 3 - row.length }).map((_, i) => (
-                        <div key={`empty-${i}`} style={{ flex: "1 0 0", minWidth: 0 }} />
+                        <div key={`empty-${i}`} aria-hidden style={{ flex: "1 1 0", minWidth: 0 }} />
                       ))}
                     </div>
                   ))}
