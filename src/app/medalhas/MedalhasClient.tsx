@@ -345,36 +345,36 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                               borderRadius: 12,
                               boxSizing: "border-box",
                               height: 118,
-                              padding: "8px",
+                              padding: "26px 8px 10px",
                               display: "flex",
                               flexDirection: "column",
                               alignItems: "center",
-                              justifyContent: "center",
+                              justifyContent: "flex-start",
                               gap: 4,
                               cursor: "pointer",
                               WebkitTapHighlightColor: "transparent",
                             }}
                           >
-                            {/* Tag NOVO (conquista recente) ou cadeado (bloqueada) */}
+                            {/* Tag NOVO (conquista recente) ou cadeado (bloqueada) — selo no canto, sem encostar na medalha */}
                             {unlocked
                               ? (novosSet.has(badge.slug) && (
-                                  <div style={{ position: "absolute", top: 6, right: 6, background: "#9fe870", borderRadius: 8, padding: "2px 8px", zIndex: 1 }}>
-                                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 10, lineHeight: "14px", color: "#000" }}>NOVO</span>
+                                  <div style={{ position: "absolute", top: 7, right: 7, background: "#9fe870", borderRadius: 6, padding: "1px 6px", zIndex: 2 }}>
+                                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 9, lineHeight: "13px", letterSpacing: "0.3px", color: "#0a1a06" }}>NOVO</span>
                                   </div>
                                 ))
                               : (
-                                <div style={{ position: "absolute", top: 6, right: 6, zIndex: 1 }}>
-                                  <LockSimple size={14} color={tier === "epica" ? "#e2c485" : "#fff"} weight="fill" />
+                                <div style={{ position: "absolute", top: 7, right: 7, zIndex: 2 }}>
+                                  <LockSimple size={13} color={tier === "epica" ? "#e2c485" : "#fff"} weight="fill" />
                                 </div>
                               )}
 
                             {/* Badge image */}
-                            <div style={{ width: 64, height: 64, flexShrink: 0, position: "relative" }}>
+                            <div style={{ width: 56, height: 56, flexShrink: 0, position: "relative" }}>
                               <Image
                                 alt={badge.nome}
                                 src={badge.svg}
                                 fill
-                                sizes="64px"
+                                sizes="56px"
                                 style={{ objectFit: "contain", filter: unlocked ? "none" : "brightness(0.5)" }}
                               />
                             </div>
