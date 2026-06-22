@@ -84,6 +84,7 @@ interface Props {
   selecao: (PersonagemSemana | null)[];
   selecaoPiores: (PersonagemSemana | null)[];
   conquistas: Conquista[];
+  badgesGrupo: { comBadge: number; total: number };
   datePills: string[];
   grupoNome: string;
   proximoBaba: ProximoBaba | null;
@@ -94,7 +95,7 @@ const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
 
 export function HomeClient({
   rodadaId, dataRodada, dataCurta, horarioJogo, votacao, jaVotou, top5Rodada,
-  maisVotados, personagensPorRodada, personagensSemana, selecao, selecaoPiores, conquistas, datePills, grupoNome,
+  maisVotados, personagensPorRodada, personagensSemana, selecao, selecaoPiores, conquistas, badgesGrupo, datePills, grupoNome,
   proximoBaba, criarRodadaAction,
 }: Props) {
   const [bsOpen, setBsOpen] = useState(false);
@@ -565,7 +566,7 @@ export function HomeClient({
         )}
 
         {/* ── 4. MEDALHAS ── */}
-        {conquistas.length > 0 && (
+        {badgesGrupo.total > 0 && (
           <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 20, padding: "17px 9px", display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Header */}
             <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
@@ -590,8 +591,8 @@ export function HomeClient({
               <span style={{ fontFamily: "var(--font-body)", fontSize: 18, lineHeight: "27px", letterSpacing: "-0.44px", flexShrink: 0 }}>🏅</span>
               <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 4 }}>
                 <p style={{ margin: 0, whiteSpace: "nowrap" }}>
-                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#fff" }}>{conquistas.length}/</span>
-                  <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 16, lineHeight: "1.4", color: "#7a7a7a" }}>15 jogadores</span>
+                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#fff" }}>{badgesGrupo.comBadge}/</span>
+                  <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 16, lineHeight: "1.4", color: "#7a7a7a" }}>{badgesGrupo.total} jogadores</span>
                 </p>
                 <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, lineHeight: "20px", color: "#666", whiteSpace: "nowrap" }}>já conquistaram uma medalha</p>
               </div>

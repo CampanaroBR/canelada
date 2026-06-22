@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { criarRodada } from "@/app/votacao/actions";
+import { computarBadgesGrupo } from "@/lib/badges";
 import { HomeClient } from "./HomeClient";
 
 export const dynamic = "force-dynamic";
@@ -204,13 +205,15 @@ export default async function FeedPage() {
 
   const personagensPorRodada: Personagem[][] = grupos.map(g => g.personagens);
 
-  const conquistas: Conquista[] = recentTraits.map(c => ({
-    apelido: c.jogador.apelido,
-    traitSlug: c.traitSlug,
-    traitNome: c.trait.nome,
-    traitEmoji: c.trait.emoji,
-    traitDesc: c.trait.descricao ?? null,
-    data: c.updatedAt,
+  // Badges reais do grupo (mesma engine da página de medalhas) — quem desbloqueou na última rodada
+  const badgesGrupo = await computarBadgesGrupo(grupoId);
+  const conquistas: Conquista[] = badgesGrupo.novas.map(n => ({
+    apelido: n.apelido,
+    traitSlug: n.slug,
+    traitNome: n.nome,
+    traitEmoji: null,
+    traitDesc: "Nova conquista desbloqueada!",
+    data: new Date(),
   }));
 
   const [jaVotou, top5VotosRaw] = await Promise.all([
@@ -295,6 +298,7 @@ export default async function FeedPage() {
       selecao={selecao}
       selecaoPiores={selecaoPiores}
       conquistas={conquistas}
+      badgesGrupo={{ comBadge: badgesGrupo.jogadoresComBadge, total: badgesGrupo.totalJogadores }}
       datePills={datePills}
       grupoNome={grupoNome}
       proximoBaba={proximoBaba}
