@@ -229,13 +229,16 @@ export async function computarBadges(grupoId: string, jogadorId: string): Promis
   return agregar(ctx, jogadorId, ctx.rodadas);
 }
 
+export const nomeBadge = (slug: string): string => NOME[slug] ?? slug;
+
 /**
  * Persiste novos desbloqueios na tabela BadgeUnlock (idempotente).
- * Chamado no carregamento das páginas — registra o createdAt do desbloqueio.
+ * Chamado no carregamento das páginas e no cron — registra o createdAt do desbloqueio.
+ * Retorna os desbloqueios recém-criados (para notificação).
  */
-export async function sincronizarBadges(grupoId: string): Promise<void> {
+export async function sincronizarBadges(grupoId: string): Promise<{ jogadorId: string; slug: string }[]> {
   const ctx = await carregar(grupoId);
-  if (ctx.rodadas.length === 0) return;
+  if (ctx.rodadas.length === 0) return [];
   const [jogadores, existentes] = await Promise.all([
     prisma.jogador.findMany({ where: { grupoId }, select: { id: true } }),
     prisma.badgeUnlock.findMany({ where: { jogador: { grupoId } }, select: { jogadorId: true, slug: true } }),
@@ -247,6 +250,7 @@ export async function sincronizarBadges(grupoId: string): Promise<void> {
     for (const slug of unlocked) if (!jaTem.has(`${j.id}:${slug}`)) novos.push({ jogadorId: j.id, slug });
   }
   if (novos.length > 0) await prisma.badgeUnlock.createMany({ data: novos, skipDuplicates: true });
+  return novos;
 }
 
 const NOVO_MS = 7 * 24 * 60 * 60 * 1000; // "NOVO" = desbloqueado nos últimos 7 dias
