@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { computarBadges } from "@/lib/badges";
+import { badgesDoJogador } from "@/lib/badges";
 import { MedalhasClient } from "./MedalhasClient";
 
 export const dynamic = "force-dynamic";
@@ -16,14 +16,14 @@ export default async function MedalhasPage() {
   });
   if (!jogador) redirect("/onboarding");
 
-  // Cálculo oficial das 24 badges (docs/gamificacao.md)
-  const { unlocked, progress } = await computarBadges(jogador.grupoId, jogador.id);
+  // Cálculo oficial das 24 badges (docs/gamificacao.md) + persistência/novos
+  const { unlocked, novos, progress } = await badgesDoJogador(jogador.grupoId, jogador.id);
 
   return (
     <MedalhasClient
       unlockedSlugs={unlocked}
+      novos={novos}
       progress={progress}
-      lastConquista={null}
     />
   );
 }

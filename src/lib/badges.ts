@@ -37,12 +37,22 @@ type Ctx = {
   partPorRodada: Map<string, Set<string>>;
 };
 
+// Uma rodada "conta" para badges quando a votação já encerrou (encerrada OU 15h do dia seguinte já passou)
+function votacaoFinalizada(data: Date, encerrada: boolean): boolean {
+  if (encerrada) return true;
+  const fim = new Date(data);
+  fim.setDate(fim.getDate() + 1);
+  fim.setHours(15, 0, 0, 0);
+  return new Date() >= fim;
+}
+
 async function carregar(grupoId: string): Promise<Ctx> {
-  const rodadas = await prisma.rodada.findMany({
-    where: { grupoId, encerrada: true },
+  const todas = await prisma.rodada.findMany({
+    where: { grupoId },
     orderBy: { data: "asc" },
-    select: { id: true, data: true },
+    select: { id: true, data: true, encerrada: true },
   });
+  const rodadas = todas.filter(r => votacaoFinalizada(r.data, r.encerrada)).map(r => ({ id: r.id, data: r.data }));
   const rodadaIds = rodadas.map(r => r.id);
   const contagem = new Map<string, Map<string, Map<string, number>>>();
   const partPorRodada = new Map<string, Set<string>>();
@@ -219,24 +229,64 @@ export async function computarBadges(grupoId: string, jogadorId: string): Promis
   return agregar(ctx, jogadorId, ctx.rodadas);
 }
 
+/**
+ * Persiste novos desbloqueios na tabela BadgeUnlock (idempotente).
+ * Chamado no carregamento das páginas — registra o createdAt do desbloqueio.
+ */
+export async function sincronizarBadges(grupoId: string): Promise<void> {
+  const ctx = await carregar(grupoId);
+  if (ctx.rodadas.length === 0) return;
+  const [jogadores, existentes] = await Promise.all([
+    prisma.jogador.findMany({ where: { grupoId }, select: { id: true } }),
+    prisma.badgeUnlock.findMany({ where: { jogador: { grupoId } }, select: { jogadorId: true, slug: true } }),
+  ]);
+  const jaTem = new Set(existentes.map(e => `${e.jogadorId}:${e.slug}`));
+  const novos: { jogadorId: string; slug: string }[] = [];
+  for (const j of jogadores) {
+    const { unlocked } = agregar(ctx, j.id, ctx.rodadas);
+    for (const slug of unlocked) if (!jaTem.has(`${j.id}:${slug}`)) novos.push({ jogadorId: j.id, slug });
+  }
+  if (novos.length > 0) await prisma.badgeUnlock.createMany({ data: novos, skipDuplicates: true });
+}
+
+const NOVO_MS = 7 * 24 * 60 * 60 * 1000; // "NOVO" = desbloqueado nos últimos 7 dias
+
+export type BadgesJogador = BadgeResult & { novos: string[] };
+
+/** Página de medalhas: desbloqueadas (persistidas) + quais são novas + progresso (ao vivo). */
+export async function badgesDoJogador(grupoId: string, jogadorId: string): Promise<BadgesJogador> {
+  await sincronizarBadges(grupoId);
+  const [{ progress }, rows] = await Promise.all([
+    computarBadges(grupoId, jogadorId),
+    prisma.badgeUnlock.findMany({ where: { jogadorId }, select: { slug: true, createdAt: true } }),
+  ]);
+  const limite = Date.now() - NOVO_MS;
+  return {
+    unlocked: rows.map(r => r.slug),
+    novos: rows.filter(r => r.createdAt.getTime() >= limite).map(r => r.slug),
+    progress,
+  };
+}
+
 export type BadgeNova = { apelido: string; slug: string; nome: string };
 export type BadgesGrupo = { jogadoresComBadge: number; totalJogadores: number; novas: BadgeNova[] };
 
-/** Visão de grupo (home): quantos jogadores têm badge + quem desbloqueou na última rodada. */
-export async function computarBadgesGrupo(grupoId: string): Promise<BadgesGrupo> {
-  const ctx = await carregar(grupoId);
-  const jogadores = await prisma.jogador.findMany({ where: { grupoId }, select: { id: true, apelido: true } });
-  if (ctx.rodadas.length === 0) {
-    return { jogadoresComBadge: 0, totalJogadores: jogadores.length, novas: [] };
-  }
-  const semUltima = ctx.rodadas.slice(0, -1);
-  let comBadge = 0;
-  const novas: BadgeNova[] = [];
-  for (const j of jogadores) {
-    const full = new Set(agregar(ctx, j.id, ctx.rodadas).unlocked);
-    if (full.size > 0) comBadge++;
-    const prev = new Set(agregar(ctx, j.id, semUltima).unlocked);
-    for (const slug of full) if (!prev.has(slug)) novas.push({ apelido: j.apelido, slug, nome: NOME[slug] ?? slug });
-  }
-  return { jogadoresComBadge: comBadge, totalJogadores: jogadores.length, novas: novas.slice(0, 3) };
+/** Home: nº de jogadores com badge + últimos desbloqueios do grupo (por data). */
+export async function badgesHome(grupoId: string): Promise<BadgesGrupo> {
+  await sincronizarBadges(grupoId);
+  const [total, comBadgeRows, recentes] = await Promise.all([
+    prisma.jogador.count({ where: { grupoId } }),
+    prisma.badgeUnlock.findMany({ where: { jogador: { grupoId } }, select: { jogadorId: true }, distinct: ["jogadorId"] }),
+    prisma.badgeUnlock.findMany({
+      where: { jogador: { grupoId } },
+      orderBy: { createdAt: "desc" },
+      take: 3,
+      select: { slug: true, jogador: { select: { apelido: true } } },
+    }),
+  ]);
+  return {
+    jogadoresComBadge: comBadgeRows.length,
+    totalJogadores: total,
+    novas: recentes.map(r => ({ apelido: r.jogador.apelido, slug: r.slug, nome: NOME[r.slug] ?? r.slug })),
+  };
 }

@@ -129,15 +129,16 @@ type Filter = "todas" | "desbloqueadas" | "andamento";
 
 interface Props {
   unlockedSlugs: string[];
+  novos?: string[];
   progress?: Record<string, { current: number; meta: number }>;
-  lastConquista: { slug: string; nome: string; descricao: string } | null;
 }
 
-export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: Props) {
+export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Props) {
   const [filter, setFilter] = useState<Filter>("todas");
   const [selected, setSelected] = useState<BadgeEntry | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const unlockedSet = new Set(unlockedSlugs);
+  const novosSet = new Set(novos);
   const unlockedCount = ALL_SLUGS.filter(s => unlockedSet.has(s)).length;
 
   // % de progresso de uma badge bloqueada (capado em 0.95 p/ nunca parecer "completa porém travada")
@@ -359,7 +360,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                           >
                             {/* Tag NOVO (conquista recente) ou cadeado (bloqueada) */}
                             {unlocked
-                              ? (lastConquista?.slug === badge.slug && (
+                              ? (novosSet.has(badge.slug) && (
                                   <div style={{ position: "absolute", top: 6, right: 6, background: "#9fe870", borderRadius: 8, padding: "2px 8px" }}>
                                     <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 10, lineHeight: "14px", color: "#000" }}>NOVO</span>
                                   </div>

@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { criarRodada } from "@/app/votacao/actions";
-import { computarBadgesGrupo } from "@/lib/badges";
+import { badgesHome } from "@/lib/badges";
 import { HomeClient } from "./HomeClient";
 
 export const dynamic = "force-dynamic";
@@ -206,7 +206,7 @@ export default async function FeedPage() {
   const personagensPorRodada: Personagem[][] = grupos.map(g => g.personagens);
 
   // Badges reais do grupo (mesma engine da página de medalhas) — quem desbloqueou na última rodada
-  const badgesGrupo = await computarBadgesGrupo(grupoId);
+  const badgesGrupo = await badgesHome(grupoId);
   const conquistas: Conquista[] = badgesGrupo.novas.map(n => ({
     apelido: n.apelido,
     traitSlug: n.slug,

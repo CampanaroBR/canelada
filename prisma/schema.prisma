@@ -90,6 +90,19 @@ model Jogador {
   votosEmitidos   Voto[]   @relation("VotanteVotos")
   traitsRecebidas JogadorTrait[]
   pushSubscriptions PushSubscription[]
+  badgeUnlocks    BadgeUnlock[]
+}
+
+model BadgeUnlock {
+  id         String   @id @default(cuid())
+  jogadorId  String
+  slug       String
+  createdAt  DateTime @default(now())
+
+  jogador    Jogador  @relation(fields: [jogadorId], references: [id], onDelete: Cascade)
+
+  @@unique([jogadorId, slug])
+  @@index([jogadorId])
 }
 
 model PushSubscription {
