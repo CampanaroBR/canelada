@@ -367,7 +367,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                                 ))
                               : (
                                 <div style={{ position: "absolute", top: 6, right: 6 }}>
-                                  <LockSimple size={14} color={meta.cor} weight="fill" />
+                                  <LockSimple size={14} color="#fff" weight="fill" />
                                 </div>
                               )}
 
