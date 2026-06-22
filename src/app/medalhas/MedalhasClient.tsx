@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { BottomNav } from "@/components/layout/BottomNav";
-import { Lock, CheckCircle, MedalMilitary, List, Bell, X, User, UsersThree, SignOut, Export } from "@phosphor-icons/react";
+import { LockSimple, CheckCircle, MedalMilitary, List, Bell, X, User, UsersThree, SignOut, Export } from "@phosphor-icons/react";
 
 async function shareBadge(slug: string, nome: string, svg: string) {
   const texto = `Desbloqueei a badge "${nome}" no Canelada! ⚽`;
@@ -309,7 +309,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                               minWidth: 0,
                               position: "relative",
                               background: unlocked ? "#0a0e0e" : "#171717",
-                              border: unlocked ? "1px solid #2e2e2e" : "none",
+                              border: unlocked ? "1px solid #2c2c2c" : "none",
                               borderRadius: 12,
                               display: "flex",
                               flexDirection: "column",
@@ -322,13 +322,18 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                               WebkitTapHighlightColor: "transparent",
                             }}
                           >
-                            {/* Lock / Check icon */}
-                            <div style={{ position: "absolute", top: unlocked ? 3 : 4, right: 4 }}>
-                              {unlocked
-                                ? <CheckCircle size={24} color="#9fe870" weight="fill" />
-                                : <Lock size={14} color="rgba(255,255,255,0.65)" weight="fill" />
-                              }
-                            </div>
+                            {/* Tag NOVO (conquista recente) ou cadeado (bloqueada) */}
+                            {unlocked
+                              ? (lastConquista?.slug === badge.slug && (
+                                  <div style={{ position: "absolute", top: 6, right: 6, background: "#9fe870", borderRadius: 8, padding: "2px 8px" }}>
+                                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 10, lineHeight: "14px", color: "#000" }}>NOVO</span>
+                                  </div>
+                                ))
+                              : (
+                                <div style={{ position: "absolute", top: 6, right: 6 }}>
+                                  <LockSimple size={14} color="#7a7a7a" weight="fill" />
+                                </div>
+                              )}
 
                             {/* Player: image + label */}
                             <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -341,7 +346,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                                   sizes="72px"
                                   style={{
                                     objectFit: "contain",
-                                    opacity: unlocked ? 1 : 0.3,
+                                    opacity: unlocked ? 1 : 0.4,
                                   }}
                                 />
                               </div>
@@ -353,7 +358,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                                 fontWeight: 800,
                                 fontSize: 12,
                                 lineHeight: "13.75px",
-                                color: unlocked ? "#fff" : "rgba(255,255,255,0.25)",
+                                color: unlocked ? "#fff" : "#7a7a7a",
                                 textAlign: "center",
                                 whiteSpace: "nowrap",
                                 overflow: "hidden",
@@ -476,7 +481,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                   }}>
                     {unlocked
                       ? <CheckCircle size={18} color="#9fe870" weight="fill" />
-                      : <Lock size={18} color="#fff" weight="fill" />
+                      : <LockSimple size={18} color="#fff" weight="fill" />
                     }
                     <span style={{
                       fontFamily: "var(--font-display)", fontWeight: 700,
