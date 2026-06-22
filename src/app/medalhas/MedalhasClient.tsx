@@ -90,6 +90,9 @@ type BadgeEntry = typeof BADGE_CATALOG[number]["badges"][number];
 const ALL_SLUGS = BADGE_CATALOG.flatMap(c => c.badges.map(b => b.slug));
 const TOTAL = ALL_SLUGS.length;
 
+// Únicas douradas (borda + cadeado dourado + brilho do dourado)
+const GOLDEN_SLUGS = new Set(["lenda-do-baba", "craque-historico", "mestre-da-resenha", "completo"]);
+
 const BADGE_SVG: Record<string, string> = Object.fromEntries(
   BADGE_CATALOG.flatMap(c => c.badges.map(b => [b.slug, b.svg]))
 );
@@ -300,7 +303,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                     <div key={ri} style={{ display: "flex", gap: 8, alignItems: "stretch" }}>
                       {row.map(badge => {
                         const unlocked = unlockedSet.has(badge.slug);
-                        const rara = badge.rara;
+                        const dourada = GOLDEN_SLUGS.has(badge.slug);
                         return (
                           <div
                             key={badge.slug}
@@ -310,7 +313,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                               minWidth: 0,
                               position: "relative",
                               background: unlocked ? "#0a0e0e" : "#171717",
-                              border: rara ? "1px solid #c5973a" : unlocked ? "1px solid #2c2c2c" : "none",
+                              border: dourada ? "1px solid #c5973a" : unlocked ? "1px solid #2c2c2c" : "none",
                               borderRadius: 12,
                               display: "flex",
                               flexDirection: "column",
@@ -334,7 +337,7 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                                 ))
                               : (
                                 <div style={{ position: "absolute", top: 6, right: 6 }}>
-                                  <LockSimple size={14} color={rara ? "#d6a83e" : "#cfcfcf"} weight="fill" />
+                                  <LockSimple size={14} color={dourada ? "#d6a83e" : "#cfcfcf"} weight="fill" />
                                 </div>
                               )}
 
@@ -349,8 +352,8 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                                   sizes="72px"
                                   style={{
                                     objectFit: "contain",
-                                    // Bloqueado = badge colorido escurecido (igual ao Figma); raro fica quase cheio pro dourado brilhar
-                                    filter: unlocked ? "none" : rara ? "brightness(0.92)" : "brightness(0.5)",
+                                    // Bloqueado = badge colorido escurecido (igual ao Figma); dourado fica quase cheio pro ouro brilhar
+                                    filter: unlocked ? "none" : dourada ? "brightness(0.92)" : "brightness(0.5)",
                                   }}
                                 />
                               </div>
