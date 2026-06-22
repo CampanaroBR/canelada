@@ -334,6 +334,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                         const unlocked = unlockedSet.has(badge.slug);
                         const tier = tierOf(badge.slug);
                         const meta = TIER_META[tier];
+                        const temBarra = !unlocked && badge.slug !== "primeiro-baba" && !!progress[badge.slug];
                         return (
                           <div
                             key={badge.slug}
@@ -343,16 +344,16 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                               minWidth: 0,
                               position: "relative",
                               background: unlocked ? "#0a0e0e" : "#171717",
-                              border: tier !== "comum" ? `1px solid ${meta.borda}` : unlocked ? "1px solid #2c2c2c" : "none",
+                              // Todas com borda (comum cinza, raridades coloridas) — grid uniforme
+                              border: `1px solid ${tier !== "comum" ? meta.borda : "#2c2c2c"}`,
                               borderRadius: 12,
+                              boxSizing: "border-box",
+                              height: 118,
+                              padding: "12px 6px",
                               display: "flex",
                               flexDirection: "column",
                               alignItems: "center",
-                              justifyContent: "flex-start",
-                              height: 116,
-                              boxSizing: "border-box",
-                              padding: "14px 4px 12px",
-                              gap: 0,
+                              justifyContent: "space-between",
                               overflow: "hidden",
                               cursor: "pointer",
                               WebkitTapHighlightColor: "transparent",
@@ -361,40 +362,36 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                             {/* Tag NOVO (conquista recente) ou cadeado (bloqueada) */}
                             {unlocked
                               ? (novosSet.has(badge.slug) && (
-                                  <div style={{ position: "absolute", top: 6, right: 6, background: "#9fe870", borderRadius: 8, padding: "2px 8px" }}>
+                                  <div style={{ position: "absolute", top: 6, right: 6, background: "#9fe870", borderRadius: 8, padding: "2px 8px", zIndex: 1 }}>
                                     <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 10, lineHeight: "14px", color: "#000" }}>NOVO</span>
                                   </div>
                                 ))
                               : (
-                                <div style={{ position: "absolute", top: 6, right: 6 }}>
+                                <div style={{ position: "absolute", top: 6, right: 6, zIndex: 1 }}>
                                   <LockSimple size={14} color="#fff" weight="fill" />
                                 </div>
                               )}
 
-                            {/* Player: image + label */}
-                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                              {/* Badge image with -8px bottom margin */}
-                              <div style={{ width: 72, height: 72, flexShrink: 0, marginBottom: -8, position: "relative" }}>
+                            {/* Topo: imagem + nome */}
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                              <div style={{ width: 64, height: 64, flexShrink: 0, position: "relative" }}>
                                 <Image
                                   alt={badge.nome}
                                   src={badge.svg}
                                   fill
-                                  sizes="72px"
+                                  sizes="64px"
                                   style={{
                                     objectFit: "contain",
-                                    // Bloqueado = badge colorido escurecido (igual ao Figma) — douradas escurecem igual às outras
                                     filter: unlocked ? "none" : "brightness(0.5)",
                                   }}
                                 />
                               </div>
-
-                              {/* Label */}
                               <p style={{
                                 margin: 0,
                                 fontFamily: "var(--font-display)",
                                 fontWeight: 800,
                                 fontSize: 12,
-                                lineHeight: "13.75px",
+                                lineHeight: "14px",
                                 color: unlocked ? "#fff" : "#7a7a7a",
                                 textAlign: "center",
                                 whiteSpace: "nowrap",
@@ -406,25 +403,14 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                               </p>
                             </div>
 
-                            {/* Progress bar — só em badges bloqueadas com progresso real (Primeira Pelada é binária, sem barra) */}
-                            {!unlocked && badge.slug !== "primeiro-baba" && progress[badge.slug] && (
-                              <div style={{
-                                width: 72,
-                                height: 6,
-                                background: "rgba(120,120,120,0.2)",
-                                borderRadius: 100,
-                                overflow: "hidden",
-                                flexShrink: 0,
-                                marginTop: "auto",
-                              }}>
-                                <div style={{
-                                  height: "100%",
-                                  width: `${Math.round(pctFor(badge.slug) * 100)}%`,
-                                  background: "#9fe870",
-                                  borderRadius: 100,
-                                }} />
-                              </div>
-                            )}
+                            {/* Base: barra de progresso (ou espaço reservado p/ manter altura igual) */}
+                            <div style={{ height: 6, width: 64, flexShrink: 0 }}>
+                              {temBarra && (
+                                <div style={{ height: 6, width: "100%", background: "rgba(120,120,120,0.2)", borderRadius: 100, overflow: "hidden" }}>
+                                  <div style={{ height: "100%", width: `${Math.round(pctFor(badge.slug) * 100)}%`, background: "#9fe870", borderRadius: 100 }} />
+                                </div>
+                              )}
+                            </div>
                           </div>
                         );
                       })}
