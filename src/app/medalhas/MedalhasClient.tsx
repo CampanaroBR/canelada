@@ -6,7 +6,27 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { BottomNav } from "@/components/layout/BottomNav";
-import { Lock, CheckCircle, MedalMilitary, List, Bell, X, User, UsersThree, SignOut } from "@phosphor-icons/react";
+import { Lock, CheckCircle, MedalMilitary, List, Bell, X, User, UsersThree, SignOut, Export } from "@phosphor-icons/react";
+
+async function shareBadge(slug: string, nome: string, svg: string) {
+  const texto = `Desbloqueei a badge "${nome}" no Canelada! ⚽`;
+  try {
+    const res = await fetch(svg);
+    const blob = await res.blob();
+    const file = new File([blob], `${slug}.png`, { type: blob.type || "image/png" });
+    if (navigator.canShare?.({ files: [file] })) {
+      await navigator.share({ files: [file], text: texto });
+    } else if (navigator.share) {
+      await navigator.share({ text: texto });
+    } else {
+      const url = URL.createObjectURL(blob);
+      Object.assign(document.createElement("a"), { href: url, download: `${slug}.png` }).click();
+      URL.revokeObjectURL(url);
+    }
+  } catch (e) {
+    if ((e as Error)?.name !== "AbortError") console.error(e);
+  }
+}
 
 const BADGE_CATALOG = [
   {
@@ -128,40 +148,37 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
         </div>
       </div>
 
-      {/* ── DARK HEADER + BANNER ── */}
+      {/* ── HEADER COMPACTO: Suas Badges X/Y + anel ── */}
       <div style={{
-        background: "#0e4a54",
         paddingTop: "calc(env(safe-area-inset-top, 0px) + 96px)",
         paddingBottom: 20,
         paddingLeft: 16,
         paddingRight: 16,
-        borderBottomLeftRadius: 40,
-        borderBottomRightRadius: 40,
         boxSizing: "border-box",
         width: "100%",
-        display: "flex",
-        flexDirection: "column",
-        gap: 16,
       }}>
-
-        {/* Title row */}
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div style={{ flex: "1 0 0", minWidth: 1, display: "flex", flexDirection: "column", gap: 2 }}>
-            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 28, lineHeight: "32px", color: "#fff" }}>
-              Suas Badges
-            </p>
-            <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, lineHeight: "normal", color: "#fff" }}>
-              {unlockedCount} de {TOTAL} badges desbloqueadas
+        <div style={{
+          background: "#090909", border: "1px solid #2c2c2c", borderRadius: 20,
+          padding: "13px 9px 13px 17px",
+          display: "flex", alignItems: "center", gap: 16,
+        }}>
+          <div style={{ flex: "1 0 0", minWidth: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <MedalMilitary size={20} color="#9fe870" weight="fill" />
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#fff", whiteSpace: "nowrap" }}>Suas Badges</span>
+            </div>
+            <p style={{ margin: 0, whiteSpace: "nowrap" }}>
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 18, lineHeight: "22px", color: "#9fe870" }}>{unlockedCount}</span>
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 16, lineHeight: "18px", color: "#7a7a7a" }}>/{TOTAL}</span>
             </p>
           </div>
-          {/* Circular progress ring */}
+          {/* Anel de progresso */}
           <div style={{ flexShrink: 0, width: 48, height: 48, position: "relative" }}>
             <svg width="48" height="48" viewBox="0 0 48 48" style={{ display: "block" }}>
-              <circle cx="24" cy="24" r="20" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="4" />
+              <circle cx="24" cy="24" r="20" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="4" />
               <circle
                 cx="24" cy="24" r="20" fill="none"
-                stroke="#9fe870" strokeWidth="4"
-                strokeLinecap="round"
+                stroke="#9fe870" strokeWidth="4" strokeLinecap="round"
                 strokeDasharray={`${(unlockedCount / TOTAL) * 125.66} 125.66`}
                 transform="rotate(-90 24 24)"
               />
@@ -175,87 +192,12 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
             </span>
           </div>
         </div>
-
-        {lastConquista ? (
-          <div style={{
-            background: "#090909",
-            border: "1px solid #c5973a",
-            borderRadius: 18,
-            padding: "11px 9px 11px 17px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}>
-            {/* Left text — fixed height 80px como no Figma */}
-            <div style={{ height: 80, display: "flex", flexDirection: "column", gap: 6, justifyContent: "center", flex: "0 0 auto", maxWidth: "calc(100% - 88px)" }}>
-              <div>
-                <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: "#9fe870" }}>
-                  ÚLTIMA CONQUISTA
-                </p>
-                <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, lineHeight: "24px", color: "#fff" }}>
-                  {lastConquista.nome}
-                </p>
-              </div>
-              <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#ccc" }}>
-                {lastConquista.descricao}
-              </p>
-            </div>
-
-            {/* Right: badge image + tiny name overlay */}
-            <div style={{ flex: "1 0 0", minWidth: 1, height: 80, display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
-              <div style={{ width: 72, height: 72, flexShrink: 0, position: "relative" }}>
-                <Image
-                  alt={lastConquista.nome}
-                  src={BADGE_SVG[lastConquista.slug] ?? `/conquistas/${lastConquista.slug}.png`}
-                  fill
-                  sizes="72px"
-                  style={{ objectFit: "contain" }}
-                />
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div style={{
-            background: "#090909",
-            border: "1px solid #c5973a",
-            borderRadius: 18,
-            padding: "11px 9px 11px 17px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}>
-            <div style={{ height: 80, display: "flex", flexDirection: "column", gap: 6, justifyContent: "center", flex: "0 0 auto", maxWidth: "calc(100% - 88px)" }}>
-              <div>
-                <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: "#9fe870" }}>
-                  ÚLTIMA CONQUISTA
-                </p>
-                <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, lineHeight: "24px", color: "#fff" }}>
-                  Nenhuma ainda
-                </p>
-              </div>
-              <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#ccc" }}>
-                Vote na pelada para desbloquear badges!
-              </p>
-            </div>
-            <div style={{ flex: "1 0 0", minWidth: 1, height: 80, display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
-              <div style={{ width: 72, height: 72, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <MedalMilitary size={48} color="rgba(197,151,58,0.4)" weight="fill" />
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* ── MAIN CARD — contém tudo ── */}
+      {/* ── CONTEÚDO (flui no fundo escuro) ── */}
       <div style={{
-        background: "#171717",
-        border: "1px solid #2e2e2e",
-        borderTopLeftRadius: 48,
-        borderTopRightRadius: 48,
-        borderBottomLeftRadius: 16,
-        borderBottomRightRadius: 16,
-        boxShadow: "0px 4px 4px 0px rgba(0,0,0,0.25)",
-        paddingTop: 24,
+        background: "transparent",
+        paddingTop: 8,
         paddingLeft: 8,
         paddingRight: 8,
         paddingBottom: "calc(104px + env(safe-area-inset-bottom, 0px))",
@@ -629,25 +571,40 @@ export function MedalhasClient({ unlockedSlugs, progress = {}, lastConquista }: 
                   </div>
                 )}
 
-                {/* Close button */}
-                <button
-                  onClick={() => setSelected(null)}
-                  style={{
-                    width: "100%",
-                    padding: "17px",
-                    background: "#0a0e0e",
-                    border: "1px solid #424242",
-                    borderRadius: 16,
-                    fontFamily: "var(--font-display)", fontWeight: 700,
-                    fontSize: 16, lineHeight: "20px",
-                    color: "#fff",
-                    cursor: "pointer", textAlign: "center",
-                    WebkitTapHighlightColor: "transparent",
-                    boxSizing: "border-box",
-                  }}
-                >
-                  Fechar
-                </button>
+                {/* Ações: compartilhar (desbloqueada) + fechar */}
+                <div style={{ display: "flex", gap: 8, width: "100%" }}>
+                  {unlocked && (
+                    <button
+                      onClick={() => shareBadge(selected.slug, selected.nome, selected.svg)}
+                      aria-label="Compartilhar badge"
+                      style={{
+                        flexShrink: 0, width: 73, height: 54, borderRadius: 16,
+                        background: "#7ed44e", border: "none", cursor: "pointer",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        WebkitTapHighlightColor: "transparent",
+                      }}
+                    >
+                      <Export size={24} color="#090909" weight="bold" />
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setSelected(null)}
+                    style={{
+                      flex: 1, minWidth: 0, height: 54,
+                      background: "#0a0e0e",
+                      border: "1px solid #424242",
+                      borderRadius: 16,
+                      fontFamily: "var(--font-display)", fontWeight: 700,
+                      fontSize: 16, lineHeight: "20px",
+                      color: "#fff",
+                      cursor: "pointer", textAlign: "center",
+                      WebkitTapHighlightColor: "transparent",
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    Fechar
+                  </button>
+                </div>
               </div>
 
               {/* Footer safe-area spacer */}
