@@ -46,16 +46,16 @@ export default function LoginPage() {
             display: "flex", flexDirection: "column", alignItems: "center",
           }}>
             <Image
-              alt="Canelada" src="/logo.png" width={116} height={116} priority
-              style={{ objectFit: "cover", borderRadius: 28, marginBottom: -8, display: "block" }}
+              alt="Canelada" src="/logo.png" width={80} height={80} priority
+              style={{ objectFit: "cover", borderRadius: "50%", marginBottom: 4, display: "block" }}
             />
             <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center", width: "100%" }}>
               <p style={{
                 margin: 0,
                 fontFamily: "var(--font-display)", fontWeight: 900,
-                fontSize: 28, lineHeight: "36px",
+                fontSize: 28, lineHeight: "32px",
                 color: "#fff", textAlign: "center",
-                letterSpacing: "-0.5px", whiteSpace: "nowrap",
+                whiteSpace: "nowrap",
               }}>
                 Canelada
               </p>
@@ -63,7 +63,7 @@ export default function LoginPage() {
                 margin: 0,
                 fontFamily: "var(--font-body)", fontWeight: 700,
                 fontSize: 18, lineHeight: "22px",
-                color: "#6c6c6c", whiteSpace: "nowrap",
+                color: "#fff", whiteSpace: "nowrap",
               }}>
                 Quando o baba vira resenha
               </p>
@@ -105,7 +105,7 @@ export default function LoginPage() {
               onClick={() => signIn("apple", { callbackUrl: "/feed" })}
               style={{
                 width: "100%", height: 56,
-                background: "#1e1e1e", border: "1px solid #2e2e2e",
+                background: "#1c1c1c", border: "1px solid #2c2c2c",
                 borderRadius: 16, cursor: "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}
@@ -128,7 +128,7 @@ export default function LoginPage() {
               onClick={() => signIn("resend", { callbackUrl: "/feed" })}
               style={{
                 width: "100%", height: 56,
-                background: "#1e1e1e", border: "1px solid #2e2e2e",
+                background: "#1c1c1c", border: "1px solid #2c2c2c",
                 borderRadius: 16, cursor: "pointer",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}
@@ -149,17 +149,17 @@ export default function LoginPage() {
 
           {/* "ou" divider */}
           <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 0" }}>
-            <div style={{ flex: 1, height: 1, background: "#2a2a2a" }} />
+            <div style={{ flex: 1, height: 1, background: "#2c2c2c" }} />
             <span style={{
               fontFamily: "var(--font-body)", fontWeight: 500,
               fontSize: 12, lineHeight: "18px", color: "#606060",
             }}>ou</span>
-            <div style={{ flex: 1, height: 1, background: "#2a2a2a" }} />
+            <div style={{ flex: 1, height: 1, background: "#2c2c2c" }} />
           </div>
 
           {/* Invite card */}
           <div style={{
-            background: "#1a1a1a", border: "1px solid #2a2a2a",
+            background: "#1a1a1a", border: "1px solid #2c2c2c",
             borderRadius: 16, padding: 17,
             display: "flex", flexDirection: "column", gap: 4,
           }}>
@@ -174,7 +174,7 @@ export default function LoginPage() {
             <p style={{
               margin: 0, paddingTop: 4,
               fontFamily: "var(--font-body)", fontWeight: 400,
-              fontSize: 14, lineHeight: "18px", color: "#666",
+              fontSize: 14, lineHeight: "18px", color: "#7a7a7a",
             }}>
               Peça ao administrador da sua liga um link de convite. Só é possível entrar por convite.
             </p>
@@ -186,12 +186,12 @@ export default function LoginPage() {
               margin: 0,
               fontFamily: "var(--font-body)", fontWeight: 400,
               fontSize: 11, lineHeight: "16px",
-              color: "#666", textAlign: "center",
+              color: "#7a7a7a", textAlign: "center",
             }}>
               Ao continuar você aceita os{" "}
-              <strong style={{ fontWeight: 700, color: "#666" }}>Termos de Uso</strong>
+              <strong style={{ fontWeight: 700, color: "#7a7a7a" }}>Termos de Uso</strong>
               {" "}e a{" "}
-              <strong style={{ fontWeight: 700, color: "#666" }}>Política de Privacidade</strong>
+              <strong style={{ fontWeight: 700, color: "#7a7a7a" }}>Política de Privacidade</strong>
             </p>
           </div>
         </div>
