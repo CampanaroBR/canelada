@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { List, Bell } from "@phosphor-icons/react";
+import { List, Bell, SoccerBall, Clock } from "@phosphor-icons/react";
 import { MenuSheet } from "@/components/MenuSheet";
 import { parseLista, criarRodada, type ParticipanteImportado } from "./actions";
 
@@ -382,103 +382,59 @@ export function NovaRodadaForm() {
         </div>
       </div>
 
-      {/* Teal header */}
-      <div style={{
-        background: "#0e4a54",
-        borderRadius: "0 0 40px 40px",
-        paddingTop: "calc(env(safe-area-inset-top, 0px) + 80px)",
-        paddingBottom: 32,
-        paddingLeft: 16,
-        paddingRight: 16,
-      }}>
-        <h1 style={{
-          fontFamily: "var(--font-display)",
-          fontWeight: 900,
-          fontSize: 28,
-          lineHeight: "32px",
-          color: "#fff",
-          margin: "0 0 4px",
+      {/* Header card (dark, sem teal) */}
+      <div style={{ padding: "calc(env(safe-area-inset-top, 0px) + 92px) 8px 0", boxSizing: "border-box" }}>
+        <div style={{
+          background: "#171717", border: "1px solid #2c2c2c", borderRadius: 20,
+          padding: 17, display: "flex", flexDirection: "column", gap: 4,
         }}>
-          Crie seu Baba
-        </h1>
-        <p style={{
-          fontFamily: "var(--font-body)",
-          fontWeight: 500,
-          fontSize: 14,
-          lineHeight: "18px",
-          color: "#fff",
-          margin: 0,
-        }}>
-          Cria a rodada para começar a votação
-        </p>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <SoccerBall size={24} color="#9fe870" weight="fill" />
+            <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>
+              CRIE SUA RODADA
+            </h1>
+          </div>
+          <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 14, lineHeight: "18px", color: "#fff" }}>
+            Cria a rodada para começar a votação
+          </p>
+        </div>
       </div>
 
-      {/* Card body */}
+      {/* Card body (form) */}
       <div style={{
         background: "#171717",
-        border: "1px solid #2e2e2e",
-        borderRadius: "48px 48px 16px 16px",
-        margin: "0 8px",
-        boxShadow: "0px 4px 4px rgba(0,0,0,0.25)",
+        border: "1px solid #2c2c2c",
+        borderRadius: 20,
+        margin: "16px 8px 0",
         display: "flex",
         flexDirection: "column",
         gap: 24,
-        padding: "20px 8px 20px",
+        padding: "17px 9px",
         boxSizing: "border-box",
       }}>
-        {/* LISTA header + time pill (gap 16) */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {/* Section header — LISTA */}
-          <div style={{ display: "flex", height: 42, alignItems: "center", paddingLeft: 8 }}>
-            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              <div style={{
-                background: "#171717",
-                border: "1px solid #2e2e2e",
-                borderRadius: 12,
-                padding: 8,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}>
-                <img src="/baba-list-checks.svg" alt="" style={{ width: 24, height: 24 }} />
-              </div>
-              <h2 style={{
-                margin: 0,
-                fontFamily: "var(--font-display)",
-                fontWeight: 800,
-                fontSize: 16,
-                lineHeight: "20px",
-                color: "#fff",
-              }}>
-                LISTA
-              </h2>
-            </div>
-          </div>
-
-          {/* Time pill */}
-          <div style={{
-            background: "#090909",
-            borderRadius: 12,
-            height: 36,
-            padding: "0 16px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}>
-            <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
-              <img src="/baba-clock.svg" alt="" style={{ width: 16, height: 16 }} />
-              <span style={{
-                fontFamily: "var(--font-display)",
-                fontWeight: 600,
-                fontSize: 16,
-                lineHeight: "16px",
-                letterSpacing: "-0.64px",
-                color: "#fff",
-                whiteSpace: "nowrap",
-              }}>
-                Votação inicia às 22:30
-              </span>
-            </div>
+        {/* Time pill */}
+        <div style={{
+          background: "#090909",
+          borderRadius: 12,
+          height: 44,
+          padding: "0 16px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}>
+          <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            <Clock size={18} color="#9fe870" weight="bold" />
+            <span style={{
+              fontFamily: "var(--font-display)",
+              fontWeight: 600,
+              fontSize: 16,
+              lineHeight: "16px",
+              letterSpacing: "-0.64px",
+              color: "#fff",
+              whiteSpace: "nowrap",
+            }}>
+              Votação inicia às 22:30
+            </span>
           </div>
         </div>
 
@@ -520,8 +476,8 @@ export function NovaRodadaForm() {
                   height: 120,
                   minHeight: 120,
                   resize: "vertical",
-                  background: "#111",
-                  border: "1px solid #2a2a2d",
+                  background: "#0a0e0e",
+                  border: lista.trim() ? "1px solid #9fe870" : "1px solid #2c2c2c",
                   borderRadius: 16,
                   padding: "12px 16px",
                   fontFamily: "var(--font-body)",
@@ -649,7 +605,7 @@ function MiniCalendar({ value, onChange }: { value: string; onChange: (iso: stri
           disabled={!canGoBack}
           aria-label="Dias anteriores"
           style={{
-            appearance: "none", border: "1px solid #2a2a2d", background: "#111",
+            appearance: "none", border: "1px solid #2c2c2c", background: "#0a0e0e",
             borderRadius: 12, width: 36, flexShrink: 0, cursor: canGoBack ? "pointer" : "not-allowed",
             color: canGoBack ? "#fff" : "#3a3a3f", fontSize: 18, lineHeight: 1,
             display: "flex", alignItems: "center", justifyContent: "center",
@@ -676,7 +632,7 @@ function MiniCalendar({ value, onChange }: { value: string; onChange: (iso: stri
                   padding: "10px 0",
                   borderRadius: 12,
                   background: selected ? "#9fe870" : "#111",
-                  border: `1px solid ${selected ? "#9fe870" : isToday ? "rgba(159,232,112,.4)" : "#2a2a2d"}`,
+                  border: `1px solid ${selected ? "#9fe870" : isToday ? "rgba(159,232,112,.4)" : "#2c2c2c"}`,
                   transition: "background .15s, border-color .15s",
                 }}
               >
@@ -703,7 +659,7 @@ function MiniCalendar({ value, onChange }: { value: string; onChange: (iso: stri
           onClick={() => shift(VISIBLE)}
           aria-label="Próximos dias"
           style={{
-            appearance: "none", border: "1px solid #2a2a2d", background: "#111",
+            appearance: "none", border: "1px solid #2c2c2c", background: "#0a0e0e",
             borderRadius: 12, width: 36, flexShrink: 0, cursor: "pointer",
             color: "#fff", fontSize: 18, lineHeight: 1,
             display: "flex", alignItems: "center", justifyContent: "center",
