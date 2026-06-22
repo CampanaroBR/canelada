@@ -596,40 +596,43 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                 </div>
 
                 {/* Status box — locked only */}
-                {!unlocked && (
-                  <div style={{
-                    background: "#0a0e0e",
-                    border: "1px solid #232327",
-                    borderRadius: 18,
-                    padding: "11px 16px",
-                    display: "flex", flexDirection: "column", gap: 12,
-                    width: "100%", boxSizing: "border-box",
-                  }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%" }}>
-                      <p style={{
-                        margin: 0,
-                        fontFamily: "var(--font-display)", fontWeight: 700,
-                        fontSize: 16, lineHeight: "20px", color: "#fff",
-                      }}>
-                        Em andamento
-                      </p>
-                      {/* Progress bar */}
-                      <div style={{
-                        height: 8, background: "#26262b", borderRadius: 99,
-                        overflow: "hidden", width: "100%",
-                      }}>
-                        <div style={{ height: "100%", width: "0%", background: "#9fe870", borderRadius: 99 }} />
-                      </div>
-                    </div>
-                    <p style={{
-                      margin: 0,
-                      fontFamily: "var(--font-body)", fontWeight: 600,
-                      fontSize: 12, color: "#999",
+                {!unlocked && (() => {
+                  const p = progress[selected.slug];
+                  const cur = p ? Math.min(p.current, p.meta) : 0;
+                  const pct = p && p.meta > 0 ? Math.min(p.current / p.meta, 1) : 0;
+                  return (
+                    <div style={{
+                      background: "#0a0e0e",
+                      border: "1px solid #232327",
+                      borderRadius: 18,
+                      padding: "11px 16px",
+                      display: "flex", flexDirection: "column", gap: 12,
+                      width: "100%", boxSizing: "border-box",
                     }}>
-                      {selected.descricao}
-                    </p>
-                  </div>
-                )}
+                      {p ? (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%" }}>
+                          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
+                            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#fff" }}>Em andamento</p>
+                            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px" }}>
+                              <span style={{ color: "#9fe870" }}>{cur}</span>
+                              <span style={{ color: "#7a7a7a" }}>/{p.meta}</span>
+                            </p>
+                          </div>
+                          <div style={{ height: 8, background: "#26262b", borderRadius: 99, overflow: "hidden", width: "100%" }}>
+                            <div style={{ height: "100%", width: `${Math.round(pct * 100)}%`, background: "#9fe870", borderRadius: 99 }} />
+                          </div>
+                        </div>
+                      ) : (
+                        <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#fff" }}>
+                          Como desbloquear
+                        </p>
+                      )}
+                      <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 12, color: "#999" }}>
+                        {selected.descricao}
+                      </p>
+                    </div>
+                  );
+                })()}
 
                 {/* Ações: compartilhar (desbloqueada) + fechar */}
                 <div style={{ display: "flex", gap: 8, width: "100%" }}>
