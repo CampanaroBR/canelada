@@ -205,8 +205,15 @@ export default async function FeedPage() {
 
   const personagensPorRodada: Personagem[][] = grupos.map(g => g.personagens);
 
-  // Badges reais do grupo (mesma engine da página de medalhas) — quem desbloqueou na última rodada
-  const badgesGrupo = await badgesHome(grupoId);
+  // Badges reais do grupo (mesma engine da página de medalhas) — quem desbloqueou na última rodada.
+  // Resiliente: se falhar, a home carrega sem o card em vez de quebrar a página toda.
+  let badgesGrupo: { jogadoresComBadge: number; totalJogadores: number; novas: { apelido: string; slug: string; nome: string }[] } =
+    { jogadoresComBadge: 0, totalJogadores: 0, novas: [] };
+  try {
+    badgesGrupo = await badgesHome(grupoId);
+  } catch (e) {
+    console.error("badgesHome falhou:", e);
+  }
   const conquistas: Conquista[] = badgesGrupo.novas.map(n => ({
     apelido: n.apelido,
     traitSlug: n.slug,

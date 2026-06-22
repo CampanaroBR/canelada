@@ -17,7 +17,13 @@ export default async function MedalhasPage() {
   if (!jogador) redirect("/onboarding");
 
   // Cálculo oficial das 24 badges (docs/gamificacao.md) + persistência/novos
-  const { unlocked, novos, progress } = await badgesDoJogador(jogador.grupoId, jogador.id);
+  // Resiliente: se falhar, a página abre vazia em vez de dar erro de servidor.
+  let unlocked: string[] = [], novos: string[] = [], progress: Record<string, { current: number; meta: number }> = {};
+  try {
+    ({ unlocked, novos, progress } = await badgesDoJogador(jogador.grupoId, jogador.id));
+  } catch (e) {
+    console.error("badgesDoJogador falhou:", e);
+  }
 
   return (
     <MedalhasClient
