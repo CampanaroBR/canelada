@@ -326,11 +326,9 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                   </div>
                 </div>
 
-                {/* Badge rows of 3 */}
-                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                  {chunk(visible, 3).map((row, ri) => (
-                    <div key={ri} style={{ display: "flex", gap: 8, alignItems: "stretch" }}>
-                      {row.map(badge => {
+                {/* Grid de badges — 3 colunas iguais (uniforme, sem fillers) */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                  {visible.map(badge => {
                         const unlocked = unlockedSet.has(badge.slug);
                         const tier = tierOf(badge.slug);
                         const meta = TIER_META[tier];
@@ -340,8 +338,6 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                             key={badge.slug}
                             onClick={() => setSelected(badge)}
                             style={{
-                              flex: "1 1 0",
-                              minWidth: 0,
                               position: "relative",
                               background: "#0a0e0e",
                               // Todas com borda (comum cinza, raridades coloridas) — grid uniforme
@@ -410,11 +406,6 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                           </div>
                         );
                       })}
-                      {row.length < 3 && Array.from({ length: 3 - row.length }).map((_, i) => (
-                        <div key={`empty-${i}`} aria-hidden style={{ flex: "1 1 0", minWidth: 0 }} />
-                      ))}
-                    </div>
-                  ))}
                 </div>
               </div>
             );
@@ -724,10 +715,4 @@ function MenuRow({ icon, label, href, onClose }: { icon: React.ReactNode; label:
       <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 16, color: "#fff" }}>{label}</span>
     </Link>
   );
-}
-
-function chunk<T>(arr: readonly T[], size: number): T[][] {
-  const result: T[][] = [];
-  for (let i = 0; i < arr.length; i += size) result.push([...arr.slice(i, i + size)]);
-  return result;
 }
