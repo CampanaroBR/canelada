@@ -251,7 +251,7 @@ export type RankRow = {
 };
 export type TraitLeader = { slug: string; apelido: string | null; titulos: number };
 export type RankingPayload = { classificacao: RankRow[]; lideres: TraitLeader[] };
-export type RankingGrupo = { mes: RankingPayload; geral: RankingPayload };
+export type RankingGrupo = { semana: RankingPayload; mes: RankingPayload };
 
 function computarRanking(ctx: Ctx, nome: Map<string, string>, rodadas: Rodada[]): RankingPayload {
   const pts = new Map<string, number>();
@@ -306,9 +306,16 @@ export async function rankingGrupo(grupoId: string): Promise<RankingGrupo> {
   const mes = agora.getMonth(), ano = agora.getFullYear();
   const rodadasMes = ctx.rodadas.filter(r => r.data.getMonth() === mes && r.data.getFullYear() === ano);
 
+  // Semana atual (segunda 00:00 → agora)
+  const inicioSemana = new Date(agora);
+  const diaSeg = (inicioSemana.getDay() + 6) % 7; // 0 = segunda
+  inicioSemana.setDate(inicioSemana.getDate() - diaSeg);
+  inicioSemana.setHours(0, 0, 0, 0);
+  const rodadasSemana = ctx.rodadas.filter(r => r.data >= inicioSemana);
+
   return {
+    semana: computarRanking(ctx, nome, rodadasSemana),
     mes: computarRanking(ctx, nome, rodadasMes),
-    geral: computarRanking(ctx, nome, ctx.rodadas),
   };
 }
 
