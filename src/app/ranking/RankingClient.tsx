@@ -2,18 +2,26 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { List, Bell, Trophy } from "@phosphor-icons/react";
+import { List, Bell, Trophy, Crown } from "@phosphor-icons/react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { MenuSheet } from "@/components/MenuSheet";
 import { TRAIT_SVG } from "@/lib/assets";
 import type { RankingGrupo, RankRow, TraitLeader } from "@/lib/badges";
 
-const TRAIT_LABEL: Record<string, string> = {
-  categoria: "Craque", matador: "Matador", paredao: "Paredão",
-  garcom: "Garçom", racudo: "Raçudo", bagre: "Bagre",
+// label + cor de acento por personagem
+const TRAIT_META: Record<string, { label: string; cor: string }> = {
+  categoria: { label: "Craque", cor: "#9fe870" },
+  matador:   { label: "Matador", cor: "#f0a14e" },
+  paredao:   { label: "Paredão", cor: "#5aa9e6" },
+  garcom:    { label: "Garçom", cor: "#b98ef0" },
+  racudo:    { label: "Raçudo", cor: "#3fcaa8" },
+  bagre:     { label: "Bagre", cor: "#ef6b6b" },
 };
 
 const PODIUM = ["#e2c485", "#c0c0c0", "#cd7f32"]; // ouro, prata, bronze
+
+const rgba = (hex: string, a: number) =>
+  `rgba(${parseInt(hex.slice(1, 3), 16)},${parseInt(hex.slice(3, 5), 16)},${parseInt(hex.slice(5, 7), 16)},${a})`;
 
 interface Props {
   ranking: RankingGrupo;
@@ -122,14 +130,32 @@ export function RankingClient({ ranking, grupoNome, meuId }: Props) {
             )}
 
             {/* ── PERSONAGENS (líderes por trait) ── */}
-            <div>
-              <div style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 14, letterSpacing: "0.08em", textTransform: "uppercase", color: "#fff", marginBottom: 12 }}>
-                Personagens da temporada
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8 }}>
-                {data.lideres.map(l => <LeaderCard key={l.slug} leader={l} />)}
-              </div>
-            </div>
+            {(() => {
+              const craque = data.lideres.find(l => l.slug === "categoria");
+              const bagre = data.lideres.find(l => l.slug === "bagre");
+              const positivos = data.lideres.filter(l => l.slug !== "categoria" && l.slug !== "bagre");
+              return (
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                    <Crown size={18} color="#e2c485" weight="fill" />
+                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 14, letterSpacing: "0.08em", textTransform: "uppercase", color: "#fff" }}>
+                      Donos da temporada
+                    </span>
+                  </div>
+                  <p style={{ margin: "0 0 14px", fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, color: "#7a7a7a" }}>
+                    Quem mais leva cada personagem
+                  </p>
+
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {craque && <LeaderCard leader={craque} size="lg" />}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8 }}>
+                      {positivos.map(l => <LeaderCard key={l.slug} leader={l} size="sm" />)}
+                    </div>
+                    {bagre && <LeaderCard leader={bagre} size="lg" />}
+                  </div>
+                </div>
+              );
+            })()}
           </>
         )}
       </main>
@@ -210,30 +236,72 @@ function RankRowItem({ row, pos, eu }: { row: RankRow; pos: number; eu: boolean 
   );
 }
 
-function LeaderCard({ leader }: { leader: TraitLeader }) {
+function LeaderCard({ leader, size }: { leader: TraitLeader; size: "lg" | "sm" }) {
   const svg = TRAIT_SVG[leader.slug];
-  const label = TRAIT_LABEL[leader.slug] ?? leader.slug;
+  const meta = TRAIT_META[leader.slug] ?? { label: leader.slug, cor: "#9fe870" };
+  const cor = meta.cor;
+  const lg = size === "lg";
+  const vazio = !leader.apelido;
+  const avatar = lg ? 64 : 48;
+  const img = lg ? 46 : 34;
+
   return (
     <div style={{
-      background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 16,
-      padding: 12, display: "flex", alignItems: "center", gap: 10,
+      display: "flex", alignItems: "center", gap: lg ? 14 : 10,
+      background: "#0b0f0e",
+      border: `1px solid ${vazio ? "#222" : rgba(cor, 0.34)}`,
+      borderRadius: 16, padding: lg ? 14 : 11,
+      boxSizing: "border-box", overflow: "hidden", minWidth: 0,
     }}>
-      <div style={{ width: 40, height: 40, flexShrink: 0, position: "relative", opacity: leader.apelido ? 1 : 0.4 }}>
-        {svg && <Image src={svg} alt={label} fill sizes="40px" style={{ objectFit: "contain" }} />}
+      {/* Arte do personagem em círculo tonalizado */}
+      <div style={{
+        width: avatar, height: avatar, flexShrink: 0, borderRadius: "50%",
+        background: vazio ? "#141414" : rgba(cor, 0.13),
+        display: "flex", alignItems: "center", justifyContent: "center",
+      }}>
+        <div style={{ width: img, height: img, position: "relative", opacity: vazio ? 0.35 : 1 }}>
+          {svg && <Image src={svg} alt={meta.label} fill sizes={`${img}px`} style={{ objectFit: "contain" }} />}
+        </div>
       </div>
-      <div style={{ minWidth: 0 }}>
-        <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, letterSpacing: "0.04em", textTransform: "uppercase", color: "#7a7a7a" }}>
-          {label}
+
+      {/* Texto */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <span style={{
+          display: "inline-block",
+          fontFamily: "var(--font-display)", fontWeight: 800,
+          fontSize: lg ? 11 : 10, letterSpacing: "0.06em", textTransform: "uppercase",
+          color: cor, background: rgba(cor, 0.12),
+          padding: "2px 8px", borderRadius: 6,
+        }}>
+          {meta.label}
+        </span>
+        <p style={{
+          margin: "6px 0 0", fontFamily: "var(--font-display)", fontWeight: 900,
+          fontSize: lg ? 20 : 15, lineHeight: lg ? "22px" : "17px",
+          color: vazio ? "#5a5a5a" : "#fff",
+          whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+        }}>
+          {vazio ? "Ninguém ainda" : leader.apelido!.toUpperCase()}
         </p>
-        <p style={{ margin: "2px 0 0", fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 14, lineHeight: "16px", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-          {leader.apelido ? leader.apelido.toUpperCase() : "—"}
-        </p>
-        {leader.apelido && (
-          <p style={{ margin: "1px 0 0", fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 11, color: "#9fe870" }}>
-            {leader.titulos}× título{leader.titulos === 1 ? "" : "s"}
-          </p>
+        {!vazio && (
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 4, marginTop: 6,
+            background: rgba(cor, 0.12), borderRadius: 9999, padding: "2px 9px",
+          }}>
+            <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12, color: cor }}>
+              {leader.titulos}×
+            </span>
+            <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 11, color: cor }}>
+              {leader.titulos === 1 ? "título" : "títulos"}
+            </span>
+          </div>
         )}
       </div>
+
+      {/* Coroa no destaque (Craque) */}
+      {lg && leader.slug === "categoria" && !vazio && (
+        <Crown size={22} color={cor} weight="fill" style={{ flexShrink: 0, opacity: 0.9 }} />
+      )}
     </div>
   );
 }
