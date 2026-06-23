@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
 import { BottomNav } from "@/components/layout/BottomNav";
-import { LockSimple, CheckCircle, MedalMilitary, List, Bell, X, User, UsersThree, SignOut, Export } from "@phosphor-icons/react";
+import { BottomSheet } from "@/components/BottomSheet";
+import { MenuSheet } from "@/components/MenuSheet";
+import { LockSimple, CheckCircle, MedalMilitary, List, Bell, Export } from "@phosphor-icons/react";
 
 async function shareBadge(slug: string, nome: string, svg: string) {
   const texto = `Desbloqueei a badge "${nome}" no Canelada! ⚽`;
@@ -137,6 +136,10 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
   const [filter, setFilter] = useState<Filter>("todas");
   const [selected, setSelected] = useState<BadgeEntry | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  // mantém a badge durante a animação de fechamento do sheet
+  const [lastBadge, setLastBadge] = useState<BadgeEntry | null>(null);
+  useEffect(() => { if (selected) setLastBadge(selected); }, [selected]);
+  const sheetBadge = selected ?? lastBadge;
   const unlockedSet = new Set(unlockedSlugs);
   const novosSet = new Set(novos);
   const unlockedCount = ALL_SLUGS.filter(s => unlockedSet.has(s)).length;
@@ -413,59 +416,26 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
       </div>
 
       {/* ── BADGE BOTTOM SHEET ── */}
-      {selected && (() => {
-        const unlocked = unlockedSet.has(selected.slug);
-        const isRara = tierOf(selected.slug) === "epica";
+      {sheetBadge && (() => {
+        const b = sheetBadge;
+        const unlocked = unlockedSet.has(b.slug);
+        const isRara = tierOf(b.slug) === "epica";
 
+        // Glow dourado nas épicas (senão usa o shadow padrão do shell)
         const sheetShadow = isRara
           ? "0px 0px 64px 6px rgba(226,196,133,0.55), 0px -10px 40px 2px rgba(226,196,133,0.45)"
-          : "0px 2px 8px 0px rgba(40,41,61,0.16), 0px 16px 24px 0px rgba(96,97,112,0.16)";
+          : undefined;
 
         // Título e subtítulo em muted quando bloqueado (incl. épica)
         const nameColor = unlocked ? "#fff" : "#8b8b93";
         const descColor = unlocked ? "#b0b0b6" : "#7a7a7a";
 
         return (
-          <>
-            {/* Backdrop */}
-            <div
-              onClick={() => setSelected(null)}
-              style={{
-                position: "fixed", inset: 0,
-                background: "rgba(0,0,0,0.6)",
-                backdropFilter: "blur(4px)",
-                WebkitBackdropFilter: "blur(4px)",
-                zIndex: 40,
-                animation: "backdrop-in 260ms cubic-bezier(0.16,1,0.3,1) both",
-              }}
-            />
-
-            {/* Sheet */}
-            <div style={{
-              position: "fixed", bottom: 0,
-              left: "50%", transform: "translateX(-50%)",
-              width: "min(100%, 430px)",
-              zIndex: 50,
-              background: "#171717",
-              borderTopLeftRadius: 48,
-              borderTopRightRadius: 48,
-              boxShadow: sheetShadow,
-              overflow: "hidden",
-              animation: "sheet-up 380ms cubic-bezier(0.16,1,0.3,1) both",
-            }}>
-              {/* Handle */}
-              <div style={{
-                height: 32,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                paddingTop: 12, paddingBottom: 12,
-              }}>
-                <div style={{ width: 40, height: 4, background: "#3a3a3a", borderRadius: 9999 }} />
-              </div>
-
+          <BottomSheet open={!!selected} onClose={() => setSelected(null)} bg="#171717" boxShadow={sheetShadow}>
               {/* Content */}
               <div style={{
                 display: "flex", flexDirection: "column", gap: 24,
-                alignItems: "center", padding: 16,
+                alignItems: "center", padding: "0 16px",
               }}>
 
                 {/* Badge info block */}
@@ -497,8 +467,8 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                   {/* Badge image 140×140 */}
                   <div style={{ width: 140, height: 140, flexShrink: 0, marginBottom: isRara && !unlocked ? -8 : 0, position: "relative" }}>
                     <Image
-                      src={selected.svg}
-                      alt={selected.nome}
+                      src={b.svg}
+                      alt={b.nome}
                       fill
                       sizes="140px"
                       style={{ objectFit: "contain", opacity: unlocked ? 1 : 0.65 }}
@@ -516,7 +486,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                         color: "#8b8b93", letterSpacing: "1.4px",
                         textAlign: "center", width: "100%",
                       }}>
-                        {selected.tagline}
+                        {b.tagline}
                       </p>
                     )}
 
@@ -527,7 +497,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                         fontSize: 28, lineHeight: "32px",
                         color: nameColor, textAlign: "center", width: "100%",
                       }}>
-                        {selected.nome}
+                        {b.nome}
                       </p>
                       <p style={{
                         margin: 0,
@@ -535,7 +505,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                         fontSize: 16, lineHeight: "20px",
                         color: descColor, textAlign: "center", width: "100%",
                       }}>
-                        {selected.descricao}
+                        {b.descricao}
                       </p>
                     </div>
                   </div>
@@ -545,10 +515,10 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                 <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap", width: "100%" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 9999, padding: "6px 12px" }}>
                     <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#9b9b9b" }}>Categoria</span>
-                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: "#fff" }}>{BADGE_CATEGORY[selected.slug] ?? "—"}</span>
+                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: "#fff" }}>{BADGE_CATEGORY[b.slug] ?? "—"}</span>
                   </div>
                   {(() => {
-                    const m = TIER_META[tierOf(selected.slug)];
+                    const m = TIER_META[tierOf(b.slug)];
                     return (
                       <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0a0e0e", border: `1px solid ${m.borda}`, borderRadius: 9999, padding: "6px 12px" }}>
                         <span style={{ width: 6, height: 6, borderRadius: "50%", background: m.cor, flexShrink: 0 }} />
@@ -561,7 +531,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
 
                 {/* Status box — locked only */}
                 {!unlocked && (() => {
-                  const p = progress[selected.slug];
+                  const p = progress[b.slug];
                   const cur = p ? Math.min(p.current, p.meta) : 0;
                   const pct = p && p.meta > 0 ? Math.min(p.current / p.meta, 1) : 0;
                   return (
@@ -592,7 +562,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                         </p>
                       )}
                       <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 12, color: "#999" }}>
-                        {selected.descricao}
+                        {b.descricao}
                       </p>
                     </div>
                   );
@@ -602,7 +572,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                 <div style={{ display: "flex", gap: 8, width: "100%" }}>
                   {unlocked && (
                     <button
-                      onClick={() => shareBadge(selected.slug, selected.nome, selected.svg)}
+                      onClick={() => shareBadge(b.slug, b.nome, b.svg)}
                       aria-label="Compartilhar badge"
                       style={{
                         flexShrink: 0, width: 73, height: 54, borderRadius: 16,
@@ -633,77 +603,14 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                   </button>
                 </div>
               </div>
-
-              {/* Footer safe-area spacer */}
-              <div style={{ height: "max(16px, env(safe-area-inset-bottom, 0px))", background: "#171717" }} />
-            </div>
-          </>
+          </BottomSheet>
         );
       })()}
 
       <BottomNav />
 
-      {/* ── Menu Hambúrguer Drawer ── */}
-      {menuOpen && (
-        <>
-          <div
-            aria-hidden
-            onClick={() => setMenuOpen(false)}
-            style={{
-              position: "fixed", top: 0, bottom: 0, left: "50%", transform: "translateX(-50%)",
-              width: "min(100%, 430px)", zIndex: 50,
-              background: "rgba(0,0,0,0.65)",
-              backdropFilter: "blur(2px)", WebkitBackdropFilter: "blur(2px)",
-            }}
-          />
-          <div style={{
-            position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)",
-            width: "min(100%, 430px)", zIndex: 51,
-            background: "#1a1a1a",
-            border: "1px solid #2e2e2e",
-            borderRadius: "32px 32px 0 0",
-            paddingBottom: "max(24px, env(safe-area-inset-bottom, 24px))",
-          }}>
-            <div style={{ display: "flex", justifyContent: "center", padding: "12px 0 8px" }}>
-              <div style={{ width: 40, height: 4, background: "#3a3a3a", borderRadius: 9999 }} />
-            </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 16px 16px" }}>
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#fff" }}>MENU</span>
-              <button
-                onClick={() => setMenuOpen(false)}
-                style={{ width: 40, height: 40, background: "#000", border: "1px solid #424242", borderRadius: 20, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}
-              >
-                <X size={16} color="#fff" weight="bold" />
-              </button>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2, padding: "0 16px" }}>
-              <MenuRow icon={<User size={20} color="#fff" weight="regular" />} label="Meu Perfil" href="/perfil" onClose={() => setMenuOpen(false)} />
-              <MenuRow icon={<UsersThree size={20} color="#fff" weight="regular" />} label="Meu Grupo" href="/grupo" onClose={() => setMenuOpen(false)} />
-              <div style={{ height: 1, background: "#2a2a2a", margin: "8px 0" }} />
-              <button
-                onClick={() => signOut({ callbackUrl: "/login" })}
-                style={{ display: "flex", alignItems: "center", gap: 12, background: "none", border: "none", cursor: "pointer", padding: "14px 8px", borderRadius: 12, width: "100%" }}
-              >
-                <div style={{ width: 40, height: 40, background: "#2a0a0a", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <SignOut size={20} color="#ef4444" weight="regular" />
-                </div>
-                <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 16, color: "#ef4444" }}>Sair</span>
-              </button>
-            </div>
-          </div>
-        </>
-      )}
+      {/* ── Menu Hambúrguer ── */}
+      <MenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} />
     </div>
-  );
-}
-
-function MenuRow({ icon, label, href, onClose }: { icon: React.ReactNode; label: string; href: string; onClose: () => void }) {
-  return (
-    <Link href={href} onClick={onClose} style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 8px", borderRadius: 12, textDecoration: "none" }}>
-      <div style={{ width: 40, height: 40, background: "#242424", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-        {icon}
-      </div>
-      <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 16, color: "#fff" }}>{label}</span>
-    </Link>
   );
 }
