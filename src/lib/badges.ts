@@ -231,6 +231,87 @@ export async function computarBadges(grupoId: string, jogadorId: string): Promis
 
 export const nomeBadge = (slug: string): string => NOME[slug] ?? slug;
 
+/* ─────────────────────────────────────────────────────────────
+ * RANKING (Classificação) — baseado em Personagem da Semana.
+ * Mesma base do MVP/badges: vencedor de cada trait por rodada.
+ * Pontos: positivas somam (POINTS), negativas descontam (NEG_POINTS).
+ * ──────────────────────────────────────────────────────────── */
+
+const NEG_POINTS: Record<string, number> = { bagre: 3, cone: 2, "corpo-mole": 2 };
+
+// Traits em destaque nos cards de "Personagem" do ranking
+const RANK_TRAITS_DESTAQUE = ["categoria", "matador", "paredao", "garcom", "racudo", "bagre"];
+
+export type RankRow = {
+  jogadorId: string;
+  apelido: string;
+  pontos: number;
+  rodadas: number;
+  mvps: number;
+};
+export type TraitLeader = { slug: string; apelido: string | null; titulos: number };
+export type RankingPayload = { classificacao: RankRow[]; lideres: TraitLeader[] };
+export type RankingGrupo = { mes: RankingPayload; geral: RankingPayload };
+
+function computarRanking(ctx: Ctx, nome: Map<string, string>, rodadas: Rodada[]): RankingPayload {
+  const pts = new Map<string, number>();
+  const rod = new Map<string, number>();
+  const mvpC = new Map<string, number>();
+  const titulos = new Map<string, Map<string, number>>(); // trait -> jogador -> nº títulos
+
+  for (const r of rodadas) {
+    const venc = vencedoresDe(ctx, r.id);
+    for (const [t, pid] of venc) {
+      let m = titulos.get(t);
+      if (!m) { m = new Map(); titulos.set(t, m); }
+      m.set(pid, (m.get(pid) ?? 0) + 1);
+      if (POINTS[t]) pts.set(pid, (pts.get(pid) ?? 0) + POINTS[t]);
+      else if (NEG_POINTS[t]) pts.set(pid, (pts.get(pid) ?? 0) - NEG_POINTS[t]);
+    }
+    for (const pid of mvpsDe(ctx, r.id)) mvpC.set(pid, (mvpC.get(pid) ?? 0) + 1);
+    const part = ctx.partPorRodada.get(r.id);
+    if (part) for (const pid of part) rod.set(pid, (rod.get(pid) ?? 0) + 1);
+  }
+
+  const ids = new Set<string>([...pts.keys(), ...rod.keys(), ...mvpC.keys()]);
+  const classificacao: RankRow[] = [...ids]
+    .map(pid => ({
+      jogadorId: pid,
+      apelido: nome.get(pid) ?? "—",
+      pontos: pts.get(pid) ?? 0,
+      rodadas: rod.get(pid) ?? 0,
+      mvps: mvpC.get(pid) ?? 0,
+    }))
+    .sort((a, b) => b.pontos - a.pontos || b.mvps - a.mvps || a.apelido.localeCompare(b.apelido));
+
+  const lideres: TraitLeader[] = RANK_TRAITS_DESTAQUE.map(slug => {
+    const m = titulos.get(slug);
+    let best: string | null = null, bestN = 0;
+    if (m) for (const [pid, n] of m) if (n > bestN) { bestN = n; best = pid; }
+    return { slug, apelido: best ? (nome.get(best) ?? null) : null, titulos: bestN };
+  });
+
+  return { classificacao, lideres };
+}
+
+/** Classificação do grupo — mês atual e geral (histórico). */
+export async function rankingGrupo(grupoId: string): Promise<RankingGrupo> {
+  const [ctx, jogadores] = await Promise.all([
+    carregar(grupoId),
+    prisma.jogador.findMany({ where: { grupoId }, select: { id: true, apelido: true } }),
+  ]);
+  const nome = new Map(jogadores.map(j => [j.id, j.apelido]));
+
+  const agora = new Date();
+  const mes = agora.getMonth(), ano = agora.getFullYear();
+  const rodadasMes = ctx.rodadas.filter(r => r.data.getMonth() === mes && r.data.getFullYear() === ano);
+
+  return {
+    mes: computarRanking(ctx, nome, rodadasMes),
+    geral: computarRanking(ctx, nome, ctx.rodadas),
+  };
+}
+
 /**
  * Persiste novos desbloqueios na tabela BadgeUnlock (idempotente).
  * Chamado no carregamento das páginas e no cron — registra o createdAt do desbloqueio.
