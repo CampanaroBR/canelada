@@ -21,7 +21,10 @@ interface Props {
 
 export function RankingClient({ ranking, grupoNome, meuId }: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [periodo, setPeriodo] = useState<"semana" | "mes">("semana");
+  // abre na aba que tem dados (evita "vazio" quando a semana ainda não teve rodada)
+  const [periodo, setPeriodo] = useState<"semana" | "mes">(
+    ranking.semana.classificacao.length > 0 ? "semana" : "mes"
+  );
   const [verTudo, setVerTudo] = useState(false);
 
   const data = ranking[periodo];

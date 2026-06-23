@@ -306,12 +306,10 @@ export async function rankingGrupo(grupoId: string): Promise<RankingGrupo> {
   const mes = agora.getMonth(), ano = agora.getFullYear();
   const rodadasMes = ctx.rodadas.filter(r => r.data.getMonth() === mes && r.data.getFullYear() === ano);
 
-  // Semana atual (segunda 00:00 → agora)
-  const inicioSemana = new Date(agora);
-  const diaSeg = (inicioSemana.getDay() + 6) % 7; // 0 = segunda
-  inicioSemana.setDate(inicioSemana.getDate() - diaSeg);
-  inicioSemana.setHours(0, 0, 0, 0);
-  const rodadasSemana = ctx.rodadas.filter(r => r.data >= inicioSemana);
+  // Semanal = últimos 7 dias (rolling — mais tolerante a baba que não é toda semana)
+  const seteDias = new Date(agora);
+  seteDias.setDate(seteDias.getDate() - 7);
+  const rodadasSemana = ctx.rodadas.filter(r => r.data >= seteDias);
 
   return {
     semana: computarRanking(ctx, nome, rodadasSemana),
