@@ -5,12 +5,13 @@ import Image from "next/image";
 import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
-  // mostra "Entrar com telefone" só se o provider Resend estiver ativo (depende de AUTH_RESEND_KEY)
+  // mostra cada botão só se o provider correspondente estiver ativo (depende das envs na Vercel)
+  const [hasGoogle, setHasGoogle] = useState(true);
   const [hasResend, setHasResend] = useState(false);
   useEffect(() => {
     fetch("/api/auth/providers")
       .then(r => r.ok ? r.json() : null)
-      .then(p => setHasResend(!!p?.resend))
+      .then(p => { setHasGoogle(!!p?.google); setHasResend(!!p?.resend); })
       .catch(() => {});
   }, []);
 
@@ -77,20 +78,22 @@ export default function LoginPage() {
           {/* Botões */}
           <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
             {/* Google */}
-            <button
-              onClick={() => signIn("google", { callbackUrl: "/feed" })}
-              style={{
-                width: "100%", height: 56, background: "#fff", border: "none",
-                borderRadius: 16, cursor: "pointer",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
-              }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/google-icon.svg" alt="" aria-hidden width={20} height={20} />
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#0a0e0e", whiteSpace: "nowrap" }}>
-                Continuar com Google
-              </span>
-            </button>
+            {hasGoogle && (
+              <button
+                onClick={() => signIn("google", { callbackUrl: "/feed" })}
+                style={{
+                  width: "100%", height: 56, background: "#fff", border: "none",
+                  borderRadius: 16, cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/google-icon.svg" alt="" aria-hidden width={20} height={20} />
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#0a0e0e", whiteSpace: "nowrap" }}>
+                  Continuar com Google
+                </span>
+              </button>
+            )}
 
             {/* Telefone (e-mail mágico) — só se o Resend estiver ativo */}
             {hasResend && (
