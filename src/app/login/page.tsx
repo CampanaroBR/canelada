@@ -1,9 +1,19 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 
 export default function LoginPage() {
+  // mostra "Entrar com telefone" só se o provider Resend estiver ativo (depende de AUTH_RESEND_KEY)
+  const [hasResend, setHasResend] = useState(false);
+  useEffect(() => {
+    fetch("/api/auth/providers")
+      .then(r => r.ok ? r.json() : null)
+      .then(p => setHasResend(!!p?.resend))
+      .catch(() => {});
+  }, []);
+
   return (
     <div style={{
       position: "relative",
@@ -82,37 +92,23 @@ export default function LoginPage() {
               </span>
             </button>
 
-            {/* Apple */}
-            <button
-              onClick={() => signIn("apple", { callbackUrl: "/feed" })}
-              style={{
-                width: "100%", height: 56, background: "#1c1c1c", border: "1px solid #2c2c2c",
-                borderRadius: 16, cursor: "pointer",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
-              }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/apple-icon.svg" alt="" aria-hidden width={20} height={20} />
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>
-                Continuar com Apple
-              </span>
-            </button>
-
-            {/* Telefone */}
-            <button
-              onClick={() => signIn("resend", { callbackUrl: "/feed" })}
-              style={{
-                width: "100%", height: 56, background: "#1c1c1c", border: "1px solid #2c2c2c",
-                borderRadius: 16, cursor: "pointer",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
-              }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/phone-icon.svg" alt="" aria-hidden width={20} height={20} />
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>
-                Entrar com telefone
-              </span>
-            </button>
+            {/* Telefone (e-mail mágico) — só se o Resend estiver ativo */}
+            {hasResend && (
+              <button
+                onClick={() => signIn("resend", { callbackUrl: "/feed" })}
+                style={{
+                  width: "100%", height: 56, background: "#1c1c1c", border: "1px solid #2c2c2c",
+                  borderRadius: 16, cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/phone-icon.svg" alt="" aria-hidden width={20} height={20} />
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>
+                  Entrar com telefone
+                </span>
+              </button>
+            )}
           </div>
 
           {/* Divisor "ou" */}
