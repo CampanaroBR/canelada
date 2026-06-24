@@ -5,6 +5,7 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import Link from "next/link";
 import Image from "next/image";
 import { TRAIT_SVG } from "@/lib/assets";
+import { EditarPerfilSheet } from "../EditarPerfilSheet";
 import {
   CONQUISTAS,
   CAT_CONQUISTA_CONFIG,
@@ -55,7 +56,12 @@ export default async function PerfilPage({
     where: { apelido: { equals: apelido, mode: "insensitive" } },
     select: {
       id: true,
+      userId: true,
       apelido: true,
+      nome: true,
+      sobrenome: true,
+      posicao: true,
+      peDominante: true,
       grupoId: true,
       createdAt: true,
       traitsRecebidas: {
@@ -124,6 +130,8 @@ export default async function PerfilPage({
 
   const color = getAvatarColor(jogador.apelido);
   const initials = getInitials(jogador.apelido);
+  const isOwner = jogador.userId === session.user.id;
+  const nomeCompleto = [jogador.nome, jogador.sobrenome].filter(Boolean).join(" ");
   const traitsUnlocked = jogador.traitsRecebidas.length;
   const presencaCount = presencaRows.length;
   const joinYear = new Date(jogador.createdAt).getFullYear();
@@ -193,6 +201,17 @@ export default async function PerfilPage({
         }}>
           PERFIL
         </span>
+        {isOwner && (
+          <EditarPerfilSheet
+            initial={{
+              nome: jogador.nome ?? "",
+              sobrenome: jogador.sobrenome ?? "",
+              apelido: jogador.apelido,
+              posicao: jogador.posicao ?? "",
+              peDominante: jogador.peDominante ?? "",
+            }}
+          />
+        )}
       </header>
 
       <main style={{ flex: 1, paddingBottom: "calc(88px + env(safe-area-inset-bottom, 0px))" }}>
@@ -357,6 +376,17 @@ export default async function PerfilPage({
               </div>
             </div>
 
+            {/* Nome completo */}
+            {nomeCompleto && (
+              <p style={{
+                margin: "0 0 10px",
+                fontFamily: "var(--font-body)", fontWeight: 600, fontSize: "15px",
+                color: "var(--color-text-secondary)",
+              }}>
+                {nomeCompleto}
+              </p>
+            )}
+
             {/* Meta pills */}
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
               <div style={{
@@ -400,6 +430,20 @@ export default async function PerfilPage({
                   Desde {joinYear}
                 </span>
               </div>
+              {jogador.posicao && (
+                <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-pill)", background: "rgba(255,255,255,0.06)", boxShadow: "0 0 0 1px rgba(255,255,255,0.10)" }}>
+                  <span style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", color: "var(--color-text-secondary)", fontFamily: "var(--font-body)", textTransform: "uppercase" }}>
+                    {jogador.posicao}
+                  </span>
+                </div>
+              )}
+              {jogador.peDominante && (
+                <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "4px 10px", borderRadius: "var(--radius-pill)", background: "rgba(255,255,255,0.06)", boxShadow: "0 0 0 1px rgba(255,255,255,0.10)" }}>
+                  <span style={{ fontSize: "11px", fontWeight: 600, letterSpacing: "0.08em", color: "var(--color-text-secondary)", fontFamily: "var(--font-body)", textTransform: "uppercase" }}>
+                    Pé {jogador.peDominante}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>

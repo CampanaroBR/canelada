@@ -80,6 +80,10 @@ model Jogador {
   grupoId     String
   apelido     String
   nomeNoBaba  String?
+  nome        String?
+  sobrenome   String?
+  posicao     String?
+  peDominante String?
   foto        String?
   role        RoleGrupo @default(PLAYER)
   createdAt   DateTime  @default(now())
