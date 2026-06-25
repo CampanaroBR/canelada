@@ -2,12 +2,20 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Camera } from "@phosphor-icons/react";
+import { Camera, UserCircle } from "@phosphor-icons/react";
 import { BottomSheet } from "@/components/BottomSheet";
 import { atualizarPerfil, uploadFoto } from "./actions";
 
-const POSICOES = ["Goleiro", "Zagueiro", "Lateral", "Volante", "Meia", "Atacante"];
+const POSICOES = ["Goleiro", "Zagueiro", "Lateral", "Volante", "Meio-Campo", "Atacante"];
 const PES = ["Direito", "Esquerdo", "Ambidestro"];
+
+function Label({ children, req }: { children: React.ReactNode; req?: boolean }) {
+  return (
+    <label style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, color: "#fff", marginBottom: 8, display: "block" }}>
+      {children}{req && <span style={{ color: "#e56767" }}> *</span>}
+    </label>
+  );
+}
 
 export interface PerfilInitial {
   nome: string;
@@ -29,10 +37,6 @@ function initials(name: string) {
   return (p.length >= 2 ? p[0][0] + p[1][0] : name.slice(0, 2)).toUpperCase();
 }
 
-const labelStyle: React.CSSProperties = {
-  fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 12,
-  letterSpacing: "0.04em", textTransform: "uppercase", color: "#7a7a7a", marginBottom: 6, display: "block",
-};
 const inputStyle: React.CSSProperties = {
   width: "100%", height: 48, boxSizing: "border-box",
   background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 12,
@@ -85,16 +89,22 @@ export function EditarPerfilSheet({ open, onClose, initial }: Props) {
   return (
     <BottomSheet open={open} onClose={onClose}>
       <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", gap: 16 }}>
-        <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 20, color: "#fff" }}>Editar perfil</h2>
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: "#1c1c1c", border: "1px solid #383838", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <UserCircle size={20} color="#9fe870" weight="fill" />
+          </div>
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, letterSpacing: "0.04em", textTransform: "uppercase", color: "#fff" }}>Editar perfil</span>
+        </div>
 
         {/* Foto */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
-          <button type="button" onClick={() => fileRef.current?.click()} style={{ position: "relative", width: 96, height: 96, borderRadius: "50%", border: "2px solid #9fe870", background: "#0a0e0e", padding: 0, cursor: uploading ? "default" : "pointer", overflow: "hidden", WebkitTapHighlightColor: "transparent" }}>
+          <button type="button" onClick={() => fileRef.current?.click()} style={{ position: "relative", width: 112, height: 112, borderRadius: "50%", border: "2px solid #9fe870", background: "#0a0e0e", padding: 0, cursor: uploading ? "default" : "pointer", overflow: "hidden", WebkitTapHighlightColor: "transparent" }}>
             {foto ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={foto} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: uploading ? 0.5 : 1 }} />
             ) : (
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 34, color: "#9fe870", opacity: uploading ? 0.5 : 1 }}>{initials(apelido || initial.apelido)}</span>
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 40, color: "#9fe870", opacity: uploading ? 0.5 : 1 }}>{initials(apelido || initial.apelido)}</span>
             )}
             <span style={{ position: "absolute", right: 2, bottom: 2, width: 28, height: 28, borderRadius: "50%", background: "#9fe870", border: "2px solid #171717", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <Camera size={15} color="#0a1a06" weight="fill" />
@@ -106,30 +116,30 @@ export function EditarPerfilSheet({ open, onClose, initial }: Props) {
 
         <div style={{ display: "flex", gap: 10 }}>
           <div style={{ flex: 1 }}>
-            <label style={labelStyle}>Nome</label>
+            <Label req>Nome</Label>
             <input style={inputStyle} value={nome} onChange={e => setNome(e.target.value)} placeholder="Arthur" maxLength={40} />
           </div>
           <div style={{ flex: 1 }}>
-            <label style={labelStyle}>Sobrenome</label>
+            <Label req>Sobrenome</Label>
             <input style={inputStyle} value={sobrenome} onChange={e => setSobrenome(e.target.value)} placeholder="Silva" maxLength={40} />
           </div>
         </div>
 
         <div>
-          <label style={labelStyle}>Apelido no baba</label>
+          <Label>Apelido no baba</Label>
           <input style={inputStyle} value={apelido} onChange={e => setApelido(e.target.value)} placeholder="Craque" maxLength={24} />
         </div>
 
         <div style={{ display: "flex", gap: 10 }}>
           <div style={{ flex: 1 }}>
-            <label style={labelStyle}>Posição</label>
+            <Label req>Posição</Label>
             <select style={{ ...inputStyle, appearance: "none" }} value={posicao} onChange={e => setPosicao(e.target.value)}>
               <option value="">—</option>
               {POSICOES.map(p => <option key={p} value={p}>{p}</option>)}
             </select>
           </div>
           <div style={{ flex: 1 }}>
-            <label style={labelStyle}>Pé preferido</label>
+            <Label req>Pé Preferido</Label>
             <select style={{ ...inputStyle, appearance: "none" }} value={pe} onChange={e => setPe(e.target.value)}>
               <option value="">—</option>
               {PES.map(p => <option key={p} value={p}>{p}</option>)}
