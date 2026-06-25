@@ -180,9 +180,9 @@ export function HomeClient({
                 key={key}
                 onClick={() => setCampoTab(key)}
                 style={{
-                  flex: 1, height: 40, borderRadius: 9999, cursor: "pointer",
+                  flex: 1, height: 40, borderRadius: 9999, cursor: "pointer", boxSizing: "border-box",
                   background: active ? "#9fe870" : "#1a1a1a",
-                  border: active ? "none" : "1px solid #5a5a5a",
+                  border: `1px solid ${active ? "#9fe870" : "#5a5a5a"}`,
                   fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14,
                   color: active ? "#000" : "#7a7a7a", WebkitTapHighlightColor: "transparent",
                 }}
