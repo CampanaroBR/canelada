@@ -172,7 +172,7 @@ export function HomeClient({
         </p>
 
         {/* Tabs: Os melhores / Os piores — pílulas (ativa verde) */}
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ position: "relative", display: "flex", gap: 8, width: "100%" }}>
           {([["melhores", "Os melhores"], ["piores", "Os piores"]] as const).map(([key, label]) => {
             const active = campoTab === key;
             return (
@@ -260,7 +260,7 @@ export function HomeClient({
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 8, paddingBottom: 8 }}>
                 {mostrarResultados
                   ? <PlayerNamed p={campoSel[0]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
-                  : <PlayerSlot tshirt={TSHIRT_OUTLINE} />}
+                  : <PlayerSlot tshirt={TSHIRT_OUTLINE} href={podeVotar ? "/votacao" : undefined} />}
               </div>
 
               {/* Meio campo: 3 slots */}
@@ -273,9 +273,9 @@ export function HomeClient({
                   </>
                 ) : (
                   <>
-                    <PlayerSlot tshirt={TSHIRT_OUTLINE} />
-                    <PlayerSlot tshirt={TSHIRT_OUTLINE} />
-                    <PlayerSlot tshirt={TSHIRT_OUTLINE} />
+                    <PlayerSlot tshirt={TSHIRT_OUTLINE} href={podeVotar ? "/votacao" : undefined} />
+                    <PlayerSlot tshirt={TSHIRT_OUTLINE} href={podeVotar ? "/votacao" : undefined} />
+                    <PlayerSlot tshirt={TSHIRT_OUTLINE} href={podeVotar ? "/votacao" : undefined} />
                   </>
                 )}
               </div>
@@ -284,7 +284,7 @@ export function HomeClient({
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 8, paddingBottom: 8 }}>
                 {mostrarResultados
                   ? <PlayerNamed p={campoSel[4]} tshirt={campoTab === "melhores" ? TSHIRT_GK_FILL : TSHIRT_FILLED} onShare={setShareCard} />
-                  : <PlayerSlot tshirt={TSHIRT_GK_OUT} />}
+                  : <PlayerSlot tshirt={TSHIRT_GK_OUT} href={podeVotar ? "/votacao" : undefined} />}
               </div>
             </div>
 
@@ -714,9 +714,9 @@ export function HomeClient({
 }
 
 /* Slot vazio: camisa + "VOTE" */
-function PlayerSlot({ tshirt }: { tshirt: string }) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1 }}>
+function PlayerSlot({ tshirt, href }: { tshirt: string; href?: string }) {
+  const inner = (
+    <>
       <div style={{
         background: "#1e1e1e", border: "1px solid #555", borderRadius: 22,
         width: 48, height: 48,
@@ -729,8 +729,12 @@ function PlayerSlot({ tshirt }: { tshirt: string }) {
         <img alt="" src={tshirt} style={{ width: 24, height: 24 }} />
       </div>
       <p style={{ margin: 0, marginTop: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12, lineHeight: "normal", color: "#fff", textAlign: "center", whiteSpace: "nowrap" }}>VOTE</p>
-    </div>
+    </>
   );
+  const wrap: React.CSSProperties = { display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1, WebkitTapHighlightColor: "transparent" };
+  return href
+    ? <Link href={href} style={{ ...wrap, textDecoration: "none" }}>{inner}</Link>
+    : <div style={wrap}>{inner}</div>;
 }
 
 /* Slot com nome do jogador (estado pós-votação) */
