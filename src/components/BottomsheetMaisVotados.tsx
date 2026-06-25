@@ -30,6 +30,16 @@ export function BottomsheetMaisVotados({
     if (open) setActivePill(dataAtiva);
   }, [open, dataAtiva]);
 
+  async function compartilhar() {
+    const top = entries.slice(0, 5).map((e) => `${e.rank}. ${e.apelido} (${e.qtd}x ${e.categoria})`).join("\n");
+    const text = `⚡ Parcial da rodada${datas[activePill] ? ` — ${datas[activePill]}` : ""}\n\n${top}`;
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    try {
+      if (typeof navigator !== "undefined" && navigator.share) await navigator.share({ title: "Parcial da rodada", text, url });
+      else if (typeof navigator !== "undefined" && navigator.clipboard) { await navigator.clipboard.writeText(`${text}\n${url}`); alert("Parcial copiada!"); }
+    } catch { /* cancelou */ }
+  }
+
   return (
     <BottomSheet open={open} onClose={onClose} maxHeight="90dvh" boxShadow="0px 2px 8px rgba(40,41,61,0.16), 0px 16px 24px rgba(96,97,112,0.16)">
       {/* Header */}
@@ -69,23 +79,9 @@ export function BottomsheetMaisVotados({
         display: "flex", flexDirection: "column", gap: 16,
         padding: "0 16px",
       }}>
-        {/* Compartilhar */}
-        <button style={{
-          display: "inline-flex", alignItems: "center", gap: 8,
-          background: "#2a2a2a", border: "1px solid #3a3a3a",
-          borderRadius: 9999, padding: "9px 17px",
-          cursor: "pointer", alignSelf: "flex-start",
-        }}>
-          <span style={{
-            fontFamily: "var(--font-display)", fontWeight: 700,
-            fontSize: 12, lineHeight: "18px", color: "#fff",
-          }}>Compartilhar</span>
-          <ShareNetwork size={16} color="#fff" weight="bold" />
-        </button>
-
-        {/* Date pills */}
-        {datas.length > 0 && (
-          <div style={{ display: "flex", gap: 8, height: 38, overflow: "hidden" }}>
+        {/* Datas + compartilhar (à direita) */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+          <div style={{ display: "flex", gap: 8, overflowX: "auto", flex: 1, minWidth: 0 }}>
             {datas.map((d, i) => {
               const active = i === activePill;
               return (
@@ -108,7 +104,10 @@ export function BottomsheetMaisVotados({
               );
             })}
           </div>
-        )}
+          <button onClick={compartilhar} aria-label="Compartilhar parcial" style={{ width: 40, height: 40, borderRadius: 12, background: "#1c1c1c", border: "1px solid #2c2c2c", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, WebkitTapHighlightColor: "transparent" }}>
+            <ShareNetwork size={18} color="#9fe870" weight="bold" />
+          </button>
+        </div>
 
         {/* Leaderboard rows */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
