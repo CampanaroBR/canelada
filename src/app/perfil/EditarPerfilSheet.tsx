@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { PencilSimple } from "@phosphor-icons/react";
+import { PencilSimple, Camera } from "@phosphor-icons/react";
 import { BottomSheet } from "@/components/BottomSheet";
-import { atualizarPerfil } from "./actions";
+import { atualizarPerfil, uploadFoto } from "./actions";
 
 const POSICOES = ["Goleiro", "Zagueiro", "Lateral", "Volante", "Meia", "Atacante"];
 const PES = ["Direito", "Esquerdo", "Ambidestro"];
@@ -16,7 +16,13 @@ interface Props {
     apelido: string;
     posicao: string;
     peDominante: string;
+    foto: string;
   };
+}
+
+function initials(name: string) {
+  const p = name.trim().split(/\s+/);
+  return (p.length >= 2 ? p[0][0] + p[1][0] : name.slice(0, 2)).toUpperCase();
 }
 
 const labelStyle: React.CSSProperties = {
@@ -41,11 +47,26 @@ export function EditarPerfilSheet({ initial }: Props) {
   const [apelido, setApelido] = useState(initial.apelido);
   const [posicao, setPosicao] = useState(initial.posicao);
   const [pe, setPe] = useState(initial.peDominante);
+  const [foto, setFoto] = useState(initial.foto);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   function abrir() {
     setNome(initial.nome); setSobrenome(initial.sobrenome); setApelido(initial.apelido);
-    setPosicao(initial.posicao); setPe(initial.peDominante);
+    setPosicao(initial.posicao); setPe(initial.peDominante); setFoto(initial.foto);
     setError(null); setOpen(true);
+  }
+
+  async function onPickFoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true); setError(null);
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await uploadFoto(fd);
+    setUploading(false);
+    if (!res.ok) { setError(res.error ?? "Falha no upload."); return; }
+    if (res.url) { setFoto(res.url); router.refresh(); }
   }
 
   async function salvar() {
@@ -81,6 +102,29 @@ export function EditarPerfilSheet({ initial }: Props) {
           <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 20, color: "#fff" }}>
             Editar perfil
           </h2>
+
+          {/* Foto */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              style={{ position: "relative", width: 96, height: 96, borderRadius: "50%", border: "2px solid #9fe870", background: "#0a0e0e", padding: 0, cursor: uploading ? "default" : "pointer", overflow: "hidden", WebkitTapHighlightColor: "transparent" }}
+            >
+              {foto ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={foto} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: uploading ? 0.5 : 1 }} />
+              ) : (
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 34, color: "#9fe870", opacity: uploading ? 0.5 : 1 }}>{initials(apelido || initial.apelido)}</span>
+              )}
+              <span style={{ position: "absolute", right: 2, bottom: 2, width: 28, height: 28, borderRadius: "50%", background: "#9fe870", border: "2px solid #171717", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Camera size={15} color="#0a1a06" weight="fill" />
+              </span>
+            </button>
+            <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, color: "#7a7a7a" }}>
+              {uploading ? "Enviando…" : "Toque pra trocar a foto"}
+            </span>
+            <input ref={fileRef} type="file" accept="image/*" onChange={onPickFoto} style={{ display: "none" }} />
+          </div>
 
           <div style={{ display: "flex", gap: 10 }}>
             <div style={{ flex: 1 }}>

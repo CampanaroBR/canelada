@@ -31,7 +31,7 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
     where: { apelido: { equals: apelido, mode: "insensitive" } },
     select: {
       id: true, userId: true, apelido: true, nome: true, sobrenome: true,
-      posicao: true, peDominante: true, grupoId: true, createdAt: true, role: true,
+      posicao: true, peDominante: true, foto: true, grupoId: true, createdAt: true, role: true,
       grupo: { select: { nome: true } },
       traitsRecebidas: { select: { traitSlug: true } },
     },
@@ -92,7 +92,7 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
         </Link>
         <span style={{ flex: 1, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, letterSpacing: "0.1em", textTransform: "uppercase", color: "#7a7a7a" }}>Perfil</span>
         {isOwner && (
-          <EditarPerfilSheet initial={{ nome: jogador.nome ?? "", sobrenome: jogador.sobrenome ?? "", apelido: jogador.apelido, posicao: jogador.posicao ?? "", peDominante: jogador.peDominante ?? "" }} />
+          <EditarPerfilSheet initial={{ nome: jogador.nome ?? "", sobrenome: jogador.sobrenome ?? "", apelido: jogador.apelido, posicao: jogador.posicao ?? "", peDominante: jogador.peDominante ?? "", foto: jogador.foto ?? "" }} />
         )}
       </header>
 
@@ -118,8 +118,11 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
 
             {/* avatar */}
             <div style={{ position: "relative", display: "flex", justifyContent: "center", margin: "6px 0 12px" }}>
-              <div style={{ width: 116, height: 116, borderRadius: "50%", background: "#0a0e0e", border: `2px solid ${ACCENT}`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 30px ${ACCENT}33` }}>
-                <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 44, color: ACCENT }}>{initials}</span>
+              <div style={{ width: 116, height: 116, borderRadius: "50%", background: "#0a0e0e", border: `2px solid ${ACCENT}`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 30px ${ACCENT}33`, overflow: "hidden" }}>
+                {jogador.foto
+                  // eslint-disable-next-line @next/next/no-img-element
+                  ? <img src={jogador.foto} alt={jogador.apelido} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  : <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 44, color: ACCENT }}>{initials}</span>}
               </div>
             </div>
 
