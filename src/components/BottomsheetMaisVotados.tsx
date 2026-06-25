@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Lightning, X, ShareNetwork, MedalMilitary } from "@phosphor-icons/react";
 import { BottomSheet } from "./BottomSheet";
 
@@ -104,9 +105,6 @@ export function BottomsheetMaisVotados({
               );
             })}
           </div>
-          <button onClick={compartilhar} aria-label="Compartilhar parcial" style={{ width: 40, height: 40, borderRadius: 12, background: "#1c1c1c", border: "1px solid #2c2c2c", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", flexShrink: 0, WebkitTapHighlightColor: "transparent" }}>
-            <ShareNetwork size={18} color="#9fe870" weight="bold" />
-          </button>
         </div>
 
         {/* Leaderboard rows */}
@@ -178,6 +176,17 @@ export function BottomsheetMaisVotados({
             </div>
           ))}
         </div>
+
+        {/* Ver mais → Ranking */}
+        <Link href="/ranking" onClick={onClose} style={{ display: "block", textAlign: "center", padding: "6px 0 2px", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#fff", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
+          Ver mais
+        </Link>
+
+        {/* Compartilhar (full-width) */}
+        <button onClick={compartilhar} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, width: "100%", height: 54, borderRadius: 16, background: "#0a0e0e", border: "1px solid #2c2c2c", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+          <ShareNetwork size={18} color="#9fe870" weight="bold" />
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#fff" }}>Compartilhar</span>
+        </button>
       </div>
     </BottomSheet>
   );
