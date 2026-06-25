@@ -5,6 +5,32 @@ import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { put } from "@vercel/blob";
 
+/** Exclui a conta do jogador e todos os dados relacionados (irreversível). */
+export async function excluirConta(): Promise<{ ok: boolean; error?: string }> {
+  const session = await auth();
+  if (!session?.user?.id) return { ok: false, error: "Não autenticado." };
+  const uid = session.user.id;
+
+  const jogador = await prisma.jogador.findUnique({ where: { userId: uid }, select: { id: true } });
+  try {
+    await prisma.$transaction(async (tx) => {
+      if (jogador) {
+        // Votos não têm cascade → remover os dados e recebidos manualmente
+        await tx.voto.deleteMany({ where: { OR: [{ votanteId: jogador.id }, { votadoId: jogador.id }] } });
+        await tx.jogadorTrait.deleteMany({ where: { jogadorId: jogador.id } });
+        // delete do Jogador cascateia BadgeUnlock + PushSubscription
+        await tx.jogador.delete({ where: { id: jogador.id } });
+      }
+      // delete do User cascateia Account + Session
+      await tx.user.delete({ where: { id: uid } });
+    });
+    return { ok: true };
+  } catch (e) {
+    console.error("excluirConta falhou:", e);
+    return { ok: false, error: "Não foi possível excluir agora. Tente novamente." };
+  }
+}
+
 /** Upload da foto de perfil (Vercel Blob). */
 export async function uploadFoto(formData: FormData): Promise<{ ok: boolean; error?: string; url?: string }> {
   const session = await auth();
