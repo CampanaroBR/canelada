@@ -3,17 +3,18 @@
 import { useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { Medal, Bell, EnvelopeSimple, ShieldCheck, FileText, SignOut, CaretRight } from "@phosphor-icons/react";
+import { UserCircle, Medal, Bell, EnvelopeSimple, ShieldCheck, FileText, SignOut, CaretRight } from "@phosphor-icons/react";
 
 interface Props {
   email: string;
   grupoNome: string;
   roleLabel: string;
+  onEditar: () => void;
 }
 
 type PushState = "idle" | "ativando" | "ativadas" | "bloqueadas" | "erro";
 
-export function ContaActions({ email, grupoNome, roleLabel }: Props) {
+export function ContaActions({ email, grupoNome, roleLabel, onEditar }: Props) {
   const [push, setPush] = useState<PushState>("idle");
 
   async function ativarPush() {
@@ -33,10 +34,7 @@ export function ContaActions({ email, grupoNome, roleLabel }: Props) {
     } catch { setPush("erro"); }
   }
 
-  const pushRight = push === "ativadas" ? "Ativadas"
-    : push === "ativando" ? "Ativando…"
-    : push === "bloqueadas" ? "Bloqueadas"
-    : push === "erro" ? "Erro" : "Ativar";
+  const pushRight = push === "ativadas" ? "Ativadas" : push === "ativando" ? "Ativando…" : push === "bloqueadas" ? "Bloqueadas" : push === "erro" ? "Erro" : "Ativar";
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -44,7 +42,9 @@ export function ContaActions({ email, grupoNome, roleLabel }: Props) {
       {/* CONTA */}
       <div>
         <GroupTitle>Conta</GroupTitle>
-        <div style={{ background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 16, padding: "4px 16px" }}>
+        <div style={{ background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 16, overflow: "hidden" }}>
+          <RowButton onClick={onEditar} icon={<UserCircle size={20} color="#9fe870" weight="fill" />} label="Dados pessoais" sub="Nome, apelido, posição, foto" />
+          <Divider />
           <InfoRow label="E-mail" value={email || "—"} />
           <Divider />
           <InfoRow label="Grupo" value={grupoNome} />
@@ -76,10 +76,7 @@ export function ContaActions({ email, grupoNome, roleLabel }: Props) {
       </div>
 
       {/* SAIR */}
-      <button
-        onClick={() => signOut({ callbackUrl: "/login" })}
-        style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 16, padding: "14px 16px", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}
-      >
+      <button onClick={() => signOut({ callbackUrl: "/login" })} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 16, padding: "14px 16px", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
         <div style={{ width: 36, height: 36, borderRadius: 10, background: "#2a0a0a", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
           <SignOut size={20} color="#ef4444" weight="regular" />
         </div>
@@ -94,20 +91,16 @@ export function ContaActions({ email, grupoNome, roleLabel }: Props) {
 function GroupTitle({ children }: { children: React.ReactNode }) {
   return <p style={{ margin: "0 0 8px 4px", fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#7a7a7a" }}>{children}</p>;
 }
-
-function Divider() {
-  return <div style={{ height: 1, background: "#1c1c1c" }} />;
-}
+function Divider() { return <div style={{ height: 1, background: "#1c1c1c" }} />; }
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "12px 0" }}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "12px 16px" }}>
       <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 14, color: "#7a7a7a", flexShrink: 0 }}>{label}</span>
       <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{value}</span>
     </div>
   );
 }
-
 function RowLink({ href, icon, label, sub }: { href: string; icon: React.ReactNode; label: string; sub?: string }) {
   return (
     <Link href={href} style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
@@ -117,21 +110,18 @@ function RowLink({ href, icon, label, sub }: { href: string; icon: React.ReactNo
     </Link>
   );
 }
-
-function RowButton({ onClick, icon, label, sub, right, rightColor }: { onClick: () => void; icon: React.ReactNode; label: string; sub?: string; right: string; rightColor: string }) {
+function RowButton({ onClick, icon, label, sub, right, rightColor }: { onClick: () => void; icon: React.ReactNode; label: string; sub?: string; right?: string; rightColor?: string }) {
   return (
     <button onClick={onClick} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", background: "none", border: "none", padding: "14px 16px", cursor: "pointer", WebkitTapHighlightColor: "transparent", textAlign: "left" }}>
       <IconBox>{icon}</IconBox>
       <Labels label={label} sub={sub} />
-      <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 13, color: rightColor }}>{right}</span>
+      {right ? <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 13, color: rightColor ?? "#7a7a7a" }}>{right}</span> : <CaretRight size={16} color="#555" weight="bold" />}
     </button>
   );
 }
-
 function IconBox({ children }: { children: React.ReactNode }) {
   return <div style={{ width: 36, height: 36, borderRadius: 10, background: "#1a1a1a", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{children}</div>;
 }
-
 function Labels({ label, sub }: { label: string; sub?: string }) {
   return (
     <div style={{ flex: 1, minWidth: 0 }}>
