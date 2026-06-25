@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Barlow } from "next/font/google";
 import "./globals.css";
 import { PushInit } from "@/components/PushInit";
+import { OrientationGuard } from "@/components/OrientationGuard";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -47,6 +48,7 @@ export default function RootLayout({
           <PushInit />
           {children}
         </div>
+        <OrientationGuard />
       </body>
     </html>
   );
