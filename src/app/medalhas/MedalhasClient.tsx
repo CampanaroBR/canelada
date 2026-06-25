@@ -7,12 +7,69 @@ import { BottomSheet } from "@/components/BottomSheet";
 import { MenuSheet } from "@/components/MenuSheet";
 import { LockSimple, CheckCircle, MedalMilitary, List, Bell, Export } from "@phosphor-icons/react";
 
-async function shareBadge(slug: string, nome: string, svg: string) {
+function loadImg(src: string): Promise<HTMLImageElement> {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => res(img);
+    img.onerror = rej;
+    img.src = src;
+  });
+}
+
+/** Gera um card de compartilhamento em alta resolução (1080×1350) com a badge ampliada. */
+async function buildBadgeShare(nome: string, svg: string, tagline: string): Promise<Blob> {
+  const W = 1080, H = 1350;
+  const canvas = document.createElement("canvas");
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext("2d")!;
+
+  // fundo + glow verde
+  ctx.fillStyle = "#0a0e0e"; ctx.fillRect(0, 0, W, H);
+  const g = ctx.createRadialGradient(W / 2, 430, 60, W / 2, 430, 760);
+  g.addColorStop(0, "rgba(159,232,112,0.20)"); g.addColorStop(1, "rgba(159,232,112,0)");
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+
+  try { await (document as Document & { fonts?: FontFaceSet }).fonts?.ready; } catch { /* */ }
+
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#9fe870";
+  ctx.font = "800 36px Barlow, sans-serif";
+  ctx.fillText("DESBLOQUEEI", W / 2, 220);
+
+  // badge ampliada (suavizada)
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+  try {
+    const img = await loadImg(svg);
+    const bs = 600;
+    ctx.drawImage(img, (W - bs) / 2, 300, bs, bs);
+  } catch { /* sem imagem */ }
+
+  // nome (ajusta fonte se largo)
+  ctx.fillStyle = "#ffffff";
+  let size = 88;
+  const upper = nome.toUpperCase();
+  do { ctx.font = `900 ${size}px Barlow, sans-serif`; if (ctx.measureText(upper).width <= W - 120) break; size -= 6; } while (size > 40);
+  ctx.fillText(upper, W / 2, 1010);
+
+  if (tagline) {
+    ctx.fillStyle = "#9fe870";
+    ctx.font = "700 38px Inter, sans-serif";
+    ctx.fillText(tagline, W / 2, 1075);
+  }
+
+  ctx.fillStyle = "#5a5a5a";
+  ctx.font = "800 30px Barlow, sans-serif";
+  ctx.fillText("CANELADA", W / 2, 1290);
+
+  return new Promise((res, rej) => canvas.toBlob(b => (b ? res(b) : rej(new Error("toBlob failed"))), "image/png"));
+}
+
+async function shareBadge(slug: string, nome: string, svg: string, tagline = "") {
   const texto = `Desbloqueei a badge "${nome}" no Canelada! ⚽`;
   try {
-    const res = await fetch(svg);
-    const blob = await res.blob();
-    const file = new File([blob], `${slug}.png`, { type: blob.type || "image/png" });
+    const blob = await buildBadgeShare(nome, svg, tagline);
+    const file = new File([blob], `${slug}.png`, { type: "image/png" });
     if (navigator.canShare?.({ files: [file] })) {
       await navigator.share({ files: [file], text: texto });
     } else if (navigator.share) {
@@ -572,7 +629,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                 <div style={{ display: "flex", gap: 8, width: "100%" }}>
                   {unlocked && (
                     <button
-                      onClick={() => shareBadge(b.slug, b.nome, b.svg)}
+                      onClick={() => shareBadge(b.slug, b.nome, b.svg, b.tagline)}
                       aria-label="Compartilhar badge"
                       style={{
                         flexShrink: 0, width: 73, height: 54, borderRadius: 16,
