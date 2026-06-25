@@ -9,7 +9,7 @@ import { LockSimple, CheckCircle, MedalMilitary, List, Bell, Export } from "@pho
 
 function loadImg(src: string): Promise<HTMLImageElement> {
   return new Promise((res, rej) => {
-    const img = new Image();
+    const img = new window.Image();
     img.crossOrigin = "anonymous";
     img.onload = () => res(img);
     img.onerror = rej;
