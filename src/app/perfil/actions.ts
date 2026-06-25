@@ -9,7 +9,10 @@ import { put } from "@vercel/blob";
 export async function uploadFoto(formData: FormData): Promise<{ ok: boolean; error?: string; url?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: "Não autenticado." };
-  if (!process.env.BLOB_READ_WRITE_TOKEN) return { ok: false, error: "Armazenamento de fotos ainda não configurado." };
+  // Aceita tanto token clássico quanto conexão via OIDC (que injeta BLOB_STORE_ID)
+  if (!process.env.BLOB_READ_WRITE_TOKEN && !process.env.BLOB_STORE_ID) {
+    return { ok: false, error: "Armazenamento de fotos ainda não configurado." };
+  }
 
   const file = formData.get("file");
   if (!(file instanceof File) || file.size === 0) return { ok: false, error: "Arquivo inválido." };
