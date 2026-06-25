@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ShareNetwork } from "@phosphor-icons/react";
 import { ContaActions } from "./ContaActions";
 import { EditarPerfilSheet, type PerfilInitial } from "./EditarPerfilSheet";
 
@@ -26,6 +27,19 @@ export function PerfilCliente(props: Props) {
   const { displayName, subtitle, initials, overall, posAbbr, joinYear, foto, stats, email, grupoNome, roleLabel, initial, isOwner } = props;
   const [editOpen, setEditOpen] = useState(false);
 
+  async function compartilhar() {
+    const text = `🏆 ${displayName} — ${overall} OVR no Canelada`;
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    try {
+      if (typeof navigator !== "undefined" && navigator.share) {
+        await navigator.share({ title: displayName, text, url });
+      } else if (typeof navigator !== "undefined" && navigator.clipboard) {
+        await navigator.clipboard.writeText(`${text}\n${url}`);
+        alert("Card copiado!");
+      }
+    } catch { /* cancelou */ }
+  }
+
   const avatarInner = foto
     // eslint-disable-next-line @next/next/no-img-element
     ? <img src={foto} alt={displayName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -36,10 +50,20 @@ export function PerfilCliente(props: Props) {
     <>
       {/* ── CARD DO JOGADOR ── */}
       <div style={{
+        position: "relative",
         background: "#171717", border: "2px solid #383838",
         borderRadius: "64px 0 64px 64px", overflow: "hidden",
         padding: "20px 24px 32px", display: "flex", flexDirection: "column", gap: 16,
       }}>
+        {/* Compartilhar */}
+        <button
+          onClick={compartilhar}
+          aria-label="Compartilhar card"
+          style={{ position: "absolute", top: 16, right: 16, zIndex: 2, width: 36, height: 36, borderRadius: 10, background: "#1c1c1c", border: "1px solid #383838", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}
+        >
+          <ShareNetwork size={18} color="#9fe870" weight="bold" />
+        </button>
+
         {/* DESDE */}
         <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
