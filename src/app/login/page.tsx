@@ -95,7 +95,7 @@ export default function LoginPage() {
               </button>
             )}
 
-            {/* Telefone (e-mail mágico) — só se o Resend estiver ativo */}
+            {/* Login por e-mail (link mágico) — só se o Resend estiver ativo */}
             {hasResend && (
               <button
                 onClick={() => signIn("resend", { callbackUrl: "/feed" })}
@@ -105,10 +105,12 @@ export default function LoginPage() {
                   display: "flex", alignItems: "center", justifyContent: "center", gap: 12,
                 }}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/phone-icon.svg" alt="" aria-hidden width={20} height={20} />
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                  <rect x="2" y="4" width="20" height="16" rx="2" />
+                  <path d="m22 7-10 6L2 7" />
+                </svg>
                 <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>
-                  Entrar com telefone
+                  Entrar com e-mail
                 </span>
               </button>
             )}
