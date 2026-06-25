@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { toPng } from "html-to-image";
 import { ShareNetwork } from "@phosphor-icons/react";
 import { ContaActions } from "./ContaActions";
 import { EditarPerfilSheet, type PerfilInitial } from "./EditarPerfilSheet";
@@ -26,18 +27,39 @@ interface Props {
 export function PerfilCliente(props: Props) {
   const { displayName, subtitle, initials, overall, posAbbr, joinYear, foto, stats, email, grupoNome, roleLabel, initial, isOwner } = props;
   const [editOpen, setEditOpen] = useState(false);
+  const [sharing, setSharing] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const shareBtnRef = useRef<HTMLButtonElement>(null);
 
   async function compartilhar() {
+    if (sharing || !cardRef.current) return;
+    setSharing(true);
     const text = `🏆 ${displayName} — ${overall} OVR no Canelada`;
     const url = typeof window !== "undefined" ? window.location.href : "";
     try {
-      if (typeof navigator !== "undefined" && navigator.share) {
+      const dataUrl = await toPng(cardRef.current, {
+        pixelRatio: 2, cacheBust: true, backgroundColor: "#090909",
+        filter: (n) => n !== shareBtnRef.current,
+      });
+      const blob = await (await fetch(dataUrl)).blob();
+      const file = new File([blob], "card-canelada.png", { type: "image/png" });
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], text });
+      } else if (navigator.share) {
         await navigator.share({ title: displayName, text, url });
-      } else if (typeof navigator !== "undefined" && navigator.clipboard) {
-        await navigator.clipboard.writeText(`${text}\n${url}`);
-        alert("Card copiado!");
+      } else {
+        const u = URL.createObjectURL(blob);
+        Object.assign(document.createElement("a"), { href: u, download: "card-canelada.png" }).click();
+        URL.revokeObjectURL(u);
       }
-    } catch { /* cancelou */ }
+    } catch (e) {
+      // CORS na foto pode falhar a imagem → fallback texto
+      if ((e as Error)?.name !== "AbortError") {
+        try { if (navigator.share) await navigator.share({ title: displayName, text, url }); } catch { /* */ }
+      }
+    } finally {
+      setSharing(false);
+    }
   }
 
   const avatarInner = foto
@@ -49,7 +71,7 @@ export function PerfilCliente(props: Props) {
   return (
     <>
       {/* ── CARD DO JOGADOR ── */}
-      <div style={{
+      <div ref={cardRef} style={{
         position: "relative",
         background: "#171717", border: "2px solid #383838",
         borderRadius: "64px 0 64px 64px", overflow: "hidden",
@@ -57,9 +79,11 @@ export function PerfilCliente(props: Props) {
       }}>
         {/* Compartilhar */}
         <button
+          ref={shareBtnRef}
           onClick={compartilhar}
+          disabled={sharing}
           aria-label="Compartilhar card"
-          style={{ position: "absolute", top: 16, right: 16, zIndex: 2, width: 36, height: 36, borderRadius: 10, background: "#1c1c1c", border: "1px solid #383838", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}
+          style={{ position: "absolute", top: 16, right: 16, zIndex: 2, width: 36, height: 36, borderRadius: 10, background: "#1c1c1c", border: "1px solid #383838", display: "flex", alignItems: "center", justifyContent: "center", cursor: sharing ? "default" : "pointer", opacity: sharing ? 0.5 : 1, WebkitTapHighlightColor: "transparent" }}
         >
           <ShareNetwork size={18} color="#9fe870" weight="bold" />
         </button>
