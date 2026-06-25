@@ -9,10 +9,10 @@ import { atualizarPerfil, uploadFoto } from "./actions";
 const POSICOES = ["Goleiro", "Zagueiro", "Lateral", "Volante", "Meio-Campo", "Atacante"];
 const PES = ["Direito", "Esquerdo", "Ambidestro"];
 
-function Label({ children, req }: { children: React.ReactNode; req?: boolean }) {
+function Label({ children }: { children: React.ReactNode }) {
   return (
     <label style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, color: "#fff", marginBottom: 8, display: "block" }}>
-      {children}{req && <span style={{ color: "#e56767" }}> *</span>}
+      {children}
     </label>
   );
 }
@@ -116,11 +116,11 @@ export function EditarPerfilSheet({ open, onClose, initial }: Props) {
 
         <div style={{ display: "flex", gap: 10 }}>
           <div style={{ flex: 1 }}>
-            <Label req>Nome</Label>
+            <Label>Nome</Label>
             <input style={inputStyle} value={nome} onChange={e => setNome(e.target.value)} placeholder="Arthur" maxLength={40} />
           </div>
           <div style={{ flex: 1 }}>
-            <Label req>Sobrenome</Label>
+            <Label>Sobrenome</Label>
             <input style={inputStyle} value={sobrenome} onChange={e => setSobrenome(e.target.value)} placeholder="Silva" maxLength={40} />
           </div>
         </div>
@@ -132,14 +132,14 @@ export function EditarPerfilSheet({ open, onClose, initial }: Props) {
 
         <div style={{ display: "flex", gap: 10 }}>
           <div style={{ flex: 1 }}>
-            <Label req>Posição</Label>
+            <Label>Posição</Label>
             <select style={{ ...inputStyle, appearance: "none" }} value={posicao} onChange={e => setPosicao(e.target.value)}>
               <option value="">—</option>
               {POSICOES.map(p => <option key={p} value={p}>{p}</option>)}
             </select>
           </div>
           <div style={{ flex: 1 }}>
-            <Label req>Pé Preferido</Label>
+            <Label>Pé Preferido</Label>
             <select style={{ ...inputStyle, appearance: "none" }} value={pe} onChange={e => setPe(e.target.value)}>
               <option value="">—</option>
               {PES.map(p => <option key={p} value={p}>{p}</option>)}
