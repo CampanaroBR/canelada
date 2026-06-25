@@ -31,7 +31,8 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
     where: { apelido: { equals: apelido, mode: "insensitive" } },
     select: {
       id: true, userId: true, apelido: true, nome: true, sobrenome: true,
-      posicao: true, peDominante: true, grupoId: true, createdAt: true,
+      posicao: true, peDominante: true, grupoId: true, createdAt: true, role: true,
+      grupo: { select: { nome: true } },
       traitsRecebidas: { select: { traitSlug: true } },
     },
   });
@@ -145,7 +146,11 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
 
         {/* ── CONTA ── */}
         <div style={{ padding: "0 16px" }}>
-          <ContaActions />
+          <ContaActions
+            email={session.user.email ?? ""}
+            grupoNome={jogador.grupo?.nome ?? "Canelada"}
+            roleLabel={jogador.role === "PLAYER" ? "Jogador" : "Admin"}
+          />
         </div>
       </main>
 
