@@ -56,9 +56,10 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
     prisma.voto.findMany({ where: { votadoId: jogador.id }, select: { rodadaId: true }, distinct: ["rodadaId"] }),
   ]);
 
-  const initials = getInitials(jogador.apelido);
   const isOwner = jogador.userId === session.user.id;
   const nomeCompleto = [jogador.nome, jogador.sobrenome].filter(Boolean).join(" ");
+  const displayName = nomeCompleto || jogador.apelido;
+  const initials = getInitials(displayName);
   const traitsUnlocked = jogador.traitsRecebidas.length;
   const presencaCount = presencaRows.length;
   const joinYear = new Date(jogador.createdAt).getFullYear();
@@ -71,28 +72,30 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
 
   const posAbbr = jogador.posicao ? (POS_ABBR[jogador.posicao] ?? jogador.posicao.slice(0, 3).toUpperCase()) : "—";
 
-  const subtitle = [nomeCompleto, jogador.peDominante ? `Pé ${jogador.peDominante.toLowerCase()}` : null].filter(Boolean).join(" · ");
+  const subParts: string[] = [];
+  if (nomeCompleto) subParts.push(jogador.apelido);
+  if (jogador.peDominante) subParts.push(`Pé ${jogador.peDominante}`);
+  const subtitle = subParts.join(" · ");
 
   const STATS = [
     { label: "PRESENÇAS", value: presencaCount, color: "#9fe870" },
-    { label: "MVPs", value: mvpCount, color: "#B5FF4D" },
-    { label: "BAGRES", value: bagreCount, color: "#EF4444" },
+    { label: "MVP's", value: mvpCount, color: "#B5FF4D" },
+    { label: "BAGRES", value: bagreCount, color: "#e56767" },
     { label: "PERSONAGENS", value: traitsUnlocked, color: "#A78BFA" },
   ];
 
   return (
     <div style={{ minHeight: "100dvh", background: "#090909" }}>
       {/* ── Topbar ── */}
-      <header className="glass-bar" style={{ position: "sticky", top: 0, zIndex: 30, height: 56, display: "flex", alignItems: "center", padding: "0 16px", gap: 12 }}>
-        <Link href="/feed" aria-label="Voltar" style={{ width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", marginLeft: -8, textDecoration: "none", flexShrink: 0 }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
+      <header className="glass-bar" style={{ position: "sticky", top: 0, zIndex: 30, height: 56, display: "flex", alignItems: "center", padding: "0 8px" }}>
+        <Link href="/feed" aria-label="Voltar" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", textDecoration: "none", flexShrink: 0 }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
         </Link>
-        <span style={{ flex: 1, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, letterSpacing: "0.1em", textTransform: "uppercase", color: "#7a7a7a" }}>Perfil</span>
       </header>
 
-      <main style={{ paddingBottom: "calc(96px + env(safe-area-inset-bottom, 0px))", display: "flex", flexDirection: "column", gap: 16 }}>
+      <main style={{ padding: "0 8px", paddingBottom: "calc(96px + env(safe-area-inset-bottom, 0px))", display: "flex", flexDirection: "column", gap: 16 }}>
         <PerfilCliente
-          apelido={jogador.apelido}
+          displayName={displayName}
           overall={overall}
           posAbbr={posAbbr}
           joinYear={joinYear}

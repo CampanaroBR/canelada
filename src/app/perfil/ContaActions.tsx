@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { UserCircle, Medal, Bell, EnvelopeSimple, ShieldCheck, FileText, SignOut, CaretRight } from "@phosphor-icons/react";
+import { UserCircle, Medal, Bell, ShieldCheck, FileText, SignOut, CaretRight } from "@phosphor-icons/react";
 
 interface Props {
   email: string;
@@ -12,84 +12,92 @@ interface Props {
   onEditar: () => void;
 }
 
-type PushState = "idle" | "ativando" | "ativadas" | "bloqueadas" | "erro";
-
 export function ContaActions({ email, grupoNome, roleLabel, onEditar }: Props) {
-  const [push, setPush] = useState<PushState>("idle");
+  const [pushOn, setPushOn] = useState(false);
+  const [pushBusy, setPushBusy] = useState(false);
 
-  async function ativarPush() {
-    if (push === "ativando" || push === "ativadas") return;
-    setPush("ativando");
+  useEffect(() => {
+    (async () => {
+      try {
+        if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
+        const reg = await navigator.serviceWorker.getRegistration();
+        const sub = await reg?.pushManager.getSubscription();
+        setPushOn(!!sub);
+      } catch { /* ignore */ }
+    })();
+  }, []);
+
+  async function togglePush() {
+    if (pushBusy) return;
+    setPushBusy(true);
     try {
-      if (!("serviceWorker" in navigator) || !("PushManager" in window)) { setPush("erro"); return; }
+      if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
       const reg = await navigator.serviceWorker.register("/sw.js");
-      const perm = await Notification.requestPermission();
-      if (perm !== "granted") { setPush("bloqueadas"); return; }
-      const sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!) as unknown as BufferSource,
-      });
-      await fetch("/api/push/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(sub.toJSON()) });
-      setPush("ativadas");
-    } catch { setPush("erro"); }
+      const existing = await reg.pushManager.getSubscription();
+      if (existing) {
+        await existing.unsubscribe();
+        setPushOn(false);
+      } else {
+        const perm = await Notification.requestPermission();
+        if (perm !== "granted") { setPushOn(false); return; }
+        const sub = await reg.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!) as unknown as BufferSource,
+        });
+        await fetch("/api/push/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(sub.toJSON()) });
+        setPushOn(true);
+      }
+    } catch { /* ignore */ } finally { setPushBusy(false); }
   }
-
-  const pushRight = push === "ativadas" ? "Ativadas" : push === "ativando" ? "Ativando…" : push === "bloqueadas" ? "Bloqueadas" : push === "erro" ? "Erro" : "Ativar";
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
       {/* CONTA */}
-      <div>
-        <GroupTitle>Conta</GroupTitle>
-        <div style={{ background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 16, overflow: "hidden" }}>
-          <RowButton onClick={onEditar} icon={<UserCircle size={20} color="#9fe870" weight="fill" />} label="Dados pessoais" sub="Nome, apelido, posição, foto" />
-          <Divider />
-          <InfoRow label="E-mail" value={email || "—"} />
-          <Divider />
-          <InfoRow label="Grupo" value={grupoNome} />
-          <Divider />
-          <InfoRow label="Papel" value={roleLabel} />
-        </div>
-      </div>
+      <Group title="CONTA">
+        <RowButton onClick={onEditar} icon={<UserCircle size={20} color="#9fe870" weight="fill" />} label="Dados pessoais" sub="Nome, apelido, posição, foto" />
+        <Divider />
+        <InfoRow label="E-mail" value={email || "—"} />
+        <Divider />
+        <InfoRow label="Grupo" value={grupoNome} />
+        <Divider />
+        <InfoRow label="Papel" value={roleLabel} />
+      </Group>
 
       {/* GERAL */}
-      <div>
-        <GroupTitle>Geral</GroupTitle>
-        <div style={{ background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 16, overflow: "hidden" }}>
-          <RowLink href="/medalhas" icon={<Medal size={20} color="#9fe870" weight="fill" />} label="Minhas Badges" sub="Personagens e conquistas" />
-          <Divider />
-          <RowButton onClick={ativarPush} icon={<Bell size={20} color="#fff" weight="regular" />} label="Notificações" sub="Avisos de votação e badges" right={pushRight} rightColor={push === "ativadas" ? "#9fe870" : "#7a7a7a"} />
-        </div>
-      </div>
+      <Group title="GERAL">
+        <RowLink href="/medalhas" icon={<Medal size={20} color="#9fe870" weight="fill" />} label="Minhas Badges" sub="Personagens e conquistas" />
+        <Divider />
+        <RowToggle onClick={togglePush} on={pushOn} icon={<Bell size={20} color="#fff" weight="regular" />} label="Notificações" sub="Avisos de votação e badges" />
+      </Group>
 
       {/* AJUDA & LEGAL */}
-      <div>
-        <GroupTitle>Ajuda & legal</GroupTitle>
-        <div style={{ background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 16, overflow: "hidden" }}>
-          <RowLink href="mailto:arthursf.designer@gmail.com?subject=Suporte%20Canelada" icon={<EnvelopeSimple size={20} color="#fff" weight="regular" />} label="Suporte" sub="Fale com a gente" />
-          <Divider />
-          <RowLink href="/termos" icon={<FileText size={20} color="#fff" weight="regular" />} label="Termos de Uso" />
-          <Divider />
-          <RowLink href="/privacidade" icon={<ShieldCheck size={20} color="#fff" weight="regular" />} label="Política de Privacidade" />
-        </div>
-      </div>
+      <Group title="AJUDA & LEGAL">
+        <RowLink href="/termos" icon={<FileText size={20} color="#fff" weight="regular" />} label="Termos de Uso" />
+        <Divider />
+        <RowLink href="/privacidade" icon={<ShieldCheck size={20} color="#fff" weight="regular" />} label="Política de Privacidade" />
+      </Group>
 
       {/* SAIR */}
-      <button onClick={() => signOut({ callbackUrl: "/login" })} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 16, padding: "14px 16px", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-        <div style={{ width: 36, height: 36, borderRadius: 10, background: "#2a0a0a", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-          <SignOut size={20} color="#ef4444" weight="regular" />
+      <button onClick={() => signOut({ callbackUrl: "/login" })} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", background: "#0a0e0e", border: "1px solid #383838", borderRadius: 16, padding: "14px 16px", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+        <div style={{ width: 36, height: 36, borderRadius: 10, background: "#e56767", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <SignOut size={20} color="#1a0606" weight="bold" />
         </div>
-        <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 15, color: "#ef4444" }}>Sair</span>
+        <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 15, color: "#e56767" }}>Sair</span>
       </button>
 
-      <p style={{ margin: 0, textAlign: "center", fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 11, color: "#5a5a5a" }}>Canelada · v1.0</p>
+      <p style={{ margin: 0, textAlign: "center", fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 11, color: "#5a5a5a" }}>Canelada · v1.0</p>
     </div>
   );
 }
 
-function GroupTitle({ children }: { children: React.ReactNode }) {
-  return <p style={{ margin: "0 0 8px 4px", fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#7a7a7a" }}>{children}</p>;
+function Group({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <p style={{ margin: "0 0 0 2px", fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", color: "#999" }}>{title}</p>
+      <div style={{ background: "#0a0e0e", border: "1px solid #383838", borderRadius: 16, overflow: "hidden" }}>{children}</div>
+    </div>
+  );
 }
 function Divider() { return <div style={{ height: 1, background: "#1c1c1c" }} />; }
 
@@ -110,17 +118,28 @@ function RowLink({ href, icon, label, sub }: { href: string; icon: React.ReactNo
     </Link>
   );
 }
-function RowButton({ onClick, icon, label, sub, right, rightColor }: { onClick: () => void; icon: React.ReactNode; label: string; sub?: string; right?: string; rightColor?: string }) {
+function RowButton({ onClick, icon, label, sub }: { onClick: () => void; icon: React.ReactNode; label: string; sub?: string }) {
   return (
     <button onClick={onClick} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", background: "none", border: "none", padding: "14px 16px", cursor: "pointer", WebkitTapHighlightColor: "transparent", textAlign: "left" }}>
       <IconBox>{icon}</IconBox>
       <Labels label={label} sub={sub} />
-      {right ? <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 13, color: rightColor ?? "#7a7a7a" }}>{right}</span> : <CaretRight size={16} color="#555" weight="bold" />}
+      <CaretRight size={16} color="#555" weight="bold" />
+    </button>
+  );
+}
+function RowToggle({ onClick, on, icon, label, sub }: { onClick: () => void; on: boolean; icon: React.ReactNode; label: string; sub?: string }) {
+  return (
+    <button onClick={onClick} aria-pressed={on} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", background: "none", border: "none", padding: "14px 16px", cursor: "pointer", WebkitTapHighlightColor: "transparent", textAlign: "left" }}>
+      <IconBox>{icon}</IconBox>
+      <Labels label={label} sub={sub} />
+      <span style={{ position: "relative", width: 40, height: 22, borderRadius: 9999, background: on ? "#9fe870" : "#3a3a3a", flexShrink: 0, transition: "background 160ms" }}>
+        <span style={{ position: "absolute", top: 2, left: on ? 20 : 2, width: 18, height: 18, borderRadius: "50%", background: "#fff", transition: "left 160ms" }} />
+      </span>
     </button>
   );
 }
 function IconBox({ children }: { children: React.ReactNode }) {
-  return <div style={{ width: 36, height: 36, borderRadius: 10, background: "#1a1a1a", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{children}</div>;
+  return <div style={{ width: 36, height: 36, borderRadius: 10, background: "#1c1c1c", border: "1px solid #383838", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{children}</div>;
 }
 function Labels({ label, sub }: { label: string; sub?: string }) {
   return (
