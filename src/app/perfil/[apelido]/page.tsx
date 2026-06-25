@@ -6,34 +6,25 @@ import Link from "next/link";
 import Image from "next/image";
 import { TRAIT_SVG } from "@/lib/assets";
 import { EditarPerfilSheet } from "../EditarPerfilSheet";
-import { CONQUISTAS, computeConquistas, computeOverall } from "@/lib/conquistas";
+import { CONQUISTAS, CAT_CONQUISTA_CONFIG, computeConquistas, computeOverall, type ConquistaCategoria } from "@/lib/conquistas";
 
 export const dynamic = "force-dynamic";
 
-const AVATAR_COLORS = ["#B5FF4D", "#60A5FA", "#F59E0B", "#EF4444", "#A78BFA", "#34D399", "#F97316", "#EC4899"];
-function getAvatarColor(name: string) {
-  let h = 0;
-  for (const c of name) h = (h * 31 + c.charCodeAt(0)) & 0xffff;
-  return AVATAR_COLORS[h % AVATAR_COLORS.length];
-}
+const ACCENT = "#9fe870";
+
 function getInitials(name: string) {
   const p = name.trim().split(/\s+/);
   return p.length >= 2 ? (p[0][0] + p[1][0]).toUpperCase() : name.slice(0, 2).toUpperCase();
 }
 
-const CAT_COLOR: Record<string, string> = {
-  FUTEBOL: "#B5FF4D",
-  PERSONALIDADE: "#F59E0B",
-  RESENHA: "#EF4444",
+// cor de acento por categoria de trait
+const TRAIT_CAT: Record<string, { label: string; color: string }> = {
+  FUTEBOL: { label: "Futebol", color: "#9fe870" },
+  PERSONALIDADE: { label: "Personalidade", color: "#f0a14e" },
+  RESENHA: { label: "Resenha", color: "#5aa9e6" },
 };
 
-const hexA = (hex: string, a: string) => `${hex}${a}`; // hex + alpha suffix (ex: "#fff" + "33")
-
-export default async function PerfilPage({
-  params,
-}: {
-  params: Promise<{ apelido: string }>;
-}) {
+export default async function PerfilPage({ params }: { params: Promise<{ apelido: string }> }) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
@@ -43,36 +34,22 @@ export default async function PerfilPage({
   const jogador = await prisma.jogador.findFirst({
     where: { apelido: { equals: apelido, mode: "insensitive" } },
     select: {
-      id: true,
-      userId: true,
-      apelido: true,
-      nome: true,
-      sobrenome: true,
-      posicao: true,
-      peDominante: true,
-      grupoId: true,
-      createdAt: true,
-      traitsRecebidas: {
-        select: {
-          traitSlug: true,
-          contador: true,
-          trait: { select: { nome: true, emoji: true, categoria: true } },
-        },
-        orderBy: { contador: "desc" },
-      },
+      id: true, userId: true, apelido: true, nome: true, sobrenome: true,
+      posicao: true, peDominante: true, grupoId: true, createdAt: true,
+      traitsRecebidas: { select: { traitSlug: true, contador: true } },
     },
   });
 
   if (!jogador) {
     return (
-      <div style={{ minHeight: "100dvh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
-        <header style={{ height: "56px", display: "flex", alignItems: "center", padding: "0 20px" }}>
-          <Link href="/feed" style={{ color: "var(--color-text-muted)", display: "flex", alignItems: "center" }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
+      <div style={{ minHeight: "100dvh", background: "#090909", display: "flex", flexDirection: "column" }}>
+        <header style={{ height: 56, display: "flex", alignItems: "center", padding: "0 16px" }}>
+          <Link href="/feed" style={{ color: "#7a7a7a", display: "flex", alignItems: "center" }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
           </Link>
         </header>
-        <main style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }}>
-          <p style={{ color: "var(--color-text-muted)", fontFamily: "var(--font-body)", fontSize: "14px" }}>Jogador não encontrado.</p>
+        <main style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
+          <p style={{ color: "#7a7a7a", fontFamily: "var(--font-body)", fontSize: 14 }}>Jogador não encontrado.</p>
         </main>
         <BottomNav />
       </div>
@@ -80,7 +57,7 @@ export default async function PerfilPage({
   }
 
   const [allTraits, mvpCount, bagreCount, racudoCount, resenhaCount, totalRodadas, presencaRows, recentRodadas] = await Promise.all([
-    prisma.trait.findMany({ orderBy: [{ categoria: "asc" }, { nome: "asc" }], select: { slug: true } }),
+    prisma.trait.findMany({ orderBy: [{ categoria: "asc" }, { nome: "asc" }], select: { slug: true, nome: true, categoria: true } }),
     prisma.voto.count({ where: { votadoId: jogador.id, categoria: "MVP" } }),
     prisma.voto.count({ where: { votadoId: jogador.id, categoria: "BAGRE" } }),
     prisma.voto.count({ where: { votadoId: jogador.id, categoria: "RACUDO" } }),
@@ -90,13 +67,11 @@ export default async function PerfilPage({
     prisma.rodada.findMany({
       where: { grupoId: jogador.grupoId },
       select: { id: true, data: true, votos: { where: { votadoId: jogador.id }, select: { categoria: true } } },
-      orderBy: { data: "desc" },
-      take: 5,
+      orderBy: { data: "desc" }, take: 5,
     }),
   ]);
 
   const unlockedMap = new Map(jogador.traitsRecebidas.map((t) => [t.traitSlug, t.contador]));
-  const color = getAvatarColor(jogador.apelido);
   const initials = getInitials(jogador.apelido);
   const isOwner = jogador.userId === session.user.id;
   const nomeCompleto = [jogador.nome, jogador.sobrenome].filter(Boolean).join(" ");
@@ -107,153 +82,120 @@ export default async function PerfilPage({
   const conquiStats = { mvpCount, bagreCount, racudoCount, resenhaCount, traitsUnlocked, presencaCount };
   const overall = computeOverall(conquiStats);
   const conquistasUnlocked = computeConquistas(conquiStats);
+  const conqUnlockedCount = CONQUISTAS.filter((c) => conquistasUnlocked.has(c.slug)).length;
 
-  const unlockedTraitList = jogador.traitsRecebidas;
-  const lockedTraits = allTraits.filter((t) => !unlockedMap.has(t.slug));
-  const unlockedConq = CONQUISTAS.filter((c) => conquistasUnlocked.has(c.slug));
+  const traitsByCat = ["FUTEBOL", "PERSONALIDADE", "RESENHA"].map((cat) => ({
+    cat,
+    cfg: TRAIT_CAT[cat],
+    items: allTraits.filter((t) => t.categoria === cat),
+  })).filter((g) => g.items.length > 0);
+
+  const conqByCat = (["SEQUENCIA", "MENSAL", "HISTORICA"] as ConquistaCategoria[]).map((cat) => ({
+    cat,
+    cfg: CAT_CONQUISTA_CONFIG[cat],
+    items: CONQUISTAS.filter((c) => c.categoria === cat),
+  })).filter((g) => g.items.length > 0);
 
   return (
-    <div style={{ minHeight: "100dvh", background: "var(--color-bg)" }}>
-      {/* ── Header ── */}
-      <header className="glass-bar" style={{
-        position: "sticky", top: 0, zIndex: 30, height: 56,
-        display: "flex", alignItems: "center", padding: "0 16px", gap: 12,
-      }}>
-        <Link href="/feed" aria-label="Voltar" style={{ width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--color-text-muted)", marginLeft: -8, textDecoration: "none", flexShrink: 0 }}>
+    <div style={{ minHeight: "100dvh", background: "#090909" }}>
+      {/* ── Topbar ── */}
+      <header className="glass-bar" style={{ position: "sticky", top: 0, zIndex: 30, height: 56, display: "flex", alignItems: "center", padding: "0 16px", gap: 12 }}>
+        <Link href="/feed" aria-label="Voltar" style={{ width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", marginLeft: -8, textDecoration: "none", flexShrink: 0 }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
         </Link>
-        <span style={{ flex: 1, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--color-text-muted)" }}>Perfil</span>
+        <span style={{ flex: 1, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, letterSpacing: "0.1em", textTransform: "uppercase", color: "#7a7a7a" }}>Perfil</span>
         {isOwner && (
-          <EditarPerfilSheet initial={{
-            nome: jogador.nome ?? "",
-            sobrenome: jogador.sobrenome ?? "",
-            apelido: jogador.apelido,
-            posicao: jogador.posicao ?? "",
-            peDominante: jogador.peDominante ?? "",
-          }} />
+          <EditarPerfilSheet initial={{ nome: jogador.nome ?? "", sobrenome: jogador.sobrenome ?? "", apelido: jogador.apelido, posicao: jogador.posicao ?? "", peDominante: jogador.peDominante ?? "" }} />
         )}
       </header>
 
       <main style={{ paddingBottom: "calc(96px + env(safe-area-inset-bottom, 0px))", display: "flex", flexDirection: "column", gap: 24 }}>
 
-        {/* ── HERO CARD ── */}
+        {/* ── Card do jogador ── */}
         <div style={{ padding: "12px 16px 0" }}>
-          <div style={{
-            position: "relative", overflow: "hidden",
-            borderRadius: 24, padding: "22px 20px",
-            background: "#0c0f0e",
-            border: `1px solid ${hexA(color, "40")}`,
-            boxShadow: `0 18px 44px -22px ${hexA(color, "66")}`,
-          }}>
-            {/* glow */}
-            <div aria-hidden style={{ position: "absolute", top: -90, left: "50%", transform: "translateX(-50%)", width: 340, height: 220, background: color, opacity: 0.16, filter: "blur(72px)", borderRadius: "50%", pointerEvents: "none" }} />
-            {/* watermark */}
-            <div aria-hidden style={{ position: "absolute", right: -8, bottom: -38, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 168, lineHeight: 1, color: "#fff", opacity: 0.03, pointerEvents: "none", letterSpacing: "-0.04em" }}>{initials}</div>
-
-            <div style={{ position: "relative", display: "flex", alignItems: "center", gap: 16 }}>
-              <div style={{ width: 80, height: 80, borderRadius: "50%", flexShrink: 0, background: hexA(color, "1f"), border: `2px solid ${color}`, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 26px ${hexA(color, "40")}` }}>
-                <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 30, color }}>{initials}</span>
+          <div style={{ background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 20, padding: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+              <div style={{ width: 72, height: 72, borderRadius: "50%", flexShrink: 0, background: "#171717", border: `2px solid ${ACCENT}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 26, color: ACCENT }}>{initials}</span>
               </div>
-              <div style={{ marginLeft: "auto", textAlign: "center", background: hexA(color, "18"), border: `1px solid ${hexA(color, "55")}`, borderRadius: 16, padding: "8px 16px" }}>
-                <div style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 34, lineHeight: 0.9, color, fontVariantNumeric: "tabular-nums" }}>{overall}</div>
-                <div style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 9, letterSpacing: "0.14em", color, opacity: 0.85, marginTop: 3 }}>OVR</div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 26, lineHeight: 1, letterSpacing: "-0.01em", textTransform: "uppercase", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{jogador.apelido}</h1>
+                {nomeCompleto && <p style={{ margin: "4px 0 0", fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "#7a7a7a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{nomeCompleto}</p>}
+              </div>
+              <div style={{ flexShrink: 0, textAlign: "center", background: "#090909", border: `1px solid ${ACCENT}55`, borderRadius: 14, padding: "8px 14px" }}>
+                <div style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 28, lineHeight: 0.9, color: ACCENT, fontVariantNumeric: "tabular-nums" }}>{overall}</div>
+                <div style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 9, letterSpacing: "0.14em", color: ACCENT, opacity: 0.8, marginTop: 2 }}>OVR</div>
               </div>
             </div>
-
-            <div style={{ position: "relative", marginTop: 16 }}>
-              <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: "clamp(34px, 11vw, 46px)", lineHeight: 0.95, letterSpacing: "-0.02em", textTransform: "uppercase", color: "#fff" }}>{jogador.apelido}</h1>
-              {nomeCompleto && <p style={{ margin: "6px 0 0", fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, color: "var(--color-text-secondary)" }}>{nomeCompleto}</p>}
-            </div>
-
-            <div style={{ position: "relative", display: "flex", flexWrap: "wrap", gap: 8, marginTop: 14 }}>
-              <MetaPill>⚽ {totalRodadas} {totalRodadas === 1 ? "rodada" : "rodadas"}</MetaPill>
-              <MetaPill>Desde {joinYear}</MetaPill>
-              {jogador.posicao && <MetaPill>{jogador.posicao}</MetaPill>}
-              {jogador.peDominante && <MetaPill>Pé {jogador.peDominante}</MetaPill>}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 14 }}>
+              <Pill>⚽ {totalRodadas} {totalRodadas === 1 ? "rodada" : "rodadas"}</Pill>
+              <Pill>Desde {joinYear}</Pill>
+              {jogador.posicao && <Pill>{jogador.posicao}</Pill>}
+              {jogador.peDominante && <Pill>Pé {jogador.peDominante}</Pill>}
             </div>
           </div>
         </div>
 
-        {/* ── STATS ── */}
+        {/* ── Stats ── */}
         <div style={{ padding: "0 16px", display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
-          <MetricCard label="Presenças" value={presencaCount} color="#9fe870" />
-          <MetricCard label="MVPs" value={mvpCount} color="#B5FF4D" />
-          <MetricCard label="Bagres" value={bagreCount} color="#EF4444" />
-          <MetricCard label="Personagens" value={traitsUnlocked} color="#A78BFA" />
+          <Metric label="Presenças" value={presencaCount} color={ACCENT} />
+          <Metric label="MVPs" value={mvpCount} color="#B5FF4D" />
+          <Metric label="Bagres" value={bagreCount} color="#EF4444" />
+          <Metric label="Personagens" value={traitsUnlocked} color="#A78BFA" />
         </div>
 
-        {/* ── PERSONAGENS ── */}
+        {/* ── Personagens (traits) ── */}
         <section style={{ padding: "0 16px" }}>
           <SectionTitle title="Personagens" count={`${traitsUnlocked}/${allTraits.length}`} />
-          {unlockedTraitList.length > 0 ? (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
-              {unlockedTraitList.map((t) => (
-                <TraitTile key={t.traitSlug} src={TRAIT_SVG[t.traitSlug]} nome={t.trait.nome} count={t.contador} color={CAT_COLOR[t.trait.categoria] ?? "#9fe870"} />
-              ))}
-            </div>
-          ) : (
-            <EmptyState icon="🎭" title="Nenhum personagem ainda" text="Entre nos babás e seja votado pra começar a colecionar seus personagens." />
-          )}
-
-          {lockedTraits.length > 0 && (
-            <div style={{ marginTop: 14 }}>
-              <p style={{ margin: "0 0 8px", fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--color-text-muted)" }}>
-                A desbloquear · {lockedTraits.length}
-              </p>
-              <div style={{ display: "flex", gap: 8 }}>
-                {lockedTraits.slice(0, 6).map((t) => (
-                  <div key={t.slug} style={{ width: 44, height: 44, flexShrink: 0, borderRadius: 12, background: "#101010", border: "1px solid #222", display: "flex", alignItems: "center", justifyContent: "center", opacity: 0.5 }}>
-                    {TRAIT_SVG[t.slug] && <Image src={TRAIT_SVG[t.slug]} alt="" width={28} height={28} style={{ objectFit: "contain", filter: "grayscale(1) brightness(0.7)" }} />}
-                  </div>
-                ))}
-                {lockedTraits.length > 6 && (
-                  <div style={{ width: 44, height: 44, flexShrink: 0, borderRadius: 12, background: "#101010", border: "1px solid #222", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 13, color: "#7a7a7a" }}>
-                    +{lockedTraits.length - 6}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </section>
-
-        {/* ── MEDALHAS ── */}
-        <section style={{ padding: "0 16px" }}>
-          <SectionTitle title="Medalhas" count={`${unlockedConq.length}/${CONQUISTAS.length}`} />
-          {unlockedConq.length > 0 ? (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10 }}>
-              {unlockedConq.map((c) => (
-                <div key={c.slug} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-                  <div style={{ width: "100%", aspectRatio: "1 / 1", position: "relative" }}>
-                    <Image src={c.svg} alt={c.nome} fill sizes="80px" style={{ objectFit: "contain" }} />
-                  </div>
-                  <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 10, lineHeight: "12px", color: "#b0b0b6", textAlign: "center" }}>{c.nome}</span>
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            {traitsByCat.map((g) => (
+              <div key={g.cat}>
+                <CatLabel label={g.cfg.label} color={g.cfg.color} count={`${g.items.filter((t) => unlockedMap.has(t.slug)).length}/${g.items.length}`} />
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                  {g.items.map((t) => (
+                    <Tile key={t.slug} src={TRAIT_SVG[t.slug]} nome={t.nome} unlocked={unlockedMap.has(t.slug)} accent={g.cfg.color} count={unlockedMap.get(t.slug)} />
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <EmptyState icon="🏅" title="Nenhuma medalha ainda" text="Medalhas vêm com presença, MVPs e sequências boas. Bora pro próximo baba!" />
-          )}
+              </div>
+            ))}
+          </div>
         </section>
 
-        {/* ── HISTÓRICO ── */}
+        {/* ── Medalhas (conquistas) ── */}
+        <section style={{ padding: "0 16px" }}>
+          <SectionTitle title="Medalhas" count={`${conqUnlockedCount}/${CONQUISTAS.length}`} />
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            {conqByCat.map((g) => (
+              <div key={g.cat}>
+                <CatLabel label={g.cfg.label} color={g.cfg.color} count={`${g.items.filter((c) => conquistasUnlocked.has(c.slug)).length}/${g.items.length}`} />
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                  {g.items.map((c) => (
+                    <Tile key={c.slug} src={c.svg} nome={c.nome} unlocked={conquistasUnlocked.has(c.slug)} accent={g.cfg.color} />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Histórico ── */}
         <section style={{ padding: "0 16px" }}>
           <SectionTitle title="Histórico" />
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {recentRodadas.length === 0 ? (
-              <EmptyState icon="📅" title="Sem histórico" text="Suas rodadas vão aparecer aqui." />
-            ) : (
-              recentRodadas.map((r) => {
-                const d = new Date(r.data);
-                const label = d.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "short" });
-                const n = r.votos.length;
-                return (
-                  <div key={r.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 14, padding: "12px 16px" }}>
-                    <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, color: "#fff", textTransform: "capitalize" }}>{label}</span>
-                    <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 12, color: n > 0 ? "#9fe870" : "#7a7a7a" }}>{n > 0 ? `${n} voto${n > 1 ? "s" : ""}` : "Sem votos"}</span>
-                  </div>
-                );
-              })
-            )}
+              <div style={{ background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 14, padding: "16px", textAlign: "center", fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "#7a7a7a" }}>
+                Suas rodadas vão aparecer aqui.
+              </div>
+            ) : recentRodadas.map((r) => {
+              const label = new Date(r.data).toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "short" });
+              const n = r.votos.length;
+              return (
+                <div key={r.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 14, padding: "12px 16px" }}>
+                  <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, color: "#fff", textTransform: "capitalize" }}>{label}</span>
+                  <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 12, color: n > 0 ? ACCENT : "#7a7a7a" }}>{n > 0 ? `${n} voto${n > 1 ? "s" : ""}` : "Sem votos"}</span>
+                </div>
+              );
+            })}
           </div>
         </section>
       </main>
@@ -263,22 +205,22 @@ export default async function PerfilPage({
   );
 }
 
-/* ── Componentes de apresentação ── */
+/* ── Componentes ── */
 
-function MetaPill({ children }: { children: React.ReactNode }) {
+function Pill({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 11px", borderRadius: 9999, background: "rgba(255,255,255,0.06)", boxShadow: "0 0 0 1px rgba(255,255,255,0.10)", fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 11, letterSpacing: "0.06em", textTransform: "uppercase", color: "var(--color-text-secondary)", whiteSpace: "nowrap" }}>
+    <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 11px", borderRadius: 9999, background: "#141414", border: "1px solid #2c2c2c", fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 11, letterSpacing: "0.04em", textTransform: "uppercase", color: "#9b9b9b", whiteSpace: "nowrap" }}>
       {children}
     </div>
   );
 }
 
-function MetricCard({ label, value, color }: { label: string; value: number; color: string }) {
+function Metric({ label, value, color }: { label: string; value: number; color: string }) {
   return (
     <div style={{ position: "relative", overflow: "hidden", background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 16, padding: "14px 14px 12px" }}>
       <div aria-hidden style={{ position: "absolute", top: 0, left: 0, bottom: 0, width: 3, background: color }} />
-      <div style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--color-text-muted)" }}>{label}</div>
-      <div style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 40, lineHeight: 0.95, color, fontVariantNumeric: "tabular-nums", marginTop: 2 }}>{value}</div>
+      <div style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 10, letterSpacing: "0.12em", textTransform: "uppercase", color: "#7a7a7a" }}>{label}</div>
+      <div style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 38, lineHeight: 0.95, color, fontVariantNumeric: "tabular-nums", marginTop: 2 }}>{value}</div>
     </div>
   );
 }
@@ -287,29 +229,36 @@ function SectionTitle({ title, count }: { title: string; count?: string }) {
   return (
     <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 14 }}>
       <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 18, letterSpacing: "0.04em", textTransform: "uppercase", color: "#fff" }}>{title}</h2>
-      {count && <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 13, color: "var(--color-text-muted)" }}>{count}</span>}
+      {count && <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 13, color: "#7a7a7a" }}>{count}</span>}
     </div>
   );
 }
 
-function TraitTile({ src, nome, count, color }: { src?: string; nome: string; count: number; color: string }) {
+function CatLabel({ label, color, count }: { label: string; color: string; count: string }) {
   return (
-    <div style={{ background: "#0a0e0e", border: `1px solid ${hexA(color, "40")}`, borderRadius: 14, padding: "12px 8px", display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
-      <div style={{ width: 48, height: 48, position: "relative" }}>
-        {src && <Image src={src} alt={nome} fill sizes="48px" style={{ objectFit: "contain" }} />}
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+      <span style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color }}>{label}</span>
+      <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 11, color: "#7a7a7a" }}>{count}</span>
+    </div>
+  );
+}
+
+function Tile({ src, nome, unlocked, accent, count }: { src?: string; nome: string; unlocked: boolean; accent: string; count?: number }) {
+  return (
+    <div style={{ position: "relative", background: "#0a0e0e", border: `1px solid ${unlocked ? accent : "#2c2c2c"}`, borderRadius: 12, boxSizing: "border-box", height: 118, padding: "20px 8px 8px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start", gap: 3 }}>
+      {!unlocked ? (
+        <div style={{ position: "absolute", top: 7, right: 7, zIndex: 2 }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="#fff" aria-hidden><path d="M12 1a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5Zm3 8H9V6a3 3 0 0 1 6 0v3Z" /></svg>
+        </div>
+      ) : count && count > 1 ? (
+        <div style={{ position: "absolute", top: 6, right: 6, background: accent, borderRadius: 5, padding: "0 5px", zIndex: 2 }}>
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 9, lineHeight: "15px", color: "#0a1a06" }}>{count}×</span>
+        </div>
+      ) : null}
+      <div style={{ width: 54, height: 54, flexShrink: 0, position: "relative" }}>
+        {src && <Image src={src} alt={nome} fill sizes="54px" style={{ objectFit: "contain", filter: unlocked ? "none" : "brightness(0.45) grayscale(0.4)" }} />}
       </div>
-      <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, lineHeight: "13px", color: "#fff", textAlign: "center", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%" }}>{nome}</span>
-      {count > 1 && <span style={{ fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 10, color }}>{count}×</span>}
-    </div>
-  );
-}
-
-function EmptyState({ icon, title, text }: { icon: string; title: string; text: string }) {
-  return (
-    <div style={{ background: "#0a0e0e", border: "1px dashed #2c2c2c", borderRadius: 18, padding: "28px 20px", textAlign: "center" }}>
-      <div style={{ fontSize: 30, marginBottom: 8 }}>{icon}</div>
-      <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 15, color: "#fff" }}>{title}</p>
-      <p style={{ margin: "6px 0 0", fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, lineHeight: "18px", color: "#7a7a7a" }}>{text}</p>
+      <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12, lineHeight: "14px", color: unlocked ? "#fff" : "#7a7a7a", textAlign: "center", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: "100%" }}>{nome}</p>
     </div>
   );
 }
