@@ -85,8 +85,8 @@ export function BottomSheet({ open, onClose, children, maxHeight = "88dvh", bg =
           <div style={{ width: 40, height: 4, background: "#3a3a3a", borderRadius: 9999 }} />
         </div>
 
-        {/* Conteúdo (rola se passar da altura) */}
-        <div style={{ overflowY: "auto", flex: "0 1 auto", paddingBottom: "max(20px, env(safe-area-inset-bottom, 20px))" }}>
+        {/* Conteúdo (rola se passar da altura) — minHeight:0 é essencial p/ scroll em flex column */}
+        <div style={{ overflowY: "auto", flex: "0 1 auto", minHeight: 0, paddingBottom: "max(20px, env(safe-area-inset-bottom, 20px))" }}>
           {children}
         </div>
       </div>
