@@ -8,7 +8,7 @@ import Link from "next/link";
 import {
   Lightning, Medal, CaretRight, Check,
   CalendarBlank, Alarm, CalendarStar,
-  List, Bell, MedalMilitary, ThumbsUp, ThumbsDown, Export,
+  List, Bell, MedalMilitary, Export,
 } from "@phosphor-icons/react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
@@ -171,30 +171,27 @@ export function HomeClient({
           Votação da rodada
         </p>
 
-        {/* Tabs: Os melhores / Os piores (aba ativa branca) */}
-        {(
-          <div style={{ position: "relative", display: "flex", alignItems: "center", gap: 4, background: "#171717", border: "1px solid #2c2c2c", borderRadius: 12, padding: 4 }}>
-            {([["melhores", "Os melhores", ThumbsUp], ["piores", "Os piores", ThumbsDown]] as const).map(([key, label, Icon]) => {
-              const active = campoTab === key;
-              return (
-                <button
-                  key={key}
-                  onClick={() => setCampoTab(key)}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 8, cursor: "pointer",
-                    borderRadius: 10, padding: "10px 12px",
-                    background: active ? "#fff" : "transparent",
-                    border: active ? "1px solid #2c2c2c" : "1px solid transparent",
-                    boxShadow: active ? "0px 1px 1.5px rgba(0,0,0,0.1)" : "none",
-                  }}
-                >
-                  <Icon size={20} color={active ? "#090909" : "#7a7a7a"} weight="regular" />
-                  <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, lineHeight: "20px", color: active ? "#090909" : "#7a7a7a", whiteSpace: "nowrap" }}>{label}</span>
-                </button>
-              );
-            })}
-          </div>
-        )}
+        {/* Tabs: Os melhores / Os piores — pílulas (ativa verde) */}
+        <div style={{ display: "flex", gap: 8 }}>
+          {([["melhores", "Os melhores"], ["piores", "Os piores"]] as const).map(([key, label]) => {
+            const active = campoTab === key;
+            return (
+              <button
+                key={key}
+                onClick={() => setCampoTab(key)}
+                style={{
+                  flex: 1, height: 40, borderRadius: 9999, cursor: "pointer",
+                  background: active ? "#9fe870" : "#111",
+                  border: active ? "none" : "1px solid #2e2e2e",
+                  fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14,
+                  color: active ? "#000" : "#7a7a7a", WebkitTapHighlightColor: "transparent",
+                }}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
 
         {/* Wrapper do campo (sem card branco) */}
         <div style={{
