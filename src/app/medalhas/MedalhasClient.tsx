@@ -289,10 +289,10 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
         </div>
       </div>
 
-      {/* ── CONTEÚDO (flui no fundo escuro) ── */}
+      {/* ── CONTEÚDO (encostado no header, formando um container único) ── */}
       <div style={{
         background: "transparent",
-        paddingTop: 8,
+        paddingTop: 0,
         paddingLeft: 8,
         paddingRight: 8,
         paddingBottom: "calc(104px + env(safe-area-inset-bottom, 0px))",
@@ -301,12 +301,12 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
         gap: 16,
       }}>
 
-        {/* Card único: header + filtros + categorias (Figma 564-4398) */}
+        {/* Card único: header + filtros + categorias (Figma 564-4398) — canto superior arredondado p/ unir ao header */}
         <div style={{
           background: "#090909",
           border: "1px solid #2e2e2e",
-          borderRadius: 20,
-          padding: "16px 9px 9px",
+          borderRadius: "40px 40px 16px 16px",
+          padding: "20px 9px 9px",
           display: "flex",
           flexDirection: "column",
           gap: 16,

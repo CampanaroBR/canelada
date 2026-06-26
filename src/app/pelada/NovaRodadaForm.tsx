@@ -411,12 +411,12 @@ export function NovaRodadaForm() {
       <div style={{
         background: "#171717",
         border: "1px solid #2c2c2c",
-        borderRadius: 32,
-        margin: "16px 8px 0",
+        borderRadius: "40px 40px 24px 24px",
+        margin: "0 8px 0",
         display: "flex",
         flexDirection: "column",
         gap: 24,
-        padding: "17px 9px",
+        padding: "24px 9px 17px",
         boxSizing: "border-box",
       }}>
         {/* Time pill */}
