@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, UserCircle } from "@phosphor-icons/react";
+import { Camera, UserCircle, CaretDown } from "@phosphor-icons/react";
 import { BottomSheet } from "@/components/BottomSheet";
 import { atualizarPerfil, uploadFoto } from "./actions";
 
@@ -42,6 +42,14 @@ const inputStyle: React.CSSProperties = {
   width: "100%", height: 48, boxSizing: "border-box",
   background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 12,
   padding: "0 14px", color: "#fff", fontFamily: "var(--font-body)", fontSize: 15, outline: "none",
+};
+const selectWrap: React.CSSProperties = { position: "relative", width: "100%" };
+const selectStyle: React.CSSProperties = {
+  ...inputStyle, appearance: "none", WebkitAppearance: "none", MozAppearance: "none",
+  paddingRight: 36, cursor: "pointer",
+};
+const caretStyle: React.CSSProperties = {
+  position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none",
 };
 
 export function EditarPerfilSheet({ open, onClose, initial }: Props) {
@@ -134,17 +142,23 @@ export function EditarPerfilSheet({ open, onClose, initial }: Props) {
         <div style={{ display: "flex", gap: 10 }}>
           <div style={{ flex: 1 }}>
             <Label required>Posição</Label>
-            <select style={{ ...inputStyle, appearance: "none" }} value={posicao} onChange={e => setPosicao(e.target.value)}>
-              <option value="">—</option>
-              {POSICOES.map(p => <option key={p} value={p}>{p}</option>)}
-            </select>
+            <div style={selectWrap}>
+              <select style={selectStyle} value={posicao} onChange={e => setPosicao(e.target.value)}>
+                <option value="">—</option>
+                {POSICOES.map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+              <CaretDown size={16} color="#9fe870" weight="bold" style={caretStyle} />
+            </div>
           </div>
           <div style={{ flex: 1 }}>
             <Label required>Pé Preferido</Label>
-            <select style={{ ...inputStyle, appearance: "none" }} value={pe} onChange={e => setPe(e.target.value)}>
-              <option value="">—</option>
-              {PES.map(p => <option key={p} value={p}>{p}</option>)}
-            </select>
+            <div style={selectWrap}>
+              <select style={selectStyle} value={pe} onChange={e => setPe(e.target.value)}>
+                <option value="">—</option>
+                {PES.map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+              <CaretDown size={16} color="#9fe870" weight="bold" style={caretStyle} />
+            </div>
           </div>
         </div>
 
