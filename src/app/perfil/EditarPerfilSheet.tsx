@@ -43,6 +43,9 @@ const inputStyle: React.CSSProperties = {
   background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 12,
   padding: "0 14px", color: "#fff", fontFamily: "var(--font-body)", fontSize: 15, outline: "none",
 };
+const disabledStyle: React.CSSProperties = {
+  ...inputStyle, color: "#7a7a7a", cursor: "not-allowed", opacity: 1,
+};
 const selectWrap: React.CSSProperties = { position: "relative", width: "100%" };
 const selectStyle: React.CSSProperties = {
   ...inputStyle, appearance: "none", WebkitAppearance: "none", MozAppearance: "none",
@@ -126,11 +129,11 @@ export function EditarPerfilSheet({ open, onClose, initial }: Props) {
         <div style={{ display: "flex", gap: 10 }}>
           <div style={{ flex: 1 }}>
             <Label>Nome</Label>
-            <input style={inputStyle} value={nome} onChange={e => setNome(e.target.value)} placeholder="Arthur" maxLength={40} />
+            <input style={disabledStyle} value={nome} disabled readOnly placeholder="Arthur" />
           </div>
           <div style={{ flex: 1 }}>
             <Label>Sobrenome</Label>
-            <input style={inputStyle} value={sobrenome} onChange={e => setSobrenome(e.target.value)} placeholder="Sena" maxLength={40} />
+            <input style={disabledStyle} value={sobrenome} disabled readOnly placeholder="Sena" />
           </div>
         </div>
 
