@@ -67,7 +67,7 @@ export function ContaActions({ email, grupoNome, roleLabel, onEditar }: Props) {
 
       {/* CONTA */}
       <Group title="CONTA">
-        <RowButton onClick={onEditar} icon={<UserCircle size={20} color="#9fe870" weight="fill" />} label="Dados pessoais" sub="Nome, apelido, posição, foto" />
+        <RowButton onClick={onEditar} icon={<UserCircle size={20} color="#9fe870" weight="regular" />} label="Dados pessoais" sub="Nome, apelido, posição, foto" />
         <Divider />
         <InfoRow label="E-mail" value={email || "—"} />
         <Divider />
@@ -78,16 +78,16 @@ export function ContaActions({ email, grupoNome, roleLabel, onEditar }: Props) {
 
       {/* GERAL */}
       <Group title="GERAL">
-        <RowLink href="/medalhas" icon={<Medal size={20} color="#9fe870" weight="fill" />} label="Minhas Badges" sub="Personagens e conquistas" />
+        <RowLink href="/medalhas" icon={<Medal size={20} color="#9fe870" weight="regular" />} label="Minhas Badges" sub="Personagens e conquistas" />
         <Divider />
-        <RowToggle onClick={togglePush} on={pushOn} icon={<Bell size={20} color="#9fe870" weight="fill" />} label="Notificações" sub="Avisos de votação e badges" />
+        <RowToggle onClick={togglePush} on={pushOn} icon={<Bell size={20} color="#9fe870" weight="regular" />} label="Notificações" sub="Avisos de votação e badges" />
       </Group>
 
       {/* AJUDA & LEGAL */}
       <Group title="AJUDA & LEGAL">
-        <RowLink href="/termos" icon={<FileText size={20} color="#9fe870" weight="fill" />} label="Termos de Uso" />
+        <RowLink href="/termos" icon={<FileText size={20} color="#9fe870" weight="regular" />} label="Termos de Uso" />
         <Divider />
-        <RowLink href="/privacidade" icon={<ShieldCheck size={20} color="#9fe870" weight="fill" />} label="Política de Privacidade" />
+        <RowLink href="/privacidade" icon={<ShieldCheck size={20} color="#9fe870" weight="regular" />} label="Política de Privacidade" />
       </Group>
 
       {/* SAIR */}
