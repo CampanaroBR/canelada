@@ -396,35 +396,35 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
           position: "absolute", left: 8, right: 8,
           bottom: `calc(env(safe-area-inset-bottom, 0px) + 8px)`,
           zIndex: 25,
-          background: "rgba(15,14,12,0.9)", border: "1px solid #393939",
-          borderRadius: 32, padding: "6px 16px",
+          background: "rgba(15,14,12,0.92)", border: "1px solid #393939",
+          borderRadius: 32, padding: 4,
           display: "flex", alignItems: "center", gap: 8,
           boxShadow: "0px 4px 4.7px 1px rgba(0,0,0,0.28)",
         }}>
-          <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 6, minWidth: 0 }}>
-            <div style={{ position: "relative", width: 56, height: 56, flexShrink: 0 }}>
+          <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 8, minWidth: 0 }}>
+            <div style={{ position: "relative", width: 59, height: 56, flexShrink: 0 }}>
               <div style={{
                 width: 56, height: 56, borderRadius: "50%",
-                background: "#1998ad",
+                background: "#090909", border: "1px solid #383838",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
                 <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#fff" }}>
                   {getInitial(pendingPlayer.apelido)}
                 </span>
               </div>
-              <div style={{ position: "absolute", left: 35, top: 32, width: 24, height: 24, background: "#171717", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <CheckCircle size={22} color="#9fe870" weight="fill" />
+              <div style={{ position: "absolute", left: 35, top: 32, width: 24, height: 24, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <CheckCircle size={24} color="#9fe870" weight="fill" />
               </div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1, minWidth: 0 }}>
               <p style={{
-                margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12,
-                color: "#ccc", letterSpacing: "1.2px",
+                margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px",
+                color: "#cccccc",
               }}>
                 SEU VOTO · {trait.nome.toUpperCase()}
               </p>
               <p style={{
-                margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 20,
+                margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px",
                 color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const,
               }}>
                 {pendingPlayer.apelido.toUpperCase()}
@@ -435,9 +435,9 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
           <button
             onClick={handleConfirm}
             style={{
-              flexShrink: 0, height: 48, borderRadius: 9999,
-              background: "#9fe870", border: "1px solid #3a3a3a",
-              padding: "0 16px", display: "flex", alignItems: "center", gap: 2,
+              flexShrink: 0, height: 56, width: 118, borderRadius: 9999,
+              background: "#9fe870", border: "1px solid #424242",
+              padding: "0 13px", display: "flex", alignItems: "center", justifyContent: "center", gap: 4,
               cursor: "pointer",
             }}
           >
