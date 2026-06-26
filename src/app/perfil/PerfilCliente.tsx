@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { toPng } from "html-to-image";
-import { ShareNetwork } from "@phosphor-icons/react";
+import { Export } from "@phosphor-icons/react";
 import { ContaActions } from "./ContaActions";
 import { EditarPerfilSheet, type PerfilInitial } from "./EditarPerfilSheet";
 
@@ -83,9 +83,9 @@ export function PerfilCliente(props: Props) {
           onClick={compartilhar}
           disabled={sharing}
           aria-label="Compartilhar card"
-          style={{ position: "absolute", top: 16, right: 16, zIndex: 2, width: 36, height: 36, borderRadius: 10, background: "#1c1c1c", border: "1px solid #383838", display: "flex", alignItems: "center", justifyContent: "center", cursor: sharing ? "default" : "pointer", opacity: sharing ? 0.5 : 1, WebkitTapHighlightColor: "transparent" }}
+          style={{ position: "absolute", top: 16, right: 16, zIndex: 2, width: 48, height: 48, borderRadius: 16, background: "#090909", border: "1px solid #383838", display: "flex", alignItems: "center", justifyContent: "center", cursor: sharing ? "default" : "pointer", opacity: sharing ? 0.5 : 1, WebkitTapHighlightColor: "transparent" }}
         >
-          <ShareNetwork size={18} color="#9fe870" weight="bold" />
+          <Export size={24} color="#9fe870" weight="bold" />
         </button>
 
         {/* DESDE */}

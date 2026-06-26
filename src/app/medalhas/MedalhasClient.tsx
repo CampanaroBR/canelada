@@ -240,8 +240,11 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
         </div>
       </div>
 
-      {/* ── HEADER COMPACTO: Suas Badges X/Y + anel ── */}
+      {/* ── HEADER COMPACTO: painel com card "Suas Badges" X/Y + anel (Figma 564-4399) ── */}
       <div style={{
+        background: "#0a0e0e",
+        border: "1px solid #2c2c2c",
+        borderRadius: "0 0 40px 40px",
         paddingTop: "calc(env(safe-area-inset-top, 0px) + 96px)",
         paddingBottom: 20,
         paddingLeft: 16,
@@ -257,7 +260,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
           <div style={{ flex: "1 0 0", minWidth: 1, display: "flex", flexDirection: "column", gap: 6 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
               <MedalMilitary size={20} color="#9fe870" weight="fill" />
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#fff", whiteSpace: "nowrap" }}>Suas Badges</span>
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#fff", whiteSpace: "nowrap" }}>SUAS BADGES</span>
             </div>
             <p style={{ margin: 0, whiteSpace: "nowrap" }}>
               <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 18, lineHeight: "22px", color: "#9fe870" }}>{unlockedCount}</span>

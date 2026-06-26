@@ -9,10 +9,11 @@ import { atualizarPerfil, uploadFoto } from "./actions";
 const POSICOES = ["Goleiro", "Zagueiro", "Lateral", "Volante", "Meio-Campo", "Atacante"];
 const PES = ["Direito", "Esquerdo", "Ambidestro"];
 
-function Label({ children }: { children: React.ReactNode }) {
+function Label({ children, required }: { children: React.ReactNode; required?: boolean }) {
   return (
     <label style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, color: "#fff", marginBottom: 8, display: "block" }}>
       {children}
+      {required && <span style={{ color: "#e56767", marginLeft: 3 }}>*</span>}
     </label>
   );
 }
@@ -121,7 +122,7 @@ export function EditarPerfilSheet({ open, onClose, initial }: Props) {
           </div>
           <div style={{ flex: 1 }}>
             <Label>Sobrenome</Label>
-            <input style={inputStyle} value={sobrenome} onChange={e => setSobrenome(e.target.value)} placeholder="Silva" maxLength={40} />
+            <input style={inputStyle} value={sobrenome} onChange={e => setSobrenome(e.target.value)} placeholder="Sena" maxLength={40} />
           </div>
         </div>
 
@@ -132,14 +133,14 @@ export function EditarPerfilSheet({ open, onClose, initial }: Props) {
 
         <div style={{ display: "flex", gap: 10 }}>
           <div style={{ flex: 1 }}>
-            <Label>Posição</Label>
+            <Label required>Posição</Label>
             <select style={{ ...inputStyle, appearance: "none" }} value={posicao} onChange={e => setPosicao(e.target.value)}>
               <option value="">—</option>
               {POSICOES.map(p => <option key={p} value={p}>{p}</option>)}
             </select>
           </div>
           <div style={{ flex: 1 }}>
-            <Label>Pé Preferido</Label>
+            <Label required>Pé Preferido</Label>
             <select style={{ ...inputStyle, appearance: "none" }} value={pe} onChange={e => setPe(e.target.value)}>
               <option value="">—</option>
               {PES.map(p => <option key={p} value={p}>{p}</option>)}
@@ -149,9 +150,9 @@ export function EditarPerfilSheet({ open, onClose, initial }: Props) {
 
         {error && <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "#ef6b6b" }}>{error}</p>}
 
-        <div style={{ display: "flex", gap: 8, paddingTop: 4 }}>
-          <button onClick={onClose} disabled={saving} style={{ flex: 1, height: 52, borderRadius: 16, cursor: "pointer", background: "#0a0e0e", border: "1px solid #424242", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#fff" }}>Cancelar</button>
-          <button onClick={salvar} disabled={saving} style={{ flex: 1, height: 52, borderRadius: 16, cursor: saving ? "default" : "pointer", background: "#9fe870", border: "none", opacity: saving ? 0.6 : 1, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#000" }}>{saving ? "Salvando…" : "Salvar"}</button>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, paddingTop: 4 }}>
+          <button onClick={salvar} disabled={saving} style={{ width: "100%", height: 56, borderRadius: 16, cursor: saving ? "default" : "pointer", background: "#9fe870", border: "none", opacity: saving ? 0.6 : 1, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#000" }}>{saving ? "Salvando…" : "Salvar"}</button>
+          <button onClick={onClose} disabled={saving} style={{ width: "100%", height: 56, borderRadius: 16, cursor: "pointer", background: "#0a0e0e", border: "1px solid #424242", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#fff" }}>Cancelar</button>
         </div>
       </div>
     </BottomSheet>
