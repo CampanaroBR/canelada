@@ -397,7 +397,7 @@ export function NovaRodadaForm() {
         <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingLeft: 8 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <SoccerBall size={24} color="#9fe870" weight="fill" />
-            <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>
+            <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#fff" }}>
               CRIE SUA RODADA
             </h1>
           </div>
@@ -411,19 +411,20 @@ export function NovaRodadaForm() {
       <div style={{
         background: "#171717",
         border: "1px solid #2c2c2c",
-        borderRadius: "40px 40px 24px 24px",
+        borderRadius: "48px 48px 16px 16px",
         margin: "0 8px 0",
+        boxShadow: "0px 4px 4px rgba(0,0,0,0.25)",
         display: "flex",
         flexDirection: "column",
         gap: 24,
-        padding: "24px 9px 17px",
+        padding: "32px 8px 16px",
         boxSizing: "border-box",
       }}>
         {/* Time pill */}
         <div style={{
           background: "#090909",
           borderRadius: 12,
-          height: 44,
+          height: 36,
           padding: "0 16px",
           display: "flex",
           alignItems: "center",
@@ -532,9 +533,9 @@ export function NovaRodadaForm() {
             width: "100%",
             height: 54,
             padding: "0 20px",
-            border: canImport ? "none" : "1px solid #34343a",
+            border: canImport ? "none" : "1px solid #424242",
             borderRadius: 16,
-            background: canImport ? "#9fe870" : "#26262b",
+            background: canImport ? "#9fe870" : "#2c2c2c",
             fontFamily: "var(--font-display)",
             fontWeight: 700,
             fontSize: 15,

@@ -301,12 +301,13 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
         gap: 16,
       }}>
 
-        {/* Card único: header + filtros + categorias (Figma 564-4398) — canto superior arredondado p/ unir ao header */}
+        {/* Card externo (Figma 564-4398): bg #171717, topo arredondado 48 p/ unir ao header */}
         <div style={{
-          background: "#090909",
-          border: "1px solid #2e2e2e",
-          borderRadius: "40px 40px 16px 16px",
-          padding: "20px 9px 9px",
+          background: "#171717",
+          border: "1px solid #2c2c2c",
+          borderRadius: "48px 48px 16px 16px",
+          boxShadow: "0px 4px 4px rgba(0,0,0,0.25)",
+          padding: "32px 9px 16px",
           display: "flex",
           flexDirection: "column",
           gap: 16,
@@ -315,7 +316,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
         <div style={{ display: "flex", alignItems: "center", gap: 8, height: 42, paddingLeft: 8 }}>
           <div style={{
             background: "#171717",
-            border: "1px solid #2e2e2e",
+            border: "1px solid #2c2c2c",
             borderRadius: 12,
             padding: 8,
             display: "flex",
@@ -345,8 +346,8 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                 key={f}
                 onClick={() => setFilter(f)}
                 style={{
-                  background: active ? "#9fe870" : "#111",
-                  border: active ? "none" : "1px solid #2e2e2e",
+                  background: active ? "#9fe870" : "#0a0e0e",
+                  border: active ? "none" : "1px solid #2c2c2c",
                   borderRadius: 9999,
                   padding: "5px 12px",
                   cursor: "pointer",
@@ -365,8 +366,12 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
           })}
         </div>
 
-        {/* Categorias */}
+        {/* Container interno (Figma): bg #090909, rounded 20, com as categorias */}
         <div style={{
+          background: "#090909",
+          border: "1px solid #2c2c2c",
+          borderRadius: 20,
+          padding: "16px 8px 8px",
           display: "flex",
           flexDirection: "column",
           gap: 24,
