@@ -28,12 +28,13 @@ export default async function GrupoPage() {
     prisma.grupo.findUnique({ where: { id: eu.grupoId }, select: { nome: true } }),
     prisma.jogador.findMany({
       where: { grupoId: eu.grupoId },
-      select: { apelido: true, nome: true, sobrenome: true, posicao: true, foto: true, role: true },
+      select: { apelido: true, nome: true, sobrenome: true, posicao: true, foto: true, role: true, userId: true },
       orderBy: [{ apelido: "asc" }],
     }),
     prisma.rodada.count({ where: { grupoId: eu.grupoId } }),
   ]);
 
+  const souAdmin = eu.role === "ADMIN" || eu.role === "SUPER_ADMIN";
   const membros: Membro[] = jogadores
     .map((j) => ({
       apelido: j.apelido,
@@ -42,6 +43,7 @@ export default async function GrupoPage() {
       foto: j.foto ?? "",
       roleLabel: ROLE_LABEL[j.role] ?? "Jogador",
       isAdmin: j.role === "ADMIN" || j.role === "SUPER_ADMIN",
+      removivel: souAdmin && j.userId !== session.user!.id && j.role !== "SUPER_ADMIN",
     }))
     // admins primeiro, depois ordem alfabética
     .sort((a, b) => Number(b.isAdmin) - Number(a.isAdmin) || a.apelido.localeCompare(b.apelido));
