@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { List, Bell, Trophy, ChartBar, ShareNetwork, CaretDown } from "@phosphor-icons/react";
+import { List, Bell, Trophy, ChartBar, Export, CaretDown } from "@phosphor-icons/react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { MenuSheet } from "@/components/MenuSheet";
 import type { RankingGrupo, RankRow } from "@/lib/badges";
@@ -89,11 +89,11 @@ export function RankingClient({ ranking, grupoNome, meuId }: Props) {
           </div>
           {/* Compartilhar */}
           <button onClick={compartilhar} aria-label="Compartilhar classificação" style={{
-            background: "#171717", border: "1px solid #2c2c2c", borderRadius: 12,
-            width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center",
+            background: "#171717", border: "1px solid #2c2c2c", borderRadius: 16,
+            width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center",
             cursor: "pointer", flexShrink: 0, WebkitTapHighlightColor: "transparent",
           }}>
-            <ShareNetwork size={20} color="#fff" weight="bold" />
+            <Export size={24} color="#9fe870" weight="bold" />
           </button>
         </div>
 

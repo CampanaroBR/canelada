@@ -89,13 +89,18 @@ export function NovaRodadaForm() {
         position: "relative",
         overflow: "hidden",
       }}>
-        {/* Stripe decoration */}
+        {/* Decoração: 3 barras verticais centralizadas atrás do check */}
         <div style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage: "repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(255,255,255,0.045) 48px, rgba(255,255,255,0.045) 56px)",
-          pointerEvents: "none",
-        }} />
+          position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)",
+          display: "flex", gap: 10, height: "46%", zIndex: 0, pointerEvents: "none",
+        }}>
+          {[0, 1, 2].map((i) => (
+            <div key={i} style={{
+              width: 10, height: "100%",
+              background: "linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.22) 60%, rgba(255,255,255,0) 100%)",
+            }} />
+          ))}
+        </div>
 
         {/* Check circle */}
         <div style={{
@@ -155,7 +160,7 @@ export function NovaRodadaForm() {
               width: "100%",
             }}>
               {totalCriados} jogadores relacionados para o baba.
-              Aguardar a votação!
+              Aguardar a votação às 22:30!
             </p>
           </div>
 
@@ -382,12 +387,14 @@ export function NovaRodadaForm() {
         </div>
       </div>
 
-      {/* Header card (dark, sem teal) */}
-      <div style={{ padding: "calc(env(safe-area-inset-top, 0px) + 92px) 8px 0", boxSizing: "border-box" }}>
-        <div style={{
-          background: "#171717", border: "1px solid #2c2c2c", borderRadius: 20,
-          padding: 17, display: "flex", flexDirection: "column", gap: 4,
-        }}>
+      {/* Header panel (arredondado embaixo, encostado no topo) */}
+      <div style={{
+        background: "#0a0e0e", border: "1px solid #2c2c2c",
+        borderRadius: "0 0 40px 40px",
+        paddingTop: "calc(env(safe-area-inset-top, 0px) + 96px)",
+        paddingBottom: 20, paddingLeft: 16, paddingRight: 16, boxSizing: "border-box",
+      }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingLeft: 8 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <SoccerBall size={24} color="#9fe870" weight="fill" />
             <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>
@@ -404,7 +411,7 @@ export function NovaRodadaForm() {
       <div style={{
         background: "#171717",
         border: "1px solid #2c2c2c",
-        borderRadius: 20,
+        borderRadius: 32,
         margin: "16px 8px 0",
         display: "flex",
         flexDirection: "column",
@@ -449,7 +456,7 @@ export function NovaRodadaForm() {
               lineHeight: "20px",
               color: "#f5f5f5",
             }}>
-              Data do baba
+              Selecione a data do baba
             </span>
             <MiniCalendar value={data} onChange={setData} />
           </div>
