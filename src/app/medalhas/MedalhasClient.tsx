@@ -301,6 +301,16 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
         gap: 16,
       }}>
 
+        {/* Card único: header + filtros + categorias (Figma 564-4398) */}
+        <div style={{
+          background: "#090909",
+          border: "1px solid #2e2e2e",
+          borderRadius: 20,
+          padding: "16px 9px 9px",
+          display: "flex",
+          flexDirection: "column",
+          gap: 16,
+        }}>
         {/* Section header */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, height: 42, paddingLeft: 8 }}>
           <div style={{
@@ -355,12 +365,8 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
           })}
         </div>
 
-        {/* Inner badge container */}
+        {/* Categorias */}
         <div style={{
-          background: "#090909",
-          border: "1px solid #2e2e2e",
-          borderRadius: 20,
-          padding: "17px 9px 9px",
           display: "flex",
           flexDirection: "column",
           gap: 24,
@@ -472,6 +478,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
               </div>
             );
           })}
+        </div>
         </div>
       </div>
 
