@@ -11,6 +11,8 @@
     "test:watch": "vitest",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio"
@@ -36,18 +38,22 @@
     "ws": "^8.21.0"
   },
   "devDependencies": {
+    "@storybook/react-vite": "^10.4.6",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/web-push": "^3.6.4",
     "@types/ws": "^8.18.1",
+    "@vitejs/plugin-react": "^6.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "prettier": "^3.8.5",
+    "storybook": "^10.4.6",
     "tailwindcss": "^4",
     "tsx": "^4.22.4",
     "typescript": "^5",
+    "vite": "^8.1.0",
     "vitest": "^4.1.9"
   }
 }
