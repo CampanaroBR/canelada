@@ -29,3 +29,4 @@ export { Text } from "./components/Text";
 export { Image } from "./components/Image";
 export { Menu } from "./components/Menu";
 export { Form, FormField, FormRow, FormActions } from "./components/Form";
+export { PasswordInput } from "./components/PasswordInput";
