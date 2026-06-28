@@ -10,3 +10,6 @@ export { Tabs } from "./components/Tabs";
 export { RowItem } from "./components/RowItem";
 export { Input } from "./components/Input";
 export { Toggle } from "./components/Toggle";
+export { Checkbox } from "./components/Checkbox";
+export { Radio } from "./components/Radio";
+export { Select } from "./components/Select";
