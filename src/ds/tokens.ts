@@ -2,82 +2,91 @@ import type { CSSProperties } from "react";
 
 /**
  * Bagre Design System — Tokens
- * Fonte da verdade: variáveis do Figma do Canelada (Primitives, Tokens [Dark/Light], Spacing, Radius, Motion)
- * + estilos de texto do Figma. Dark-first.
+ * Arquitetura inspirada no Hive (primitivos → semânticos por papel), com a paleta do Canelada.
+ * BRAND = verde (#9fe870). Teal é cor de apoio (logo/personagem). Dark-first.
  */
 
-// ── Primitives (escalas) ──────────────────────────────────────
+// ── 1. Primitivos (escalas de cor) ────────────────────────────
 export const primitives = {
   neutral: {
-    white: "#ffffff",
+    0: "#ffffff",
     50: "#f5f5f5", 100: "#e5e5e5", 200: "#cccccc", 300: "#999999", 400: "#666666",
     500: "#424242", 600: "#2c2c2c", 700: "#242424", 800: "#1c1c1c", 850: "#171717",
     900: "#141414", 950: "#0a0e0e", 1000: "#090909",
   },
+  // brand = verde
+  brand: { 100: "#d6ffbc", 200: "#b8f592", 300: "#9fe870", 400: "#7ed44e", 500: "#5db82d" },
   teal: { 100: "#b3e8f0", 200: "#7dd6e5", 300: "#42bace", 400: "#1998ad", 500: "#147787", 600: "#176572", 700: "#0e4a54" },
-  green: { 100: "#d6ffbc", 200: "#b8f592", 300: "#9fe870", 400: "#7ed44e", 500: "#5db82d" },
   gold: { 100: "#f5e0b0", 200: "#e5c073", 300: "#d4a843", 400: "#c5973a", 500: "#5f450f" },
   red: { 100: "#f5b3b3", 200: "#e56767", 300: "#d42020", 400: "#b51a1a", 500: "#5f0005" },
+  purple: { 200: "#c9b6fb", 300: "#a78bfa", 400: "#8b5cf6" },
 } as const;
 
-// ── Temas (tokens semânticos resolvidos do Figma) ─────────────
-export const theme = {
+// ── 2. Tokens semânticos (por papel, à la Hive) — Dark/Light ──
+const p = primitives;
+export const semantic = {
   dark: {
-    brand: { primary: "#1998ad", primaryLight: "#42bace", primaryDark: "#176572", primaryGlow: "#147787" },
-    accent: { default: "#9fe870", light: "#d6ffbc", strong: "#7ed44e" },
-    bg: { base: "#090909", surface: "#0a0e0e", card: "#171717", elevated: "#1c1c1c", border: "#424242" },
-    text: { primary: "#ffffff", secondary: "#999999", muted: "#7a7a7a", onAccent: "#ffffff", accent: "#9fe870", accentLight: "#d6ffbc" },
-    semantic: { success: "#9fe870", successBg: "#5db82d", danger: "#d42020", dangerBg: "#5f0005", gold: "#c5973a", goldBg: "#5f450f" },
-    character: { matador: "#1998ad", categoria: "#c5973a", paredao: "#d42020" },
+    content: { brand: p.brand[300], primary: p.neutral[0], secondary: p.neutral[300], tertiary: "#7a7a7a", inverse: p.neutral[1000], onBrand: p.neutral[1000], onColor: p.neutral[1000] },
+    background: { base: p.neutral[1000], primary: p.neutral[950], secondary: p.neutral[850], tertiary: p.neutral[800], brand: p.brand[300], brandSubtle: "rgba(159,232,112,0.12)", inverse: p.neutral[0] },
+    border: { brand: p.brand[300], primary: p.neutral[600], secondary: p.neutral[500], subtle: "#383838", inverse: p.neutral[0] },
+    accent: { green: p.brand[300], teal: p.teal[400], gold: p.gold[400], red: p.red[200], purple: p.purple[300] },
+    alert: {
+      success: p.brand[300], successSubtle: "rgba(159,232,112,0.12)",
+      warning: p.gold[400], warningSubtle: "rgba(197,151,58,0.12)",
+      error: p.red[200], errorSubtle: "rgba(229,103,103,0.12)",
+      info: p.teal[300], infoSubtle: "rgba(66,186,206,0.12)",
+    },
+    action: { hover: "rgba(255,255,255,0.06)", disabled: p.neutral[600], active: p.brand[400], focusRing: p.brand[300] },
   },
   light: {
-    brand: { primary: "#1998ad", primaryLight: "#42bace", primaryDark: "#176572", primaryGlow: "#147787" },
-    accent: { default: "#7ed44e", light: "#9fe870", strong: "#5db82d" },
-    bg: { base: "#ffffff", surface: "#f5f5f5", card: "#e5e5e5", elevated: "#cccccc", border: "#999999" },
-    text: { primary: "#090909", secondary: "#2c2c2c", muted: "#7a7a7a", onAccent: "#ffffff", accent: "#5db82d", accentLight: "#7ed44e" },
-    semantic: { success: "#7ed44e", successBg: "#d6ffbc", danger: "#d42020", dangerBg: "#f5b3b3", gold: "#c5973a", goldBg: "#f5e0b0" },
-    character: { matador: "#1998ad", categoria: "#c5973a", paredao: "#d42020" },
+    content: { brand: p.brand[500], primary: p.neutral[1000], secondary: p.neutral[600], tertiary: "#7a7a7a", inverse: p.neutral[0], onBrand: p.neutral[1000], onColor: p.neutral[0] },
+    background: { base: p.neutral[0], primary: p.neutral[50], secondary: p.neutral[100], tertiary: p.neutral[200], brand: p.brand[400], brandSubtle: "rgba(126,212,78,0.14)", inverse: p.neutral[1000] },
+    border: { brand: p.brand[400], primary: p.neutral[200], secondary: p.neutral[300], subtle: p.neutral[200], inverse: p.neutral[1000] },
+    accent: { green: p.brand[500], teal: p.teal[400], gold: p.gold[400], red: p.red[300], purple: p.purple[400] },
+    alert: {
+      success: p.brand[500], successSubtle: "rgba(126,212,78,0.14)",
+      warning: p.gold[400], warningSubtle: "rgba(197,151,58,0.14)",
+      error: p.red[300], errorSubtle: "rgba(212,32,32,0.10)",
+      info: p.teal[400], infoSubtle: "rgba(25,152,173,0.12)",
+    },
+    action: { hover: "rgba(0,0,0,0.05)", disabled: p.neutral[200], active: p.brand[500], focusRing: p.brand[400] },
   },
 } as const;
 
 /**
- * Paleta de trabalho dos componentes (dark-first).
- * Espelha theme.dark, com 2 ajustes de contraste pro dark do Canelada:
- *  - text.onAccent = #090909 (texto escuro sobre o verde, como nas telas reais)
- *  - bordas: border = #2c2c2c (a mais usada nas telas) + borderStrong = #424242 (token bg/border)
- *  - *Bg semânticos como tint (rgba) p/ badges "soft"; versões sólidas ficam em theme.
+ * Paleta de trabalho dos componentes (dark-first). Mapeia os tokens semânticos
+ * para chaves curtas usadas no código. BRAND = verde.
  */
+const D = semantic.dark;
 export const colors = {
-  brand: theme.dark.brand,
-  accent: theme.dark.accent,
+  brand: { primary: p.brand[300], primaryLight: p.brand[100], primaryDark: p.brand[500], primaryGlow: "rgba(159,232,112,0.30)" },
+  accent: { default: p.brand[300], light: p.brand[100], strong: p.brand[400], teal: p.teal[400], purple: p.purple[300] },
   bg: {
-    base: "#090909", surface: "#0a0e0e", card: "#171717", elevated: "#1c1c1c",
-    border: "#2c2c2c", borderStrong: "#424242", borderSubtle: "#383838",
+    base: D.background.base, surface: D.background.primary, card: D.background.secondary, elevated: D.background.tertiary,
+    border: D.border.primary, borderStrong: D.border.secondary, borderSubtle: D.border.subtle,
   },
   text: {
-    primary: "#ffffff", secondary: "#999999", muted: "#7a7a7a",
-    onAccent: "#090909", accent: "#9fe870", accentLight: "#d6ffbc",
+    primary: D.content.primary, secondary: D.content.secondary, muted: D.content.tertiary,
+    onAccent: D.content.onBrand, accent: D.content.brand, accentLight: p.brand[100],
   },
   semantic: {
-    success: "#9fe870", successSolid: "#5db82d", successBg: "rgba(159,232,112,0.12)",
-    danger: "#e56767", dangerSolid: "#d42020", dangerBg: "rgba(229,103,103,0.12)",
-    gold: "#c5973a", goldSolid: "#d4a843", goldBg: "rgba(197,151,58,0.12)",
+    success: D.alert.success, successSolid: p.brand[500], successBg: D.alert.successSubtle,
+    danger: D.alert.error, dangerSolid: p.red[300], dangerBg: D.alert.errorSubtle,
+    gold: D.alert.warning, goldSolid: p.gold[300], goldBg: D.alert.warningSubtle,
   },
-  character: theme.dark.character,
+  character: { matador: p.teal[400], categoria: p.gold[400], paredao: p.red[300] },
 } as const;
 
-// ── Espaçamento / Raios / Motion ──────────────────────────────
+// ── 3. Espaço / Raios / Sombras / Motion ──────────────────────
 export const space = { 1: 4, 2: 8, 3: 12, 4: 16, 5: 20, 6: 24, 8: 32, 10: 40, 12: 48 } as const;
 export const radius = { sm: 8, md: 12, lg: 16, xl: 20, "2xl": 24, "3xl": 32, "4xl": 48, pill: 9999 } as const;
-
 export const shadow = {
   sm: "0px 1px 2px rgba(0,0,0,0.20)",
   md: "0px 4px 4px rgba(0,0,0,0.25)",
   lg: "0px 12px 28px rgba(0,0,0,0.45)",
   sheet: "0px 2px 8px rgba(40,41,61,0.16), 0px 16px 24px rgba(96,97,112,0.16)",
-  glow: "0px 0px 64px 6px rgba(226,196,133,0.45)",
+  glow: "0px 0px 64px 6px rgba(159,232,112,0.35)",
 } as const;
-
 export const motion = {
   ease: {
     out: "cubic-bezier(0.23, 1, 0.32, 1)",
@@ -88,14 +97,13 @@ export const motion = {
   duration: { fast: 150, base: 250, slow: 380 },
 } as const;
 
-// ── Tipografia (escala completa do Figma) ─────────────────────
+// ── 4. Tipografia (escala completa do Figma) ──────────────────
 export const font = {
   display: 'var(--font-display, "Barlow", system-ui, sans-serif)',
   body: 'var(--font-body, "Inter", system-ui, sans-serif)',
 } as const;
 
 type RawText = { fontFamily: "display" | "body"; fontWeight: number; fontSize: number; lineHeight: string; letterSpacing?: string };
-
 export const text: Record<string, RawText> = {
   "display-hero": { fontFamily: "display", fontWeight: 900, fontSize: 48, lineHeight: "48px" },
   "display-h1": { fontFamily: "display", fontWeight: 900, fontSize: 32, lineHeight: "36px" },
@@ -121,11 +129,9 @@ export const text: Record<string, RawText> = {
 };
 
 export type TextStyle = keyof typeof text;
-
-/** Resolve um estilo de texto para CSSProperties. */
 export function textStyle(name: TextStyle): CSSProperties {
   const t = text[name];
   return { ...t, fontFamily: t.fontFamily === "display" ? font.display : font.body } as CSSProperties;
 }
 
-export const tokens = { primitives, theme, colors, space, radius, shadow, motion, font, text } as const;
+export const tokens = { primitives, semantic, colors, space, radius, shadow, motion, font, text } as const;
