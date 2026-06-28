@@ -20,3 +20,5 @@ export { Tooltip } from "./components/Tooltip";
 export { Modal } from "./components/Modal";
 export { Container } from "./components/Container";
 export { Slot } from "./components/Slot";
+export { Rating } from "./components/Rating";
+export { Table } from "./components/Table";
