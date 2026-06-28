@@ -17,3 +17,6 @@ export { Badge } from "./components/Badge";
 export { ProgressBar } from "./components/ProgressBar";
 export { Alert } from "./components/Alert";
 export { Tooltip } from "./components/Tooltip";
+export { Modal } from "./components/Modal";
+export { Container } from "./components/Container";
+export { Slot } from "./components/Slot";
