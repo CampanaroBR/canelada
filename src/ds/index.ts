@@ -13,3 +13,7 @@ export { Toggle } from "./components/Toggle";
 export { Checkbox } from "./components/Checkbox";
 export { Radio } from "./components/Radio";
 export { Select } from "./components/Select";
+export { Badge } from "./components/Badge";
+export { ProgressBar } from "./components/ProgressBar";
+export { Alert } from "./components/Alert";
+export { Tooltip } from "./components/Tooltip";
