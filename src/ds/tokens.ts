@@ -2,8 +2,8 @@ import type { CSSProperties } from "react";
 
 /**
  * Bagre Design System — Tokens
- * Arquitetura inspirada no Hive (primitivos → semânticos por papel), com a paleta do Canelada.
- * BRAND = verde (#9fe870). Teal é cor de apoio (logo/personagem). Dark-first.
+ * Arquitetura espelhada do Hive (primitivos → semânticos por papel), com a paleta do Canelada.
+ * BRAND = verde (#9fe870). Teal é cor de apoio. Dark-first.
  */
 
 // ── 1. Primitivos (escalas de cor) ────────────────────────────
@@ -14,65 +14,105 @@ export const primitives = {
     500: "#424242", 600: "#2c2c2c", 700: "#242424", 800: "#1c1c1c", 850: "#171717",
     900: "#141414", 950: "#0a0e0e", 1000: "#090909",
   },
-  // brand = verde
-  brand: { 100: "#d6ffbc", 200: "#b8f592", 300: "#9fe870", 400: "#7ed44e", 500: "#5db82d" },
+  brand: { 100: "#d6ffbc", 200: "#b8f592", 300: "#9fe870", 400: "#7ed44e", 500: "#5db82d" }, // verde
   teal: { 100: "#b3e8f0", 200: "#7dd6e5", 300: "#42bace", 400: "#1998ad", 500: "#147787", 600: "#176572", 700: "#0e4a54" },
   gold: { 100: "#f5e0b0", 200: "#e5c073", 300: "#d4a843", 400: "#c5973a", 500: "#5f450f" },
   red: { 100: "#f5b3b3", 200: "#e56767", 300: "#d42020", 400: "#b51a1a", 500: "#5f0005" },
   purple: { 200: "#c9b6fb", 300: "#a78bfa", 400: "#8b5cf6" },
 } as const;
 
-// ── 2. Tokens semânticos (por papel, à la Hive) — Dark/Light ──
+// ── 2. Tokens semânticos (por papel) — Dark/Light ─────────────
 const p = primitives;
 export const semantic = {
   dark: {
-    content: { brand: p.brand[300], primary: p.neutral[0], secondary: p.neutral[300], tertiary: "#7a7a7a", inverse: p.neutral[1000], onBrand: p.neutral[1000], onColor: p.neutral[1000] },
-    background: { base: p.neutral[1000], primary: p.neutral[950], secondary: p.neutral[850], tertiary: p.neutral[800], brand: p.brand[300], brandSubtle: "rgba(159,232,112,0.12)", inverse: p.neutral[0] },
-    border: { brand: p.brand[300], primary: p.neutral[600], secondary: p.neutral[500], subtle: "#383838", inverse: p.neutral[0] },
-    accent: { green: p.brand[300], teal: p.teal[400], gold: p.gold[400], red: p.red[200], purple: p.purple[300] },
-    alert: {
-      success: p.brand[300], successSubtle: "rgba(159,232,112,0.12)",
-      warning: p.gold[400], warningSubtle: "rgba(197,151,58,0.12)",
-      error: p.red[200], errorSubtle: "rgba(229,103,103,0.12)",
-      info: p.teal[300], infoSubtle: "rgba(66,186,206,0.12)",
+    content: {
+      brand: p.brand[300], primary: p.neutral[0], secondary: p.neutral[300], tertiary: "#7a7a7a",
+      inverse: p.neutral[1000], alwaysLight: p.neutral[0], alwaysDark: p.neutral[1000],
+      onBrand: p.neutral[1000], onColor: p.neutral[0], disabled: p.neutral[500], link: p.brand[300],
     },
-    action: { hover: "rgba(255,255,255,0.06)", disabled: p.neutral[600], active: p.brand[400], focusRing: p.brand[300] },
+    background: {
+      base: p.neutral[1000], primary: p.neutral[950], secondary: p.neutral[850], tertiary: p.neutral[800],
+      brand: p.brand[300], brandLight: "rgba(159,232,112,0.14)", brandSubtle: "rgba(159,232,112,0.08)",
+      inverse: p.neutral[0], alwaysLight: p.neutral[0], alwaysDark: p.neutral[1000],
+      overlay: "rgba(0,0,0,0.60)", disabled: p.neutral[800],
+    },
+    border: {
+      brand: p.brand[300], primary: p.neutral[600], secondary: p.neutral[500], tertiary: "#383838",
+      subtle: p.neutral[800], inverse: p.neutral[0], focus: p.brand[300], disabled: p.neutral[600],
+    },
+    accent: {
+      green: p.brand[300], greenLight: "rgba(159,232,112,0.14)",
+      teal: p.teal[400], tealLight: "rgba(25,152,173,0.16)",
+      gold: p.gold[400], goldLight: "rgba(197,151,58,0.16)",
+      red: p.red[200], redLight: "rgba(229,103,103,0.16)",
+      purple: p.purple[300], purpleLight: "rgba(167,139,250,0.16)",
+    },
+    alert: {
+      success: p.brand[300], successLight: "rgba(159,232,112,0.12)", successSolid: p.brand[500],
+      warning: p.gold[400], warningLight: "rgba(197,151,58,0.12)", warningSolid: p.gold[300],
+      error: p.red[200], errorLight: "rgba(229,103,103,0.12)", errorSolid: p.red[300],
+      info: p.teal[300], infoLight: "rgba(66,186,206,0.12)", infoSolid: p.teal[500],
+    },
+    action: {
+      hoverOnLight: "rgba(0,0,0,0.05)", hoverOnDark: "rgba(255,255,255,0.06)", hoverOnColor: "rgba(255,255,255,0.12)",
+      disabled: p.neutral[600], active: p.brand[400],
+      focusRingBrand: p.brand[300], focusRingNeutral: p.neutral[300], focusRingError: p.red[300],
+    },
   },
   light: {
-    content: { brand: p.brand[500], primary: p.neutral[1000], secondary: p.neutral[600], tertiary: "#7a7a7a", inverse: p.neutral[0], onBrand: p.neutral[1000], onColor: p.neutral[0] },
-    background: { base: p.neutral[0], primary: p.neutral[50], secondary: p.neutral[100], tertiary: p.neutral[200], brand: p.brand[400], brandSubtle: "rgba(126,212,78,0.14)", inverse: p.neutral[1000] },
-    border: { brand: p.brand[400], primary: p.neutral[200], secondary: p.neutral[300], subtle: p.neutral[200], inverse: p.neutral[1000] },
-    accent: { green: p.brand[500], teal: p.teal[400], gold: p.gold[400], red: p.red[300], purple: p.purple[400] },
-    alert: {
-      success: p.brand[500], successSubtle: "rgba(126,212,78,0.14)",
-      warning: p.gold[400], warningSubtle: "rgba(197,151,58,0.14)",
-      error: p.red[300], errorSubtle: "rgba(212,32,32,0.10)",
-      info: p.teal[400], infoSubtle: "rgba(25,152,173,0.12)",
+    content: {
+      brand: p.brand[500], primary: p.neutral[1000], secondary: p.neutral[600], tertiary: "#7a7a7a",
+      inverse: p.neutral[0], alwaysLight: p.neutral[0], alwaysDark: p.neutral[1000],
+      onBrand: p.neutral[1000], onColor: p.neutral[0], disabled: p.neutral[300], link: p.brand[500],
     },
-    action: { hover: "rgba(0,0,0,0.05)", disabled: p.neutral[200], active: p.brand[500], focusRing: p.brand[400] },
+    background: {
+      base: p.neutral[0], primary: p.neutral[50], secondary: p.neutral[100], tertiary: p.neutral[200],
+      brand: p.brand[400], brandLight: "rgba(126,212,78,0.16)", brandSubtle: "rgba(126,212,78,0.08)",
+      inverse: p.neutral[1000], alwaysLight: p.neutral[0], alwaysDark: p.neutral[1000],
+      overlay: "rgba(0,0,0,0.45)", disabled: p.neutral[100],
+    },
+    border: {
+      brand: p.brand[400], primary: p.neutral[200], secondary: p.neutral[300], tertiary: p.neutral[200],
+      subtle: p.neutral[100], inverse: p.neutral[1000], focus: p.brand[400], disabled: p.neutral[200],
+    },
+    accent: {
+      green: p.brand[500], greenLight: "rgba(126,212,78,0.16)",
+      teal: p.teal[400], tealLight: "rgba(25,152,173,0.14)",
+      gold: p.gold[400], goldLight: "rgba(197,151,58,0.14)",
+      red: p.red[300], redLight: "rgba(212,32,32,0.10)",
+      purple: p.purple[400], purpleLight: "rgba(139,92,246,0.12)",
+    },
+    alert: {
+      success: p.brand[500], successLight: "rgba(126,212,78,0.16)", successSolid: p.brand[500],
+      warning: p.gold[400], warningLight: "rgba(197,151,58,0.16)", warningSolid: p.gold[400],
+      error: p.red[300], errorLight: "rgba(212,32,32,0.10)", errorSolid: p.red[400],
+      info: p.teal[400], infoLight: "rgba(25,152,173,0.12)", infoSolid: p.teal[500],
+    },
+    action: {
+      hoverOnLight: "rgba(0,0,0,0.05)", hoverOnDark: "rgba(255,255,255,0.06)", hoverOnColor: "rgba(0,0,0,0.08)",
+      disabled: p.neutral[200], active: p.brand[500],
+      focusRingBrand: p.brand[400], focusRingNeutral: p.neutral[400], focusRingError: p.red[400],
+    },
   },
 } as const;
 
-/**
- * Paleta de trabalho dos componentes (dark-first). Mapeia os tokens semânticos
- * para chaves curtas usadas no código. BRAND = verde.
- */
+/** Paleta de trabalho (dark-first) — chaves curtas mapeadas dos semânticos. BRAND = verde. */
 const D = semantic.dark;
 export const colors = {
   brand: { primary: p.brand[300], primaryLight: p.brand[100], primaryDark: p.brand[500], primaryGlow: "rgba(159,232,112,0.30)" },
-  accent: { default: p.brand[300], light: p.brand[100], strong: p.brand[400], teal: p.teal[400], purple: p.purple[300] },
+  accent: { default: p.brand[300], light: p.brand[100], strong: p.brand[400], teal: p.teal[400], gold: p.gold[400], red: p.red[200], purple: p.purple[300] },
   bg: {
     base: D.background.base, surface: D.background.primary, card: D.background.secondary, elevated: D.background.tertiary,
-    border: D.border.primary, borderStrong: D.border.secondary, borderSubtle: D.border.subtle,
+    border: D.border.primary, borderStrong: D.border.secondary, borderSubtle: D.border.tertiary,
   },
   text: {
     primary: D.content.primary, secondary: D.content.secondary, muted: D.content.tertiary,
     onAccent: D.content.onBrand, accent: D.content.brand, accentLight: p.brand[100],
   },
   semantic: {
-    success: D.alert.success, successSolid: p.brand[500], successBg: D.alert.successSubtle,
-    danger: D.alert.error, dangerSolid: p.red[300], dangerBg: D.alert.errorSubtle,
-    gold: D.alert.warning, goldSolid: p.gold[300], goldBg: D.alert.warningSubtle,
+    success: D.alert.success, successSolid: D.alert.successSolid, successBg: D.alert.successLight,
+    danger: D.alert.error, dangerSolid: D.alert.errorSolid, dangerBg: D.alert.errorLight,
+    gold: D.alert.warning, goldSolid: D.alert.warningSolid, goldBg: D.alert.warningLight,
   },
   character: { matador: p.teal[400], categoria: p.gold[400], paredao: p.red[300] },
 } as const;
