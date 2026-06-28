@@ -1,15 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Barlow } from "next/font/google";
+import { Barlow } from "next/font/google";
 import "./globals.css";
 import { PushInit } from "@/components/PushInit";
 import { OrientationGuard } from "@/components/OrientationGuard";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
+// Body/números = Google Sans (self-hosted via @font-face em globals.css). Barlow = display.
 const barlow = Barlow({
   subsets: ["latin"],
   weight: ["500", "600", "700", "800", "900"],
@@ -32,7 +27,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${barlow.variable}`}>
+    <html lang="pt-BR" className={`${barlow.variable}`}>
       <body>
         <div
           id="app-shell"

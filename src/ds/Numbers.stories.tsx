@@ -6,7 +6,8 @@ export default meta;
 type Story = StoryObj;
 
 const CANDIDATES = [
-  { name: "Barlow (atual)", stack: font.display },
+  { name: "Google Sans (escolhida ✓)", stack: font.numeric },
+  { name: "Barlow", stack: font.display },
   { name: "DM Sans", stack: '"DM Sans", sans-serif' },
   { name: "Manrope", stack: '"Manrope", sans-serif' },
   { name: "Plus Jakarta Sans", stack: '"Plus Jakarta Sans", sans-serif' },

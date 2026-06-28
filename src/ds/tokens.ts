@@ -140,7 +140,8 @@ export const motion = {
 // ── 4. Tipografia (escala completa do Figma) ──────────────────
 export const font = {
   display: 'var(--font-display, "Barlow", system-ui, sans-serif)',
-  body: 'var(--font-body, "Inter", system-ui, sans-serif)',
+  body: 'var(--font-body, "Google Sans", system-ui, sans-serif)',
+  numeric: 'var(--font-numeric, "Google Sans", system-ui, sans-serif)',
 } as const;
 
 type RawText = { fontFamily: "display" | "body"; fontWeight: number; fontSize: number; lineHeight: string; letterSpacing?: string; textTransform?: "uppercase" };

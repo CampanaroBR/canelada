@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+/* ── Google Sans (self-hosted) ── */
+@font-face { font-family: "Google Sans"; font-style: normal; font-weight: 400; font-display: swap; src: url("/fonts/google-sans/GoogleSans-Regular.ttf") format("truetype"); }
+@font-face { font-family: "Google Sans"; font-style: normal; font-weight: 500; font-display: swap; src: url("/fonts/google-sans/GoogleSans-Medium.ttf") format("truetype"); }
+@font-face { font-family: "Google Sans"; font-style: normal; font-weight: 600; font-display: swap; src: url("/fonts/google-sans/GoogleSans-SemiBold.ttf") format("truetype"); }
+@font-face { font-family: "Google Sans"; font-style: normal; font-weight: 700; font-display: swap; src: url("/fonts/google-sans/GoogleSans-Bold.ttf") format("truetype"); }
+@font-face { font-family: "Google Sans"; font-style: italic; font-weight: 400; font-display: swap; src: url("/fonts/google-sans/GoogleSans-Italic.ttf") format("truetype"); }
+@font-face { font-family: "Google Sans"; font-style: italic; font-weight: 700; font-display: swap; src: url("/fonts/google-sans/GoogleSans-BoldItalic.ttf") format("truetype"); }
+
 :root {
   /* ── Surfaces ── */
   --color-bg:        #090909;  /* fundo base do app */
@@ -42,9 +50,10 @@
   /* ── Elevation ── */
   --shadow-border: 0 0 0 1px rgba(255,255,255,0.08);
 
-  /* ── Typography · famílias (next/font self-hosted) ── */
+  /* ── Typography · famílias ── */
   --font-display: var(--font-barlow), 'Barlow', sans-serif;
-  --font-body:    var(--font-inter), 'Inter', sans-serif;
+  --font-body:    'Google Sans', system-ui, sans-serif;
+  --font-numeric: 'Google Sans', system-ui, sans-serif;
 
   /* ── Typography · escala de tamanho ── */
   --text-2xs:  10px;
