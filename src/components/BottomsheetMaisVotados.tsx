@@ -120,7 +120,7 @@ export function BottomsheetMaisVotados({
             >
               <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
                 <span style={{
-                  fontFamily: "var(--font-display)", fontWeight: 800,
+                  fontFamily: "var(--font-numeric)", fontWeight: 700,
                   fontSize: 20, lineHeight: "18px", color: "#fff", flexShrink: 0,
                 }}>
                   {entry.rank}.
@@ -136,7 +136,7 @@ export function BottomsheetMaisVotados({
                       width: 40, height: 40, background: "#3a3a3a", borderRadius: 12,
                       display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
                     }}>
-                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 20, color: "#fff" }}>
+                      <span style={{ fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 20, color: "#fff" }}>
                         {entry.qtd}x
                       </span>
                     </div>

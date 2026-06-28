@@ -263,8 +263,8 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
               <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#fff", whiteSpace: "nowrap" }}>SUAS BADGES</span>
             </div>
             <p style={{ margin: 0, whiteSpace: "nowrap" }}>
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 18, lineHeight: "22px", color: "#9fe870" }}>{unlockedCount}</span>
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 16, lineHeight: "18px", color: "#7a7a7a" }}>/{TOTAL}</span>
+              <span style={{ fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 18, lineHeight: "22px", color: "#9fe870" }}>{unlockedCount}</span>
+              <span style={{ fontFamily: "var(--font-numeric)", fontWeight: 500, fontSize: 16, lineHeight: "18px", color: "#7a7a7a" }}>/{TOTAL}</span>
             </p>
           </div>
           {/* Anel de progresso */}
@@ -390,7 +390,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                   </p>
                   <div style={{ display: "flex", gap: 6, alignItems: "baseline", whiteSpace: "nowrap" }}>
                     {/* número + /N inline, sem gap entre eles */}
-                    <span style={{ fontFamily: "var(--font-display)", lineHeight: 0 }}>
+                    <span style={{ fontFamily: "var(--font-numeric)", lineHeight: 0 }}>
                       <span style={{ fontWeight: 700, fontSize: 18, lineHeight: "22px", color: catUnlocked > 0 ? "#9fe870" : "#fff" }}>{catUnlocked}</span>
                       <span style={{ fontWeight: 500, fontSize: 16, lineHeight: "18px", color: "#fff" }}>/{cat.badges.length}</span>
                     </span>
@@ -619,7 +619,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                         <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "100%" }}>
                           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
                             <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#fff" }}>Em andamento</p>
-                            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px" }}>
+                            <p style={{ margin: 0, fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 16, lineHeight: "20px" }}>
                               <span style={{ color: "#9fe870" }}>{cur}</span>
                               <span style={{ color: "#7a7a7a" }}>/{p.meta}</span>
                             </p>

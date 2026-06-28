@@ -92,7 +92,7 @@ export function PerfilCliente(props: Props) {
         <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
             <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 10, lineHeight: "14px", color: "#666" }}>DESDE</span>
-            <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 13, color: "#cfcfcf" }}>{joinYear}</span>
+            <span style={{ fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 13, color: "#cfcfcf" }}>{joinYear}</span>
           </div>
         </div>
 
@@ -110,7 +110,7 @@ export function PerfilCliente(props: Props) {
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-            <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 64, lineHeight: "72px", color: ACCENT }}>{overall}</span>
+            <span style={{ fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 64, lineHeight: "72px", letterSpacing: "-1px", color: ACCENT }}>{overall}</span>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
               <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 10, letterSpacing: "1.8px", color: ACCENT }}>OVERALL</span>
               <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 13, letterSpacing: "1px", color: "#cfcfcf" }}>{posAbbr}</span>
@@ -125,7 +125,7 @@ export function PerfilCliente(props: Props) {
         <div style={{ display: "flex", gap: 12, width: "100%" }}>
           {stats.map((s) => (
             <div key={s.label} style={{ flex: "1 0 0", minWidth: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 22, color: s.color, fontVariantNumeric: "tabular-nums" }}>{s.value}</span>
+              <span style={{ fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 22, color: s.color, fontVariantNumeric: "tabular-nums" }}>{s.value}</span>
               <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 10, lineHeight: "14px", color: "#7a7a7a", textAlign: "center" }}>{s.label}</span>
             </div>
           ))}

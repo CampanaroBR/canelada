@@ -200,7 +200,7 @@ function PodiumCol({ row, pos, eu }: { row: RankRow; pos: number; eu: boolean })
           width: first ? 54 : 46, height: first ? 54 : 46, borderRadius: 40,
           background: "#090909", border: `2px solid ${cor}`,
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 20, color: "#fff",
+          fontFamily: "var(--font-numeric)", fontWeight: 600, fontSize: 20, color: "#fff",
         }}>{pos}</div>
         <p style={{
           margin: 0, maxWidth: "100%", fontFamily: "var(--font-display)", fontWeight: 600,
@@ -216,7 +216,7 @@ function PodiumCol({ row, pos, eu }: { row: RankRow; pos: number; eu: boolean })
         borderRadius: "20px 0 20px 20px",
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
       }}>
-        <span style={{ fontFamily: "var(--font-display)", fontWeight: first ? 700 : 600, fontSize: first ? 24 : 20, lineHeight: "1.1", color: ptCor }}>{row.pontos}</span>
+        <span style={{ fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: first ? 24 : 20, lineHeight: "1.1", color: ptCor, fontVariantNumeric: "tabular-nums" }}>{row.pontos}</span>
         <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 10, lineHeight: "14px", color: "#fff" }}>pnts</span>
       </div>
     </div>
@@ -231,7 +231,7 @@ function ListRow({ row, pos, eu }: { row: RankRow; pos: number; eu: boolean }) {
         width: 44, flexShrink: 0, background: "#090909",
         border: `1px solid ${eu ? "#9fe870" : "#383838"}`, borderRadius: "20px 0 20px 20px",
         display: "flex", alignItems: "center", justifyContent: "center",
-        fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 20, color: "#fff",
+        fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 20, color: "#fff",
       }}>{pos}</div>
 
       {/* Linha */}
@@ -256,7 +256,7 @@ function ListRow({ row, pos, eu }: { row: RankRow; pos: number; eu: boolean }) {
             height: 40, background: "#000", border: "1px solid #353535", borderRadius: 12,
             padding: "4px 8px", display: "flex", alignItems: "center", gap: 2, flexShrink: 0,
           }}>
-            <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#9fe870" }}>{row.pontos}</span>
+            <span style={{ fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 16, color: "#9fe870", fontVariantNumeric: "tabular-nums" }}>{row.pontos}</span>
             <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 10, color: "#fff" }}>pnts</span>
           </div>
         </div>

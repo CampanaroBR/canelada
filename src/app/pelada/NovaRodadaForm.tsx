@@ -651,7 +651,7 @@ function MiniCalendar({ value, onChange }: { value: string; onChange: (iso: stri
                   {WEEKDAYS_ABBR[d.getDay()]}
                 </span>
                 <span style={{
-                  fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "20px",
+                  fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 18, lineHeight: "20px",
                   color: selected ? "#090909" : "#fff",
                 }}>
                   {d.getDate()}
