@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Card } from "./Card";
 import { font } from "../tokens";
 
-const meta: Meta<typeof Card> = { title: "Core/Card", component: Card };
+const meta: Meta<typeof Card> = { title: "Core/Card", component: Card, tags: ["!autodocs"] };
 export default meta;
 type Story = StoryObj<typeof Card>;
 

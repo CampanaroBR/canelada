@@ -4,6 +4,7 @@ import { Button } from "./Button";
 const meta: Meta<typeof Button> = {
   title: "Core/Button",
   component: Button,
+  tags: ["!autodocs"],
   args: { children: "Confirmar", variant: "primary", size: "md" },
   argTypes: {
     variant: { control: "inline-radio", options: ["primary", "secondary", "ghost", "danger"] },

@@ -1,0 +1,28 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as CardStories from "./components/Card.stories";
+
+<Meta of={CardStories} />
+
+# Card
+
+Superfície base do Canelada. Agrupa conteúdo relacionado sobre o fundo escuro, com borda sutil.
+
+<Canvas of={CardStories.Tons} />
+
+## Quando usar
+
+- **surface** (`#0a0e0e`) — cards de lista e blocos sobre o fundo base.
+- **card** (`#171717`) — destaque/elevação (card do jogador, container de badges).
+- **base** (`#090909`) — quando precisa do mesmo tom do fundo.
+
+## Do & Don't
+
+- ✅ Use os **tons** pra criar hierarquia (base → surface → card).
+- ✅ Combine com `RowItem` + `Divider` para listas.
+- ✅ Para seção com título, prefira o **Container** (Card com header).
+- 🚫 Não aninhe muitos cards do mesmo tom (some a hierarquia).
+- 🚫 Não troque a borda por sombra forte — o Canelada é flat/escuro.
+
+## Props
+
+<Controls of={CardStories.Tons} />

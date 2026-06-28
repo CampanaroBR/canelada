@@ -4,6 +4,7 @@ import { Input } from "./Input";
 const meta: Meta<typeof Input> = {
   title: "Forms/Input",
   component: Input,
+  tags: ["!autodocs"],
   args: { label: "Apelido no baba", placeholder: "Craque" },
   decorators: [(S) => <div style={{ width: 320 }}><S /></div>],
 };

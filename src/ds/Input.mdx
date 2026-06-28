@@ -1,0 +1,33 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as InputStories from "./components/Input.stories";
+
+<Meta of={InputStories} />
+
+# Input
+
+Campo de texto de uma linha. Sempre com **label** visível; ícone à esquerda e estado de
+**erro** quando precisar.
+
+<Canvas of={InputStories.Default} />
+
+## Quando usar
+
+- Entradas curtas: apelido, nome do grupo, e-mail, busca.
+- Para senha use **PasswordInput**; para escolha de opções, **Select**.
+
+## Estados
+
+<Canvas of={InputStories.Erro} />
+
+## Do & Don't
+
+- ✅ Sempre com **label** (não confie só no placeholder).
+- ✅ Placeholder = exemplo do conteúdo ("Craque"), não a instrução.
+- ✅ Mensagem de **erro** específica e curta ("Apelido muito curto (mín. 2).").
+- ✅ Marque obrigatórios com `required` (asterisco verde-vermelho).
+- 🚫 Não use o `hint` pra repetir a label.
+- 🚫 Não desabilite sem deixar claro o porquê.
+
+## Props
+
+<Controls of={InputStories.Default} />

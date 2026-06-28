@@ -4,6 +4,7 @@ import { Badge } from "./Badge";
 const meta: Meta<typeof Badge> = {
   title: "Feedback/Badge",
   component: Badge,
+  tags: ["!autodocs"],
   args: { children: "Badge", tone: "accent", variant: "soft" },
   argTypes: {
     tone: { control: "inline-radio", options: ["accent", "brand", "neutral", "success", "danger", "gold"] },

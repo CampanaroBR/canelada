@@ -1,0 +1,31 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as ButtonStories from "./components/Button.stories";
+
+<Meta of={ButtonStories} />
+
+# Button
+
+Ação principal da interface. Verde (`primary`) para a ação que faz a coisa acontecer;
+as demais variantes para ações secundárias e destrutivas.
+
+<Canvas of={ButtonStories.Todos} />
+
+## Quando usar
+
+- **primary** — a ação principal da tela (Confirmar, Criar Rodada, Salvar). **Uma por contexto.**
+- **secondary** — ação alternativa ao lado da primária (Cancelar).
+- **ghost** — ações de menor peso sobre superfície (Ver mais, filtros).
+- **danger** — ações destrutivas (Excluir conta, Remover membro).
+
+## Do & Don't
+
+- ✅ Use **uma** `primary` por tela/seção — ela guia o olho.
+- ✅ Texto curto e no infinitivo: "Confirmar", "Salvar", "Criar Rodada".
+- ✅ Em modais, pare a dupla **secondary + primary** (Cancelar | Confirmar).
+- 🚫 Não empilhe duas `primary` competindo entre si.
+- 🚫 Não use `danger` para ações reversíveis comuns.
+- 🚫 Não escreva frases longas dentro do botão.
+
+## Props
+
+<Controls of={ButtonStories.Primary} />

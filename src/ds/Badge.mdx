@@ -1,0 +1,34 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as BadgeStories from "./components/Badge.stories";
+
+<Meta of={BadgeStories} />
+
+# Badge
+
+Pílula curta de status, contagem ou raridade. Três variantes (`solid`, `soft`, `outline`)
+e tons mapeados na paleta do Canelada.
+
+<Canvas of={BadgeStories.Variantes} />
+
+## Quando usar
+
+- **soft** — padrão; status e chips dentro de listas/cards (Desbloqueada, Épica).
+- **solid** — destaque forte e pontual (uma chamada na tela).
+- **outline** — discreto, sobre superfícies já carregadas.
+
+## Tons
+
+- `accent`/`success` (verde), `gold` (raridade épica), `danger` (bagre/erro),
+  `brand`, `neutral`. Use `dot` para um ponto de status.
+
+## Do & Don't
+
+- ✅ Texto de 1–2 palavras ("NOVO", "Épica", "12").
+- ✅ Mantenha **um** badge `solid` por área pra não competir.
+- ✅ Use o tom semântico certo (danger só para negativo).
+- 🚫 Não use badge como botão — sem ação clicável aqui.
+- 🚫 Não escreva frases dentro do badge.
+
+## Props
+
+<Controls of={BadgeStories.Playground} />
