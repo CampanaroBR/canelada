@@ -25,3 +25,6 @@ export { Table } from "./components/Table";
 export { PanelHeader } from "./components/PanelHeader";
 export { BottomNav } from "./components/BottomNav";
 export { EmptyState } from "./components/EmptyState";
+export { Text } from "./components/Text";
+export { Image } from "./components/Image";
+export { Menu } from "./components/Menu";
