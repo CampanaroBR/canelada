@@ -119,7 +119,7 @@ export const Tipografia: Story = {
     return (
       <Page>
         <H>Tipografia</H>
-        <Sub>Nomenclatura do Hive (Display / Heading / Paragraph / Label / Overline). Display, Heading e Overline = Barlow; Paragraph e Label = Inter.</Sub>
+        <Sub>Nomenclatura do Hive (Display / Heading / Paragraph / Label / Overline). Display, Heading e Overline = Barlow; Paragraph e Label = Google Sans.</Sub>
         {groups.map((g) => (
           <div key={g} style={{ marginBottom: 8 }}>
             <p style={{ fontFamily: font.display, fontWeight: 800, fontSize: 13, color: "#9fe870", textTransform: "uppercase", letterSpacing: "0.06em", margin: "20px 0 10px" }}>{g}</p>
@@ -128,7 +128,7 @@ export const Tipografia: Story = {
                 <div key={k} style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
                   <span style={{ ...textStyle(k), color: "#fff" }}>{k}</span>
                   <span style={{ fontFamily: font.body, fontSize: 11, color: "#7a7a7a" }}>
-                    {text[k].fontSize}px / {text[k].lineHeight} · {text[k].fontFamily === "display" ? "Barlow" : "Inter"} {text[k].fontWeight}
+                    {text[k].fontSize}px / {text[k].lineHeight} · {text[k].fontFamily === "display" ? "Barlow" : "Google Sans"} {text[k].fontWeight}
                   </span>
                 </div>
               ))}

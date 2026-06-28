@@ -147,7 +147,7 @@ export const font = {
 type RawText = { fontFamily: "display" | "body"; fontWeight: number; fontSize: number; lineHeight: string; letterSpacing?: string; textTransform?: "uppercase" };
 /**
  * Escala tipográfica — nomenclatura do Hive (Display/Heading/Paragraph/Label/Overline, sizing L/M/S/XS),
- * com as fontes do Canelada: Display+Heading+Overline = Barlow; Paragraph+Label = Inter.
+ * com as fontes do Canelada: Display+Heading+Overline = Barlow; Paragraph+Label = Google Sans.
  */
 export const text: Record<string, RawText> = {
   // Display — Barlow Black (números/heros)
@@ -162,12 +162,12 @@ export const text: Record<string, RawText> = {
   "heading-h4": { fontFamily: "display", fontWeight: 800, fontSize: 18, lineHeight: "22px" },
   "heading-h5": { fontFamily: "display", fontWeight: 800, fontSize: 16, lineHeight: "20px" },
   "heading-h6": { fontFamily: "display", fontWeight: 700, fontSize: 14, lineHeight: "18px" },
-  // Paragraph — Inter Regular (texto corrido)
+  // Paragraph — Google Sans Regular (texto corrido)
   "paragraph-l": { fontFamily: "body", fontWeight: 400, fontSize: 16, lineHeight: "24px" },
   "paragraph-m": { fontFamily: "body", fontWeight: 400, fontSize: 14, lineHeight: "20px" },
   "paragraph-s": { fontFamily: "body", fontWeight: 400, fontSize: 12, lineHeight: "16px" },
   "paragraph-xs": { fontFamily: "body", fontWeight: 400, fontSize: 10, lineHeight: "14px" },
-  // Label — Inter SemiBold (rótulos de UI)
+  // Label — Google Sans SemiBold (rótulos de UI)
   "label-l": { fontFamily: "body", fontWeight: 600, fontSize: 16, lineHeight: "24px" },
   "label-m": { fontFamily: "body", fontWeight: 600, fontSize: 14, lineHeight: "20px" },
   "label-s": { fontFamily: "body", fontWeight: 600, fontSize: 12, lineHeight: "16px" },
