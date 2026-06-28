@@ -19,10 +19,10 @@ export const Variantes: Story = {
 export const Cores: Story = {
   render: () => (
     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-      <Text variant="title-md">Texto primário</Text>
-      <Text variant="body-base" color="#999">Texto secundário</Text>
-      <Text variant="body-base" color="#7a7a7a">Texto muted</Text>
-      <Text variant="label-sm" color="#9fe870">Texto accent</Text>
+      <Text variant="heading-h5">Texto primário</Text>
+      <Text variant="paragraph-m" color="#999">Texto secundário</Text>
+      <Text variant="paragraph-m" color="#7a7a7a">Texto muted</Text>
+      <Text variant="label-s" color="#9fe870">Texto accent</Text>
     </div>
   ),
 };

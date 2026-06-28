@@ -113,22 +113,31 @@ export const Temas: Story = {
 
 // 4) TIPOGRAFIA
 export const Tipografia: Story = {
-  render: () => (
-    <Page>
-      <H>Escala tipográfica</H>
-      <Sub>Display = Barlow · Body = Inter.</Sub>
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-        {(Object.keys(text) as (keyof typeof text)[]).map((k) => (
-          <div key={k}>
-            <span style={{ ...textStyle(k), color: "#fff" }}>{k}</span>
-            <span style={{ fontFamily: font.body, fontSize: 11, color: "#7a7a7a", marginLeft: 12 }}>
-              {text[k].fontSize}px · {text[k].fontFamily === "display" ? "Barlow" : "Inter"} {text[k].fontWeight}
-            </span>
+  render: () => {
+    const groups = ["display", "heading", "paragraph", "label", "overline"];
+    const keys = Object.keys(text) as (keyof typeof text)[];
+    return (
+      <Page>
+        <H>Tipografia</H>
+        <Sub>Nomenclatura do Hive (Display / Heading / Paragraph / Label / Overline). Display, Heading e Overline = Barlow; Paragraph e Label = Inter.</Sub>
+        {groups.map((g) => (
+          <div key={g} style={{ marginBottom: 8 }}>
+            <p style={{ fontFamily: font.display, fontWeight: 800, fontSize: 13, color: "#9fe870", textTransform: "uppercase", letterSpacing: "0.06em", margin: "20px 0 10px" }}>{g}</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {keys.filter((k) => k.startsWith(g)).map((k) => (
+                <div key={k} style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
+                  <span style={{ ...textStyle(k), color: "#fff" }}>{k}</span>
+                  <span style={{ fontFamily: font.body, fontSize: 11, color: "#7a7a7a" }}>
+                    {text[k].fontSize}px / {text[k].lineHeight} · {text[k].fontFamily === "display" ? "Barlow" : "Inter"} {text[k].fontWeight}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         ))}
-      </div>
-    </Page>
-  ),
+      </Page>
+    );
+  },
 };
 
 // 5) ESPAÇO / RAIO / SOMBRA

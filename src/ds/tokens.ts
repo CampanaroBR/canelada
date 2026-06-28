@@ -143,29 +143,37 @@ export const font = {
   body: 'var(--font-body, "Inter", system-ui, sans-serif)',
 } as const;
 
-type RawText = { fontFamily: "display" | "body"; fontWeight: number; fontSize: number; lineHeight: string; letterSpacing?: string };
+type RawText = { fontFamily: "display" | "body"; fontWeight: number; fontSize: number; lineHeight: string; letterSpacing?: string; textTransform?: "uppercase" };
+/**
+ * Escala tipográfica — nomenclatura do Hive (Display/Heading/Paragraph/Label/Overline, sizing L/M/S/XS),
+ * com as fontes do Canelada: Display+Heading+Overline = Barlow; Paragraph+Label = Inter.
+ */
 export const text: Record<string, RawText> = {
-  "display-hero": { fontFamily: "display", fontWeight: 900, fontSize: 48, lineHeight: "48px" },
-  "display-h1": { fontFamily: "display", fontWeight: 900, fontSize: 32, lineHeight: "36px" },
-  "display-h2": { fontFamily: "display", fontWeight: 900, fontSize: 28, lineHeight: "32px" },
-  "title-lg": { fontFamily: "display", fontWeight: 800, fontSize: 18, lineHeight: "22px" },
-  "title-player": { fontFamily: "display", fontWeight: 600, fontSize: 18, lineHeight: "22px" },
-  "title-md": { fontFamily: "display", fontWeight: 700, fontSize: 16, lineHeight: "20px" },
-  "heading-section": { fontFamily: "display", fontWeight: 800, fontSize: 16, lineHeight: "20px" },
-  "stat-lg": { fontFamily: "display", fontWeight: 800, fontSize: 19, lineHeight: "22px" },
-  "label-lg": { fontFamily: "display", fontWeight: 800, fontSize: 12, lineHeight: "16px" },
-  "label-md": { fontFamily: "display", fontWeight: 700, fontSize: 12, lineHeight: "16px" },
-  "label-sm": { fontFamily: "display", fontWeight: 600, fontSize: 12, lineHeight: "16px" },
-  "overline-lg": { fontFamily: "display", fontWeight: 800, fontSize: 11, lineHeight: "14px", letterSpacing: "0.5px" },
-  "overline-sm": { fontFamily: "display", fontWeight: 800, fontSize: 10, lineHeight: "14px", letterSpacing: "1px" },
-  "body-xl": { fontFamily: "body", fontWeight: 400, fontSize: 25, lineHeight: "32px" },
-  "body-lg": { fontFamily: "body", fontWeight: 400, fontSize: 16, lineHeight: "22px" },
-  "body-md": { fontFamily: "body", fontWeight: 500, fontSize: 16, lineHeight: "22px" },
-  "body-base": { fontFamily: "body", fontWeight: 400, fontSize: 14, lineHeight: "18px" },
-  "label": { fontFamily: "body", fontWeight: 600, fontSize: 14, lineHeight: "20px" },
-  "caption": { fontFamily: "body", fontWeight: 500, fontSize: 12, lineHeight: "16px" },
-  "caption-strong": { fontFamily: "body", fontWeight: 600, fontSize: 12, lineHeight: "16px" },
-  "overline": { fontFamily: "body", fontWeight: 600, fontSize: 10, lineHeight: "14px", letterSpacing: "1px" },
+  // Display — Barlow Black (números/heros)
+  "display-l": { fontFamily: "display", fontWeight: 900, fontSize: 48, lineHeight: "52px", letterSpacing: "-1px" },
+  "display-m": { fontFamily: "display", fontWeight: 900, fontSize: 36, lineHeight: "40px", letterSpacing: "-0.5px" },
+  "display-s": { fontFamily: "display", fontWeight: 900, fontSize: 32, lineHeight: "36px" },
+  "display-xs": { fontFamily: "display", fontWeight: 900, fontSize: 28, lineHeight: "32px" },
+  // Heading — Barlow ExtraBold (títulos de tela/seção)
+  "heading-h1": { fontFamily: "display", fontWeight: 800, fontSize: 28, lineHeight: "32px" },
+  "heading-h2": { fontFamily: "display", fontWeight: 800, fontSize: 24, lineHeight: "28px" },
+  "heading-h3": { fontFamily: "display", fontWeight: 800, fontSize: 20, lineHeight: "24px" },
+  "heading-h4": { fontFamily: "display", fontWeight: 800, fontSize: 18, lineHeight: "22px" },
+  "heading-h5": { fontFamily: "display", fontWeight: 800, fontSize: 16, lineHeight: "20px" },
+  "heading-h6": { fontFamily: "display", fontWeight: 700, fontSize: 14, lineHeight: "18px" },
+  // Paragraph — Inter Regular (texto corrido)
+  "paragraph-l": { fontFamily: "body", fontWeight: 400, fontSize: 16, lineHeight: "24px" },
+  "paragraph-m": { fontFamily: "body", fontWeight: 400, fontSize: 14, lineHeight: "20px" },
+  "paragraph-s": { fontFamily: "body", fontWeight: 400, fontSize: 12, lineHeight: "16px" },
+  "paragraph-xs": { fontFamily: "body", fontWeight: 400, fontSize: 10, lineHeight: "14px" },
+  // Label — Inter SemiBold (rótulos de UI)
+  "label-l": { fontFamily: "body", fontWeight: 600, fontSize: 16, lineHeight: "24px" },
+  "label-m": { fontFamily: "body", fontWeight: 600, fontSize: 14, lineHeight: "20px" },
+  "label-s": { fontFamily: "body", fontWeight: 600, fontSize: 12, lineHeight: "16px" },
+  "label-xs": { fontFamily: "body", fontWeight: 600, fontSize: 10, lineHeight: "14px" },
+  // Overline — Barlow ExtraBold caixa-alta (PRESENÇAS, OVERALL…)
+  "overline-m": { fontFamily: "display", fontWeight: 800, fontSize: 11, lineHeight: "14px", letterSpacing: "0.5px", textTransform: "uppercase" },
+  "overline-s": { fontFamily: "display", fontWeight: 800, fontSize: 10, lineHeight: "14px", letterSpacing: "1px", textTransform: "uppercase" },
 };
 
 export type TextStyle = keyof typeof text;
