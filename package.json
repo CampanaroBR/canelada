@@ -38,6 +38,7 @@
     "ws": "^8.21.0"
   },
   "devDependencies": {
+    "@storybook/addon-docs": "^10.4.6",
     "@storybook/react-vite": "^10.4.6",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

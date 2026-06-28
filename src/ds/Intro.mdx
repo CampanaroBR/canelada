@@ -1,0 +1,52 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Introdução" />
+
+<div style={{ maxWidth: 760 }}>
+
+# 🐟 Bagre Design System
+
+O design system do **Canelada** — o app onde o baba vira resenha. Construído sobre a
+arquitetura de tokens do **Hive**, recontextualizado com a marca e as cores do Canelada.
+
+---
+
+## Princípios
+
+- **Dark-first.** O Canelada vive no escuro (`#090909`). O tema Light existe, mas o padrão é dark.
+- **Marca = verde.** `#9fe870` é a cor de marca. Teal, gold, red e purple são apoio.
+- **Duas vozes tipográficas.** **Barlow** (display/headings/números grandes esportivos) +
+  **Google Sans** (corpo, labels e números). Ícones: **Phosphor** (regular/outline, nunca fill).
+- **Tokens, não valores soltos.** Sempre use os tokens semânticos (`content/*`, `background/*`,
+  `border/*`, `accent/*`, `alert/*`, `action/*`), não hex cru.
+
+---
+
+## Como está organizado
+
+- **Foundations** — Cores (primitivos + semânticos + temas), Tipografia, Espaço/Raio/Sombra,
+  Iconografia, Números.
+- **Core** — Button, Text, Card, Avatar, Tag, RowItem, Image, IconBox, Divider, Tabs.
+- **Forms** — Input, PasswordInput, Select, Checkbox, Radio, Toggle, Form.
+- **Feedback** — Badge, ProgressBar, Alert, Tooltip.
+- **Overlays** — Modal, Menu, Container, Slot.
+- **Data** — Rating, Table.
+- **Patterns** — PanelHeader, BottomNav, EmptyState.
+
+---
+
+## Como usar no código
+
+```tsx
+import { Button, Card, Text, colors, tokens } from "@/ds";
+
+<Card tone="card">
+  <Text variant="heading-h4">Resenha do baba</Text>
+  <Button variant="primary">Confirmar presença</Button>
+</Card>
+```
+
+Tokens disponíveis: `colors`, `semantic` (dark/light), `space`, `radius`, `shadow`, `motion`,
+`font`, `text` / `textStyle()`.
+
+</div>
