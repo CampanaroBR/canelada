@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { Toggle } from "./Toggle";
 
-const meta: Meta<typeof Toggle> = { title: "Core/Toggle", component: Toggle };
+const meta: Meta<typeof Toggle> = { title: "Forms/Toggle", component: Toggle };
 export default meta;
 type Story = StoryObj<typeof Toggle>;
 
