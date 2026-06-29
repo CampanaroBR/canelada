@@ -1,0 +1,26 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as ToggleStories from "./components/Toggle.stories";
+
+<Meta of={ToggleStories} />
+
+# Toggle
+
+Liga/desliga uma configuração que tem **efeito imediato** (ex.: notificações).
+
+<Canvas of={ToggleStories.Estados} />
+
+## Quando usar
+
+- Preferências on/off com efeito na hora (sem precisar de "Salvar").
+- Para escolher entre opções, use **Radio**; para seleção múltipla em lista, **Checkbox**.
+
+## Do & Don't
+
+- ✅ Acompanhe de uma label clara do que está sendo ligado.
+- ✅ Aplique a mudança imediatamente.
+- 🚫 Não use Toggle dentro de um form que só salva no "Salvar" (use Checkbox).
+- 🚫 Não use para ações destrutivas.
+
+## Props
+
+<Controls />

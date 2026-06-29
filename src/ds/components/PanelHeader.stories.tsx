@@ -6,6 +6,7 @@ import { Button } from "./Button";
 const meta: Meta<typeof PanelHeader> = {
   title: "Patterns/PanelHeader",
   component: PanelHeader,
+  tags: ["!autodocs"],
   parameters: { layout: "fullscreen" },
   decorators: [(S) => <div style={{ width: 393 }}><S /></div>],
 };

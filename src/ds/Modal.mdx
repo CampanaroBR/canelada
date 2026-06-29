@@ -1,0 +1,30 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as ModalStories from "./components/Modal.stories";
+
+<Meta of={ModalStories} />
+
+# Modal
+
+Diálogo central para confirmações e decisões pontuais. Em telas mobile do app, fluxos longos
+usam **BottomSheet**; o Modal é para confirmar/avisar.
+
+<Canvas of={ModalStories.Confirmacao} />
+
+## Quando usar
+
+- Confirmar ação importante ou destrutiva (Excluir conta, Remover membro).
+- Avisos curtos que exigem decisão (Cancelar | Confirmar).
+- Para conteúdo longo/scrollável no mobile, prefira um **BottomSheet**.
+
+## Do & Don't
+
+- ✅ Título direto que diz a ação ("Excluir conta?").
+- ✅ Dupla de ações: `secondary` (Cancelar) + `primary`/`danger` (Confirmar).
+- ✅ Use `confirmVariant="danger"` quando a ação for destrutiva.
+- ✅ Permita fechar pelo backdrop e pelo X.
+- 🚫 Não empilhe modais.
+- 🚫 Não use modal para tarefas longas/multi-etapa.
+
+## Props
+
+<Controls />

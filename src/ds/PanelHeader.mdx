@@ -1,0 +1,28 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as PanelHeaderStories from "./components/PanelHeader.stories";
+
+<Meta of={PanelHeaderStories} />
+
+# PanelHeader
+
+Cabeçalho-painel com cantos inferiores arredondados — a assinatura do topo das telas do
+Canelada (Ranking, Badges, Meu Grupo, Criar Rodada).
+
+<Canvas of={PanelHeaderStories.MeuGrupo} />
+
+## Quando usar
+
+- Topo de telas de seção, logo abaixo da topbar.
+- Sempre com ícone (em `IconBox`) + título; subtítulo e ação à direita são opcionais.
+
+## Do & Don't
+
+- ✅ Título curto em caixa-alta (o componente já aplica).
+- ✅ Use a `action` para 1 ação (ex.: compartilhar) — botão 48×48.
+- ✅ Deixe o conteúdo da tela "encostar" no painel (container único).
+- 🚫 Não coloque muitos elementos na faixa do header.
+- 🚫 Não use fora do topo da tela.
+
+## Props
+
+<Controls of={PanelHeaderStories.MeuGrupo} />

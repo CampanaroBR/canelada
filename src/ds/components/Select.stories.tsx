@@ -5,6 +5,7 @@ import { Select } from "./Select";
 const meta: Meta<typeof Select> = {
   title: "Forms/Select",
   component: Select,
+  tags: ["!autodocs"],
   decorators: [(S) => <div style={{ width: 280 }}><S /></div>],
 };
 export default meta;

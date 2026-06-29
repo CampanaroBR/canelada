@@ -7,7 +7,7 @@ import { Divider } from "./Divider";
 import { Avatar } from "./Avatar";
 import { Toggle } from "./Toggle";
 
-const meta: Meta<typeof RowItem> = { title: "Core/RowItem", component: RowItem };
+const meta: Meta<typeof RowItem> = { title: "Core/RowItem", component: RowItem, tags: ["!autodocs"] };
 export default meta;
 type Story = StoryObj<typeof RowItem>;
 

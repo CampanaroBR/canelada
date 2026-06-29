@@ -1,0 +1,33 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as SelectStories from "./components/Select.stories";
+
+<Meta of={SelectStories} />
+
+# Select
+
+Escolha de uma opção entre poucas (posição, pé preferido). Usa `<select>` nativo por baixo,
+com a aparência do Canelada e chevron verde.
+
+<Canvas of={SelectStories.Default} />
+
+## Quando usar
+
+- 4+ opções fixas e mutuamente exclusivas.
+- Para 2–3 opções visíveis lado a lado, prefira **Radio**.
+- Para texto livre, **Input**.
+
+## Estados
+
+<Canvas of={SelectStories.Erro} />
+
+## Do & Don't
+
+- ✅ Sempre com **label**; `placeholder` como estado vazio ("Selecione").
+- ✅ Marque obrigatórios com `required`.
+- ✅ Use `error` quando a escolha for obrigatória e estiver vazia.
+- 🚫 Não use Select para 2 opções (use Radio/Toggle).
+- 🚫 Não esconda a label.
+
+## Props
+
+<Controls of={SelectStories.Vazio} />

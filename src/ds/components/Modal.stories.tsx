@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Modal } from "./Modal";
 import { Button } from "./Button";
 
-const meta: Meta<typeof Modal> = { title: "Overlays/Modal", component: Modal, parameters: { layout: "centered" } };
+const meta: Meta<typeof Modal> = { title: "Overlays/Modal", component: Modal, tags: ["!autodocs"], parameters: { layout: "centered" } };
 export default meta;
 type Story = StoryObj<typeof Modal>;
 

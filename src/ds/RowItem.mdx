@@ -1,0 +1,28 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as RowItemStories from "./components/RowItem.stories";
+
+<Meta of={RowItemStories} />
+
+# RowItem
+
+Linha de lista: ícone + título/subtítulo + elemento à direita (caret, toggle, valor).
+Base das listas de Conta, Membros e Menu.
+
+<Canvas of={RowItemStories.ListaDeConta} />
+
+## Quando usar
+
+- Listas de navegação/configuração dentro de um **Card** (`padding={0}`) com **Divider** entre linhas.
+- Para membros/jogadores, use `Avatar` como ícone (veja exemplo Membros).
+
+## Do & Don't
+
+- ✅ `trailing` = caret quando navega; `Toggle` quando é config; valor quando é info.
+- ✅ Use `onClick` só quando a linha inteira for clicável.
+- ✅ Combine com `IconBox` (ícone Phosphor regular verde).
+- 🚫 Não coloque dois controles interativos competindo na mesma linha.
+- 🚫 Não use sub muito longo — uma linha.
+
+## Props
+
+<Controls />
