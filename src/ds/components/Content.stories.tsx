@@ -14,13 +14,13 @@ import { colors } from "../tokens";
 const meta: Meta<typeof Content> = {
   title: "Core/Content",
   component: Content,
-  decorators: [(S) => <div style={{ width: 380 }}><S /></div>],
+  decorators: [(S) => <div style={{ width: 420 }}><S /></div>],
 };
 export default meta;
 type Story = StoryObj<typeof Content>;
 
 const Caret = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7a7a7a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
 );
 const Dot = () => <div style={{ width: 20, height: 20, borderRadius: 6, background: colors.accent.default }} />;
 
@@ -38,8 +38,8 @@ export const ListaDeConta: Story = {
   render: () => {
     const [notif, setNotif] = useState(true);
     return (
-      <Card padding={16} tone="surface">
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      <Card padding={20} tone="surface">
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           <Content leading={<IconBox><Dot /></IconBox>} label="Dados pessoais" description="Nome, apelido, posição, foto" trailing={<Caret />} onClick={() => {}} />
           <Divider />
           <Content leading={<IconBox><Dot /></IconBox>} label="Notificações" description="Avisos de votação e badges" trailing={<Toggle checked={notif} onChange={setNotif} />} />
@@ -59,8 +59,8 @@ export const SelecaoMembros: Story = {
       { id: "rivaldo", nome: "Rivaldo", sub: "ATA · Jogador" },
     ];
     return (
-      <Card padding={16} tone="surface">
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      <Card padding={20} tone="surface">
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           {membros.map((m) => (
             <Content
               key={m.id}
@@ -86,8 +86,8 @@ export const ComRadio: Story = {
       { id: "ambi", label: "Ambidestro", desc: "Manda dos dois" },
     ];
     return (
-      <Card padding={16} tone="surface">
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <Card padding={20} tone="surface">
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           {opts.map((o) => (
             <Content key={o.id} leading={<Radio checked={v === o.id} onChange={() => setV(o.id)} />} label={o.label} description={o.desc} onClick={() => setV(o.id)} />
           ))}
