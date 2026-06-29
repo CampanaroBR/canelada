@@ -26,7 +26,7 @@ const p = primitives;
 export const semantic = {
   dark: {
     content: {
-      brand: p.brand[300], primary: p.neutral[0], secondary: p.neutral[300], tertiary: "#7a7a7a",
+      brand: p.brand[300], primary: p.neutral[0], secondary: p.neutral[300], tertiary: "#8a8a8a",
       inverse: p.neutral[1000], alwaysLight: p.neutral[0], alwaysDark: p.neutral[1000],
       onBrand: p.neutral[1000], onColor: p.neutral[0], disabled: p.neutral[500], link: p.brand[300],
     },
@@ -61,7 +61,7 @@ export const semantic = {
   },
   light: {
     content: {
-      brand: p.brand[500], primary: p.neutral[1000], secondary: p.neutral[600], tertiary: "#7a7a7a",
+      brand: p.brand[500], primary: p.neutral[1000], secondary: p.neutral[600], tertiary: "#6e6e6e",
       inverse: p.neutral[0], alwaysLight: p.neutral[0], alwaysDark: p.neutral[1000],
       onBrand: p.neutral[1000], onColor: p.neutral[0], disabled: p.neutral[300], link: p.brand[500],
     },
