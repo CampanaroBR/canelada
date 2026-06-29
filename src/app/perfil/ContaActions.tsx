@@ -5,6 +5,7 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { UserCircle, Medal, Bell, ShieldCheck, FileText, SignOut, CaretRight, Warning } from "@phosphor-icons/react";
 import { BottomSheet } from "@/components/BottomSheet";
+import { Button, Toggle } from "@/ds";
 import { excluirConta } from "./actions";
 
 interface Props {
@@ -117,8 +118,8 @@ export function ContaActions({ email, grupoNome, roleLabel, onEditar }: Props) {
           </p>
           {delError && <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "#e56767" }}>{delError}</p>}
           <div style={{ display: "flex", gap: 8, width: "100%", paddingTop: 8 }}>
-            <button onClick={() => setConfirmOpen(false)} disabled={deleting} style={{ flex: 1, height: 52, borderRadius: 16, cursor: "pointer", background: "#0a0e0e", border: "1px solid #424242", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#fff" }}>Cancelar</button>
-            <button onClick={confirmarExclusao} disabled={deleting} style={{ flex: 1, height: 52, borderRadius: 16, cursor: deleting ? "default" : "pointer", background: "#e56767", border: "none", opacity: deleting ? 0.6 : 1, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#1a0606" }}>{deleting ? "Excluindo…" : "Excluir"}</button>
+            <Button style={{ flex: 1 }} variant="secondary" onClick={() => setConfirmOpen(false)} disabled={deleting}>Cancelar</Button>
+            <Button style={{ flex: 1 }} variant="danger" onClick={confirmarExclusao} disabled={deleting}>{deleting ? "Excluindo…" : "Excluir"}</Button>
           </div>
         </div>
       </BottomSheet>
@@ -164,13 +165,11 @@ function RowButton({ onClick, icon, label, sub }: { onClick: () => void; icon: R
 }
 function RowToggle({ onClick, on, icon, label, sub }: { onClick: () => void; on: boolean; icon: React.ReactNode; label: string; sub?: string }) {
   return (
-    <button onClick={onClick} aria-pressed={on} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", background: "none", border: "none", padding: "14px 16px", cursor: "pointer", WebkitTapHighlightColor: "transparent", textAlign: "left" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", padding: "14px 16px" }}>
       <IconBox>{icon}</IconBox>
       <Labels label={label} sub={sub} />
-      <span style={{ position: "relative", width: 40, height: 22, borderRadius: 9999, background: on ? "#9fe870" : "#3a3a3a", flexShrink: 0, transition: "background 160ms" }}>
-        <span style={{ position: "absolute", top: 2, left: on ? 20 : 2, width: 18, height: 18, borderRadius: "50%", background: "#fff", transition: "left 160ms" }} />
-      </span>
-    </button>
+      <Toggle checked={on} onChange={() => onClick()} />
+    </div>
   );
 }
 function IconBox({ children }: { children: React.ReactNode }) {

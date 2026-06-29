@@ -10,6 +10,7 @@ import { MenuSheet } from "@/components/MenuSheet";
 import { BottomSheet } from "@/components/BottomSheet";
 import { renomearGrupo, removerMembro } from "./actions";
 import { toast } from "@/ds/toast";
+import { Button } from "@/ds";
 
 export interface Membro {
   apelido: string;
@@ -204,8 +205,8 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
           />
           {error && <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "#e56767" }}>{error}</p>}
           <div style={{ display: "flex", flexDirection: "column", gap: 8, paddingTop: 4 }}>
-            <button onClick={salvarNome} disabled={saving} style={{ width: "100%", height: 56, borderRadius: 20, cursor: saving ? "default" : "pointer", background: "#9fe870", border: "none", opacity: saving ? 0.6 : 1, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#090909" }}>{saving ? "Salvando…" : "Salvar"}</button>
-            <button onClick={() => setEditOpen(false)} disabled={saving} style={{ width: "100%", height: 56, borderRadius: 20, cursor: "pointer", background: "transparent", border: "1px solid #383838", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#fff" }}>Cancelar</button>
+            <Button fullWidth size="lg" onClick={salvarNome} disabled={saving}>{saving ? "Salvando…" : "Salvar"}</Button>
+            <Button fullWidth size="lg" variant="secondary" onClick={() => setEditOpen(false)} disabled={saving}>Cancelar</Button>
           </div>
         </div>
       </BottomSheet>
@@ -222,8 +223,8 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
           </p>
           {removeErro && <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "#e56767" }}>{removeErro}</p>}
           <div style={{ display: "flex", gap: 8, width: "100%", paddingTop: 8 }}>
-            <button onClick={() => setRemoveAlvo(null)} disabled={removendo} style={{ flex: 1, height: 52, borderRadius: 16, cursor: "pointer", background: "#0a0e0e", border: "1px solid #424242", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#fff" }}>Cancelar</button>
-            <button onClick={confirmarRemocao} disabled={removendo} style={{ flex: 1, height: 52, borderRadius: 16, cursor: removendo ? "default" : "pointer", background: "#e56767", border: "none", opacity: removendo ? 0.6 : 1, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#1a0606" }}>{removendo ? "Removendo…" : "Remover"}</button>
+            <Button style={{ flex: 1 }} variant="secondary" onClick={() => setRemoveAlvo(null)} disabled={removendo}>Cancelar</Button>
+            <Button style={{ flex: 1 }} variant="danger" onClick={confirmarRemocao} disabled={removendo}>{removendo ? "Removendo…" : "Remover"}</Button>
           </div>
         </div>
       </BottomSheet>

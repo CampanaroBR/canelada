@@ -6,6 +6,7 @@ import { Camera, UserCircle, CaretDown } from "@phosphor-icons/react";
 import { BottomSheet } from "@/components/BottomSheet";
 import { atualizarPerfil, uploadFoto } from "./actions";
 import { toast } from "@/ds/toast";
+import { Button } from "@/ds";
 
 const POSICOES = ["Goleiro", "Zagueiro", "Lateral", "Volante", "Meio-Campo", "Atacante"];
 const PES = ["Direito", "Esquerdo", "Ambidestro"];
@@ -172,8 +173,8 @@ export function EditarPerfilSheet({ open, onClose, initial }: Props) {
         {error && <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "#ef6b6b" }}>{error}</p>}
 
         <div style={{ display: "flex", flexDirection: "column", gap: 16, paddingTop: 4 }}>
-          <button onClick={salvar} disabled={saving} style={{ width: "100%", height: 56, borderRadius: 20, cursor: saving ? "default" : "pointer", background: "#9fe870", border: "none", opacity: saving ? 0.6 : 1, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#090909" }}>{saving ? "Salvando…" : "Salvar"}</button>
-          <button onClick={onClose} disabled={saving} style={{ width: "100%", height: 56, borderRadius: 20, cursor: "pointer", background: "transparent", border: "1px solid #383838", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#fff" }}>Cancelar</button>
+          <Button fullWidth size="lg" onClick={salvar} disabled={saving}>{saving ? "Salvando…" : "Salvar"}</Button>
+          <Button fullWidth size="lg" variant="secondary" onClick={onClose} disabled={saving}>Cancelar</Button>
         </div>
       </div>
     </BottomSheet>
