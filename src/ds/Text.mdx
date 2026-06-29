@@ -1,0 +1,25 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as TextStories from "./components/Text.stories";
+
+<Meta of={TextStories} />
+
+# Text
+
+Aplica um estilo da escala tipográfica via `variant` (Display/Heading/Paragraph/Label/Overline).
+
+<Canvas of={TextStories.Variantes} />
+
+## Quando usar
+
+- Qualquer texto do produto — em vez de definir fonte/tamanho na mão.
+- `as` define a tag semântica (`h1`, `p`, `span`…).
+
+## Do & Don't
+
+- ✅ Use a `variant` certa pra hierarquia (heading vs paragraph).
+- ✅ Cor via token (`colors.text.*`).
+- 🚫 Não sobrescreva tamanho/fonte por fora — crie/use uma variant.
+
+## Props
+
+<Controls />

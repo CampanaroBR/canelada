@@ -1,0 +1,25 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as ImageStories from "./components/Image.stories";
+
+<Meta of={ImageStories} />
+
+# Image
+
+Mídia com proporção fixa, cantos arredondados e fallback quando falha o carregamento.
+
+<Canvas of={ImageStories.Quadrada} />
+
+## Quando usar
+
+- Fotos/capas com proporção controlada (1/1, 16/9).
+- Para avatar de pessoa, use **Avatar**.
+
+## Do & Don't
+
+- ✅ Defina `ratio` para evitar "pulo" de layout.
+- ✅ Forneça `fallback` (texto/elemento) para erro/sem imagem.
+- 🚫 Não estique imagem fora de proporção.
+
+## Props
+
+<Controls of={ImageStories.Quadrada} />

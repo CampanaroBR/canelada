@@ -1,0 +1,24 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as TooltipStories from "./components/Tooltip.stories";
+
+<Meta of={TooltipStories} />
+
+# Tooltip
+
+Dica curta ao passar o mouse / focar — bolha escura com seta.
+
+<Canvas of={TooltipStories.Top} />
+
+## Quando usar
+
+- Explicar um ícone ou ação não óbvia (ex.: "Compartilhar card").
+
+## Do & Don't
+
+- ✅ Texto curtíssimo, sem pontuação final.
+- ✅ Não dependa só do tooltip no mobile (não há hover) — informe também no rótulo.
+- 🚫 Não coloque conteúdo essencial só no tooltip.
+
+## Props
+
+<Controls />

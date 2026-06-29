@@ -17,7 +17,7 @@ export interface SelectProps {
   error?: boolean;
 }
 
-/** Dropdown/Select — porte do Hive (field + chevron), recolorido e usando <select> nativo p/ acessibilidade. */
+/** Dropdown/Select (field + chevron) usando <select> nativo p/ acessibilidade. */
 export function Select({ label, required, options, value, onChange, placeholder = "—", disabled, error }: SelectProps) {
   return (
     <label style={{ display: "block", width: "100%" }}>

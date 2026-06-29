@@ -19,7 +19,7 @@ export interface ProgressBarProps {
   label?: string;
 }
 
-/** Barra de progresso — porte do Hive, recolorida (usada em badges/ranking). */
+/** Barra de progresso (usada em badges/ranking). */
 export function ProgressBar({ value, tone = "accent", size = "md", showValue, label }: ProgressBarProps) {
   const pct = Math.max(0, Math.min(100, value));
   const h = size === "sm" ? 6 : 8;

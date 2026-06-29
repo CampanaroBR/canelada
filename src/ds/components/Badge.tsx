@@ -30,7 +30,7 @@ export interface BadgeProps {
   dot?: boolean;
 }
 
-/** Badge/pílula — porte do Hive (solid/soft/outline), cores mapeadas pros tons do Canelada. */
+/** Badge/pílula (solid/soft/outline) nos tons do Canelada. */
 export function Badge({ children, tone = "accent", variant = "soft", size = "md", icon, dot }: BadgeProps) {
   const t = TONE[tone];
   const sz = size === "sm" ? { fs: 11, py: 2, px: 8, gap: 4 } : { fs: 12, py: 4, px: 10, gap: 6 };

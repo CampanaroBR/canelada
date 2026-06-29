@@ -9,7 +9,7 @@ export interface RadioProps {
   onChange?: () => void;
 }
 
-/** Radio — porte do Hive, recolorido pros tokens do Canelada. */
+/** Radio — seleção de uma opção entre poucas. */
 export function Radio({ checked = false, size = "sm", disabled, label, onChange }: RadioProps) {
   const px = size === "sm" ? 20 : 16;
   const dot = px * 0.5;

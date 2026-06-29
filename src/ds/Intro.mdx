@@ -6,26 +6,26 @@ import { Meta } from "@storybook/addon-docs/blocks";
 
 # 🐟 Bagre Design System
 
-O design system do **Canelada** — o app onde o baba vira resenha. Construído sobre a
-arquitetura de tokens do **Hive**, recontextualizado com a marca e as cores do Canelada.
+O sistema de design do **Canelada** — o app onde o baba vira resenha.
+Aqui ficam as cores, a tipografia, os ícones e os componentes que mantêm o produto
+coerente, rápido de construir e com a cara do Canelada.
 
 ---
 
 ## Princípios
 
-- **Dark-first.** O Canelada vive no escuro (`#090909`). O tema Light existe, mas o padrão é dark.
-- **Marca = verde.** `#9fe870` é a cor de marca. Teal, gold, red e purple são apoio.
-- **Duas vozes tipográficas.** **Barlow** (display/headings/números grandes esportivos) +
-  **Google Sans** (corpo, labels e números). Ícones: **Phosphor** (regular/outline, nunca fill).
-- **Tokens, não valores soltos.** Sempre use os tokens semânticos (`content/*`, `background/*`,
-  `border/*`, `accent/*`, `alert/*`, `action/*`), não hex cru.
+- **Dark-first.** O Canelada vive no escuro (`#090909`). O tema Light existe, mas o padrão é o dark.
+- **Marca = verde.** `#9fe870` é a cor da marca. Teal, gold, red e purple entram como apoio.
+- **Duas vozes tipográficas.** **Barlow** nos títulos e números grandes (esportivo, encorpado) e
+  **Google Sans** no corpo, labels e números. Ícones em **Phosphor**, sempre outline (regular) — nunca preenchidos.
+- **Tokens, não valores soltos.** Use sempre os tokens semânticos (`content`, `background`,
+  `border`, `accent`, `alert`, `action`) em vez de hex cru.
 
 ---
 
-## Como está organizado
+## O que tem aqui
 
-- **Foundations** — Cores (primitivos + semânticos + temas), Tipografia, Espaço/Raio/Sombra,
-  Iconografia, Números.
+- **Foundations** — Cores (primitivos, semânticos e temas), Tipografia, Espaço/Raio/Sombra, Iconografia e Números.
 - **Core** — Button, Text, Card, Avatar, Tag, RowItem, Image, IconBox, Divider, Tabs.
 - **Forms** — Input, PasswordInput, Select, Checkbox, Radio, Toggle, Form.
 - **Feedback** — Badge, ProgressBar, Alert, Tooltip.
@@ -35,10 +35,10 @@ arquitetura de tokens do **Hive**, recontextualizado com a marca e as cores do C
 
 ---
 
-## Como usar no código
+## Usando no código
 
 ```tsx
-import { Button, Card, Text, colors, tokens } from "@/ds";
+import { Button, Card, Text } from "@/ds";
 
 <Card tone="card">
   <Text variant="heading-h4">Resenha do baba</Text>

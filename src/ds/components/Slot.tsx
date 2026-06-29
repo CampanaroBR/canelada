@@ -10,7 +10,7 @@ export interface SlotProps {
 }
 
 /**
- * Slot — porte do Hive: região de composição/placeholder.
+ * Slot — região de composição/placeholder.
  * Mostra um espaço tracejado quando vazio (útil pra montar layouts e empty states).
  */
 export function Slot({ label = "slot", width = "100%", height = 44, children }: SlotProps) {

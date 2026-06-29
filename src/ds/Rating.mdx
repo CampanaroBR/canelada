@@ -1,0 +1,24 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as RatingStories from "./components/Rating.stories";
+
+<Meta of={RatingStories} />
+
+# Rating
+
+Avaliação em estrelas (ou corações), com meio-preenchimento e contador opcional.
+
+<Canvas of={RatingStories.Estrelas} />
+
+## Quando usar
+
+- Notas/avaliações curtas (0–5). Para progresso de meta, use **ProgressBar**.
+
+## Do & Don't
+
+- ✅ Use `count` pra mostrar quantos votaram/avaliaram.
+- ✅ `onChange` só quando for interativo; senão, somente leitura.
+- 🚫 Não misture estrela e coração no mesmo contexto.
+
+## Props
+
+<Controls />

@@ -28,7 +28,7 @@ function Glyph({ ratio, px, color, path }: { ratio: number; px: number; color: s
   );
 }
 
-/** Rating — porte do Hive (estrelas/corações + meio-preenchimento + contador), recolorido. */
+/** Rating (estrelas/corações + meio-preenchimento + contador). */
 export function Rating({ value, max = 5, size = "sm", icon = "star", count, onChange }: RatingProps) {
   const px = size === "sm" ? 20 : 16;
   const color = icon === "heart" ? colors.semantic.danger : colors.semantic.gold;

@@ -1,0 +1,25 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as IconBoxStories from "./components/IconBox.stories";
+
+<Meta of={IconBoxStories} />
+
+# IconBox
+
+Caixa que emoldura um ícone (Phosphor regular) — usada em linhas de conta e headers.
+
+<Canvas of={IconBoxStories.Tons} />
+
+## Quando usar
+
+- Dar destaque/consistência a um ícone em linhas e cabeçalhos.
+- Tom `default` (caixa escura com borda) na maioria; `accent`/`danger` para ênfase.
+
+## Do & Don't
+
+- ✅ Ícone Phosphor **regular** (outline), nunca fill.
+- ✅ Tamanhos consistentes (36 em linhas, 48 em headers).
+- 🚫 Não encha de cor sem motivo — default é o padrão.
+
+## Props
+
+<Controls />

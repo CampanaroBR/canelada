@@ -41,7 +41,7 @@ const Eye = ({ off }: { off?: boolean }) => (
   </svg>
 );
 
-/** Campo de senha — porte do Hive (Text Input password): mostrar/ocultar + medidor de força opcional. */
+/** Campo de senha: mostrar/ocultar + medidor de força opcional. */
 export function PasswordInput({ label, required, hint, error, strength, disabled, value, onChange, style, ...rest }: PasswordInputProps) {
   const [show, setShow] = useState(false);
   const v = typeof value === "string" ? value : "";

@@ -1,0 +1,25 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as MenuStories from "./components/Menu.stories";
+
+<Meta of={MenuStories} />
+
+# Menu
+
+Menu de ações em popover: um gatilho abre a lista; fecha ao clicar fora.
+
+<Canvas of={MenuStories.Acoes} />
+
+## Quando usar
+
+- Ações secundárias agrupadas (editar, compartilhar, remover) atrás de um gatilho.
+- Para escolher um valor de form, use **Select**.
+
+## Do & Don't
+
+- ✅ Marque ações destrutivas com `danger`.
+- ✅ Poucos itens, verbos diretos.
+- 🚫 Não esconda a ação principal da tela dentro do menu.
+
+## Props
+
+<Controls />

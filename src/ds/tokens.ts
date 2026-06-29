@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 
 /**
  * Bagre Design System — Tokens
- * Arquitetura espelhada do Hive (primitivos → semânticos por papel), com a paleta do Canelada.
+ * Arquitetura em camadas (primitivos → semânticos por papel), com a paleta do Canelada.
  * BRAND = verde (#9fe870). Teal é cor de apoio. Dark-first.
  */
 
@@ -146,7 +146,7 @@ export const font = {
 
 type RawText = { fontFamily: "display" | "body"; fontWeight: number; fontSize: number; lineHeight: string; letterSpacing?: string; textTransform?: "uppercase" };
 /**
- * Escala tipográfica — nomenclatura do Hive (Display/Heading/Paragraph/Label/Overline, sizing L/M/S/XS),
+ * Escala tipográfica (Display/Heading/Paragraph/Label/Overline, sizing L/M/S/XS),
  * com as fontes do Canelada: Display+Heading+Overline = Barlow; Paragraph+Label = Google Sans.
  */
 export const text: Record<string, RawText> = {

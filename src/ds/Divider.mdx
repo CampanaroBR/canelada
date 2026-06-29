@@ -1,0 +1,23 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as DividerStories from "./components/Divider.stories";
+
+<Meta of={DividerStories} />
+
+# Divider
+
+Linha divisória sutil entre itens de lista. Aceita `inset` para recuo.
+
+<Canvas of={DividerStories.EmLista} />
+
+## Quando usar
+
+- Separar linhas dentro de um **Card**/lista.
+
+## Do & Don't
+
+- ✅ Use `inset` quando quiser alinhar a divisória ao conteúdo (após o ícone).
+- 🚫 Não use divisória entre cada elemento — só onde ajuda a leitura.
+
+## Props
+
+<Controls />

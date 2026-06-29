@@ -9,7 +9,7 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
   leftIcon?: React.ReactNode;
 }
 
-/** Campo de texto do Bagre DS — label + field escuro, com ícone e estado de erro (porte do Text Input do Hive). */
+/** Campo de texto do Bagre DS — label + field escuro, com ícone e estado de erro. */
 export function Input({ label, required, hint, error, leftIcon, disabled, style, ...rest }: InputProps) {
   const borderColor = error ? colors.semantic.danger : colors.bg.border;
   return (

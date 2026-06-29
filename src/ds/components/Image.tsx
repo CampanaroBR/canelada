@@ -12,7 +12,7 @@ export interface ImageProps {
   width?: number | string;
 }
 
-/** Image/Media — porte do "Images" do Hive: proporção fixa, cantos, fallback. */
+/** Image/Media — proporção fixa, cantos, fallback. */
 export function Image({ src, alt = "", ratio = "1/1", radiusToken = "lg", fallback, width = "100%" }: ImageProps) {
   const [erro, setErro] = useState(false);
   const show = src && !erro;

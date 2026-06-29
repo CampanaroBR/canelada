@@ -12,7 +12,7 @@ export interface ContainerProps {
 
 const TONE_BG = { surface: colors.bg.surface, card: colors.bg.card, base: colors.bg.base };
 
-/** Container/seção titulada — porte do Hive (heading + corpo). Base de seções de tela. */
+/** Container/seção titulada (header + corpo). Base de seções de tela. */
 export function Container({ title, action, tone = "surface", padding = 16, children }: ContainerProps) {
   return (
     <section

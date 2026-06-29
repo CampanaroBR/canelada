@@ -1,0 +1,25 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as CheckboxStories from "./components/Checkbox.stories";
+
+<Meta of={CheckboxStories} />
+
+# Checkbox
+
+Seleção de zero ou mais itens; também suporta estado indeterminado.
+
+<Canvas of={CheckboxStories.Estados} />
+
+## Quando usar
+
+- Listas de múltipla escolha e confirmações dentro de um form (salvas no "Salvar").
+- Para liga/desliga com efeito imediato, use **Toggle**.
+
+## Do & Don't
+
+- ✅ Sempre com `label` clicável.
+- ✅ Use `indeterminate` para "alguns selecionados" em grupos.
+- 🚫 Não use checkbox para escolha exclusiva (use **Radio**).
+
+## Props
+
+<Controls />

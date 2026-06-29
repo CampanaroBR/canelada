@@ -8,7 +8,7 @@ export interface TextProps extends React.HTMLAttributes<HTMLElement> {
   children: React.ReactNode;
 }
 
-/** Content/Text — aplica um estilo da escala tipográfica (porte do "Content" do Hive). */
+/** Content/Text — aplica um estilo da escala tipográfica. */
 export function Text({ variant = "paragraph-m", color = colors.text.primary, as = "span", style, children, ...rest }: TextProps) {
   const Tag = as as React.ElementType;
   return (

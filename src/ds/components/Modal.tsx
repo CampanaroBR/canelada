@@ -17,7 +17,7 @@ export interface ModalProps {
   loading?: boolean;
 }
 
-/** Modal/diálogo central — porte do Hive (header + body + footer), recolorido pro Canelada. */
+/** Modal/diálogo central (header + body + footer). */
 export function Modal({
   open, onClose, title, subtitle, icon, children,
   info, cancelLabel = "Cancelar", confirmLabel, onConfirm, confirmVariant = "primary", loading,

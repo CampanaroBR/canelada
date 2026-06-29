@@ -1,0 +1,25 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as ProgressBarStories from "./components/ProgressBar.stories";
+
+<Meta of={ProgressBarStories} />
+
+# ProgressBar
+
+Progresso linear (0–100). Usada em badges e no progresso da coleção/ranking.
+
+<Canvas of={ProgressBarStories.Tons} />
+
+## Quando usar
+
+- Mostrar avanço de uma meta (badges desbloqueadas, % de presença).
+- Para nota/estrelas, use **Rating**.
+
+## Do & Don't
+
+- ✅ Combine `label` + `showValue` quando o número importa.
+- ✅ Tom `accent` por padrão; `gold`/`danger` quando semântico.
+- 🚫 Não use pra estados indeterminados (sem % conhecido).
+
+## Props
+
+<Controls of={ProgressBarStories.Default} />

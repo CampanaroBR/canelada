@@ -1,0 +1,24 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as EmptyStateStories from "./components/EmptyState.stories";
+
+<Meta of={EmptyStateStories} />
+
+# EmptyState
+
+Estado vazio: ícone + título + descrição + ação opcional.
+
+<Canvas of={EmptyStateStories.ComAcao} />
+
+## Quando usar
+
+- Listas/telas sem conteúdo (sem classificação, sem rodada criada).
+
+## Do & Don't
+
+- ✅ Diga o porquê e ofereça a próxima ação (quando houver).
+- ✅ Tom leve e direto.
+- 🚫 Não deixe a tela só com um texto solto — use o componente.
+
+## Props
+
+<Controls of={EmptyStateStories.SemClassificacao} />

@@ -18,7 +18,7 @@ export interface AlertProps {
   icon?: React.ReactNode;
 }
 
-/** Alerta/notificação — porte do Hive, recolorido pros tons semânticos do Canelada. */
+/** Alerta/notificação nos tons semânticos do Canelada. */
 export function Alert({ tone = "info", title, children, onClose, icon }: AlertProps) {
   const t = TONE[tone];
   return (

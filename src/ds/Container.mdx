@@ -1,0 +1,25 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as ContainerStories from "./components/Container.stories";
+
+<Meta of={ContainerStories} />
+
+# Container
+
+Seção titulada: header (título + ação) sobre superfície. É o **Card** com cabeçalho.
+
+<Canvas of={ContainerStories.Titulada} />
+
+## Quando usar
+
+- Blocos de tela com título e, às vezes, uma ação ("Ver mais").
+- Sem título? Use **Card**.
+
+## Do & Don't
+
+- ✅ Uma ação no header, alinhada à direita.
+- ✅ Use os tons (surface/card) pra criar hierarquia.
+- 🚫 Não aninhe Containers titulados sem necessidade.
+
+## Props
+
+<Controls />

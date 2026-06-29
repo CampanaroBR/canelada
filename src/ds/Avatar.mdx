@@ -1,0 +1,25 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as AvatarStories from "./components/Avatar.stories";
+
+<Meta of={AvatarStories} />
+
+# Avatar
+
+Foto ou iniciais do jogador, com anel verde e selo de check opcionais.
+
+<Canvas of={AvatarStories.Tamanhos} />
+
+## Quando usar
+
+- Representar jogadores em listas, cards e no card do jogador.
+- `ring` no card de destaque; `checked` para indicar voto confirmado.
+
+## Do & Don't
+
+- ✅ Sem foto, caímos nas **iniciais** (verde) automaticamente.
+- ✅ Tamanhos consistentes: 32 (linhas), 42 (membros), 56–96 (destaque).
+- 🚫 Não use o anel verde em toda lista — ele é destaque.
+
+## Props
+
+<Controls of={AvatarStories.Initials} />

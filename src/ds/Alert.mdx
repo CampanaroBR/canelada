@@ -1,0 +1,25 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as AlertStories from "./components/Alert.stories";
+
+<Meta of={AlertStories} />
+
+# Alert
+
+Aviso/feedback contextual (info, success, warning, danger) com título e descrição.
+
+<Canvas of={AlertStories.Todos} />
+
+## Quando usar
+
+- Mensagens fixas no fluxo (votação abre às 22:30, rodada criada, pendentes de fora).
+- Para erro de campo, use o `error` do **Input**; para confirmação, use **Modal**.
+
+## Do & Don't
+
+- ✅ Tom semântico certo (danger só para problema real).
+- ✅ Título curto + uma linha de descrição.
+- 🚫 Não empilhe vários alerts; mostre o mais relevante.
+
+## Props
+
+<Controls />

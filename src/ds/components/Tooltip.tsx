@@ -7,7 +7,7 @@ export interface TooltipProps {
   children: React.ReactNode;
 }
 
-/** Tooltip — porte do Hive (bolha escura + seta), recolorido. Aparece no hover/focus. */
+/** Tooltip (bolha escura + seta). Aparece no hover/focus. */
 export function Tooltip({ label, placement = "top", children }: TooltipProps) {
   const [open, setOpen] = useState(false);
   const top = placement === "top";

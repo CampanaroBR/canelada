@@ -47,14 +47,14 @@ export const Primitivos: Story = {
   ),
 };
 
-// 2) SEMÂNTICOS (à la Hive: content / background / border / accent / alert / action)
+// 2) SEMÂNTICOS (content / background / border / accent / alert / action)
 export const SemanticTokens: Story = {
   render: () => {
     const t = semantic.dark;
     return (
       <Page>
         <H>Semantic Tokens — Dark</H>
-        <Sub>Tokens por papel (igual ao Hive), resolvidos pro tema Dark do Canelada. Use estes nos componentes, não os primitivos.</Sub>
+        <Sub>Tokens por papel, resolvidos pro tema Dark do Canelada. Use estes nos componentes, não os primitivos.</Sub>
 
         <H>Content (texto)</H>
         <Sub>Para textos, ícones e labels.</Sub>
@@ -119,7 +119,7 @@ export const Tipografia: Story = {
     return (
       <Page>
         <H>Tipografia</H>
-        <Sub>Nomenclatura do Hive (Display / Heading / Paragraph / Label / Overline). Display, Heading e Overline = Barlow; Paragraph e Label = Google Sans.</Sub>
+        <Sub>Display / Heading / Paragraph / Label / Overline. Display, Heading e Overline = Barlow; Paragraph e Label = Google Sans.</Sub>
         {groups.map((g) => (
           <div key={g} style={{ marginBottom: 8 }}>
             <p style={{ fontFamily: font.display, fontWeight: 800, fontSize: 13, color: "#9fe870", textTransform: "uppercase", letterSpacing: "0.06em", margin: "20px 0 10px" }}>{g}</p>

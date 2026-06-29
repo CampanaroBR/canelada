@@ -1,0 +1,24 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as SlotStories from "./components/Slot.stories";
+
+<Meta of={SlotStories} />
+
+# Slot
+
+Espaço de composição/placeholder. Útil pra montar layouts e marcar regiões vazias.
+
+<Canvas of={SlotStories.Composicao} />
+
+## Quando usar
+
+- Protótipos de layout e empty states em construção.
+- Em produção, prefira o conteúdo real ou **EmptyState**.
+
+## Do & Don't
+
+- ✅ Use `label` pra nomear a região ("header", "body").
+- 🚫 Não deixe Slots vazios em telas finais.
+
+## Props
+
+<Controls of={SlotStories.Vazio} />

@@ -4,13 +4,13 @@ import { colors, font } from "../tokens";
 export interface CheckboxProps {
   checked?: boolean;
   indeterminate?: boolean;
-  size?: "sm" | "xs"; // 20 | 16 (igual ao Hive)
+  size?: "sm" | "xs"; // 20 | 16
   disabled?: boolean;
   label?: React.ReactNode;
   onChange?: (checked: boolean) => void;
 }
 
-/** Checkbox — porte do Hive, recolorido pros tokens do Canelada (accent verde). */
+/** Checkbox (accent verde). */
 export function Checkbox({ checked = false, indeterminate, size = "sm", disabled, label, onChange }: CheckboxProps) {
   const px = size === "sm" ? 20 : 16;
   const r = size === "sm" ? 6 : 5;

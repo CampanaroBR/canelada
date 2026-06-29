@@ -1,0 +1,24 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as BottomNavStories from "./components/BottomNav.stories";
+
+<Meta of={BottomNavStories} />
+
+# BottomNav
+
+Navegação inferior em pílula flutuante; o item ativo vira pílula verde.
+
+<Canvas of={BottomNavStories.Default} />
+
+## Quando usar
+
+- Navegação principal do app (Home, Baba, Votos, Ranking).
+
+## Do & Don't
+
+- ✅ 3 a 5 itens, ícone (Phosphor regular) + label curta.
+- ✅ Exatamente um item ativo por vez.
+- 🚫 Não esconda a navegação principal em submenus.
+
+## Props
+
+<Controls />

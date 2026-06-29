@@ -1,0 +1,21 @@
+import { Meta, Canvas } from "@storybook/addon-docs/blocks";
+import * as TableStories from "./components/Table.stories";
+
+<Meta of={TableStories} />
+
+# Table
+
+Tabela simples com header e células, hover na linha e alturas (narrow/tall).
+
+<Canvas of={TableStories.Classificacao} />
+
+## Quando usar
+
+- Dados tabulares densos (classificação detalhada, histórico).
+- Em listas mobile mais visuais, prefira **RowItem**.
+
+## Do & Don't
+
+- ✅ Alinhe números à direita (`align: "right"`).
+- ✅ Use `height="tall"` quando as linhas têm avatar/badge.
+- 🚫 Não use tabela pra layout — só pra dados.

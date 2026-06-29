@@ -14,7 +14,7 @@ export interface TableProps<T extends Record<string, React.ReactNode>> {
   height?: "narrow" | "tall"; // 48 | 56
 }
 
-/** Tabela — porte do Hive (header + células, hover), recolorida pro Canelada. */
+/** Tabela (header + células, hover). */
 export function Table<T extends Record<string, React.ReactNode>>({ columns, rows, height = "narrow" }: TableProps<T>) {
   const rowH = height === "narrow" ? 48 : 56;
   return (

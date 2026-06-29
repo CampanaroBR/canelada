@@ -1,0 +1,25 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as RadioStories from "./components/Radio.stories";
+
+<Meta of={RadioStories} />
+
+# Radio
+
+Escolha exclusiva (uma opção) entre poucas, todas visíveis.
+
+<Canvas of={RadioStories.Grupo} />
+
+## Quando usar
+
+- 2 a 5 opções que cabem na tela (ex.: pé preferido).
+- Muitas opções? Use **Select**. Liga/desliga? **Toggle**.
+
+## Do & Don't
+
+- ✅ Garanta uma opção pré-selecionada quando fizer sentido.
+- ✅ Labels curtas e paralelas.
+- 🚫 Não use radio para seleção múltipla (use **Checkbox**).
+
+## Props
+
+<Controls />

@@ -14,7 +14,7 @@ export interface MenuProps {
   align?: "left" | "right";
 }
 
-/** Dropdown-menu de ações — porte do Hive (trigger + list-items em popover). */
+/** Dropdown-menu de ações (trigger + itens em popover). */
 export function Menu({ trigger, items, align = "right" }: MenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);

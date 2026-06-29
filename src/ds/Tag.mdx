@@ -1,0 +1,23 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as TagStories from "./components/Tag.stories";
+
+<Meta of={TagStories} />
+
+# Tag
+
+Etiqueta curta de status ou categoria. Para contagem/raridade com mais variações, veja **Badge**.
+
+<Canvas of={TagStories.Todos} />
+
+## Quando usar
+
+- Status simples (NOVO, Desbloqueada) e rótulos de categoria/raridade (com `dot`).
+
+## Do & Don't
+
+- ✅ 1–2 palavras; use o tom certo (`new`, `success`, `danger`, `gold`).
+- 🚫 Não use como botão (sem clique) nem com frases.
+
+## Props
+
+<Controls />
