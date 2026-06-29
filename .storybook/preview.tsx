@@ -1,16 +1,16 @@
+import React from "react";
 import type { Preview } from "@storybook/react-vite";
+import { themes } from "storybook/theming";
 
 const preview: Preview = {
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
     controls: { expanded: true },
-    backgrounds: {
-      default: "Canelada",
-      values: [
-        { name: "Canelada", value: "#090909" },
-        { name: "Surface", value: "#0a0e0e" },
-      ],
+    backgrounds: { disable: true },
+    docs: {
+      // Docs em tema escuro — os componentes são dark-first; fundo claro quebrava o contraste (WCAG).
+      theme: themes.dark,
     },
     options: {
       storySort: {
@@ -27,6 +27,13 @@ const preview: Preview = {
       },
     },
   },
+  decorators: [
+    (Story) => (
+      <div style={{ background: "#090909", color: "#fff", padding: 24, borderRadius: 12 }}>
+        <Story />
+      </div>
+    ),
+  ],
 };
 
 export default preview;
