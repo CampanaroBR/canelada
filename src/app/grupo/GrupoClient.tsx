@@ -9,6 +9,7 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { MenuSheet } from "@/components/MenuSheet";
 import { BottomSheet } from "@/components/BottomSheet";
 import { renomearGrupo, removerMembro } from "./actions";
+import { toast } from "@/ds/toast";
 
 export interface Membro {
   apelido: string;
@@ -49,9 +50,11 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
     setRemovendo(true); setRemoveErro(null);
     const res = await removerMembro(removeAlvo.apelido);
     setRemovendo(false);
-    if (!res.ok) { setRemoveErro(res.error ?? "Erro ao remover."); return; }
+    if (!res.ok) { setRemoveErro(res.error ?? "Erro ao remover."); toast.error(res.error ?? "Erro ao remover."); return; }
+    const nome = removeAlvo.apelido;
     setRemoveAlvo(null);
     router.refresh();
+    toast.success(`${nome} removido do grupo`);
   }
 
   async function convidar() {
@@ -71,9 +74,10 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
     setSaving(true); setError(null);
     const res = await renomearGrupo(novoNome);
     setSaving(false);
-    if (!res.ok) { setError(res.error ?? "Erro ao salvar."); return; }
+    if (!res.ok) { setError(res.error ?? "Erro ao salvar."); toast.error(res.error ?? "Erro ao salvar."); return; }
     setEditOpen(false);
     router.refresh();
+    toast.success("Nome do grupo atualizado!");
   }
 
   return (

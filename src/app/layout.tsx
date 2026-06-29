@@ -3,6 +3,7 @@ import { Barlow } from "next/font/google";
 import "./globals.css";
 import { PushInit } from "@/components/PushInit";
 import { OrientationGuard } from "@/components/OrientationGuard";
+import { Toaster } from "@/ds/toast";
 
 // Body/números = Google Sans (self-hosted via @font-face em globals.css). Barlow = display.
 const barlow = Barlow({
@@ -44,6 +45,7 @@ export default function RootLayout({
           {children}
         </div>
         <OrientationGuard />
+        <Toaster />
       </body>
     </html>
   );

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Camera, UserCircle, CaretDown } from "@phosphor-icons/react";
 import { BottomSheet } from "@/components/BottomSheet";
 import { atualizarPerfil, uploadFoto } from "./actions";
+import { toast } from "@/ds/toast";
 
 const POSICOES = ["Goleiro", "Zagueiro", "Lateral", "Volante", "Meio-Campo", "Atacante"];
 const PES = ["Direito", "Esquerdo", "Ambidestro"];
@@ -84,16 +85,17 @@ export function EditarPerfilSheet({ open, onClose, initial }: Props) {
     fd.append("file", file);
     const res = await uploadFoto(fd);
     setUploading(false);
-    if (!res.ok) { setError(res.error ?? "Falha no upload."); return; }
-    if (res.url) { setFoto(res.url); router.refresh(); }
+    if (!res.ok) { setError(res.error ?? "Falha no upload."); toast.error(res.error ?? "Falha no upload."); return; }
+    if (res.url) { setFoto(res.url); router.refresh(); toast.success("Foto atualizada!"); }
   }
 
   async function salvar() {
     setSaving(true); setError(null);
     const res = await atualizarPerfil({ nome, sobrenome, apelido, posicao, peDominante: pe });
     setSaving(false);
-    if (!res.ok) { setError(res.error ?? "Erro ao salvar."); return; }
+    if (!res.ok) { setError(res.error ?? "Erro ao salvar."); toast.error(res.error ?? "Erro ao salvar."); return; }
     onClose();
+    toast.success("Perfil atualizado!");
     if (res.apelido && res.apelido !== initial.apelido) router.push(`/perfil/${encodeURIComponent(res.apelido)}`);
     else router.refresh();
   }
