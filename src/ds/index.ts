@@ -1,6 +1,8 @@
 // Bagre Design System — barrel
 export * from "./tokens";
-export { Button } from "./components/Button";
+export { Button, IconButton } from "./components/Button";
+export { Content } from "./components/Content";
+export { Dropdown } from "./components/Dropdown";
 export { Card } from "./components/Card";
 export { IconBox } from "./components/IconBox";
 export { Divider } from "./components/Divider";
