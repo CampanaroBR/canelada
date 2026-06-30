@@ -5,7 +5,7 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { UserCircle, Medal, Bell, ShieldCheck, FileText, SignOut, CaretRight, Warning } from "@phosphor-icons/react";
 import { BottomSheet } from "@/components/BottomSheet";
-import { Button, Toggle, IconBox } from "@/ds";
+import { Button, Toggle, IconBox, RowItem, Divider } from "@/ds";
 import { excluirConta } from "./actions";
 
 interface Props {
@@ -135,8 +135,6 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
     </div>
   );
 }
-function Divider() { return <div style={{ height: 1, background: "#1c1c1c" }} />; }
-
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "12px 16px" }}>
@@ -147,38 +145,16 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 function RowLink({ href, icon, label, sub }: { href: string; icon: React.ReactNode; label: string; sub?: string }) {
   return (
-    <Link href={href} style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
-      <IconBox>{icon}</IconBox>
-      <Labels label={label} sub={sub} />
-      <CaretRight size={16} color="#555" weight="bold" />
+    <Link href={href} style={{ display: "block", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
+      <RowItem icon={<IconBox>{icon}</IconBox>} label={label} sub={sub} trailing={<CaretRight size={20} color="#555" weight="bold" />} />
     </Link>
   );
 }
 function RowButton({ onClick, icon, label, sub }: { onClick: () => void; icon: React.ReactNode; label: string; sub?: string }) {
-  return (
-    <button onClick={onClick} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", background: "none", border: "none", padding: "14px 16px", cursor: "pointer", WebkitTapHighlightColor: "transparent", textAlign: "left" }}>
-      <IconBox>{icon}</IconBox>
-      <Labels label={label} sub={sub} />
-      <CaretRight size={16} color="#555" weight="bold" />
-    </button>
-  );
+  return <RowItem icon={<IconBox>{icon}</IconBox>} label={label} sub={sub} onClick={onClick} />;
 }
 function RowToggle({ onClick, on, icon, label, sub }: { onClick: () => void; on: boolean; icon: React.ReactNode; label: string; sub?: string }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", padding: "14px 16px" }}>
-      <IconBox>{icon}</IconBox>
-      <Labels label={label} sub={sub} />
-      <Toggle checked={on} onChange={() => onClick()} />
-    </div>
-  );
-}
-function Labels({ label, sub }: { label: string; sub?: string }) {
-  return (
-    <div style={{ flex: 1, minWidth: 0 }}>
-      <div style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 15, color: "#fff" }}>{label}</div>
-      {sub && <div style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, color: "#7a7a7a" }}>{sub}</div>}
-    </div>
-  );
+  return <RowItem icon={<IconBox>{icon}</IconBox>} label={label} sub={sub} trailing={<Toggle checked={on} onChange={() => onClick()} />} />;
 }
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
