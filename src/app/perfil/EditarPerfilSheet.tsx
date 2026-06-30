@@ -61,7 +61,7 @@ export function EditarPerfilSheet({ open, onClose, initial }: Props) {
     const res = await uploadFoto(fd);
     setUploading(false);
     if (!res.ok) { setError(res.error ?? "Falha no upload."); toast.error(res.error ?? "Falha no upload."); return; }
-    if (res.url) { setFoto(res.url); router.refresh(); toast.success("Foto atualizada!"); }
+    if (res.url) { setFoto(res.url); router.refresh(); toast.success("Foto atualizada com sucesso"); }
   }
 
   async function salvar() {

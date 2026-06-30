@@ -75,7 +75,7 @@ export function ContaActions({ email, grupoNome, roleLabel, onEditar }: Props) {
       const res = await fetch("/api/push/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(sub.toJSON()) });
       if (!res.ok) throw new Error("subscribe falhou");
       setPushOn(true);
-      toast.success("Notificações ativadas!");
+      toast.success("Notificações ativadas com sucesso");
     } catch (e) {
       console.error("togglePush:", e);
       toast.error("Não foi possível ativar as notificações.");

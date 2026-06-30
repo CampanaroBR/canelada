@@ -55,7 +55,7 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
     const nome = removeAlvo.apelido;
     setRemoveAlvo(null);
     router.refresh();
-    toast.success(`${nome} removido do grupo`);
+    toast.success(`${nome} removido do grupo com sucesso`);
   }
 
   async function convidar() {
@@ -78,7 +78,7 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
     if (!res.ok) { setError(res.error ?? "Erro ao salvar."); toast.error(res.error ?? "Erro ao salvar."); return; }
     setEditOpen(false);
     router.refresh();
-    toast.success("Nome do grupo atualizado!");
+    toast.success("Nome do grupo atualizado com sucesso");
   }
 
   return (
