@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { gerarStories } from "@/lib/stories";
+import { rateLimit } from "@/lib/ratelimit";
 
 export async function criarRodada() {
   const session = await auth();
@@ -42,6 +43,10 @@ export async function submitVotos(rodadaId: string, votos: VotoInput[]) {
     select: { id: true, grupoId: true },
   });
   if (!jogador) return { error: "Jogador não encontrado." };
+
+  if (!(await rateLimit("voto", jogador.id, 8, "1 m")).ok) {
+    return { error: "Muitas tentativas. Tente em instantes." };
+  }
 
   const jaVotou = await prisma.voto.findFirst({
     where: { rodadaId, votanteId: jogador.id },

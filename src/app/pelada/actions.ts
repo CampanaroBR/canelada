@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { rateLimit } from "@/lib/ratelimit";
 
 export type ParticipanteImportado = {
   nome: string;
@@ -49,6 +50,10 @@ export async function criarRodada(data: string, participantesIds: string[]) {
 
   if (!jogador || (jogador.role !== "ADMIN" && jogador.role !== "SUPER_ADMIN")) {
     return { error: "Apenas administradores podem criar rodadas." };
+  }
+
+  if (!(await rateLimit("criarRodada", session.user.id, 5, "10 m")).ok) {
+    return { error: "Muitas tentativas. Aguarde um pouco." };
   }
 
   // Anti-spam: bloqueia se já existe rodada não encerrada ou criada há menos de 10 min no grupo.

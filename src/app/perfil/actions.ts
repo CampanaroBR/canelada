@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { put } from "@vercel/blob";
+import { rateLimit } from "@/lib/ratelimit";
 
 /** Exclui a conta do jogador e todos os dados relacionados (irreversível). */
 export async function excluirConta(): Promise<{ ok: boolean; error?: string }> {
@@ -35,6 +36,9 @@ export async function excluirConta(): Promise<{ ok: boolean; error?: string }> {
 export async function uploadFoto(formData: FormData): Promise<{ ok: boolean; error?: string; url?: string }> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: "Não autenticado." };
+  if (!(await rateLimit("foto", session.user.id, 6, "1 m")).ok) {
+    return { ok: false, error: "Muitas tentativas. Tente em instantes." };
+  }
   // Aceita tanto token clássico quanto conexão via OIDC (que injeta BLOB_STORE_ID)
   if (!process.env.BLOB_READ_WRITE_TOKEN && !process.env.BLOB_STORE_ID) {
     return { ok: false, error: "Armazenamento de fotos ainda não configurado." };
