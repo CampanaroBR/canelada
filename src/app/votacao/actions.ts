@@ -56,6 +56,17 @@ export async function submitVotos(rodadaId: string, votos: VotoInput[]) {
     return { error: "Rodada inválida." };
   }
 
+  // Segurança: só permite votar em jogadores do mesmo grupo e nunca em si mesmo.
+  const membros = await prisma.jogador.findMany({
+    where: { grupoId: jogador.grupoId },
+    select: { id: true },
+  });
+  const validos = new Set(membros.map((m) => m.id));
+  const algumInvalido = votos.some((v) => v.votadoId === jogador.id || !validos.has(v.votadoId));
+  if (algumInvalido) {
+    return { error: "Voto inválido." };
+  }
+
   try {
     await prisma.$transaction(
       votos.map((v) =>
