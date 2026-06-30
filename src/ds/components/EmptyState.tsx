@@ -1,15 +1,20 @@
 import React from "react";
-import { colors, font } from "../tokens";
+import { colors, font, radius } from "../tokens";
 
 export interface EmptyStateProps {
+  /** ícone (Phosphor regular) — renderizado dentro de um badge */
   icon?: React.ReactNode;
   title: string;
   description?: string;
+  /** ações (ex.: 1–2 Buttons) */
   action?: React.ReactNode;
+  /** link textual abaixo das ações */
+  link?: React.ReactNode;
+  tone?: "surface" | "card";
 }
 
-/** Estado vazio — ícone + título + descrição + ação opcional (ex.: "Sem classificação ainda"). */
-export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
+/** Estado vazio — badge de ícone + título + descrição + ações + link (adaptado do padrão Obra/shadcn). */
+export function EmptyState({ icon, title, description, action, link, tone = "surface" }: EmptyStateProps) {
   return (
     <div
       style={{
@@ -17,21 +22,39 @@ export function EmptyState({ icon, title, description, action }: EmptyStateProps
         flexDirection: "column",
         alignItems: "center",
         textAlign: "center",
-        gap: 8,
+        gap: 6,
         padding: "40px 24px",
-        background: colors.bg.surface,
+        background: tone === "card" ? colors.bg.card : colors.bg.surface,
         border: `1px solid ${colors.bg.border}`,
-        borderRadius: 20,
+        borderRadius: radius.xl,
       }}
     >
-      {icon && <div style={{ marginBottom: 4, opacity: 0.9 }}>{icon}</div>}
-      <p style={{ margin: 0, fontFamily: font.display, fontWeight: 800, fontSize: 16, color: colors.text.primary }}>{title}</p>
+      {icon && (
+        <div
+          style={{
+            width: 56,
+            height: 56,
+            borderRadius: radius.lg,
+            background: colors.bg.base,
+            border: `1px solid ${colors.bg.border}`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 10,
+            color: colors.text.muted,
+          }}
+        >
+          {icon}
+        </div>
+      )}
+      <p style={{ margin: 0, fontFamily: font.display, fontWeight: 800, fontSize: 16, lineHeight: "20px", color: colors.text.primary }}>{title}</p>
       {description && (
-        <p style={{ margin: 0, fontFamily: font.body, fontWeight: 500, fontSize: 13, lineHeight: "18px", color: colors.text.muted, maxWidth: 280 }}>
+        <p style={{ margin: 0, fontFamily: font.body, fontWeight: 500, fontSize: 13, lineHeight: "18px", color: colors.text.muted, maxWidth: 300 }}>
           {description}
         </p>
       )}
-      {action && <div style={{ marginTop: 8 }}>{action}</div>}
+      {action && <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap", justifyContent: "center" }}>{action}</div>}
+      {link && <div style={{ marginTop: 6 }}>{link}</div>}
     </div>
   );
 }
