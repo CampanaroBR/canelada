@@ -51,6 +51,16 @@ export async function criarRodada(data: string, participantesIds: string[]) {
     return { error: "Apenas administradores podem criar rodadas." };
   }
 
+  // Anti-spam: bloqueia se já existe rodada não encerrada ou criada há menos de 10 min no grupo.
+  const dezMinAtras = new Date(Date.now() - 10 * 60 * 1000);
+  const recente = await prisma.rodada.findFirst({
+    where: { grupoId: jogador.grupoId, OR: [{ encerrada: false }, { createdAt: { gte: dezMinAtras } }] },
+    select: { id: true },
+  });
+  if (recente) {
+    return { error: "Já existe uma rodada recente/aberta neste grupo. Aguarde encerrar." };
+  }
+
   const rodada = await prisma.rodada.create({
     data: {
       grupoId: jogador.grupoId,
