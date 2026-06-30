@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
+import { Separator } from "@/ds";
 
 export default function LoginPage() {
   // mostra cada botão só se o provider correspondente estiver ativo (depende das envs na Vercel)
@@ -117,11 +118,7 @@ export default function LoginPage() {
           </div>
 
           {/* Divisor "ou" */}
-          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 0" }}>
-            <div style={{ flex: 1, height: 1, background: "#2c2c2c" }} />
-            <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#606060" }}>ou</span>
-            <div style={{ flex: 1, height: 1, background: "#2c2c2c" }} />
-          </div>
+          <Separator label="ou" />
 
           {/* Card de convite */}
           <div style={{

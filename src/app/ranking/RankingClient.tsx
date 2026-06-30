@@ -6,6 +6,7 @@ import { List, Bell, Trophy, ChartBar, Export, CaretDown } from "@phosphor-icons
 import { BottomNav } from "@/components/layout/BottomNav";
 import { MenuSheet } from "@/components/MenuSheet";
 import type { RankingGrupo, RankRow } from "@/lib/badges";
+import { EmptyState } from "@/ds";
 
 // ouro / prata / bronze (Figma)
 const PODIUM = ["#c5973a", "#999999", "#734524"];
@@ -117,12 +118,12 @@ export function RankingClient({ ranking, grupoNome, meuId }: Props) {
       {/* ── CONTEÚDO ── */}
       <main style={{ padding: "0 8px", paddingBottom: "calc(104px + env(safe-area-inset-bottom, 0px))" }}>
         {!temDados ? (
-          <div style={{ background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 20, padding: "40px 20px", textAlign: "center", margin: "16px 8px 0" }}>
-            <Trophy size={40} color="#3a3a3a" weight="fill" style={{ marginBottom: 12 }} />
-            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#fff" }}>Sem classificação ainda</p>
-            <p style={{ margin: "6px 0 0", fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "#7a7a7a" }}>
-              {periodo === "semana" ? "Nenhuma rodada encerrada nesta semana." : "Nenhuma rodada encerrada neste mês."}
-            </p>
+          <div style={{ margin: "16px 8px 0" }}>
+            <EmptyState
+              icon={<Trophy size={26} weight="regular" />}
+              title="Sem classificação ainda"
+              description={periodo === "semana" ? "Nenhuma rodada encerrada nesta semana." : "Nenhuma rodada encerrada neste mês."}
+            />
           </div>
         ) : (
           <div style={{
