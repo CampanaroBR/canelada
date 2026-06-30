@@ -2,23 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, UserCircle, CaretDown } from "@phosphor-icons/react";
+import { Camera, UserCircle } from "@phosphor-icons/react";
 import { BottomSheet } from "@/components/BottomSheet";
 import { atualizarPerfil, uploadFoto } from "./actions";
 import { toast } from "@/ds/toast";
-import { Button } from "@/ds";
+import { Button, Input, Select, FormRow } from "@/ds";
 
 const POSICOES = ["Goleiro", "Zagueiro", "Lateral", "Volante", "Meio-Campo", "Atacante"];
 const PES = ["Direito", "Esquerdo", "Ambidestro"];
-
-function Label({ children, required }: { children: React.ReactNode; required?: boolean }) {
-  return (
-    <label style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, lineHeight: "20px", color: "#f5f5f5", marginBottom: 6, display: "block" }}>
-      {children}
-      {required && <span style={{ color: "#e56767", marginLeft: 3 }}>*</span>}
-    </label>
-  );
-}
 
 export interface PerfilInitial {
   nome: string;
@@ -39,23 +30,6 @@ function initials(name: string) {
   const p = name.trim().split(/\s+/);
   return (p.length >= 2 ? p[0][0] + p[1][0] : name.slice(0, 2)).toUpperCase();
 }
-
-const inputStyle: React.CSSProperties = {
-  width: "100%", height: 48, boxSizing: "border-box",
-  background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 16,
-  padding: "0 16px", color: "#fff", fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, outline: "none",
-};
-const disabledStyle: React.CSSProperties = {
-  ...inputStyle, background: "#171717", color: "#666", cursor: "not-allowed", opacity: 1,
-};
-const selectWrap: React.CSSProperties = { position: "relative", width: "100%" };
-const selectStyle: React.CSSProperties = {
-  ...inputStyle, appearance: "none", WebkitAppearance: "none", MozAppearance: "none",
-  paddingRight: 36, cursor: "pointer",
-};
-const caretStyle: React.CSSProperties = {
-  position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none",
-};
 
 export function EditarPerfilSheet({ open, onClose, initial }: Props) {
   const router = useRouter();
@@ -131,44 +105,17 @@ export function EditarPerfilSheet({ open, onClose, initial }: Props) {
           <input ref={fileRef} type="file" accept="image/*" onChange={onPickFoto} style={{ display: "none" }} />
         </div>
 
-        <div style={{ display: "flex", gap: 10 }}>
-          <div style={{ flex: 1 }}>
-            <Label>Nome</Label>
-            <input style={disabledStyle} value={nome} disabled readOnly placeholder="Arthur" />
-          </div>
-          <div style={{ flex: 1 }}>
-            <Label>Sobrenome</Label>
-            <input style={disabledStyle} value={sobrenome} disabled readOnly placeholder="Sena" />
-          </div>
-        </div>
+        <FormRow>
+          <Input label="Nome" value={nome} disabled placeholder="Arthur" />
+          <Input label="Sobrenome" value={sobrenome} disabled placeholder="Sena" />
+        </FormRow>
 
-        <div>
-          <Label>Apelido no baba</Label>
-          <input style={inputStyle} value={apelido} onChange={e => setApelido(e.target.value)} placeholder="Craque" maxLength={24} />
-        </div>
+        <Input label="Apelido no baba" value={apelido} onChange={e => setApelido(e.target.value)} placeholder="Craque" maxLength={24} />
 
-        <div style={{ display: "flex", gap: 10 }}>
-          <div style={{ flex: 1 }}>
-            <Label required>Posição</Label>
-            <div style={selectWrap}>
-              <select style={selectStyle} value={posicao} onChange={e => setPosicao(e.target.value)}>
-                <option value="">—</option>
-                {POSICOES.map(p => <option key={p} value={p}>{p}</option>)}
-              </select>
-              <CaretDown size={16} color="#9fe870" weight="bold" style={caretStyle} />
-            </div>
-          </div>
-          <div style={{ flex: 1 }}>
-            <Label required>Pé Preferido</Label>
-            <div style={selectWrap}>
-              <select style={selectStyle} value={pe} onChange={e => setPe(e.target.value)}>
-                <option value="">—</option>
-                {PES.map(p => <option key={p} value={p}>{p}</option>)}
-              </select>
-              <CaretDown size={16} color="#9fe870" weight="bold" style={caretStyle} />
-            </div>
-          </div>
-        </div>
+        <FormRow>
+          <Select label="Posição" required value={posicao} onChange={setPosicao} options={POSICOES.map(p => ({ value: p, label: p }))} />
+          <Select label="Pé Preferido" required value={pe} onChange={setPe} options={PES.map(p => ({ value: p, label: p }))} />
+        </FormRow>
 
         {error && <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "#ef6b6b" }}>{error}</p>}
 
