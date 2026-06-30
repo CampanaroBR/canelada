@@ -22,7 +22,7 @@ export function EmptyState({ icon, title, description, action, link, tone = "sur
         flexDirection: "column",
         alignItems: "center",
         textAlign: "center",
-        gap: 6,
+        gap: 4,
         padding: "40px 24px",
         background: tone === "card" ? colors.bg.card : colors.bg.surface,
         border: `1px solid ${colors.bg.border}`,
@@ -32,15 +32,15 @@ export function EmptyState({ icon, title, description, action, link, tone = "sur
       {icon && (
         <div
           style={{
-            width: 56,
-            height: 56,
-            borderRadius: radius.lg,
+            width: 44,
+            height: 44,
+            borderRadius: radius.md,
             background: colors.bg.base,
             border: `1px solid ${colors.bg.border}`,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            marginBottom: 10,
+            marginBottom: 16,
             color: colors.text.muted,
           }}
         >
@@ -49,12 +49,12 @@ export function EmptyState({ icon, title, description, action, link, tone = "sur
       )}
       <p style={{ margin: 0, fontFamily: font.display, fontWeight: 800, fontSize: 16, lineHeight: "20px", color: colors.text.primary }}>{title}</p>
       {description && (
-        <p style={{ margin: 0, fontFamily: font.body, fontWeight: 500, fontSize: 13, lineHeight: "18px", color: colors.text.muted, maxWidth: 300 }}>
+        <p style={{ margin: 0, fontFamily: font.body, fontWeight: 500, fontSize: 14, lineHeight: "20px", color: colors.text.muted, maxWidth: 320 }}>
           {description}
         </p>
       )}
-      {action && <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap", justifyContent: "center" }}>{action}</div>}
-      {link && <div style={{ marginTop: 6 }}>{link}</div>}
+      {action && <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap", justifyContent: "center" }}>{action}</div>}
+      {link && <div style={{ marginTop: 8 }}>{link}</div>}
     </div>
   );
 }
