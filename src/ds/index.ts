@@ -33,3 +33,8 @@ export { Menu } from "./components/Menu";
 export { Form, FormField, FormRow, FormActions } from "./components/Form";
 export { PasswordInput } from "./components/PasswordInput";
 export { toast, Toaster } from "./toast";
+export { Skeleton } from "./components/Skeleton";
+export { Separator } from "./components/Separator";
+export { Pagination } from "./components/Pagination";
+export { Slider } from "./components/Slider";
+export { Resizable } from "./components/Resizable";

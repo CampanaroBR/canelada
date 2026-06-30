@@ -22,6 +22,8 @@ const preview: Preview = {
           "Feedback",
           "Overlays",
           "Data",
+          "Navigation",
+          "Layout",
           "Patterns",
         ],
       },
