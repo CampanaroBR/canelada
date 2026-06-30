@@ -70,7 +70,7 @@ export function EditarPerfilSheet({ open, onClose, initial }: Props) {
     setSaving(false);
     if (!res.ok) { setError(res.error ?? "Erro ao salvar."); toast.error(res.error ?? "Erro ao salvar."); return; }
     onClose();
-    toast.success("Perfil atualizado!");
+    toast.success("Atualizações salvas com sucesso");
     if (res.apelido && res.apelido !== initial.apelido) router.push(`/perfil/${encodeURIComponent(res.apelido)}`);
     else router.refresh();
   }
