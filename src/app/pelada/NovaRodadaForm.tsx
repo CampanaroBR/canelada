@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { List, Bell, SoccerBall, Clock } from "@phosphor-icons/react";
 import { MenuSheet } from "@/components/MenuSheet";
+import { Button } from "@/ds";
 import { parseLista, criarRodada, type ParticipanteImportado } from "./actions";
 
 type Step = "lista" | "confirmacao" | "sucesso";
@@ -330,30 +331,9 @@ export function NovaRodadaForm() {
 
         {/* CTA fixo */}
         <div style={{ position: "fixed", left: 0, right: 0, bottom: "max(80px, calc(env(safe-area-inset-bottom, 0px) + 80px))", padding: "0 16px", zIndex: 10 }}>
-          <button
-            onClick={handleCriar}
-            disabled={!canConfirm}
-            style={{
-              appearance: "none",
-              cursor: canConfirm ? "pointer" : "not-allowed",
-              width: "100%",
-              padding: 17,
-              border: canConfirm ? "none" : "1px solid #34343a",
-              borderRadius: 20,
-              background: canConfirm ? "#9fe870" : "#26262b",
-              fontFamily: "var(--font-display)",
-              fontWeight: 800,
-              fontSize: 15,
-              letterSpacing: ".04em",
-              color: canConfirm ? "#0a1a06" : "#7a7a7a",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 8,
-            }}
-          >
+          <Button fullWidth size="lg" onClick={handleCriar} disabled={!canConfirm}>
             {isSaving ? "CRIANDO RODADA..." : `CONFIRMAR PRESENÇA · ${incluidos.length}`}
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -524,29 +504,9 @@ export function NovaRodadaForm() {
         )}
 
         {/* Criar rodada button */}
-        <button
-          onClick={handleImportar}
-          disabled={!canImport}
-          style={{
-            appearance: "none",
-            cursor: canImport ? "pointer" : "not-allowed",
-            width: "100%",
-            height: 54,
-            padding: "0 20px",
-            border: canImport ? "none" : "1px solid #424242",
-            borderRadius: 16,
-            background: canImport ? "#9fe870" : "#2c2c2c",
-            fontFamily: "var(--font-display)",
-            fontWeight: 700,
-            fontSize: 15,
-            lineHeight: "20px",
-            color: canImport ? "#090909" : "#7a7a7a",
-            textAlign: "center",
-            transition: "background .2s ease",
-          }}
-        >
+        <Button fullWidth size="lg" onClick={handleImportar} disabled={!canImport}>
           {isParsing ? "Analisando..." : "Criar Rodada"}
-        </button>
+        </Button>
       </div>
 
       {/* Menu hambúrguer (bottom sheet) */}
