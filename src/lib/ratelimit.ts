@@ -5,11 +5,12 @@ import { Redis } from "@upstash/redis";
  * Rate limit com Upstash Redis. Fail-open: se o Upstash não estiver configurado
  * (sem env) ou der erro, permite a requisição — nunca derruba o app por causa do limitador.
  *
- * Provisione em Vercel → Marketplace → Upstash (free) e defina:
- *   UPSTASH_REDIS_REST_URL e UPSTASH_REDIS_REST_TOKEN
+ * Provisionado em Vercel via Marketplace (Upstash for Redis). O Vercel injeta as envs
+ * como KV_REST_API_URL/KV_REST_API_TOKEN; aceitamos também UPSTASH_REDIS_REST_URL/TOKEN
+ * caso a integração mude de nome no futuro.
  */
-const url = process.env.UPSTASH_REDIS_REST_URL;
-const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+const url = process.env.KV_REST_API_URL ?? process.env.UPSTASH_REDIS_REST_URL;
+const token = process.env.KV_REST_API_TOKEN ?? process.env.UPSTASH_REDIS_REST_TOKEN;
 const redis = url && token ? new Redis({ url, token }) : null;
 
 type Window = `${number} s` | `${number} m` | `${number} h`;
