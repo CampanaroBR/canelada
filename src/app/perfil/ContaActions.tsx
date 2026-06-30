@@ -5,7 +5,7 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { UserCircle, Medal, Bell, ShieldCheck, FileText, SignOut, CaretRight, Warning } from "@phosphor-icons/react";
 import { BottomSheet } from "@/components/BottomSheet";
-import { Button, Toggle } from "@/ds";
+import { Button, Toggle, IconBox } from "@/ds";
 import { excluirConta } from "./actions";
 
 interface Props {
@@ -171,9 +171,6 @@ function RowToggle({ onClick, on, icon, label, sub }: { onClick: () => void; on:
       <Toggle checked={on} onChange={() => onClick()} />
     </div>
   );
-}
-function IconBox({ children }: { children: React.ReactNode }) {
-  return <div style={{ width: 36, height: 36, borderRadius: 10, background: "#1c1c1c", border: "1px solid #383838", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{children}</div>;
 }
 function Labels({ label, sub }: { label: string; sub?: string }) {
   return (

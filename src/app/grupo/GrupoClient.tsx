@@ -10,7 +10,7 @@ import { MenuSheet } from "@/components/MenuSheet";
 import { BottomSheet } from "@/components/BottomSheet";
 import { renomearGrupo, removerMembro } from "./actions";
 import { toast } from "@/ds/toast";
-import { Button } from "@/ds";
+import { Button, Input } from "@/ds";
 
 export interface Membro {
   apelido: string;
@@ -196,14 +196,13 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
       <BottomSheet open={editOpen} onClose={() => !saving && setEditOpen(false)}>
         <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", gap: 16 }}>
           <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, textTransform: "uppercase", color: "#fff" }}>Nome do grupo</span>
-          <input
+          <Input
             value={novoNome}
             onChange={(e) => setNovoNome(e.target.value)}
             maxLength={40}
             placeholder="Nome do grupo"
-            style={{ width: "100%", height: 48, boxSizing: "border-box", background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 16, padding: "0 16px", color: "#fff", fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, outline: "none" }}
+            error={error ?? undefined}
           />
-          {error && <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "#e56767" }}>{error}</p>}
           <div style={{ display: "flex", flexDirection: "column", gap: 8, paddingTop: 4 }}>
             <Button fullWidth size="lg" onClick={salvarNome} disabled={saving}>{saving ? "Salvando…" : "Salvar"}</Button>
             <Button fullWidth size="lg" variant="secondary" onClick={() => setEditOpen(false)} disabled={saving}>Cancelar</Button>
