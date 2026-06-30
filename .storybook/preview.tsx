@@ -16,7 +16,7 @@ const preview: Preview = {
       storySort: {
         order: [
           "Introdução",
-          "Foundations", ["Overview", "Iconografia", "Números (comparação)"],
+          "Foundations", ["Overview", "Marca", "Acessibilidade", "Movimento", "Iconografia", "Números (comparação)"],
           "Core",
           "Forms",
           "Feedback",
