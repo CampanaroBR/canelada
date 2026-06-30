@@ -5,7 +5,7 @@ import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { UserCircle, Medal, Bell, ShieldCheck, FileText, SignOut, CaretRight, Warning } from "@phosphor-icons/react";
 import { BottomSheet } from "@/components/BottomSheet";
-import { Button, Toggle, IconBox, RowItem, Divider } from "@/ds";
+import { Button, Toggle, IconBox, RowItem, Divider, toast } from "@/ds";
 import { excluirConta } from "./actions";
 
 interface Props {
@@ -42,25 +42,46 @@ export function ContaActions({ email, grupoNome, roleLabel, onEditar }: Props) {
 
   async function togglePush() {
     if (pushBusy) return;
+    if (!("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window)) {
+      toast.error("Seu navegador não suporta notificações.");
+      return;
+    }
+    const vapid = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
     setPushBusy(true);
     try {
-      if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
       const reg = await navigator.serviceWorker.register("/sw.js");
       const existing = await reg.pushManager.getSubscription();
       if (existing) {
         await existing.unsubscribe();
+        await fetch("/api/push/subscribe", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify(existing.toJSON()) }).catch(() => {});
         setPushOn(false);
-      } else {
-        const perm = await Notification.requestPermission();
-        if (perm !== "granted") { setPushOn(false); return; }
-        const sub = await reg.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!) as unknown as BufferSource,
-        });
-        await fetch("/api/push/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(sub.toJSON()) });
-        setPushOn(true);
+        toast.info("Notificações desativadas.");
+        return;
       }
-    } catch { /* ignore */ } finally { setPushBusy(false); }
+      if (!vapid) {
+        toast.error("Notificações ainda não configuradas no servidor.");
+        return;
+      }
+      const perm = await Notification.requestPermission();
+      if (perm !== "granted") {
+        setPushOn(false);
+        toast.error(perm === "denied" ? "Permissão de notificação bloqueada no navegador." : "Permissão não concedida.");
+        return;
+      }
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(vapid) as unknown as BufferSource,
+      });
+      const res = await fetch("/api/push/subscribe", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(sub.toJSON()) });
+      if (!res.ok) throw new Error("subscribe falhou");
+      setPushOn(true);
+      toast.success("Notificações ativadas!");
+    } catch (e) {
+      console.error("togglePush:", e);
+      toast.error("Não foi possível ativar as notificações.");
+    } finally {
+      setPushBusy(false);
+    }
   }
 
   return (
