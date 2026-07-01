@@ -43,6 +43,7 @@ export function SegmentedControl({ items, value, onChange, fullWidth }: Segmente
         position: "relative",
         display: "flex",
         width: fullWidth ? "100%" : "max-content",
+        flexShrink: 0,
         background: colors.bg.card,
         border: `1px solid ${colors.bg.border}`,
         borderRadius: radius.pill,

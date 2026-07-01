@@ -7,7 +7,7 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { MenuSheet } from "@/components/MenuSheet";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
 import type { RankingGrupo, RankRow } from "@/lib/badges";
-import { EmptyState } from "@/ds";
+import { EmptyState, SegmentedControl } from "@/ds";
 
 // ouro / prata / bronze (Figma)
 const PODIUM = ["#c5973a", "#999999", "#734524"];
@@ -100,19 +100,13 @@ export function RankingClient({ ranking, grupoNome, meuId }: Props) {
         </div>
 
         {/* Toggle Semanal / Mensal */}
-        <div style={{ display: "flex", gap: 8, paddingTop: 14 }}>
-          {([["semana", "Semanal"], ["mes", "Mensal"]] as const).map(([key, label]) => {
-            const active = periodo === key;
-            return (
-              <button key={key} onClick={() => { setPeriodo(key); setVerTudo(false); }} style={{
-                flex: 1, height: 38, borderRadius: 9999, cursor: "pointer",
-                background: active ? "#9fe870" : "#111",
-                border: active ? "none" : "1px solid #2e2e2e",
-                fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16,
-                color: active ? "#000" : "#7a7a7a", WebkitTapHighlightColor: "transparent",
-              }}>{label}</button>
-            );
-          })}
+        <div style={{ paddingTop: 14 }}>
+          <SegmentedControl
+            fullWidth
+            value={periodo}
+            onChange={(v) => { setPeriodo(v as "semana" | "mes"); setVerTudo(false); }}
+            items={[{ value: "semana", label: "Semanal" }, { value: "mes", label: "Mensal" }]}
+          />
         </div>
       </div>
 

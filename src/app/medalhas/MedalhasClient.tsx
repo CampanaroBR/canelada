@@ -7,6 +7,7 @@ import { BottomSheet } from "@/components/BottomSheet";
 import { MenuSheet } from "@/components/MenuSheet";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
 import { LockSimple, CheckCircle, MedalMilitary, Bell, Export } from "@phosphor-icons/react";
+import { SegmentedControl } from "@/ds";
 
 function loadImg(src: string): Promise<HTMLImageElement> {
   return new Promise((res, rej) => {
@@ -334,37 +335,16 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
         </div>
 
         {/* Filter tabs */}
-        <div style={{ display: "flex", gap: 8, overflowX: "auto" }}>
-          {(["todas", "desbloqueadas", "andamento"] as Filter[]).map(f => {
-            const active = filter === f;
-            const label = f === "todas"
-              ? `Todas (${TOTAL})`
-              : f === "desbloqueadas"
-              ? `Desbloqueadas (${unlockedCount})`
-              : `Em andamento (${andamentoCount})`;
-            return (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                style={{
-                  background: active ? "#9fe870" : "#0a0e0e",
-                  border: active ? "none" : "1px solid #2c2c2c",
-                  borderRadius: 9999,
-                  padding: "5px 12px",
-                  cursor: "pointer",
-                  flexShrink: 0,
-                  fontFamily: "var(--font-display)",
-                  fontWeight: active ? 700 : 600,
-                  fontSize: 12,
-                  lineHeight: "18px",
-                  color: active ? "#090909" : "#f5f5f5",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {label}
-              </button>
-            );
-          })}
+        <div style={{ overflowX: "auto" }}>
+          <SegmentedControl
+            value={filter}
+            onChange={(v) => setFilter(v as Filter)}
+            items={[
+              { value: "todas", label: `Todas (${TOTAL})` },
+              { value: "desbloqueadas", label: `Desbloqueadas (${unlockedCount})` },
+              { value: "andamento", label: `Em andamento (${andamentoCount})` },
+            ]}
+          />
         </div>
 
         {/* Container interno (Figma): bg #090909, rounded 20, com as categorias */}
