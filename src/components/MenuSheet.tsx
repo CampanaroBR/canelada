@@ -53,7 +53,7 @@ export function MenuSheet({ open, onClose }: Props) {
           position: "absolute",
           top: "calc(env(safe-area-inset-top, 0px) + 60px)",
           left: 8,
-          width: 220,
+          width: 240,
           pointerEvents: "auto",
           background: "#141414",
           border: "1px solid #2c2c2c",
@@ -75,12 +75,12 @@ export function MenuSheet({ open, onClose }: Props) {
               onClick={onClose}
               style={{
                 textDecoration: "none",
-                display: "flex", alignItems: "center", gap: 10,
-                padding: "12px 14px",
+                display: "flex", alignItems: "center", gap: 12,
+                padding: "16px",
               }}
             >
-              <Icon size={18} color="#9fe870" weight="regular" />
-              <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, color: "#fff" }}>
+              <Icon size={22} color="#9fe870" weight="regular" />
+              <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 16, color: "#fff" }}>
                 {item.label}
               </span>
             </Link>
@@ -93,14 +93,14 @@ export function MenuSheet({ open, onClose }: Props) {
           onClick={() => signOut({ callbackUrl: "/login" })}
           style={{
             width: "100%",
-            display: "flex", alignItems: "center", gap: 10,
-            padding: "12px 14px",
+            display: "flex", alignItems: "center", gap: 12,
+            padding: "16px",
             background: "none", border: "none", cursor: "pointer",
             WebkitTapHighlightColor: "transparent",
           }}
         >
-          <SignOut size={18} color="#e56767" weight="regular" />
-          <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, color: "#e56767" }}>Sair</span>
+          <SignOut size={22} color="#e56767" weight="regular" />
+          <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 16, color: "#e56767" }}>Sair</span>
         </button>
       </div>
     </div>
