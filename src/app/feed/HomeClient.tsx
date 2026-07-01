@@ -12,6 +12,7 @@ import {
 } from "@phosphor-icons/react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
+import { SegmentedControl } from "@/ds";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
 import type { PersonagemSemana } from "@/components/ShareCardModal";
 
@@ -172,26 +173,14 @@ export function HomeClient({
           Votação da rodada
         </p>
 
-        {/* Tabs: Os melhores / Os piores — pílulas (ativa verde) */}
-        <div style={{ position: "relative", display: "flex", gap: 8, width: "100%" }}>
-          {([["melhores", "Os melhores"], ["piores", "Os piores"]] as const).map(([key, label]) => {
-            const active = campoTab === key;
-            return (
-              <button
-                key={key}
-                onClick={() => setCampoTab(key)}
-                style={{
-                  flex: 1, height: 40, borderRadius: 9999, cursor: "pointer", boxSizing: "border-box",
-                  background: active ? "#9fe870" : "#1a1a1a",
-                  border: `1px solid ${active ? "#9fe870" : "#5a5a5a"}`,
-                  fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14,
-                  color: active ? "#000" : "#7a7a7a", WebkitTapHighlightColor: "transparent",
-                }}
-              >
-                {label}
-              </button>
-            );
-          })}
+        {/* Tabs: Os melhores / Os piores — pill com indicador deslizante */}
+        <div style={{ position: "relative", width: "100%" }}>
+          <SegmentedControl
+            fullWidth
+            value={campoTab}
+            onChange={(v) => setCampoTab(v as "melhores" | "piores")}
+            items={[{ value: "melhores", label: "Os melhores" }, { value: "piores", label: "Os piores" }]}
+          />
         </div>
 
         {/* Wrapper do campo (sem card branco) */}
