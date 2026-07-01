@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { User, UsersThree, SignOut, CaretRight } from "@phosphor-icons/react";
+import { User, UsersThree, SignOut, CaretRight, X } from "@phosphor-icons/react";
 
 interface Props {
   open: boolean;
@@ -72,11 +72,37 @@ export function MenuSheet({ open, onClose }: Props) {
         style={{
           position: "relative",
           width: "min(100%, 430px)",
-          paddingTop: "calc(env(safe-area-inset-top, 0px) + 64px)",
+          paddingTop: "calc(env(safe-area-inset-top, 0px) + 8px)",
           paddingLeft: 12,
           paddingRight: 12,
         }}
       >
+        {/* Fechar — sempre visível, acima do painel */}
+        <div
+          style={{
+            display: "flex", justifyContent: "flex-end", paddingRight: 4, marginBottom: 8,
+            opacity: visible ? 1 : 0,
+            transition: `opacity 200ms ${EASE}`,
+          }}
+        >
+          <button
+            onClick={onClose}
+            aria-label="Fechar menu"
+            style={{
+              width: 40, height: 40, borderRadius: "50%",
+              background: "#141414", border: "1px solid #2c2c2c",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              cursor: "pointer", WebkitTapHighlightColor: "transparent",
+              transition: `transform 180ms ${EASE}`,
+            }}
+            onPointerDown={(e) => { e.currentTarget.style.transform = "scale(0.92)"; }}
+            onPointerUp={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
+            onPointerLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
+          >
+            <X size={18} color="#fff" weight="bold" />
+          </button>
+        </div>
+
         <div
           style={{
             background: "#141414",
