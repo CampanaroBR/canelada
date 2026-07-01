@@ -53,7 +53,7 @@ export function MenuSheet({ open, onClose }: Props) {
         justifyContent: "center",
       }}
     >
-      {/* backdrop com blur */}
+      {/* backdrop com blur — cobre a tela toda, clique fecha */}
       <div
         onClick={onClose}
         style={{
@@ -67,10 +67,13 @@ export function MenuSheet({ open, onClose }: Props) {
         }}
       />
 
-      {/* painel compacto, ancorado no topo */}
+      {/* painel compacto, ancorado no topo — sem stretch, só ocupa a altura do próprio conteúdo,
+          deixando o resto da tela clicável (fecha no backdrop) */}
       <div
         style={{
           position: "relative",
+          alignSelf: "flex-start",
+          pointerEvents: "none",
           width: "min(100%, 430px)",
           paddingTop: "calc(env(safe-area-inset-top, 0px) + 8px)",
           paddingLeft: 12,
@@ -82,6 +85,7 @@ export function MenuSheet({ open, onClose }: Props) {
           style={{
             display: "flex", justifyContent: "flex-end", paddingRight: 4, marginBottom: 8,
             opacity: visible ? 1 : 0,
+            pointerEvents: "auto",
             transition: `opacity 200ms ${EASE}`,
           }}
         >
@@ -112,6 +116,7 @@ export function MenuSheet({ open, onClose }: Props) {
             overflow: "hidden",
             transformOrigin: "top center",
             opacity: visible ? 1 : 0,
+            pointerEvents: "auto",
             transform: visible ? "scale(1) translateY(0)" : "scale(0.94) translateY(-8px)",
             transition: `opacity 260ms ${EASE}, transform 260ms ${EASE}`,
           }}
