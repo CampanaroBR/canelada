@@ -5,7 +5,8 @@ import Image from "next/image";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { BottomSheet } from "@/components/BottomSheet";
 import { MenuSheet } from "@/components/MenuSheet";
-import { LockSimple, CheckCircle, MedalMilitary, List, Bell, Export } from "@phosphor-icons/react";
+import { HamburgerIcon } from "@/components/HamburgerIcon";
+import { LockSimple, CheckCircle, MedalMilitary, Bell, Export } from "@phosphor-icons/react";
 
 function loadImg(src: string): Promise<HTMLImageElement> {
   return new Promise((res, rej) => {
@@ -229,7 +230,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
       }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 8px" }}>
           <button onClick={() => setMenuOpen(true)} style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
-            <List size={24} color="#fff" weight="bold" />
+            <HamburgerIcon open={menuOpen} />
           </button>
           <div style={{ padding: 4, display: "flex", overflow: "clip" }}>
             <Image alt="Canelada" src="/logo.png" width={48} height={48} priority style={{ objectFit: "cover", borderRadius: "50%" }} />

@@ -8,9 +8,10 @@ import Link from "next/link";
 import {
   Lightning, Medal, CaretRight, Check,
   CalendarBlank, Alarm, CalendarStar,
-  List, Bell, MedalMilitary, Export,
+  Bell, MedalMilitary, Export,
 } from "@phosphor-icons/react";
 import { BottomNav } from "@/components/layout/BottomNav";
+import { HamburgerIcon } from "@/components/HamburgerIcon";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
 import type { PersonagemSemana } from "@/components/ShareCardModal";
 
@@ -665,7 +666,7 @@ export function HomeClient({
       }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 8px" }}>
           <button aria-label="Abrir menu" onClick={() => setMenuOpen(true)} style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 4px", background: "none", border: "none", cursor: "pointer", overflow: "clip" }}>
-            <List size={24} color="#fff" weight="bold" />
+            <HamburgerIcon open={menuOpen} />
           </button>
           <div style={{ padding: 4, display: "flex", overflow: "clip" }}>
             <Image alt="Canelada" src={LOGO} width={48} height={48} priority style={{ objectFit: "cover", borderRadius: "50%" }} />

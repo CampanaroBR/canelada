@@ -4,9 +4,10 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { List, Bell, UsersThree, UserPlus, Export, CaretRight, PencilSimple, ShieldStar, UserMinus, Warning } from "@phosphor-icons/react";
+import { Bell, UsersThree, UserPlus, Export, CaretRight, PencilSimple, ShieldStar, UserMinus, Warning } from "@phosphor-icons/react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { MenuSheet } from "@/components/MenuSheet";
+import { HamburgerIcon } from "@/components/HamburgerIcon";
 import { BottomSheet } from "@/components/BottomSheet";
 import { renomearGrupo, removerMembro } from "./actions";
 import { toast } from "@/ds/toast";
@@ -90,7 +91,7 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
       }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 8px" }}>
           <button onClick={() => setMenuOpen(true)} aria-label="Menu" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
-            <List size={24} color="#fff" weight="bold" />
+            <HamburgerIcon open={menuOpen} />
           </button>
           <div style={{ padding: 4, display: "flex", overflow: "clip" }}>
             <Image alt="Canelada" src="/logo.png" width={48} height={48} priority style={{ objectFit: "cover", borderRadius: "50%" }} />

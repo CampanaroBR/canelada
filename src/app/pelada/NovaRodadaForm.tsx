@@ -3,8 +3,9 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { List, Bell, SoccerBall, Clock } from "@phosphor-icons/react";
+import { Bell, SoccerBall, Clock } from "@phosphor-icons/react";
 import { MenuSheet } from "@/components/MenuSheet";
+import { HamburgerIcon } from "@/components/HamburgerIcon";
 import { Button } from "@/ds";
 import { parseLista, criarRodada, type ParticipanteImportado } from "./actions";
 
@@ -356,7 +357,7 @@ export function NovaRodadaForm() {
       }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 8px" }}>
           <button aria-label="Abrir menu" onClick={() => setMenuOpen(true)} style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
-            <List size={24} color="#fff" weight="bold" />
+            <HamburgerIcon open={menuOpen} />
           </button>
           <div style={{ padding: 4, display: "flex", overflow: "clip" }}>
             <Image alt="Canelada" src="/logo.png" width={48} height={48} priority style={{ objectFit: "cover", borderRadius: "50%" }} />

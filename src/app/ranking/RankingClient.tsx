@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { List, Bell, Trophy, ChartBar, Export, CaretDown } from "@phosphor-icons/react";
+import { Bell, Trophy, ChartBar, Export, CaretDown } from "@phosphor-icons/react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { MenuSheet } from "@/components/MenuSheet";
+import { HamburgerIcon } from "@/components/HamburgerIcon";
 import type { RankingGrupo, RankRow } from "@/lib/badges";
 import { EmptyState } from "@/ds";
 
@@ -59,7 +60,7 @@ export function RankingClient({ ranking, grupoNome, meuId }: Props) {
       }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 8px" }}>
           <button onClick={() => setMenuOpen(true)} aria-label="Menu" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
-            <List size={24} color="#fff" weight="bold" />
+            <HamburgerIcon open={menuOpen} />
           </button>
           <div style={{ padding: 4, display: "flex", overflow: "clip" }}>
             <Image alt="Canelada" src="/logo.png" width={48} height={48} priority style={{ objectFit: "cover", borderRadius: "50%" }} />
