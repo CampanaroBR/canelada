@@ -1,5 +1,5 @@
 import React from "react";
-import { colors, radius, motion, font } from "../tokens";
+import { colors, radius, motion, font, token } from "../tokens";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "link";
 export type ButtonSize = "sm" | "md" | "lg";
@@ -20,16 +20,18 @@ const SIZES: Record<ButtonSize, { h: number; px: number; fs: number; r: number; 
   lg: { h: 56, px: 24, fs: 16, r: radius.xl, gap: 8 },
 };
 
+// Migrado para tokens Encore (CSS vars) — colors.* legado mantido só onde não há
+// token semântico 1:1 ainda (ex.: text.accent, usado no link).
 export function variantStyle(v: ButtonVariant): React.CSSProperties {
   switch (v) {
     case "primary":
-      return { background: colors.accent.default, color: colors.text.onAccent, border: "none" };
+      return { background: token("bg-fill-primary-default"), color: token("text-on-fill-default"), border: "none" };
     case "secondary":
-      return { background: "transparent", color: colors.text.primary, border: `1px solid ${colors.bg.borderSubtle}` };
+      return { background: "transparent", color: token("text-primary-default"), border: `1px solid ${token("border-tertiary-default")}` };
     case "ghost":
-      return { background: colors.bg.surface, color: colors.text.primary, border: `1px solid ${colors.bg.border}` };
+      return { background: token("bg-surface-primary-default"), color: token("text-primary-default"), border: `1px solid ${token("border-primary-default")}` };
     case "danger":
-      return { background: colors.semantic.danger, color: colors.bg.base, border: "none" };
+      return { background: token("bg-fill-danger-default"), color: token("bg-base-default"), border: "none" };
     case "link":
       return { background: "transparent", color: colors.text.accent, border: "none" };
   }
