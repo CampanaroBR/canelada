@@ -367,13 +367,14 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
 
             {/* Título + descrição */}
             <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center", width: "100%", maxWidth: 361 }}>
-              <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 32, lineHeight: "36px", color: "#fff", textAlign: "center" }}>
+              <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 32, lineHeight: "36px", color: "#fff", textAlign: "center", textShadow: "0 2px 12px rgba(0,0,0,0.6), 0 0 2px rgba(0,0,0,0.5)" }}>
                 {trait.nome.toUpperCase()} {trait.emoji}
               </p>
               <p style={{
                 margin: 0, paddingTop: 4, paddingLeft: 24, paddingRight: 24,
                 fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 18, lineHeight: "22px",
-                color: "rgba(255,255,255,0.92)", letterSpacing: "-0.8px", textAlign: "center",
+                color: "#fff", letterSpacing: "-0.8px", textAlign: "center",
+                textShadow: "0 1px 10px rgba(0,0,0,0.55), 0 0 2px rgba(0,0,0,0.45)",
               }}>
                 {trait.descricao ?? `Quem foi o ${trait.nome} dessa rodada?`}
               </p>
