@@ -116,6 +116,8 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
   const [search, setSearch] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [done, setDone] = useState(false);
+  const [review, setReview] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -153,7 +155,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
     if (step < total - 1) {
       setStep((s) => s + 1);
     } else {
-      submitAllWith(newSelections);
+      setReview(true);
     }
   }
 
@@ -163,7 +165,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
     else { setStep((s) => s - 1); setSearch(""); }
   }
 
-  // Pular: só nos personagens opcionais. Remove qualquer voto do passo e avança (ou finaliza).
+  // Pular: só nos personagens opcionais. Remove qualquer voto do passo e avança (ou revisa).
   function handleSkip() {
     const next = { ...selections };
     delete next[step];
@@ -171,12 +173,20 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
     setPending(null);
     setSearch("");
     if (step < total - 1) setStep((s) => s + 1);
-    else submitAllWith(next);
+    else setReview(true);
   }
 
-  // Finalizar: envia tudo o que já foi votado, sem passar pelos opcionais restantes.
+  // Finalizar (nos opcionais): vai pra revisão em vez de enviar direto.
   function handleFinish() {
-    submitAllWith(selections);
+    setReview(true);
+  }
+
+  // Editar um voto a partir da revisão: volta ao passo correspondente.
+  function editStep(i: number) {
+    setReview(false);
+    setPending(null);
+    setSearch("");
+    setStep(i);
   }
 
   function submitAllWith(sels: Record<number, string>) {
@@ -186,14 +196,28 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
 
     if (votos.length === 0) { setDone(true); return; }
 
+    setSubmitting(true);
     startTransition(async () => {
       const result = await submitVotos(rodadaId, votos);
+      setSubmitting(false);
       if ("error" in result) setError(result.error ?? "Erro desconhecido.");
       else setDone(true);
     });
   }
 
   if (done) return <DoneScreen router={router} />;
+  if (review) return (
+    <ReviewScreen
+      steps={steps}
+      selections={selections}
+      jogadores={jogadores}
+      submitting={submitting}
+      error={error}
+      onEdit={editStep}
+      onSubmit={() => submitAllWith(selections)}
+      onBack={() => setReview(false)}
+    />
+  );
   if (!trait) return null;
 
   return (
@@ -544,6 +568,140 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
         </div>
       )}
     </div>
+  );
+}
+
+/* ─── Tela de revisão: confere/edita os votos antes de enviar ─── */
+function ReviewScreen({
+  steps, selections, jogadores, submitting, error, onEdit, onSubmit, onBack,
+}: {
+  steps: Trait[];
+  selections: Record<number, string>;
+  jogadores: Jogador[];
+  submitting: boolean;
+  error: string | null;
+  onEdit: (i: number) => void;
+  onSubmit: () => void;
+  onBack: () => void;
+}) {
+  const nomePorId = new Map(jogadores.map((j) => [j.id, j.apelido]));
+  const totalVotos = Object.values(selections).filter(Boolean).length;
+
+  return (
+    <div style={{
+      position: "fixed", top: 0, bottom: 0, left: "50%", transform: "translateX(-50%)",
+      width: "min(100%, 430px)", background: "#090909", display: "flex", flexDirection: "column", overflow: "hidden",
+    }}>
+      {/* Topbar */}
+      <div style={{
+        flexShrink: 0, paddingTop: "calc(env(safe-area-inset-top, 0px) + 20px)",
+        padding: "calc(env(safe-area-inset-top, 0px) + 20px) 16px 12px",
+        display: "flex", alignItems: "center", gap: 12,
+        borderBottom: "1px solid #1c1c1c",
+      }}>
+        <button onClick={onBack} aria-label="Voltar" style={{
+          width: 44, height: 44, borderRadius: 22, flexShrink: 0,
+          background: "rgba(255,255,255,0.06)", border: "1px solid #2c2c2c",
+          display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+        }}>
+          <CaretLeft size={16} color="#fff" weight="bold" />
+        </button>
+        <div style={{ minWidth: 0 }}>
+          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, color: "#fff" }}>
+            Revise seus votos
+          </p>
+          <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, color: "#8a8a8a" }}>
+            Toque em um voto pra ajustar · {totalVotos} de {steps.length}
+          </p>
+        </div>
+      </div>
+
+      {/* Lista agrupada */}
+      <div style={{ flex: 1, overflowY: "auto", padding: "12px 12px 96px", WebkitOverflowScrolling: "touch" }}>
+        {GROUPS.map((g) => {
+          const green = g.required;
+          const tone = green ? "#9fe870" : "#e0a83a";
+          return (
+            <div key={g.label} style={{ marginBottom: 18 }}>
+              <p style={{
+                margin: "0 0 8px 4px", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11,
+                letterSpacing: "0.08em", color: tone, textTransform: "uppercase",
+              }}>
+                {g.label} {green ? "· obrigatório" : "· opcional"}
+              </p>
+              <div style={{ background: "#141414", border: "1px solid #2c2c2c", borderRadius: 16, overflow: "hidden" }}>
+                {g.slugs.map((slug, k) => {
+                  const i = steps.findIndex((t) => t.slug === slug);
+                  if (i < 0) return null;
+                  const t = steps[i];
+                  const votadoId = selections[i];
+                  const apelido = votadoId ? nomePorId.get(votadoId) : null;
+                  return (
+                    <button
+                      key={slug}
+                      onClick={() => onEdit(i)}
+                      style={{
+                        width: "100%", display: "flex", alignItems: "center", gap: 12,
+                        padding: "12px 14px", background: "none", cursor: "pointer",
+                        border: "none", borderTop: k === 0 ? "none" : "1px solid #1f1f1f",
+                        WebkitTapHighlightColor: "transparent", textAlign: "left",
+                      }}
+                    >
+                      <span style={{ fontSize: 18, width: 22, textAlign: "center", flexShrink: 0 }}>{t.emoji}</span>
+                      <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "#8a8a8a", width: 96, flexShrink: 0 }}>
+                        {t.nome}
+                      </span>
+                      <span style={{
+                        flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15,
+                        color: apelido ? "#fff" : "#5a5a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                      }}>
+                        {apelido ?? "pulado"}
+                      </span>
+                      <span style={{ flexShrink: 0, color: apelido ? "#7a7a7a" : tone, display: "flex" }}>
+                        {apelido
+                          ? <PencilIcon />
+                          : <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, color: tone }}>votar</span>}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Rodapé fixo — enviar */}
+      <div style={{
+        position: "absolute", left: 0, right: 0, bottom: 0,
+        padding: "12px 16px calc(env(safe-area-inset-bottom, 0px) + 12px)",
+        background: "linear-gradient(180deg, rgba(9,9,9,0) 0%, #090909 40%)",
+      }}>
+        {error && (
+          <p style={{ margin: "0 0 8px", color: "#e56767", fontFamily: "var(--font-body)", fontSize: 13, textAlign: "center" }}>{error}</p>
+        )}
+        <button
+          onClick={onSubmit}
+          disabled={submitting}
+          style={{
+            width: "100%", height: 54, borderRadius: 9999, border: "none",
+            background: submitting ? "#5f7a44" : "#9fe870", cursor: submitting ? "default" : "pointer",
+            fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#0a1a06",
+            WebkitTapHighlightColor: "transparent",
+          }}
+        >
+          {submitting ? "Enviando…" : `Enviar ${totalVotos} voto${totalVotos === 1 ? "" : "s"}`}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function PencilIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7a7a7a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M12 20h9" /><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z" />
+    </svg>
   );
 }
 
