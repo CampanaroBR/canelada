@@ -16,13 +16,19 @@ interface Props {
   traits: Trait[];
 }
 
-// Ordem oficial do PRD "Sistema de Traits do Canelada":
-// Etapa 1 (Futebol) → Etapa 2 (Personalidade) → Etapa 3 (Resenha).
-const ORDERED_SLUGS = [
-  "categoria", "matador", "paredao", "racudo", "xerife", "garcom",
-  "resenha-forte", "chorao", "reclamao", "paneleiro",
-  "firuleiro", "corpo-mole", "cone", "bagre",
+// Ordem oficial do PRD "Sistema de Traits do Canelada" — 16 personagens em 3 grupos.
+// Grupo Futebol é obrigatório; Resenha e Destaques Negativos são opcionais (dá pra pular).
+const GROUPS = [
+  { label: "Futebol", required: true, slugs: ["categoria", "matador", "paredao", "racudo", "xerife", "garcom", "driblador"] },
+  { label: "Resenha", required: false, slugs: ["resenha-forte", "delegado", "chorao", "reclamao", "paneleiro"] },
+  { label: "Destaques", required: false, slugs: ["firuleiro", "pregueiro", "cone", "bagre"] },
 ];
+const ORDERED_SLUGS = GROUPS.flatMap((g) => g.slugs);
+const REQUIRED_COUNT = GROUPS.filter((g) => g.required).reduce((n, g) => n + g.slugs.length, 0);
+// grupo de um dado slug (para rótulo/estado opcional)
+function groupOf(slug: string) {
+  return GROUPS.find((g) => g.slugs.includes(slug)) ?? GROUPS[0];
+}
 
 // Backgrounds reais do Figma — PNGs baixados de localhost:3845/assets/
 const BG_IMAGES: Record<string, string> = {
@@ -37,9 +43,11 @@ const BG_IMAGES: Record<string, string> = {
   reclamao:        "/votacao-bg/reclamao.png",
   paneleiro:       "/votacao-bg/paneleiro.png",
   firuleiro:       "/votacao-bg/firuleiro.png",
+  pregueiro:       "/votacao-bg/corpo-mole.png",
   "corpo-mole":    "/votacao-bg/corpo-mole.png",
   cone:            "/votacao-bg/cone.png",
   bagre:           "/votacao-bg/bagre.png",
+  // driblador e delegado ainda sem fundo dedicado → usam só o glow
 };
 
 // Cores do glow atrás do mascote — extraídas do Figma
@@ -55,9 +63,12 @@ const GLOW_COLORS: Record<string, string> = {
   reclamao:        "#0c2648",
   paneleiro:       "#043b11",
   firuleiro:       "#594f19",
+  pregueiro:       "#3c2b17",
   "corpo-mole":    "#3c2b17",
   cone:            "#632d10",
   bagre:           "#0e394f",
+  driblador:       "#0f4a37",
+  delegado:        "#1a2f5f",
 };
 
 // Mascotes: PNGs do Figma em /public/votacao-mascot/
@@ -73,9 +84,12 @@ const MASCOTE: Record<string, string> = {
   reclamao:        "/votacao-mascot/reclamao.png",
   paneleiro:       "/votacao-mascot/paneleiro.png",
   firuleiro:       "/votacao-mascot/firuleiro.png",
+  pregueiro:       "/votacao-mascot/pregueiro.png",
   "corpo-mole":    "/votacao-mascot/corpo-mole.png",
   cone:            "/votacao-mascot/cone.png",
   bagre:           "/votacao-mascot/bagre.png",
+  driblador:       "/votacao-mascot/driblador.png",
+  // delegado ainda sem mascote dedicado → cai no fallback (gato)
 };
 
 
@@ -115,6 +129,8 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
   const pendingPlayer = pending ? jogadores.find((j) => j.id === pending) ?? null : null;
   const total = steps.length;
   const progressPct = total > 0 ? (step / total) * 100 : 0;
+  const currentGroup = groupOf(trait?.slug ?? "");
+  const isOptional = step >= REQUIRED_COUNT;
 
   useEffect(() => {
     if (done) {
@@ -144,6 +160,17 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
     if (pending) { setPending(null); return; }
     if (step === 0) router.push("/feed");
     else { setStep((s) => s - 1); setSearch(""); }
+  }
+
+  // Pular: só nos personagens opcionais. Remove qualquer voto do passo e avança (ou finaliza).
+  function handleSkip() {
+    const next = { ...selections };
+    delete next[step];
+    setSelections(next);
+    setPending(null);
+    setSearch("");
+    if (step < total - 1) setStep((s) => s + 1);
+    else submitAllWith(next);
   }
 
   function submitAllWith(sels: Record<number, string>) {
@@ -193,14 +220,28 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
             <CaretLeft size={16} color="#fff" weight="bold" />
           </button>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, color: "#fff" }}>
-              VOTAÇÃO
+            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, color: isOptional ? "#9fe870" : "#fff", letterSpacing: "0.04em" }}>
+              {currentGroup.label.toUpperCase()}{isOptional ? " · OPCIONAL" : ""}
             </p>
             <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#fff" }}>
               {step + 1} de {total} personagens
             </p>
           </div>
-          <div style={{ width: 48, flexShrink: 0 }} />
+          {isOptional ? (
+            <button
+              onClick={handleSkip}
+              style={{
+                height: 48, minWidth: 48, borderRadius: 24, flexShrink: 0, padding: "0 16px",
+                background: "rgba(0,0,0,0.4)", border: "1px solid #424242",
+                fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#cfcfcf",
+                cursor: "pointer", pointerEvents: "auto",
+              }}
+            >
+              Pular
+            </button>
+          ) : (
+            <div style={{ width: 48, flexShrink: 0 }} />
+          )}
         </div>
         <div style={{ paddingTop: 12 }}>
           <div style={{ height: 6, borderRadius: 9999, background: "#ccc", overflow: "hidden" }}>
@@ -230,14 +271,16 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
             background: "#090909",
           }}
         >
-          {/* Background PNG real do Figma — object-cover full-bleed */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            aria-hidden
-            src={bgImage}
-            alt=""
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }}
-          />
+          {/* Background PNG real do Figma — object-cover full-bleed (quando existir) */}
+          {bgImage && (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              aria-hidden
+              src={bgImage}
+              alt=""
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }}
+            />
+          )}
 
           <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
             {/* Character container — 289×296, mb -20 (overlap com título) */}

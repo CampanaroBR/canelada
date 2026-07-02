@@ -9,24 +9,27 @@ const prisma = new PrismaClient({ adapter });
 // Ordem e textos seguem o PRD oficial — "Sistema de Traits do Canelada".
 // Etapa 1 (Futebol) → Etapa 2 (Personalidade) → Etapa 3 (Resenha).
 const TRAITS = [
-  // Etapa 1 — Futebol
-  { slug: "categoria",     nome: "Categoria",       categoria: TraitCategoria.FUTEBOL,       emoji: "🎩", descricao: "Jogador tecnicamente diferenciado, habilidoso e eficiente." },
-  { slug: "matador",       nome: "Matador",         categoria: TraitCategoria.FUTEBOL,       emoji: "⚽", descricao: "Especialista em finalizar jogadas e marcar gols." },
-  { slug: "paredao",       nome: "Paredão",         categoria: TraitCategoria.FUTEBOL,       emoji: "🧤", descricao: "Responsável por grandes defesas e momentos decisivos." },
-  { slug: "racudo",        nome: "Raçudo",          categoria: TraitCategoria.FUTEBOL,       emoji: "💪", descricao: "Jogador que se destaca pelo esforço, intensidade e entrega." },
-  { slug: "xerife",        nome: "Xerife",          categoria: TraitCategoria.FUTEBOL,       emoji: "👊", descricao: "Líder dentro de campo. Organiza, orienta e assume responsabilidades." },
-  { slug: "garcom",        nome: "Garçom",          categoria: TraitCategoria.FUTEBOL,       emoji: "🥂", descricao: "Especialista em assistências e construção de jogadas." },
-  // Etapa 2 — Personalidade
-  { slug: "resenha-forte", nome: "Só Resenha",      categoria: TraitCategoria.PERSONALIDADE, emoji: "🎤", descricao: "Responsável pela animação, brincadeiras e energia do grupo." },
+  // Grupo 1 — Futebol (obrigatório)
+  { slug: "categoria",     nome: "Categoria",       categoria: TraitCategoria.FUTEBOL,       emoji: "👑", descricao: "O dono da bola e do campo. Humilha todo mundo com categoria." },
+  { slug: "matador",       nome: "Matador",         categoria: TraitCategoria.FUTEBOL,       emoji: "⚽", descricao: "Especialista em finalizar jogadas e balançar as redes." },
+  { slug: "paredao",       nome: "Paredão",         categoria: TraitCategoria.FUTEBOL,       emoji: "🧤", descricao: "Intransponível na defesa. Fechou o gol e salvou o time nos momentos decisivos." },
+  { slug: "racudo",        nome: "Raçudo",          categoria: TraitCategoria.FUTEBOL,       emoji: "💪", descricao: "Se destaca pela entrega, intensidade e vontade de vencer." },
+  { slug: "xerife",        nome: "Xerife",          categoria: TraitCategoria.FUTEBOL,       emoji: "👊", descricao: "Lidera dentro de campo, organiza o time e assume a responsabilidade." },
+  { slug: "garcom",        nome: "Garçom",          categoria: TraitCategoria.FUTEBOL,       emoji: "🥂", descricao: "Enxerga o jogo como poucos. Cria oportunidades e distribui assistências." },
+  { slug: "driblador",     nome: "Driblador",       categoria: TraitCategoria.FUTEBOL,       emoji: "💨", descricao: "Passa pelos adversários com facilidade e resolve no um contra um." },
+  // Grupo 2 — Resenha (opcional)
+  { slug: "resenha-forte", nome: "Só Resenha",      categoria: TraitCategoria.PERSONALIDADE, emoji: "🎤", descricao: "Responsável pela animação, brincadeiras e energia do grupo. E não joga nada! 😂" },
+  { slug: "delegado",      nome: "Delegado",        categoria: TraitCategoria.PERSONALIDADE, emoji: "👮", descricao: "Prende a bola, não toca para ninguém e tenta resolver tudo sozinho." },
   { slug: "chorao",        nome: "Chorão",          categoria: TraitCategoria.PERSONALIDADE, emoji: "😭", descricao: "Sempre encontra um motivo para lamentar uma derrota, lance perdido ou situação adversa." },
   { slug: "reclamao",      nome: "Reclamão",        categoria: TraitCategoria.PERSONALIDADE, emoji: "😡", descricao: "Questiona decisões, marcações e jogadas com frequência." },
   { slug: "paneleiro",     nome: "Paneleiro",       categoria: TraitCategoria.PERSONALIDADE, emoji: "🍳", descricao: "Prefere jogar sempre com os mesmos parceiros e amigos." },
-  // Etapa 3 — Resenha
-  { slug: "firuleiro",     nome: "Firuleiro",       categoria: TraitCategoria.RESENHA,       emoji: "🎭", descricao: "Especialista em dribles, pedaladas e jogadas de efeito." },
+  // Grupo 3 — Destaques Negativos (opcional)
+  { slug: "firuleiro",     nome: "Firuleiro",       categoria: TraitCategoria.RESENHA,       emoji: "🎭", descricao: "Tenta o drible mais difícil quando o passe simples resolveria." },
+  { slug: "pregueiro",     nome: "Pregueiro",       categoria: TraitCategoria.RESENHA,       emoji: "🦥", descricao: "Corre pouco, não se dedica e parece estar sempre economizando energia." },
+  { slug: "cone",          nome: "Cone",            categoria: TraitCategoria.RESENHA,       emoji: "🚧", descricao: "Teve pouca participação na partida. A bola bateu e voltou." },
+  { slug: "bagre",         nome: "Bagre da Noite",  categoria: TraitCategoria.RESENHA,       emoji: "🐟", descricao: "Representa a pior atuação da rodada. Errou passes, perdeu gols e teve dificuldades durante a partida." },
+  // Traits extras / legadas (fora do fluxo ordenado, mantidas para badges/perfis já existentes)
   { slug: "corpo-mole",    nome: "Corpo Mole",      categoria: TraitCategoria.RESENHA,       emoji: "🛋️", descricao: "Corre pouco e parece estar sempre economizando energia." },
-  { slug: "cone",          nome: "Cone",            categoria: TraitCategoria.RESENHA,       emoji: "🚧", descricao: "Jogador que teve pouca participação efetiva durante a partida." },
-  { slug: "bagre",         nome: "Bagre da Noite",  categoria: TraitCategoria.RESENHA,       emoji: "🐟", descricao: "Representa a atuação mais bagre da partida." },
-  // Traits extras (fora do fluxo ordenado, mantidas para badges/perfis já existentes)
   { slug: "catimbeiro",    nome: "Catimbeiro",      categoria: TraitCategoria.PERSONALIDADE, emoji: "🐢" },
   { slug: "fominha",       nome: "Fominha",         categoria: TraitCategoria.PERSONALIDADE, emoji: "🐷" },
   { slug: "perna-de-pau",  nome: "Perna de Pau",    categoria: TraitCategoria.RESENHA,       emoji: "💀" },
