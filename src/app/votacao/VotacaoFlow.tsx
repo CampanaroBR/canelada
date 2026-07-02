@@ -4,7 +4,7 @@ import { useState, useTransition, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { submitVotos } from "./actions";
 // TRAIT_SVG removido — usamos ilustrações de personagens PNG no hero
-import { CaretLeft, CaretRight, MagnifyingGlass, CheckCircle } from "@phosphor-icons/react";
+import { CaretLeft, CaretRight, MagnifyingGlass, CheckCircle, Check } from "@phosphor-icons/react";
 
 type Jogador = { id: string; apelido: string };
 type Trait = { slug: string; nome: string; categoria: string; emoji: string | null; descricao: string | null };
@@ -131,7 +131,6 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
   const filtered = outros.filter((j) => j.apelido.toLowerCase().includes(search.toLowerCase()));
   const pendingPlayer = pending ? jogadores.find((j) => j.id === pending) ?? null : null;
   const total = steps.length;
-  const progressPct = total > 0 ? (step / total) * 100 : 0;
   const currentGroup = groupOf(trait?.slug ?? "");
   const isOptional = step >= REQUIRED_COUNT;
 
@@ -249,10 +248,25 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
           >
             <CaretLeft size={16} color="#fff" weight="bold" />
           </button>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, color: isOptional ? "#9fe870" : "#fff", letterSpacing: "0.04em" }}>
-              {currentGroup.label.toUpperCase()}{isOptional ? " · OPCIONAL" : ""}
-            </p>
+          <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 4 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, letterSpacing: "0.06em", color: "#9a9a9a" }}>
+                {currentGroup.label.toUpperCase()}
+              </span>
+              {isOptional ? (
+                <span style={{
+                  fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 9, letterSpacing: "0.08em",
+                  color: "#e0a83a", background: "rgba(224,168,58,0.14)", border: "1px solid rgba(224,168,58,0.45)",
+                  borderRadius: 9999, padding: "2px 7px",
+                }}>OPCIONAL</span>
+              ) : (
+                <span style={{
+                  fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 9, letterSpacing: "0.08em",
+                  color: "#0a1a06", background: "#9fe870",
+                  borderRadius: 9999, padding: "2px 7px",
+                }}>OBRIGATÓRIO</span>
+              )}
+            </div>
             <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#fff" }}>
               {step + 1} de {total} personagens
             </p>
@@ -273,13 +287,17 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
             <div style={{ width: 48, flexShrink: 0 }} />
           )}
         </div>
-        <div style={{ paddingTop: 12 }}>
-          <div style={{ height: 6, borderRadius: 9999, background: "#ccc", overflow: "hidden" }}>
-            <div style={{
-              height: 6, borderRadius: 9999, background: "#9fe870",
-              width: `${progressPct}%`, transition: "width 280ms ease",
-            }} />
-          </div>
+        <div style={{ paddingTop: 12, display: "flex", gap: 4 }}>
+          {GROUPS.map((g) => {
+            const start = ORDERED_SLUGS.indexOf(g.slugs[0]);
+            const filled = Math.min(Math.max(step - start, 0), g.slugs.length) / g.slugs.length;
+            const tone = g.required ? "#9fe870" : "#e0a83a";
+            return (
+              <div key={g.label} style={{ flex: g.slugs.length, height: 6, borderRadius: 9999, background: "rgba(255,255,255,0.18)", overflow: "hidden" }}>
+                <div style={{ height: 6, borderRadius: 9999, background: tone, width: `${filled * 100}%`, transition: "width 280ms ease" }} />
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -448,17 +466,30 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
                         alignItems: "center", gap: 4,
                       }}
                     >
-                      <div style={{
-                        width: 48, height: 48, borderRadius: "50%",
-                        background: highlight ? color + "33" : "#2a2a2a",
-                        border: highlight ? `1px solid ${color}` : "none",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        flexShrink: 0,
-                      }}>
-                        <span style={{
-                          fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 18,
-                          color: highlight ? color : "#fff",
-                        }}>{initial}</span>
+                      <div style={{ position: "relative", flexShrink: 0 }}>
+                        <div style={{
+                          width: 48, height: 48, borderRadius: "50%",
+                          background: highlight ? color + "33" : "#2a2a2a",
+                          border: highlight ? `1px solid ${color}` : "none",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                        }}>
+                          <span style={{
+                            fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 18,
+                            color: highlight ? color : "#fff",
+                          }}>{initial}</span>
+                        </div>
+                        {/* Check verde ao escolher — micro-feedback */}
+                        <div style={{
+                          position: "absolute", right: -2, bottom: -2,
+                          width: 20, height: 20, borderRadius: "50%",
+                          background: "#9fe870", border: "2px solid #000",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          transform: highlight ? "scale(1)" : "scale(0)",
+                          opacity: highlight ? 1 : 0,
+                          transition: "transform 200ms cubic-bezier(0.32,0.72,0,1), opacity 160ms ease",
+                        }}>
+                          <Check size={12} color="#0a1a06" weight="bold" />
+                        </div>
                       </div>
                       <span style={{
                         fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 11,
