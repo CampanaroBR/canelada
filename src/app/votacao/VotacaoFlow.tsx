@@ -141,6 +141,14 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
     }
   }, [done, router]);
 
+  // Ao trocar de personagem (voltar/editar), recupera o voto já feito para o passo,
+  // fazendo a barra de "Confirmar" reaparecer em vez de sumir.
+  useEffect(() => {
+    setPending(selections[step] ?? null);
+    setSearch("");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step]);
+
   function handleSelect(id: string) {
     setPending((prev) => (prev === id ? null : id));
   }
@@ -159,9 +167,8 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
   }
 
   function handleBack() {
-    if (pending) { setPending(null); return; }
     if (step === 0) router.push("/feed");
-    else { setStep((s) => s - 1); setSearch(""); }
+    else setStep((s) => s - 1);
   }
 
   // Pular: só nos personagens opcionais. Remove qualquer voto do passo e avança (ou revisa).
@@ -250,24 +257,24 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
           </button>
           <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 4 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, letterSpacing: "0.06em", color: "#9a9a9a" }}>
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12, letterSpacing: "0.06em", color: "#fff", textShadow: "0 1px 3px rgba(0,0,0,0.55)" }}>
                 {currentGroup.label.toUpperCase()}
               </span>
               {isOptional ? (
                 <span style={{
-                  fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 9, letterSpacing: "0.08em",
-                  color: "#e0a83a", background: "rgba(224,168,58,0.14)", border: "1px solid rgba(224,168,58,0.45)",
-                  borderRadius: 9999, padding: "2px 7px",
+                  fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 10, letterSpacing: "0.06em",
+                  color: "#3a2a06", background: "#f0b84a",
+                  borderRadius: 9999, padding: "3px 9px", boxShadow: "0 1px 3px rgba(0,0,0,0.35)",
                 }}>OPCIONAL</span>
               ) : (
                 <span style={{
-                  fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 9, letterSpacing: "0.08em",
+                  fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 10, letterSpacing: "0.06em",
                   color: "#0a1a06", background: "#9fe870",
-                  borderRadius: 9999, padding: "2px 7px",
+                  borderRadius: 9999, padding: "3px 9px", boxShadow: "0 1px 3px rgba(0,0,0,0.35)",
                 }}>OBRIGATÓRIO</span>
               )}
             </div>
-            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#fff" }}>
+            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#fff", textShadow: "0 1px 3px rgba(0,0,0,0.45)" }}>
               {step + 1} de {total} personagens
             </p>
           </div>
@@ -355,18 +362,6 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
                   alt={trait.nome}
                   style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }}
                 />
-              </div>
-
-              {/* Pill: top:-8px, centrado */}
-              <div style={{
-                position: "absolute", top: -8, left: "50%", transform: "translateX(-50%)",
-                background: "rgba(55,55,55,0.2)", border: "1px solid rgba(255,255,255,0.15)",
-                borderRadius: 100, padding: "4px 10px", whiteSpace: "nowrap",
-                display: "flex", alignItems: "center", gap: 10,
-              }}>
-                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, color: "#fff", letterSpacing: "-0.4px" }}>
-                  VOTAÇÃO DO BABA · {step + 1}/{total}
-                </span>
               </div>
             </div>
 
