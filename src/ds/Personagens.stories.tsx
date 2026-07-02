@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { asset } from "./asset";
 
 const meta: Meta = { title: "Foundations/Personagens" };
 export default meta;
@@ -47,7 +48,7 @@ function Card({ p }: { p: P }) {
     <div style={{ background: "#141414", border: "1px solid #2c2c2c", borderRadius: 16, padding: 12, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
       <div style={{ width: 120, height: 120, display: "flex", alignItems: "center", justifyContent: "center" }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={`/votacao-mascot/${p.slug}.png`} alt={p.nome} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+        <img src={asset(`/votacao-mascot/${p.slug}.png`)} alt={p.nome} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
       </div>
       <span style={{ fontFamily: "var(--font-display, sans-serif)", fontWeight: 800, fontSize: 14, color: "#fff", textAlign: "center" }}>{p.nome}</span>
       <code style={{ fontSize: 11, color: "#7a7a7a" }}>{p.slug}</code>

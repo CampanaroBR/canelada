@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { asset } from "./asset";
 
 const meta: Meta = { title: "Foundations/Medalhas" };
 export default meta;
@@ -39,7 +40,7 @@ export const Galeria: Story = {
           <div key={m.slug} style={{ background: "#141414", border: "1px solid #2c2c2c", borderRadius: 16, padding: 14, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
             <div style={{ width: 96, height: 96, display: "flex", alignItems: "center", justifyContent: "center" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={m.file} alt={m.nome} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+              <img src={asset(m.file)} alt={m.nome} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
             </div>
             <span style={{ fontFamily: "var(--font-display, sans-serif)", fontWeight: 800, fontSize: 13, color: "#fff", textAlign: "center" }}>{m.nome}</span>
             <code style={{ fontSize: 10, color: "#7a7a7a" }}>{m.slug}</code>

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { colors, font } from "./tokens";
+import { asset } from "./asset";
 
 const meta: Meta = { title: "Foundations/Marca", parameters: { layout: "fullscreen" } };
 export default meta;
@@ -23,7 +24,7 @@ export const Marca: Story = {
         {[colors.bg.base, colors.bg.card, colors.accent.default].map((bg, i) => (
           <div key={i} style={{ width: 120, height: 120, borderRadius: 16, background: bg, border: `1px solid ${colors.bg.border}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo.png" alt="Canelada" width={64} height={64} style={{ borderRadius: "50%", objectFit: "cover" }} />
+            <img src={asset("/logo.png")} alt="Canelada" width={64} height={64} style={{ borderRadius: "50%", objectFit: "cover" }} />
           </div>
         ))}
       </div>
