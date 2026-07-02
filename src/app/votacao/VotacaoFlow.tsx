@@ -47,7 +47,8 @@ const BG_IMAGES: Record<string, string> = {
   "corpo-mole":    "/votacao-bg/corpo-mole.png",
   cone:            "/votacao-bg/cone.png",
   bagre:           "/votacao-bg/bagre.png",
-  // driblador e delegado ainda sem fundo dedicado → usam só o glow
+  driblador:       "/votacao-bg/driblador.png",
+  delegado:        "/votacao-bg/delegado.png",
 };
 
 // Cores do glow atrás do mascote — extraídas do Figma
@@ -67,8 +68,8 @@ const GLOW_COLORS: Record<string, string> = {
   "corpo-mole":    "#3c2b17",
   cone:            "#632d10",
   bagre:           "#0e394f",
-  driblador:       "#0f4a37",
-  delegado:        "#1a2f5f",
+  driblador:       "#5a2a12",
+  delegado:        "#333333",
 };
 
 // Mascotes: PNGs do Figma em /public/votacao-mascot/
