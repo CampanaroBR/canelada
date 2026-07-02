@@ -1,6 +1,7 @@
 import React from "react";
 import type { Preview } from "@storybook/react-vite";
 import { themes } from "storybook/theming";
+import "../src/ds/tokens.css";
 
 const preview: Preview = {
   tags: ["autodocs"],

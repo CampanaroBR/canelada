@@ -1,0 +1,51 @@
+{
+  "$description": "Bagre DS — tokens semânticos de cor (taxonomia Spotify Encore: color-[propriedade]-[elemento?]-[prioridade]-[estado?]). Tema dark. Fonte única: gera tokens.css e public/tokens.json.",
+  "color": {
+    "bg": {
+      "base":    { "default": "#090909" },
+      "surface": {
+        "primary":   { "default": "#0a0e0e", "hover": "#101414" },
+        "secondary": { "default": "#171717", "hover": "#1c1c1c" },
+        "tertiary":  { "default": "#1c1c1c", "hover": "#242424" }
+      },
+      "fill": {
+        "primary":   { "default": "#9fe870", "hover": "#b8f592", "active": "#7ed44e", "disabled": "#2c2c2c" },
+        "secondary": { "default": "#171717", "hover": "#1c1c1c", "active": "#242424", "disabled": "#171717" },
+        "danger":    { "default": "#e56767", "hover": "#f5b3b3", "active": "#d42020", "disabled": "#2c2c2c" }
+      },
+      "overlay": { "default": "rgba(0,0,0,0.60)" },
+      "disabled": { "default": "#1c1c1c" }
+    },
+    "text": {
+      "primary":   { "default": "#ffffff", "disabled": "#424242" },
+      "secondary": { "default": "#999999", "disabled": "#424242" },
+      "tertiary":  { "default": "#8a8a8a" },
+      "brand":     { "default": "#9fe870" },
+      "link":      { "default": "#9fe870", "hover": "#b8f592" },
+      "on-fill":   { "default": "#090909" },
+      "danger":    { "default": "#e56767" }
+    },
+    "border": {
+      "primary":   { "default": "#2c2c2c", "hover": "#424242" },
+      "secondary": { "default": "#424242" },
+      "tertiary":  { "default": "#383838" },
+      "subtle":    { "default": "#1c1c1c" },
+      "brand":     { "default": "#9fe870" },
+      "focus":     { "default": "#9fe870" },
+      "danger":    { "default": "#e56767" }
+    },
+    "icon": {
+      "primary":   { "default": "#ffffff", "hover": "#ffffff" },
+      "secondary": { "default": "#999999", "hover": "#ffffff" },
+      "brand":     { "default": "#9fe870" },
+      "danger":    { "default": "#e56767" }
+    },
+    "accent": {
+      "green":  { "default": "#9fe870", "subtle": "rgba(159,232,112,0.14)" },
+      "teal":   { "default": "#42bace", "subtle": "rgba(66,186,206,0.16)" },
+      "gold":   { "default": "#c5973a", "subtle": "rgba(197,151,58,0.16)" },
+      "red":    { "default": "#e56767", "subtle": "rgba(229,103,103,0.16)" },
+      "purple": { "default": "#a78bfa", "subtle": "rgba(167,139,250,0.16)" }
+    }
+  }
+}

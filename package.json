@@ -11,6 +11,7 @@
     "test:watch": "vitest",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "gen:tokens": "node scripts/gen-tokens.mjs",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "db:push": "prisma db push",

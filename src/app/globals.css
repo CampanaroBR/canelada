@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* Bagre DS — tokens semânticos (CSS vars, taxonomia Encore). Gerado de tokens.color.json */
+@import "../ds/tokens.css";
 
 /* ── Google Sans (self-hosted) ── */
 @font-face { font-family: "Google Sans"; font-style: normal; font-weight: 400; font-display: swap; src: url("/fonts/google-sans/GoogleSans-Regular.ttf") format("truetype"); }

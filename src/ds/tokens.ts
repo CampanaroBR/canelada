@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import colorTokens from "./tokens.color.json";
 
 /**
  * Bagre Design System — Tokens
@@ -184,3 +185,31 @@ export function textStyle(name: TextStyle): CSSProperties {
 }
 
 export const tokens = { primitives, semantic, colors, space, radius, shadow, motion, font, text } as const;
+
+// ── Encore — tokens semânticos (taxonomia Spotify Encore) ─────
+// Fonte única: tokens.color.json → gera tokens.css (CSS vars) e public/tokens.json (W3C).
+// `colors` acima permanece como camada de alias legada; a migração é incremental.
+export const encore = colorTokens.color;
+
+// Mapa achatado nome-kebab → hex (ex.: "bg-fill-primary-hover" → "#b8f592").
+function flattenColors(obj: unknown, path: string[] = []): Record<string, string> {
+  const out: Record<string, string> = {};
+  if (obj && typeof obj === "object") {
+    for (const [k, v] of Object.entries(obj as Record<string, unknown>)) {
+      if (k.startsWith("$")) continue;
+      if (typeof v === "string") out[[...path, k].join("-")] = v;
+      else Object.assign(out, flattenColors(v, [...path, k]));
+    }
+  }
+  return out;
+}
+export const tokenMap = flattenColors(encore);
+
+/** CSS var do token Encore: token("bg-fill-primary-hover") → "var(--color-bg-fill-primary-hover)". */
+export function token(name: string): string {
+  return `var(--color-${name})`;
+}
+/** Valor hex bruto do token (quando CSS var não serve): tokenValue("text-primary-default"). */
+export function tokenValue(name: string): string | undefined {
+  return tokenMap[name];
+}
