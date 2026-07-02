@@ -85,8 +85,10 @@ export default async function FeedPage() {
   const ART_BY_SLUG: Record<string, string> = {
     matador: "/premio/matador.jpg", categoria: "/premio/categoria.jpg", paredao: "/premio/paredao.jpg",
     racudo: "/premio/racudo.jpg", xerife: "/premio/xerife.jpg", garcom: "/premio/garcom.jpg",
-    "resenha-forte": "/premio/soresenha.jpg", chorao: "/premio/chorao.jpg", reclamao: "/premio/reclamao.jpg",
-    paneleiro: "/premio/paneleiro.jpg", firuleiro: "/premio/firuleiro.jpg", "corpo-mole": "/premio/pregueiro.jpg",
+    driblador: "/premio/driblador.jpg",
+    "resenha-forte": "/premio/soresenha.jpg", delegado: "/premio/delegado.jpg", chorao: "/premio/chorao.jpg", reclamao: "/premio/reclamao.jpg",
+    paneleiro: "/premio/paneleiro.jpg", firuleiro: "/premio/firuleiro.jpg",
+    pregueiro: "/premio/pregueiro.jpg", "corpo-mole": "/premio/pregueiro.jpg",
     cone: "/premio/cone.jpg", bagre: "/premio/bagredanoite.jpg",
   };
   type PersonagemSemana = { slug: string; nome: string; emoji: string | null; art: string; vencedor: string; votos: number };
