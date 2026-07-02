@@ -90,7 +90,7 @@ const MASCOTE: Record<string, string> = {
   cone:            "/votacao-mascot/cone.png",
   bagre:           "/votacao-mascot/bagre.png",
   driblador:       "/votacao-mascot/driblador.png",
-  // delegado ainda sem mascote dedicado → cai no fallback (gato)
+  delegado:        "/votacao-mascot/delegado.png",
 };
 
 
