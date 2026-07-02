@@ -464,82 +464,147 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
   );
 }
 
+const DONE_EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
+// Confete temático: bolas + emojis do baba, posições/atrasos fixos (determinístico)
+const CONFETTI = [
+  { emoji: "⚽", left: 12, delay: 0.05, dur: 2.6, size: 20, drift: -30 },
+  { emoji: "🏆", left: 24, delay: 0.35, dur: 3.1, size: 18, drift: 20 },
+  { emoji: "⚽", left: 38, delay: 0.6, dur: 2.4, size: 14, drift: -12 },
+  { emoji: "🔥", left: 50, delay: 0.15, dur: 2.9, size: 18, drift: 25 },
+  { emoji: "⚽", left: 62, delay: 0.5, dur: 2.7, size: 22, drift: -20 },
+  { emoji: "🥇", left: 74, delay: 0.25, dur: 3.0, size: 18, drift: 14 },
+  { emoji: "⚽", left: 86, delay: 0.45, dur: 2.5, size: 16, drift: -18 },
+  { emoji: "🎉", left: 6, delay: 0.7, dur: 3.2, size: 18, drift: 22 },
+  { emoji: "⚽", left: 92, delay: 0.1, dur: 2.8, size: 14, drift: -10 },
+  { emoji: "🔥", left: 32, delay: 0.8, dur: 3.0, size: 16, drift: 16 },
+  { emoji: "⚽", left: 68, delay: 0.9, dur: 2.6, size: 20, drift: -24 },
+];
+
 function DoneScreen({ router }: { router: ReturnType<typeof useRouter> }) {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => requestAnimationFrame(() => setShow(true)));
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
   return (
     <div style={{
       position: "fixed", top: 0, bottom: 0, left: "50%", transform: "translateX(-50%)",
       width: "min(100%, 430px)",
-      background: "#0a0e0e",
+      background: "#090909",
       display: "flex", flexDirection: "column",
       alignItems: "center", justifyContent: "center",
       overflow: "hidden",
+      padding: "0 24px", boxSizing: "border-box",
     }}>
-      {/* Background decorativo */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        aria-hidden
-        src="/success-bg.png"
-        alt=""
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }}
-      />
+      <style>{`
+        @keyframes done-pop { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+        @keyframes done-ring { 0% { transform: scale(0.7); opacity: 0.55; } 100% { transform: scale(2.2); opacity: 0; } }
+        @keyframes done-check { 0% { stroke-dashoffset: 48; } 100% { stroke-dashoffset: 0; } }
+        @keyframes done-fall { 0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 100% { transform: translateY(105vh) translateX(var(--drift)) rotate(320deg); opacity: 0; } }
+        @keyframes done-glow { 0%,100% { opacity: 0.5; } 50% { opacity: 0.85; } }
+      `}</style>
 
-      {/* CheckCircle 124px */}
-      <div style={{
-        position: "relative",
-        width: 124, height: 124,
-        borderRadius: "50%",
-        background: "#7ed44e",
-        flexShrink: 0,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        overflow: "hidden",
-      }}>
-        <CheckCircle size={104} color="#fff" weight="fill" style={{ position: "absolute", top: 10, left: 10 }} />
+      {/* Glow radial verde pulsante */}
+      <div aria-hidden style={{
+        position: "absolute", inset: 0, pointerEvents: "none",
+        background: "radial-gradient(460px 380px at 50% 38%, rgba(159,232,112,0.20), transparent 70%)",
+        animation: "done-glow 3.4s ease-in-out infinite",
+      }} />
+
+      {/* Confete */}
+      <div aria-hidden style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+        {CONFETTI.map((c, i) => (
+          <span key={i} style={{
+            position: "absolute", top: 0, left: `${c.left}%`, fontSize: c.size,
+            // @ts-expect-error custom prop
+            "--drift": `${c.drift}px`,
+            animation: `done-fall ${c.dur}s ${DONE_EASE} ${c.delay}s infinite`,
+          }}>{c.emoji}</span>
+        ))}
       </div>
 
-      {/* Spacer 56px */}
-      <div style={{ height: 56, flexShrink: 0 }} />
-
-      {/* Main content */}
-      <div style={{
-        position: "relative",
-        width: 313,
-        display: "flex", flexDirection: "column", alignItems: "center", gap: 58,
-      }}>
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 32, width: "100%" }}>
-          <p style={{
-            margin: 0,
-            width: 300,
-            fontFamily: "var(--font-display)", fontWeight: 700,
-            fontSize: 56, lineHeight: "64px",
-            color: "#fff", textAlign: "center", letterSpacing: "-2px",
-          }}>
-            É isso!
-          </p>
-          <p style={{
-            margin: 0,
-            fontFamily: "var(--font-body)", fontWeight: 600,
-            fontSize: 24, lineHeight: "32px",
-            color: "#fff", textAlign: "center", letterSpacing: "-1px",
-          }}>
-            Votação enviada! Agora é aguardar a resenha! 😂
-          </p>
+      {/* Check com anéis de pulso */}
+      <div style={{ position: "relative", width: 132, height: 132, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        {show && [0, 0.5].map((d, i) => (
+          <span key={i} aria-hidden style={{
+            position: "absolute", width: 132, height: 132, borderRadius: "50%",
+            border: "2px solid #9fe870",
+            animation: `done-ring 2.4s ${DONE_EASE} ${d}s infinite`,
+          }} />
+        ))}
+        <div style={{
+          position: "relative", width: 118, height: 118, borderRadius: "50%",
+          background: "linear-gradient(160deg, #b6f588 0%, #7ed44e 100%)",
+          boxShadow: "0 12px 40px rgba(159,232,112,0.4)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          animation: show ? `done-pop 0.7s ${DONE_EASE} both` : "none",
+          opacity: show ? 1 : 0,
+        }}>
+          <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#0a1a06" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 12.5l5 5L20 6" style={{
+              strokeDasharray: 48, strokeDashoffset: show ? 0 : 48,
+              animation: show ? `done-check 0.5s ${DONE_EASE} 0.4s both` : "none",
+            }} />
+          </svg>
         </div>
+      </div>
+
+      {/* Conteúdo — reveal escalonado */}
+      <div style={{ position: "relative", width: "100%", maxWidth: 340, display: "flex", flexDirection: "column", alignItems: "center", marginTop: 48 }}>
+        <div style={{
+          display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 14px", borderRadius: 9999,
+          background: "rgba(159,232,112,0.08)", border: "1px solid rgba(159,232,112,0.3)", marginBottom: 20,
+          opacity: show ? 1 : 0, transform: show ? "translateY(0)" : "translateY(16px)",
+          transition: `opacity 500ms ${DONE_EASE} 500ms, transform 500ms ${DONE_EASE} 500ms`,
+        }}>
+          <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#9fe870" }} />
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "#9fe870" }}>
+            Voto confirmado
+          </span>
+        </div>
+
+        <p style={{
+          margin: 0, fontFamily: "var(--font-display)", fontWeight: 900,
+          fontSize: 52, lineHeight: "56px", color: "#fff", textAlign: "center", letterSpacing: "-2px",
+          opacity: show ? 1 : 0, transform: show ? "translateY(0)" : "translateY(20px)", filter: show ? "blur(0)" : "blur(6px)",
+          transition: `opacity 600ms ${DONE_EASE} 580ms, transform 600ms ${DONE_EASE} 580ms, filter 600ms ${DONE_EASE} 580ms`,
+        }}>
+          É isso!
+        </p>
+
+        <p style={{
+          margin: "14px 0 0", fontFamily: "var(--font-body)", fontWeight: 500,
+          fontSize: 17, lineHeight: "24px", color: "#8a8a8a", textAlign: "center", maxWidth: 300,
+          opacity: show ? 1 : 0, transform: show ? "translateY(0)" : "translateY(20px)",
+          transition: `opacity 600ms ${DONE_EASE} 680ms, transform 600ms ${DONE_EASE} 680ms`,
+        }}>
+          Votação enviada! Agora é aguardar a resenha 😂
+        </p>
 
         <button
           onClick={() => router.push("/feed")}
           style={{
-            background: "#9fe870",
-            border: "none",
-            borderRadius: 9999,
-            padding: "12px 24px",
-            fontFamily: "var(--font-display)", fontWeight: 700,
-            fontSize: 16, lineHeight: "20px",
-            color: "#090909",
-            cursor: "pointer",
-            whiteSpace: "nowrap",
+            marginTop: 40, background: "#9fe870", border: "none", borderRadius: 9999,
+            height: 56, paddingLeft: 28, paddingRight: 8,
+            display: "flex", alignItems: "center", gap: 12,
+            cursor: "pointer", WebkitTapHighlightColor: "transparent",
+            opacity: show ? 1 : 0, transform: show ? "translateY(0)" : "translateY(20px)",
+            transition: `opacity 600ms ${DONE_EASE} 800ms, transform 600ms ${DONE_EASE} 800ms`,
           }}
+          onPointerDown={(e) => { e.currentTarget.style.transform = "scale(0.97)"; }}
+          onPointerUp={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
+          onPointerLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
         >
-          Ir para Home
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#0a1a06", whiteSpace: "nowrap" }}>
+            Ir para a Home
+          </span>
+          <span style={{
+            width: 40, height: 40, borderRadius: "50%", background: "rgba(10,26,6,0.14)",
+            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+          }}>
+            <CaretRight size={18} color="#0a1a06" weight="bold" />
+          </span>
         </button>
       </div>
     </div>
