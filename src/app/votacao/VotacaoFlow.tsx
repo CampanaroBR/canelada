@@ -174,6 +174,11 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
     else submitAllWith(next);
   }
 
+  // Finalizar: envia tudo o que já foi votado, sem passar pelos opcionais restantes.
+  function handleFinish() {
+    submitAllWith(selections);
+  }
+
   function submitAllWith(sels: Record<number, string>) {
     const votos = steps
       .map((t, i) => ({ categoria: "TRAIT" as const, traitSlug: t.slug, votadoId: sels[i] as string | undefined }))
@@ -346,6 +351,20 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
           padding: "24px 8px 96px", display: "flex", flexDirection: "column", gap: 16,
           flex: 1,
         }}>
+          {/* Aviso de transição: primeira etapa opcional */}
+          {step === REQUIRED_COUNT && (
+            <div style={{
+              margin: "0 8px", padding: "12px 14px", borderRadius: 14,
+              background: "rgba(159,232,112,0.08)", border: "1px solid rgba(159,232,112,0.3)",
+              display: "flex", gap: 10, alignItems: "flex-start",
+            }}>
+              <span style={{ fontSize: 18, lineHeight: "20px" }}>🎉</span>
+              <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, lineHeight: "18px", color: "#cfe9b8" }}>
+                Obrigatórios concluídos! Daqui em diante é <strong style={{ color: "#9fe870" }}>opcional</strong> — vote em quem quiser, toque em <strong style={{ color: "#fff" }}>Pular</strong> ou <strong style={{ color: "#fff" }}>Finalize</strong> quando quiser.
+              </p>
+            </div>
+          )}
+
           <p style={{
             margin: 0, paddingLeft: 8,
             fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18,
@@ -431,6 +450,26 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
               </div>
             )}
           </div>
+
+          {/* Finalizar votação — só nos opcionais, encerra sem pular um a um */}
+          {isOptional && (
+            <div style={{ padding: "8px 8px 0", display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+              <button
+                onClick={handleFinish}
+                style={{
+                  width: "100%", height: 50, borderRadius: 14,
+                  background: "transparent", border: "1px solid #2e2e2e",
+                  fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#9fe870",
+                  cursor: "pointer", WebkitTapHighlightColor: "transparent",
+                }}
+              >
+                Finalizar votação
+              </button>
+              <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, color: "#7a7a7a" }}>
+                envia o que você já votou
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
