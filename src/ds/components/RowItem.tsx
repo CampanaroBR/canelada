@@ -1,5 +1,5 @@
 import React from "react";
-import { colors, font } from "../tokens";
+import { font, token } from "../tokens";
 
 export interface RowItemProps {
   icon?: React.ReactNode;
@@ -34,11 +34,11 @@ export function RowItem({ icon, label, sub, trailing, onClick }: RowItemProps) {
     >
       {icon}
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontFamily: font.body, fontWeight: 600, fontSize: 15, color: colors.text.primary, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+        <div style={{ fontFamily: font.body, fontWeight: 600, fontSize: 15, color: token("text-primary-default"), whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
           {label}
         </div>
         {sub && (
-          <div style={{ fontFamily: font.body, fontWeight: 500, fontSize: 12, color: colors.text.muted }}>{sub}</div>
+          <div style={{ fontFamily: font.body, fontWeight: 500, fontSize: 12, color: token("text-tertiary-default") }}>{sub}</div>
         )}
       </div>
       {trailing !== undefined ? trailing : interactive ? <Caret /> : null}

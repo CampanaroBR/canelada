@@ -1,5 +1,5 @@
 import React from "react";
-import { colors, radius } from "../tokens";
+import { radius, token } from "../tokens";
 
 export interface IconBoxProps {
   children: React.ReactNode;
@@ -11,8 +11,8 @@ export interface IconBoxProps {
 
 /** Caixa de ícone padrão do Canelada (ex.: linhas de conta, headers de seção). */
 export function IconBox({ children, size = 36, tone = "default", radiusToken = "md" }: IconBoxProps) {
-  const bg = tone === "accent" ? colors.accent.default : tone === "danger" ? colors.semantic.danger : colors.bg.elevated;
-  const border = tone === "default" ? `1px solid ${colors.bg.border}` : "none";
+  const bg = tone === "accent" ? token("bg-fill-primary-default") : tone === "danger" ? token("bg-fill-danger-default") : token("bg-surface-tertiary-default");
+  const border = tone === "default" ? `1px solid ${token("border-primary-default")}` : "none";
   return (
     <div
       style={{
