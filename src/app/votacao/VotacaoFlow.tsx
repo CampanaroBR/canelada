@@ -4,7 +4,7 @@ import { useState, useTransition, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { submitVotos } from "./actions";
 // TRAIT_SVG removido — usamos ilustrações de personagens PNG no hero
-import { CaretLeft, CaretRight, MagnifyingGlass, CheckCircle, Check } from "@phosphor-icons/react";
+import { CaretLeft, CaretRight, MagnifyingGlass, CheckCircle, Check, Confetti } from "@phosphor-icons/react";
 
 type Jogador = { id: string; apelido: string };
 type Trait = { slug: string; nome: string; categoria: string; emoji: string | null; descricao: string | null };
@@ -392,14 +392,25 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
           {/* Aviso de transição: primeira etapa opcional */}
           {step === REQUIRED_COUNT && (
             <div style={{
-              margin: "0 8px", padding: "12px 14px", borderRadius: 14,
-              background: "rgba(159,232,112,0.08)", border: "1px solid rgba(159,232,112,0.3)",
-              display: "flex", gap: 10, alignItems: "flex-start",
+              margin: "0 8px", padding: 14, borderRadius: 16,
+              background: "rgba(159,232,112,0.08)", border: "1px solid rgba(159,232,112,0.28)",
+              display: "flex", gap: 12, alignItems: "center",
             }}>
-              <span style={{ fontSize: 18, lineHeight: "20px" }}>🎉</span>
-              <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, lineHeight: "18px", color: "#cfe9b8" }}>
-                Obrigatórios concluídos! Daqui em diante é <strong style={{ color: "#9fe870" }}>opcional</strong> — vote em quem quiser, toque em <strong style={{ color: "#fff" }}>Pular</strong> ou <strong style={{ color: "#fff" }}>Finalize</strong> quando quiser.
-              </p>
+              <div style={{
+                width: 40, height: 40, borderRadius: 12, flexShrink: 0,
+                background: "rgba(159,232,112,0.14)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <Confetti size={22} color="#9fe870" weight="regular" />
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 14, color: "#fff" }}>
+                  Agora é opcional
+                </p>
+                <p style={{ margin: "2px 0 0", fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, lineHeight: "18px", color: "#a9c99a" }}>
+                  Vote em quem quiser, ou toque em Pular / Finalizar quando terminar.
+                </p>
+              </div>
             </div>
           )}
 
@@ -443,9 +454,9 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
             ) : (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
                 {filtered.map((j) => {
-                  const isSelected = selections[step] === j.id;
-                  const isPendingThis = pending === j.id;
-                  const highlight = isSelected || isPendingThis;
+                  // Só a escolha atual (pending) fica destacada. Ao voltar, o pending já
+                  // vem sincronizado com o voto salvo, então trocar não acende dois.
+                  const highlight = pending === j.id;
                   const initial = getInitial(j.apelido);
                   const color = getAvatarColor(j.apelido);
 
