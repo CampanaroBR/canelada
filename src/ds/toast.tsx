@@ -38,27 +38,30 @@ export const toast = {
 
 // Estilo "Filled" do Hive, recontextualizado: fundo sólido do status, ícone em
 // círculo com a cor invertida, X pra fechar. Success usa o verde da marca.
-const TONE: Record<ToastType, { bg: string; fg: string; iconBg: string; iconFg: string; icon: React.ReactNode }> = {
+const TONE: Record<ToastType, { bg: string; fg: string; border: string; iconBg: string; iconFg: string; icon: React.ReactNode }> = {
   success: {
     bg: colors.accent.default,        // #9fe870
     fg: "#0a1a06",
+    border: "#d6ffbc",
     iconBg: "#0a1a06",
     iconFg: colors.accent.default,
-    icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>,
+    icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>,
   },
   error: {
     bg: "#d42020",
     fg: "#ffffff",
+    border: "#f5b3b3",
     iconBg: "#ffffff",
     iconFg: "#d42020",
-    icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>,
+    icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>,
   },
   info: {
     bg: "#1c1c1c",
     fg: "#ffffff",
+    border: "#424242",
     iconBg: colors.accent.default,
     iconFg: "#0a1a06",
-    icon: <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><line x1="12" y1="11" x2="12" y2="16" /><line x1="12" y1="8" x2="12" y2="8" /></svg>,
+    icon: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><line x1="12" y1="11" x2="12" y2="16" /><line x1="12" y1="8" x2="12" y2="8" /></svg>,
   },
 };
 
@@ -73,24 +76,24 @@ function ToastCard({ t }: { t: ToastItem }) {
         alignItems: "center",
         gap: 10,
         background: tone.bg,
-        border: t.type === "info" ? "1px solid #2c2c2c" : "none",
-        borderRadius: radius.md,
+        border: `1.5px solid ${tone.border}`,
+        borderRadius: 14,
         boxShadow: shadow.lg,
-        padding: "10px 12px",
-        maxWidth: 360,
+        padding: "13px 15px",
+        maxWidth: 380,
         width: "100%",
         boxSizing: "border-box",
         cursor: "pointer",
         animation: `bagre-toast-in ${motion.duration.base}ms ${motion.ease.spring}`,
       }}
     >
-      <span style={{ width: 20, height: 20, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: tone.iconBg, color: tone.iconFg }}>
+      <span style={{ width: 24, height: 24, borderRadius: "50%", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: tone.iconBg, color: tone.iconFg }}>
         {tone.icon}
       </span>
-      <span style={{ flex: 1, fontFamily: font.body, fontWeight: 600, fontSize: 13.5, lineHeight: "18px", color: tone.fg }}>
+      <span style={{ flex: 1, fontFamily: font.body, fontWeight: 600, fontSize: 14.5, lineHeight: "20px", color: tone.fg }}>
         {t.message}
       </span>
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={tone.fg} strokeWidth="2.5" strokeLinecap="round" opacity={0.7} style={{ flexShrink: 0 }} aria-hidden>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={tone.fg} strokeWidth="2.5" strokeLinecap="round" opacity={0.7} style={{ flexShrink: 0 }} aria-hidden>
         <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
       </svg>
     </div>
