@@ -535,8 +535,10 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
         </div>
       </div>
 
-      {/* ── Confirm pill flutuante (estilo navbar) ── */}
-      {pending && pendingPlayer && (
+      {/* ── Confirm pill flutuante (estilo navbar) ──
+          Escondida enquanto a busca está focada: com o teclado aberto no iOS ela
+          flutua sobre o grid e briga com a barra de acessórios do teclado. */}
+      {pending && pendingPlayer && !searchFocused && (
         <div style={{
           position: "absolute", left: 8, right: 8,
           bottom: `calc(env(safe-area-inset-bottom, 0px) + 8px)`,

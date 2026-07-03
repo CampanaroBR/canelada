@@ -21,6 +21,7 @@ export function BottomSheet({ open, onClose, children, maxHeight = "88dvh", bg =
   const [mounted, setMounted] = useState(open);
   const [visible, setVisible] = useState(false);
   const [drag, setDrag] = useState(0);
+  const [kb, setKb] = useState(0);
   const startY = useRef<number | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -35,6 +36,22 @@ export function BottomSheet({ open, onClose, children, maxHeight = "88dvh", bg =
     }
     return () => { if (timer.current) clearTimeout(timer.current); };
   }, [open]);
+
+  // Teclado no iOS: bottom:0 é relativo ao layout viewport, então o sheet fica
+  // atrás do teclado ao focar um input. Sobe o sheet junto acompanhando o visualViewport.
+  useEffect(() => {
+    const vv = typeof window !== "undefined" ? window.visualViewport : null;
+    if (!vv || !mounted) return;
+    const onResize = () => setKb(Math.max(0, window.innerHeight - vv.height - vv.offsetTop));
+    vv.addEventListener("resize", onResize);
+    vv.addEventListener("scroll", onResize);
+    onResize();
+    return () => {
+      vv.removeEventListener("resize", onResize);
+      vv.removeEventListener("scroll", onResize);
+      setKb(0);
+    };
+  }, [mounted]);
 
   if (!mounted) return null;
 
@@ -63,10 +80,11 @@ export function BottomSheet({ open, onClose, children, maxHeight = "88dvh", bg =
         role="dialog"
         aria-modal="true"
         style={{
-          position: "fixed", bottom: 0, left: "50%",
+          position: "fixed", bottom: kb, left: "50%",
           transform: `translateX(-50%) translateY(${visible ? `${drag}px` : "100%"})`,
           width: "min(100%, 430px)", zIndex: 51,
-          maxHeight, display: "flex", flexDirection: "column",
+          maxHeight: kb > 0 ? `calc(${maxHeight} - ${kb}px)` : maxHeight,
+          display: "flex", flexDirection: "column",
           background: bg,
           border: "1px solid #2c2c2c", borderBottom: "none",
           borderRadius: "28px 28px 0 0",

@@ -1,11 +1,27 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X, ShareNetwork, CalendarBlank, Alarm } from "@phosphor-icons/react";
 import { toBlob } from "html-to-image";
 import type { PersonagemSemana } from "./ShareCardModal";
 
 const SHARE_BG = "/share-campo.jpg"; // estádio + gramado já compostos
+
+// Pré-carrega uma imagem como data-URL — no iOS o html-to-image não embute <img>
+// remoto a tempo e o fundo sai preto na captura.
+function useDataUrl(src: string): string {
+  const [url, setUrl] = useState(src);
+  useEffect(() => {
+    let on = true;
+    fetch(src)
+      .then((r) => r.blob())
+      .then((b) => new Promise<string>((res) => { const fr = new FileReader(); fr.onload = () => res(fr.result as string); fr.readAsDataURL(b); }))
+      .then((d) => { if (on) setUrl(d); })
+      .catch(() => {});
+    return () => { on = false; };
+  }, [src]);
+  return url;
+}
 const TSHIRT_FILLED = "/tshirt-filled.svg";
 const TSHIRT_GK_FILL = "/tshirt-gk-filled.svg";
 
@@ -42,13 +58,19 @@ function Shirt({ p, tshirt }: { p: PersonagemSemana | null; tshirt: string }) {
 export function SelecaoShareModal({ selecao, grupoNome, dataRodada, horarioJogo, parcial, gkVermelho, onClose }: Props) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [sharing, setSharing] = useState(false);
+  const bgData = useDataUrl(SHARE_BG);
 
   async function handleShare() {
     if (sharing || !cardRef.current) return;
     setSharing(true);
     const texto = `${parcial ? "Parcial" : "Time"} da rodada — ${grupoNome}! ⚽`;
     try {
-      const blob = await toBlob(cardRef.current, { pixelRatio: 2, cacheBust: true });
+      // garante fontes e imagens prontas antes da captura (iOS)
+      await document.fonts?.ready?.then?.(() => {}).catch?.(() => {});
+      await Promise.all(
+        Array.from(cardRef.current.querySelectorAll("img")).map((img) => img.decode().catch(() => {}))
+      );
+      const blob = await toBlob(cardRef.current, { pixelRatio: 2 });
       if (!blob) throw new Error("sem blob");
       const file = new File([blob], "selecao.png", { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) {
@@ -90,7 +112,7 @@ export function SelecaoShareModal({ selecao, grupoNome, dataRodada, horarioJogo,
         }}>
           {/* Fundo: estádio + gramado já compostos */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={SHARE_BG} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+          <img src={bgData} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
 
           {/* Título */}
           <div style={{ position: "absolute", top: "7.5%", left: 0, right: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
