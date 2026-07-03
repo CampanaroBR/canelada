@@ -73,6 +73,22 @@ export async function criarRodada(data: string, participantesIds: string[]) {
     },
   });
 
-  // Notificações serão enviadas automaticamente às 22:30 pelo cron /api/cron/abrir-votacao
+  // Push imediato pra todos do grupo: lista confirmada. (Votação abre às 22:30 via cron.)
+  try {
+    const membros = await prisma.jogador.findMany({
+      where: { grupoId: jogador.grupoId },
+      include: { pushSubscriptions: true },
+    });
+    const subs = membros.flatMap((m) => m.pushSubscriptions);
+    if (subs.length > 0) {
+      const { sendPushToSubscriptions } = await import("@/lib/webpush");
+      await sendPushToSubscriptions(subs, {
+        title: "📋 Baba confirmado!",
+        body: `Lista fechada com ${participantesIds.length} jogadores. Votação abre às 22:30!`,
+        url: "/feed",
+      });
+    }
+  } catch { /* push é best-effort — não bloqueia a criação */ }
+
   return { rodadaId: rodada.id, totalJogadores: participantesIds.length };
 }

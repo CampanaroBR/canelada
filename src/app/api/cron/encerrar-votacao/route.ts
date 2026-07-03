@@ -44,6 +44,23 @@ export async function GET(req: NextRequest) {
   const grupos = [...new Set(aEncerrar.map(r => r.grupoId))];
   let totalNovas = 0, pushEnviados = 0;
 
+  // Broadcast pra todos do grupo: resultados saíram
+  for (const grupoId of grupos) {
+    const membros = await prisma.jogador.findMany({
+      where: { grupoId },
+      include: { pushSubscriptions: true },
+    });
+    const subs = membros.flatMap((m) => m.pushSubscriptions);
+    if (subs.length > 0) {
+      const results = await sendPushToSubscriptions(subs, {
+        title: "🏆 Saíram os resultados!",
+        body: "A votação encerrou. Vem ver quem foi o craque e quem foi o bagre! 😂",
+        url: "/feed",
+      });
+      pushEnviados += results.filter(r => r.status === "fulfilled").length;
+    }
+  }
+
   for (const grupoId of grupos) {
     const novas = await sincronizarBadges(grupoId);
     if (novas.length === 0) continue;
