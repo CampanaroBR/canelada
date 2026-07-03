@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { criarRodada } from "@/app/votacao/actions";
 import { badgesHome } from "@/lib/badges";
 import { HomeClient } from "./HomeClient";
+import { PushAutoEnroll } from "@/components/PushAutoEnroll";
 
 export const dynamic = "force-dynamic";
 
@@ -300,6 +301,8 @@ export default async function FeedPage() {
   })() : null;
 
   return (
+    <>
+    <PushAutoEnroll />
     <HomeClient
       IMG={{}}
       rodadaId={rodadaAtiva?.id ?? null}
@@ -321,5 +324,6 @@ export default async function FeedPage() {
       proximoBaba={proximoBaba}
       criarRodadaAction={criarRodada}
     />
+    </>
   );
 }

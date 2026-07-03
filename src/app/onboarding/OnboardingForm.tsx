@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { saveOnboarding } from "./actions";
+import { enablePush } from "@/lib/pushClient";
 
 const MAX = 20;
 
@@ -15,6 +16,9 @@ export function OnboardingForm() {
     e.preventDefault();
     if (!apelido.trim() || !nomeNoBaba.trim()) return;
     setError("");
+    // Ativa notificações por padrão no cadastro — precisa partir do gesto do usuário
+    // (regra do iOS/Chrome), por isso dispara aqui e não num useEffect.
+    void enablePush();
     startTransition(async () => {
       const result = await saveOnboarding(apelido, nomeNoBaba);
       if (result?.error) setError(result.error);
