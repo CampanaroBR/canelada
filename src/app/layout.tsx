@@ -4,6 +4,7 @@ import "./globals.css";
 import { PushInit } from "@/components/PushInit";
 import { OrientationGuard } from "@/components/OrientationGuard";
 import { Toaster } from "@/ds/toast";
+import { SplashScreen } from "@/components/SplashScreen";
 
 // Body/números = Google Sans (self-hosted via @font-face em globals.css). Barlow = display.
 const barlow = Barlow({
@@ -46,6 +47,7 @@ export default function RootLayout({
         </div>
         <OrientationGuard />
         <Toaster />
+        <SplashScreen />
       </body>
     </html>
   );

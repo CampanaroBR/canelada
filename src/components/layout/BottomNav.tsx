@@ -67,15 +67,15 @@ export function BottomNav() {
                   transition: "background 180ms cubic-bezier(0.34,1.56,0.64,1), border-radius 180ms cubic-bezier(0.34,1.56,0.64,1)",
                 }}>
                   <div style={{
-                    width: 22,
-                    height: 22,
+                    width: 24,
+                    height: 24,
                     marginBottom: -1,
                     flexShrink: 0,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                   }}>
-                    <item.Icon size={22} color={isActive ? "#000" : "#fff"} weight="regular" />
+                    <item.Icon size={24} color={isActive ? "#000" : "#fff"} weight="regular" />
                   </div>
                   <span style={{
                     fontFamily: "var(--font-display)",
