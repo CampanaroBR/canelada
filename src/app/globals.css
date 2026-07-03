@@ -165,23 +165,23 @@ h1, h2, h3, h4, h5, h6 {
   /* vidro CLARO: gradiente diagonal branco translúcido — lê como vidro até sobre preto */
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.16) 0%,
-    rgba(255, 255, 255, 0.06) 35%,
-    rgba(255, 255, 255, 0.03) 60%,
-    rgba(255, 255, 255, 0.11) 100%
+    rgba(255, 255, 255, 0.09) 0%,
+    rgba(255, 255, 255, 0.035) 35%,
+    rgba(255, 255, 255, 0.02) 60%,
+    rgba(255, 255, 255, 0.06) 100%
   );
-  backdrop-filter: blur(24px) saturate(190%);
-  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  backdrop-filter: blur(22px) saturate(190%);
+  -webkit-backdrop-filter: blur(22px) saturate(190%);
   border: none;
   box-shadow:
-    /* aresta especular forte no topo (a assinatura do liquid glass) */
-    inset 0 1.5px 1px rgba(255, 255, 255, 0.45),
+    /* aresta especular no topo (a assinatura do liquid glass) */
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.35),
     /* aresta inferior mais fraca (luz refletida) */
-    inset 0 -1px 1px rgba(255, 255, 255, 0.14),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.10),
     /* volume interno difuso */
-    inset 2px 4px 12px rgba(255, 255, 255, 0.06),
+    inset 2px 4px 12px rgba(255, 255, 255, 0.04),
     /* sombra de elevação */
-    0 12px 32px rgba(0, 0, 0, 0.55);
+    0 12px 32px rgba(0, 0, 0, 0.5);
 }
 /* sheen: reflexo radial no canto superior esquerdo, como luz numa lente */
 .glass-nav::before {
@@ -190,7 +190,7 @@ h1, h2, h3, h4, h5, h6 {
   inset: 0;
   border-radius: inherit;
   pointer-events: none;
-  background: radial-gradient(120% 90% at 22% 0%, rgba(255, 255, 255, 0.18), transparent 55%);
+  background: radial-gradient(120% 90% at 22% 0%, rgba(255, 255, 255, 0.11), transparent 55%);
 }
 /* Fallback: sem suporte a backdrop-filter, usa fundo mais opaco */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
