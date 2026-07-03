@@ -1,5 +1,5 @@
 import React from "react";
-import { colors, font } from "../tokens";
+import { font, token } from "../tokens";
 
 /** Campo genérico: label + required + controle + hint/erro. Use pra dar label consistente a qualquer controle. */
 export function FormField({
@@ -20,12 +20,12 @@ export function FormField({
       {label && (
         <span style={{ display: "block", marginBottom: 6, fontFamily: font.body, fontWeight: 600, fontSize: 14, lineHeight: "20px", color: "#f5f5f5" }}>
           {label}
-          {required && <span style={{ color: colors.semantic.danger, marginLeft: 3 }}>*</span>}
+          {required && <span style={{ color: token("accent-red-default"), marginLeft: 3 }}>*</span>}
         </span>
       )}
       {children}
       {(error || hint) && (
-        <span style={{ display: "block", marginTop: 6, fontFamily: font.body, fontWeight: 500, fontSize: 12, color: error ? colors.semantic.danger : colors.text.muted }}>
+        <span style={{ display: "block", marginTop: 6, fontFamily: font.body, fontWeight: 500, fontSize: 12, color: error ? token("accent-red-default") : token("text-tertiary-default") }}>
           {error ?? hint}
         </span>
       )}
@@ -50,7 +50,7 @@ export function Form({ title, gap = 16, onSubmit, children }: { title?: string; 
       onSubmit={(e) => { e.preventDefault(); onSubmit?.(); }}
       style={{ display: "flex", flexDirection: "column", gap, width: "100%" }}
     >
-      {title && <h2 style={{ margin: 0, fontFamily: font.display, fontWeight: 800, fontSize: 16, textTransform: "uppercase", color: colors.text.primary }}>{title}</h2>}
+      {title && <h2 style={{ margin: 0, fontFamily: font.display, fontWeight: 800, fontSize: 16, textTransform: "uppercase", color: token("text-primary-default") }}>{title}</h2>}
       {children}
     </form>
   );

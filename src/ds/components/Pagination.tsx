@@ -1,5 +1,5 @@
 import React from "react";
-import { colors, font, radius } from "../tokens";
+import { font, radius, token } from "../tokens";
 
 export interface PaginationProps {
   page: number; // 1-based
@@ -30,8 +30,8 @@ export function Pagination({ page, total, onChange, siblings = 1 }: PaginationPr
       disabled={disabled}
       style={{
         height: 36, padding: "0 12px", borderRadius: radius.md,
-        background: "transparent", border: `1px solid ${colors.bg.border}`,
-        color: disabled ? colors.text.muted : colors.text.primary,
+        background: "transparent", border: `1px solid ${token("border-primary-default")}`,
+        color: disabled ? token("text-tertiary-default") : token("text-primary-default"),
         fontFamily: font.display, fontWeight: 700, fontSize: 13,
         cursor: disabled ? "not-allowed" : "pointer", opacity: disabled ? 0.5 : 1,
         WebkitTapHighlightColor: "transparent",
@@ -46,7 +46,7 @@ export function Pagination({ page, total, onChange, siblings = 1 }: PaginationPr
       {navBtn("Anterior", page - 1, page <= 1)}
       {items.map((it, i) =>
         it === "…" ? (
-          <span key={`e${i}`} style={{ width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", color: colors.text.muted, fontFamily: font.display, fontWeight: 700 }}>…</span>
+          <span key={`e${i}`} style={{ width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", color: token("text-tertiary-default"), fontFamily: font.display, fontWeight: 700 }}>…</span>
         ) : (
           <button
             key={it}
@@ -54,9 +54,9 @@ export function Pagination({ page, total, onChange, siblings = 1 }: PaginationPr
             aria-current={it === page}
             style={{
               minWidth: 36, height: 36, padding: "0 8px", borderRadius: radius.md,
-              background: it === page ? colors.accent.default : "transparent",
-              border: `1px solid ${it === page ? colors.accent.default : colors.bg.border}`,
-              color: it === page ? colors.text.onAccent : colors.text.primary,
+              background: it === page ? token("accent-green-default") : "transparent",
+              border: `1px solid ${it === page ? token("accent-green-default") : token("border-primary-default")}`,
+              color: it === page ? token("text-on-fill-default") : token("text-primary-default"),
               fontFamily: font.display, fontWeight: it === page ? 800 : 600, fontSize: 14,
               cursor: "pointer", WebkitTapHighlightColor: "transparent",
             }}

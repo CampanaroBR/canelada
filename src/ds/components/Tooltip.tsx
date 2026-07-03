@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { colors, font, radius } from "../tokens";
+import { font, radius, token } from "../tokens";
 
 export interface TooltipProps {
   label: string;
@@ -28,9 +28,9 @@ export function Tooltip({ label, placement = "top", children }: TooltipProps) {
             left: "50%",
             transform: "translateX(-50%)",
             [top ? "bottom" : "top"]: "calc(100% + 8px)",
-            background: colors.bg.elevated,
-            color: colors.text.primary,
-            border: `1px solid ${colors.bg.border}`,
+            background: token("bg-surface-tertiary-default"),
+            color: token("text-primary-default"),
+            border: `1px solid ${token("border-primary-default")}`,
             borderRadius: radius.md,
             padding: "6px 10px",
             fontFamily: font.body,
@@ -52,9 +52,9 @@ export function Tooltip({ label, placement = "top", children }: TooltipProps) {
               [top ? "top" : "bottom"]: "100%",
               width: 8,
               height: 8,
-              background: colors.bg.elevated,
-              borderRight: `1px solid ${colors.bg.border}`,
-              borderBottom: `1px solid ${colors.bg.border}`,
+              background: token("bg-surface-tertiary-default"),
+              borderRight: `1px solid ${token("border-primary-default")}`,
+              borderBottom: `1px solid ${token("border-primary-default")}`,
               transform: top ? "translateY(-50%) rotate(45deg)" : "translateY(50%) rotate(225deg)",
             }}
           />

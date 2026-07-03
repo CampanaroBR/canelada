@@ -1,5 +1,5 @@
 import React from "react";
-import { colors, font, radius } from "../tokens";
+import { font, radius, token } from "../tokens";
 
 export interface SlotProps {
   /** rótulo do espaço (ex.: "Conteúdo", "Ícone") */
@@ -21,7 +21,7 @@ export function Slot({ label = "slot", width = "100%", height = 44, children }: 
         width,
         height,
         borderRadius: radius.md,
-        border: `1.5px dashed ${colors.bg.borderStrong}`,
+        border: `1.5px dashed ${token("border-secondary-default")}`,
         background: "rgba(255,255,255,0.02)",
         display: "flex",
         alignItems: "center",
@@ -29,7 +29,7 @@ export function Slot({ label = "slot", width = "100%", height = 44, children }: 
         fontFamily: font.body,
         fontWeight: 500,
         fontSize: 12,
-        color: colors.text.muted,
+        color: token("text-tertiary-default"),
       }}
     >
       {label}

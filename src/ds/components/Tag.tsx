@@ -5,9 +5,9 @@ export type TagTone = "neutral" | "success" | "danger" | "gold" | "new";
 
 const TONES: Record<TagTone, { bg: string; fg: string; border?: string }> = {
   neutral: { bg: token("bg-surface-primary-default"), fg: token("text-secondary-default"), border: token("border-primary-default") },
-  success: { bg: colors.semantic.successBg, fg: colors.semantic.success, border: "rgba(159,232,112,0.3)" },
-  danger: { bg: colors.semantic.dangerBg, fg: colors.semantic.danger, border: "rgba(229,103,103,0.3)" },
-  gold: { bg: colors.semantic.goldBg, fg: colors.semantic.gold, border: "rgba(197,151,58,0.35)" },
+  success: { bg: colors.semantic.successBg, fg: token("accent-green-default"), border: "rgba(159,232,112,0.3)" },
+  danger: { bg: colors.semantic.dangerBg, fg: token("accent-red-default"), border: "rgba(229,103,103,0.3)" },
+  gold: { bg: colors.semantic.goldBg, fg: token("accent-gold-default"), border: "rgba(197,151,58,0.35)" },
   new: { bg: token("bg-fill-primary-default"), fg: token("text-on-fill-default") },
 };
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useLayoutEffect, useRef, useState } from "react";
-import { colors, font, radius, motion } from "../tokens";
+import { font, radius, motion, token } from "../tokens";
 
 export interface SegmentedItem {
   value: string;
@@ -44,8 +44,8 @@ export function SegmentedControl({ items, value, onChange, fullWidth }: Segmente
         display: "flex",
         width: fullWidth ? "100%" : "max-content",
         flexShrink: 0,
-        background: colors.bg.card,
-        border: `1px solid ${colors.bg.border}`,
+        background: token("bg-surface-secondary-default"),
+        border: `1px solid ${token("border-primary-default")}`,
         borderRadius: radius.pill,
         padding: 4,
         boxSizing: "border-box",
@@ -61,7 +61,7 @@ export function SegmentedControl({ items, value, onChange, fullWidth }: Segmente
             bottom: 4,
             left: rect.left,
             width: rect.width,
-            background: colors.accent.default,
+            background: token("accent-green-default"),
             borderRadius: radius.pill,
             transition: `left ${motion.duration.slow}ms ${EASE}, width ${motion.duration.slow}ms ${EASE}`,
           }}
@@ -88,7 +88,7 @@ export function SegmentedControl({ items, value, onChange, fullWidth }: Segmente
               fontFamily: font.display,
               fontWeight: 700,
               fontSize: 14,
-              color: active ? colors.text.onAccent : colors.text.muted,
+              color: active ? token("text-on-fill-default") : token("text-tertiary-default"),
               transition: `color ${motion.duration.base}ms ${EASE}, transform 180ms ${EASE}`,
               WebkitTapHighlightColor: "transparent",
               whiteSpace: "nowrap",

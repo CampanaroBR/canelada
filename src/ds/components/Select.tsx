@@ -1,5 +1,5 @@
 import React from "react";
-import { colors, font, radius } from "../tokens";
+import { colors, font, radius, token } from "../tokens";
 
 export interface SelectOption {
   value: string;
@@ -24,7 +24,7 @@ export function Select({ label, required, options, value, onChange, placeholder 
       {label && (
         <span style={{ display: "block", marginBottom: 6, fontFamily: font.body, fontWeight: 600, fontSize: 14, lineHeight: "20px", color: "#f5f5f5" }}>
           {label}
-          {required && <span style={{ color: colors.semantic.danger, marginLeft: 3 }}>*</span>}
+          {required && <span style={{ color: token("accent-red-default"), marginLeft: 3 }}>*</span>}
         </span>
       )}
       <div style={{ position: "relative", width: "100%" }}>
@@ -39,11 +39,11 @@ export function Select({ label, required, options, value, onChange, placeholder 
             appearance: "none",
             WebkitAppearance: "none",
             MozAppearance: "none",
-            background: disabled ? colors.bg.card : colors.bg.surface,
-            border: `1px solid ${error ? colors.semantic.danger : colors.bg.border}`,
+            background: disabled ? token("bg-surface-secondary-default") : token("bg-surface-primary-default"),
+            border: `1px solid ${error ? token("accent-red-default") : token("border-primary-default")}`,
             borderRadius: radius.lg,
             padding: "0 38px 0 16px",
-            color: value ? colors.text.primary : colors.text.muted,
+            color: value ? token("text-primary-default") : token("text-tertiary-default"),
             fontFamily: font.body,
             fontWeight: 600,
             fontSize: 14,

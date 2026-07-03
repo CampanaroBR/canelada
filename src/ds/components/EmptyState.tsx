@@ -1,5 +1,5 @@
 import React from "react";
-import { colors, font, radius } from "../tokens";
+import { font, radius, token } from "../tokens";
 
 export interface EmptyStateProps {
   /** ícone (Phosphor regular) — renderizado dentro de um badge */
@@ -24,8 +24,8 @@ export function EmptyState({ icon, title, description, action, link, tone = "sur
         textAlign: "center",
         gap: 4,
         padding: "40px 24px",
-        background: tone === "card" ? colors.bg.card : colors.bg.surface,
-        border: `1px solid ${colors.bg.border}`,
+        background: tone === "card" ? token("bg-surface-secondary-default") : token("bg-surface-primary-default"),
+        border: `1px solid ${token("border-primary-default")}`,
         borderRadius: radius.xl,
       }}
     >
@@ -35,21 +35,21 @@ export function EmptyState({ icon, title, description, action, link, tone = "sur
             width: 44,
             height: 44,
             borderRadius: radius.md,
-            background: colors.bg.base,
-            border: `1px solid ${colors.bg.border}`,
+            background: token("bg-base-default"),
+            border: `1px solid ${token("border-primary-default")}`,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             marginBottom: 16,
-            color: colors.text.muted,
+            color: token("text-tertiary-default"),
           }}
         >
           {icon}
         </div>
       )}
-      <p style={{ margin: 0, fontFamily: font.display, fontWeight: 800, fontSize: 16, lineHeight: "20px", color: colors.text.primary }}>{title}</p>
+      <p style={{ margin: 0, fontFamily: font.display, fontWeight: 800, fontSize: 16, lineHeight: "20px", color: token("text-primary-default") }}>{title}</p>
       {description && (
-        <p style={{ margin: 0, fontFamily: font.body, fontWeight: 500, fontSize: 14, lineHeight: "20px", color: colors.text.muted, maxWidth: 320 }}>
+        <p style={{ margin: 0, fontFamily: font.body, fontWeight: 500, fontSize: 14, lineHeight: "20px", color: token("text-tertiary-default"), maxWidth: 320 }}>
           {description}
         </p>
       )}

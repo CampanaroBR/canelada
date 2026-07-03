@@ -1,5 +1,5 @@
 import React from "react";
-import { colors, motion } from "../tokens";
+import { motion, token } from "../tokens";
 
 export interface ToggleProps {
   checked: boolean;
@@ -20,7 +20,7 @@ export function Toggle({ checked, onChange, disabled }: ToggleProps) {
         width: 40,
         height: 22,
         borderRadius: 9999,
-        background: checked ? colors.accent.default : "#3a3a3a",
+        background: checked ? token("accent-green-default") : "#3a3a3a",
         border: "none",
         flexShrink: 0,
         cursor: disabled ? "not-allowed" : "pointer",

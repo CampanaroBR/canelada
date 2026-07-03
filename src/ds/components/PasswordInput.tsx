@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { colors, font, radius } from "../tokens";
+import { font, radius, token } from "../tokens";
 
 export interface PasswordInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "className" | "type"> {
   label?: string;
@@ -19,10 +19,10 @@ function score(v: string): number {
   return Math.min(s, 3); // 0..3
 }
 const STRENGTH = [
-  { label: "", color: colors.bg.border },
-  { label: "Fraca", color: colors.semantic.danger },
-  { label: "Média", color: colors.semantic.gold },
-  { label: "Forte", color: colors.semantic.success },
+  { label: "", color: token("border-primary-default") },
+  { label: "Fraca", color: token("accent-red-default") },
+  { label: "Média", color: token("accent-gold-default") },
+  { label: "Forte", color: token("accent-green-default") },
 ];
 
 const Eye = ({ off }: { off?: boolean }) => (
@@ -46,26 +46,26 @@ export function PasswordInput({ label, required, hint, error, strength, disabled
   const [show, setShow] = useState(false);
   const v = typeof value === "string" ? value : "";
   const sc = score(v);
-  const borderColor = error ? colors.semantic.danger : colors.bg.border;
+  const borderColor = error ? token("accent-red-default") : token("border-primary-default");
 
   return (
     <label style={{ display: "block", width: "100%" }}>
       {label && (
         <span style={{ display: "block", marginBottom: 6, fontFamily: font.body, fontWeight: 600, fontSize: 14, lineHeight: "20px", color: "#f5f5f5" }}>
           {label}
-          {required && <span style={{ color: colors.semantic.danger, marginLeft: 3 }}>*</span>}
+          {required && <span style={{ color: token("accent-red-default"), marginLeft: 3 }}>*</span>}
         </span>
       )}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, height: 48, background: disabled ? colors.bg.card : colors.bg.surface, border: `1px solid ${borderColor}`, borderRadius: radius.lg, padding: "0 12px 0 16px", boxSizing: "border-box" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, height: 48, background: disabled ? token("bg-surface-secondary-default") : token("bg-surface-primary-default"), border: `1px solid ${borderColor}`, borderRadius: radius.lg, padding: "0 12px 0 16px", boxSizing: "border-box" }}>
         <input
           type={show ? "text" : "password"}
           value={value}
           onChange={onChange}
           disabled={disabled}
-          style={{ flex: 1, minWidth: 0, height: "100%", background: "transparent", border: "none", outline: "none", color: colors.text.primary, fontFamily: font.body, fontWeight: 600, fontSize: 14, letterSpacing: show ? 0 : "0.06em", ...style }}
+          style={{ flex: 1, minWidth: 0, height: "100%", background: "transparent", border: "none", outline: "none", color: token("text-primary-default"), fontFamily: font.body, fontWeight: 600, fontSize: 14, letterSpacing: show ? 0 : "0.06em", ...style }}
           {...rest}
         />
-        <button type="button" onClick={() => setShow((s) => !s)} aria-label={show ? "Ocultar senha" : "Mostrar senha"} style={{ background: "none", border: "none", cursor: "pointer", color: colors.text.muted, display: "inline-flex", padding: 4, flexShrink: 0 }}>
+        <button type="button" onClick={() => setShow((s) => !s)} aria-label={show ? "Ocultar senha" : "Mostrar senha"} style={{ background: "none", border: "none", cursor: "pointer", color: token("text-tertiary-default"), display: "inline-flex", padding: 4, flexShrink: 0 }}>
           <Eye off={show} />
         </button>
       </div>
@@ -74,7 +74,7 @@ export function PasswordInput({ label, required, hint, error, strength, disabled
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8 }}>
           <div style={{ display: "flex", gap: 4, flex: 1 }}>
             {[1, 2, 3].map((i) => (
-              <span key={i} style={{ flex: 1, height: 4, borderRadius: 99, background: i <= sc ? STRENGTH[sc].color : colors.bg.border, transition: "background 150ms" }} />
+              <span key={i} style={{ flex: 1, height: 4, borderRadius: 99, background: i <= sc ? STRENGTH[sc].color : token("border-primary-default"), transition: "background 150ms" }} />
             ))}
           </div>
           <span style={{ fontFamily: font.display, fontWeight: 700, fontSize: 11, color: STRENGTH[sc].color, minWidth: 38, textAlign: "right" }}>{STRENGTH[sc].label}</span>
@@ -82,7 +82,7 @@ export function PasswordInput({ label, required, hint, error, strength, disabled
       )}
 
       {(error || hint) && (
-        <span style={{ display: "block", marginTop: 6, fontFamily: font.body, fontWeight: 500, fontSize: 12, color: error ? colors.semantic.danger : colors.text.muted }}>
+        <span style={{ display: "block", marginTop: 6, fontFamily: font.body, fontWeight: 500, fontSize: 12, color: error ? token("accent-red-default") : token("text-tertiary-default") }}>
           {error ?? hint}
         </span>
       )}

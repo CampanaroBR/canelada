@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { colors, font, radius } from "../tokens";
+import { font, radius, token } from "../tokens";
 
 export interface ImageProps {
   src?: string;
@@ -24,8 +24,8 @@ export function Image({ src, alt = "", ratio = "1/1", radiusToken = "lg", fallba
         aspectRatio: ratio,
         borderRadius: radius[radiusToken],
         overflow: "hidden",
-        background: colors.bg.card,
-        border: `1px solid ${colors.bg.border}`,
+        background: token("bg-surface-secondary-default"),
+        border: `1px solid ${token("border-primary-default")}`,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -35,7 +35,7 @@ export function Image({ src, alt = "", ratio = "1/1", radiusToken = "lg", fallba
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt={alt} onError={() => setErro(true)} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
       ) : (
-        <span style={{ fontFamily: font.body, fontWeight: 600, fontSize: 13, color: colors.text.muted }}>{fallback ?? "sem imagem"}</span>
+        <span style={{ fontFamily: font.body, fontWeight: 600, fontSize: 13, color: token("text-tertiary-default") }}>{fallback ?? "sem imagem"}</span>
       )}
     </div>
   );

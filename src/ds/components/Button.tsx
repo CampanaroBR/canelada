@@ -33,7 +33,7 @@ export function variantStyle(v: ButtonVariant): React.CSSProperties {
     case "danger":
       return { background: token("bg-fill-danger-default"), color: token("bg-base-default"), border: "none" };
     case "link":
-      return { background: "transparent", color: colors.text.accent, border: "none" };
+      return { background: "transparent", color: token("text-brand-default"), border: "none" };
   }
 }
 

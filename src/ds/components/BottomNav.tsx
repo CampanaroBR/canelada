@@ -1,5 +1,5 @@
 import React from "react";
-import { colors, font, radius } from "../tokens";
+import { font, radius, token } from "../tokens";
 
 export interface NavItem {
   value: string;
@@ -42,14 +42,14 @@ export function BottomNav({ items, value, onChange }: BottomNavProps) {
               padding: active ? "4px 12px" : 8,
               minWidth: 56,
               borderRadius: active ? radius.pill : 12,
-              background: active ? colors.accent.default : "transparent",
+              background: active ? token("accent-green-default") : "transparent",
               border: "none",
               cursor: "pointer",
-              color: active ? colors.text.onAccent : colors.text.primary,
+              color: active ? token("text-on-fill-default") : token("text-primary-default"),
               WebkitTapHighlightColor: "transparent",
             }}
           >
-            <span style={{ display: "inline-flex", lineHeight: 0, color: active ? colors.text.onAccent : colors.text.primary }}>{it.icon}</span>
+            <span style={{ display: "inline-flex", lineHeight: 0, color: active ? token("text-on-fill-default") : token("text-primary-default") }}>{it.icon}</span>
             <span style={{ fontFamily: font.display, fontWeight: 800, fontSize: 10, lineHeight: "14px" }}>{it.label}</span>
           </button>
         );

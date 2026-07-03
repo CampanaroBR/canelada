@@ -1,5 +1,5 @@
 import React from "react";
-import { colors, font } from "../tokens";
+import { colors, font, token } from "../tokens";
 
 export interface CheckboxProps {
   checked?: boolean;
@@ -22,8 +22,8 @@ export function Checkbox({ checked = false, indeterminate, size = "sm", disabled
         height: px,
         flexShrink: 0,
         borderRadius: r,
-        background: on ? colors.accent.default : "transparent",
-        border: on ? "none" : `1.5px solid ${colors.bg.borderStrong}`,
+        background: on ? token("accent-green-default") : "transparent",
+        border: on ? "none" : `1.5px solid ${token("border-secondary-default")}`,
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
@@ -41,7 +41,7 @@ export function Checkbox({ checked = false, indeterminate, size = "sm", disabled
   const content = label ? (
     <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
       {box}
-      <span style={{ fontFamily: font.body, fontWeight: 500, fontSize: 14, color: colors.text.primary }}>{label}</span>
+      <span style={{ fontFamily: font.body, fontWeight: 500, fontSize: 14, color: token("text-primary-default") }}>{label}</span>
     </span>
   ) : (
     box

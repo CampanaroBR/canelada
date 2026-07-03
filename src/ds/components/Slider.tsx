@@ -1,5 +1,5 @@
 import React from "react";
-import { colors, font } from "../tokens";
+import { font, token } from "../tokens";
 
 export interface SliderProps {
   value: number;
@@ -20,7 +20,7 @@ export function Slider({ value, min = 0, max = 100, step = 1, onChange, label, s
       {(label || showValue) && (
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
           {label && <span style={{ fontFamily: font.body, fontWeight: 600, fontSize: 14, color: "#f5f5f5" }}>{label}</span>}
-          {showValue && <span style={{ fontFamily: font.display, fontWeight: 800, fontSize: 13, color: colors.accent.default }}>{value}</span>}
+          {showValue && <span style={{ fontFamily: font.display, fontWeight: 800, fontSize: 13, color: token("accent-green-default") }}>{value}</span>}
         </div>
       )}
       <input
@@ -39,12 +39,12 @@ export function Slider({ value, min = 0, max = 100, step = 1, onChange, label, s
           WebkitAppearance: "none",
           outline: "none",
           cursor: disabled ? "not-allowed" : "pointer",
-          background: `linear-gradient(90deg, ${colors.accent.default} ${pct}%, ${colors.bg.border} ${pct}%)`,
+          background: `linear-gradient(90deg, ${token("accent-green-default")} ${pct}%, ${token("border-primary-default")} ${pct}%)`,
         }}
       />
       <style>{`
-        input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:#fff; border:2px solid ${colors.accent.default}; cursor:pointer; }
-        input[type=range]::-moz-range-thumb{ width:18px; height:18px; border-radius:50%; background:#fff; border:2px solid ${colors.accent.default}; cursor:pointer; }
+        input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:18px; height:18px; border-radius:50%; background:#fff; border:2px solid ${token("accent-green-default")}; cursor:pointer; }
+        input[type=range]::-moz-range-thumb{ width:18px; height:18px; border-radius:50%; background:#fff; border:2px solid ${token("accent-green-default")}; cursor:pointer; }
       `}</style>
     </div>
   );

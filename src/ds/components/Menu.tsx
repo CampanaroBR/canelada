@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { colors, font, radius, motion } from "../tokens";
+import { font, radius, motion, token } from "../tokens";
 
 export interface MenuItem {
   label: string;
@@ -41,8 +41,8 @@ export function Menu({ trigger, items, align = "right" }: MenuProps) {
             top: "calc(100% + 6px)",
             [align]: 0,
             minWidth: 180,
-            background: colors.bg.elevated,
-            border: `1px solid ${colors.bg.border}`,
+            background: token("bg-surface-tertiary-default"),
+            border: `1px solid ${token("border-primary-default")}`,
             borderRadius: radius.md,
             padding: 4,
             zIndex: 50,
@@ -69,10 +69,10 @@ export function Menu({ trigger, items, align = "right" }: MenuProps) {
                 fontFamily: font.body,
                 fontWeight: 600,
                 fontSize: 14,
-                color: it.danger ? colors.semantic.danger : colors.text.primary,
+                color: it.danger ? token("accent-red-default") : token("text-primary-default"),
                 WebkitTapHighlightColor: "transparent",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = colors.bg.surface)}
+              onMouseEnter={(e) => (e.currentTarget.style.background = token("bg-surface-primary-default"))}
               onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
             >
               {it.icon}

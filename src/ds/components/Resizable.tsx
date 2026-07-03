@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { colors } from "../tokens";
+import { token } from "../tokens";
 
 export interface ResizableProps {
   left: React.ReactNode;
@@ -30,15 +30,15 @@ export function Resizable({ left, right, initial = 50, min = 20, max = 80, heigh
   };
 
   return (
-    <div ref={ref} style={{ display: "flex", width: "100%", height, border: `1px solid ${colors.bg.border}`, borderRadius: 16, overflow: "hidden", background: colors.bg.card }}>
+    <div ref={ref} style={{ display: "flex", width: "100%", height, border: `1px solid ${token("border-primary-default")}`, borderRadius: 16, overflow: "hidden", background: token("bg-surface-secondary-default") }}>
       <div style={{ width: `${pct}%`, minWidth: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>{left}</div>
       <div
         onPointerDown={onDown}
         role="separator"
         aria-orientation="vertical"
-        style={{ width: 10, flexShrink: 0, cursor: "col-resize", background: colors.bg.surface, borderLeft: `1px solid ${colors.bg.border}`, borderRight: `1px solid ${colors.bg.border}`, display: "flex", alignItems: "center", justifyContent: "center", touchAction: "none" }}
+        style={{ width: 10, flexShrink: 0, cursor: "col-resize", background: token("bg-surface-primary-default"), borderLeft: `1px solid ${token("border-primary-default")}`, borderRight: `1px solid ${token("border-primary-default")}`, display: "flex", alignItems: "center", justifyContent: "center", touchAction: "none" }}
       >
-        <div style={{ width: 3, height: 22, borderRadius: 99, background: colors.bg.borderStrong }} />
+        <div style={{ width: 3, height: 22, borderRadius: 99, background: token("border-secondary-default") }} />
       </div>
       <div style={{ flex: 1, minWidth: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>{right}</div>
     </div>

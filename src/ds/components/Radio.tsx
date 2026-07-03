@@ -1,5 +1,5 @@
 import React from "react";
-import { colors, font } from "../tokens";
+import { font, token } from "../tokens";
 
 export interface RadioProps {
   checked?: boolean;
@@ -21,14 +21,14 @@ export function Radio({ checked = false, size = "sm", disabled, label, onChange 
         flexShrink: 0,
         borderRadius: "50%",
         background: "transparent",
-        border: `1.5px solid ${checked ? colors.accent.default : colors.bg.borderStrong}`,
+        border: `1.5px solid ${checked ? token("accent-green-default") : token("border-secondary-default")}`,
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
         transition: "border-color 120ms",
       }}
     >
-      {checked && <span style={{ width: dot, height: dot, borderRadius: "50%", background: colors.accent.default }} />}
+      {checked && <span style={{ width: dot, height: dot, borderRadius: "50%", background: token("accent-green-default") }} />}
     </span>
   );
 
@@ -51,7 +51,7 @@ export function Radio({ checked = false, size = "sm", disabled, label, onChange 
       }}
     >
       {circle}
-      {label && <span style={{ fontFamily: font.body, fontWeight: 500, fontSize: 14, color: colors.text.primary }}>{label}</span>}
+      {label && <span style={{ fontFamily: font.body, fontWeight: 500, fontSize: 14, color: token("text-primary-default") }}>{label}</span>}
     </button>
   );
 }

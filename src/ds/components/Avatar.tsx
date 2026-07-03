@@ -1,5 +1,5 @@
 import React from "react";
-import { colors, font } from "../tokens";
+import { colors, font, token } from "../tokens";
 
 export interface AvatarProps {
   name?: string;
@@ -26,8 +26,8 @@ export function Avatar({ name, src, size = 42, ring, checked }: AvatarProps) {
           height: size,
           borderRadius: "50%",
           overflow: "hidden",
-          background: colors.bg.card,
-          border: `${ring ? 2 : 1}px solid ${ring ? colors.accent.default : colors.bg.border}`,
+          background: token("bg-surface-secondary-default"),
+          border: `${ring ? 2 : 1}px solid ${ring ? token("accent-green-default") : token("border-primary-default")}`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -37,13 +37,13 @@ export function Avatar({ name, src, size = 42, ring, checked }: AvatarProps) {
           // eslint-disable-next-line @next/next/no-img-element
           <img src={src} alt={name ?? ""} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
         ) : (
-          <span style={{ fontFamily: font.display, fontWeight: 800, fontSize: Math.round(size * 0.38), color: colors.accent.default }}>
+          <span style={{ fontFamily: font.display, fontWeight: 800, fontSize: Math.round(size * 0.38), color: token("accent-green-default") }}>
             {initials(name)}
           </span>
         )}
       </div>
       {checked && (
-        <div style={{ position: "absolute", right: -2, bottom: -2, width: size * 0.42, height: size * 0.42, borderRadius: "50%", background: colors.accent.default, border: `2px solid ${colors.bg.base}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ position: "absolute", right: -2, bottom: -2, width: size * 0.42, height: size * 0.42, borderRadius: "50%", background: token("accent-green-default"), border: `2px solid ${token("bg-base-default")}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
           <svg width="60%" height="60%" viewBox="0 0 24 24" fill="none" stroke={colors.bg.base} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
         </div>
       )}

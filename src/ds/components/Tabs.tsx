@@ -1,5 +1,5 @@
 import React from "react";
-import { colors, font, radius, motion } from "../tokens";
+import { font, radius, motion, token } from "../tokens";
 
 export interface TabItem {
   value: string;
@@ -26,15 +26,15 @@ export function Tabs({ items, value, onChange, layout = "scroll" }: TabsProps) {
             onClick={() => onChange(it.value)}
             style={{
               flex: layout === "fill" ? 1 : "0 0 auto",
-              background: active ? colors.accent.default : colors.bg.surface,
-              border: active ? "none" : `1px solid ${colors.bg.border}`,
+              background: active ? token("accent-green-default") : token("bg-surface-primary-default"),
+              border: active ? "none" : `1px solid ${token("border-primary-default")}`,
               borderRadius: radius.pill,
               padding: "8px 14px",
               fontFamily: font.display,
               fontWeight: active ? 700 : 600,
               fontSize: 13,
               lineHeight: "18px",
-              color: active ? colors.text.onAccent : colors.text.secondary,
+              color: active ? token("text-on-fill-default") : token("text-secondary-default"),
               cursor: "pointer",
               whiteSpace: "nowrap",
               transition: `background ${motion.duration.fast}ms ${motion.ease.out}`,

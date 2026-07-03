@@ -1,5 +1,5 @@
 import React from "react";
-import { colors, font, radius } from "../tokens";
+import { font, radius, token } from "../tokens";
 
 export interface TableColumn<T> {
   key: keyof T & string;
@@ -18,10 +18,10 @@ export interface TableProps<T extends Record<string, React.ReactNode>> {
 export function Table<T extends Record<string, React.ReactNode>>({ columns, rows, height = "narrow" }: TableProps<T>) {
   const rowH = height === "narrow" ? 48 : 56;
   return (
-    <div style={{ border: `1px solid ${colors.bg.border}`, borderRadius: radius.lg, overflow: "hidden", width: "100%" }}>
+    <div style={{ border: `1px solid ${token("border-primary-default")}`, borderRadius: radius.lg, overflow: "hidden", width: "100%" }}>
       <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
-          <tr style={{ background: colors.bg.surface }}>
+          <tr style={{ background: token("bg-surface-primary-default") }}>
             {columns.map((c) => (
               <th
                 key={c.key}
@@ -35,8 +35,8 @@ export function Table<T extends Record<string, React.ReactNode>>({ columns, rows
                   fontSize: 12,
                   letterSpacing: "0.04em",
                   textTransform: "uppercase",
-                  color: colors.text.secondary,
-                  borderBottom: `1px solid ${colors.bg.border}`,
+                  color: token("text-secondary-default"),
+                  borderBottom: `1px solid ${token("border-primary-default")}`,
                 }}
               >
                 {c.label}
@@ -48,9 +48,9 @@ export function Table<T extends Record<string, React.ReactNode>>({ columns, rows
           {rows.map((row, ri) => (
             <tr
               key={ri}
-              style={{ background: colors.bg.card }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = colors.bg.elevated)}
-              onMouseLeave={(e) => (e.currentTarget.style.background = colors.bg.card)}
+              style={{ background: token("bg-surface-secondary-default") }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = token("bg-surface-tertiary-default"))}
+              onMouseLeave={(e) => (e.currentTarget.style.background = token("bg-surface-secondary-default"))}
             >
               {columns.map((c) => (
                 <td
@@ -62,8 +62,8 @@ export function Table<T extends Record<string, React.ReactNode>>({ columns, rows
                     fontFamily: font.body,
                     fontWeight: 500,
                     fontSize: 14,
-                    color: colors.text.primary,
-                    borderTop: ri === 0 ? "none" : `1px solid ${colors.bg.border}`,
+                    color: token("text-primary-default"),
+                    borderTop: ri === 0 ? "none" : `1px solid ${token("border-primary-default")}`,
                   }}
                 >
                   {row[c.key]}

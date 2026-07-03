@@ -1,5 +1,5 @@
 import React from "react";
-import { colors, font } from "../tokens";
+import { font, token } from "../tokens";
 
 export interface ContentProps {
   /** elemento à esquerda: ícone, Avatar, Checkbox, Radio, Toggle… */
@@ -33,13 +33,13 @@ export function Content({ leading, label, badge, description, trailing, onClick,
       {leading && <span style={{ flexShrink: 0, display: "inline-flex", marginTop: align === "start" ? 2 : 0 }}>{leading}</span>}
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontFamily: font.body, fontWeight: 600, fontSize: 14, lineHeight: "20px", color: colors.text.primary, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          <span style={{ fontFamily: font.body, fontWeight: 600, fontSize: 14, lineHeight: "20px", color: token("text-primary-default"), whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {label}
           </span>
           {badge}
         </div>
         {description && (
-          <p style={{ margin: "2px 0 0", fontFamily: font.body, fontWeight: 400, fontSize: 12, lineHeight: "16px", color: colors.text.muted }}>
+          <p style={{ margin: "2px 0 0", fontFamily: font.body, fontWeight: 400, fontSize: 12, lineHeight: "16px", color: token("text-tertiary-default") }}>
             {description}
           </p>
         )}
