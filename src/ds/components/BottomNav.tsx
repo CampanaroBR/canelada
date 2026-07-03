@@ -20,11 +20,11 @@ export function BottomNav({ items, value, onChange }: BottomNavProps) {
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: 12,
+        gap: 6,
         background: "rgba(0,0,0,0.6)",
         border: `1px solid #393939`,
-        borderRadius: radius["3xl"],
-        padding: "8px 8px",
+        borderRadius: 28,
+        padding: "5px 10px",
         backdropFilter: "blur(8px)",
       }}
     >
@@ -39,8 +39,8 @@ export function BottomNav({ items, value, onChange }: BottomNavProps) {
               flexDirection: "column",
               alignItems: "center",
               gap: 2,
-              padding: active ? "4px 12px" : 8,
-              minWidth: 56,
+              padding: active ? "4px 10px" : 5,
+              minWidth: 46,
               borderRadius: active ? radius.pill : 12,
               background: active ? token("accent-green-default") : "transparent",
               border: "none",
@@ -50,7 +50,7 @@ export function BottomNav({ items, value, onChange }: BottomNavProps) {
             }}
           >
             <span style={{ display: "inline-flex", lineHeight: 0, color: active ? token("text-on-fill-default") : token("text-primary-default") }}>{it.icon}</span>
-            <span style={{ fontFamily: font.display, fontWeight: 800, fontSize: 10, lineHeight: "14px" }}>{it.label}</span>
+            <span style={{ fontFamily: font.display, fontWeight: 800, fontSize: 9.5, lineHeight: "13px" }}>{it.label}</span>
           </button>
         );
       })}

@@ -36,13 +36,13 @@ export function BottomNav() {
         style={{
           display: "inline-flex",
           alignItems: "center",
-          padding: "8px 16px",
-          borderRadius: 32,
+          padding: "5px 10px",
+          borderRadius: 28,
           border: "1px solid #393939",
           overflow: "clip",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           {NAV_ITEMS.map((item, i) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
             return (
@@ -58,30 +58,30 @@ export function BottomNav() {
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
-                  width: 56,
-                  height: 56,
-                  padding: 8,
-                  borderRadius: isActive ? 9999 : 16,
+                  width: 46,
+                  height: 46,
+                  padding: 5,
+                  borderRadius: isActive ? 9999 : 14,
                   background: isActive ? "#9fe870" : "transparent",
                   overflow: "clip",
                   transition: "background 180ms cubic-bezier(0.34,1.56,0.64,1), border-radius 180ms cubic-bezier(0.34,1.56,0.64,1)",
                 }}>
                   <div style={{
-                    width: 28,
-                    height: 28,
-                    marginBottom: -2,
+                    width: 22,
+                    height: 22,
+                    marginBottom: -1,
                     flexShrink: 0,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                   }}>
-                    <item.Icon size={28} color={isActive ? "#000" : "#fff"} weight="regular" />
+                    <item.Icon size={22} color={isActive ? "#000" : "#fff"} weight="regular" />
                   </div>
                   <span style={{
                     fontFamily: "var(--font-display)",
                     fontWeight: isActive ? 800 : 600,
-                    fontSize: 10,
-                    lineHeight: "14px",
+                    fontSize: 9.5,
+                    lineHeight: "13px",
                     letterSpacing: "-0.2px",
                     color: isActive ? "#000" : "#fff",
                     textAlign: "center",
