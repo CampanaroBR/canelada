@@ -163,6 +163,11 @@ export function InstallPrompt() {
             <span style={stepBadge}>2</span>
             <span style={stepText}>Rola a lista e escolhe <PlusSquare size={17} color="#9fe870" weight="bold" style={{ verticalAlign: "-3px" }} /> <strong style={{ color: "#fff" }}>Adicionar à Tela de Início</strong></span>
           </div>
+          <div style={stepDivider} />
+          <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+            <span style={stepBadge}>3</span>
+            <span style={stepText}>Abre o app pelo ícone novo e toca em <strong style={{ color: "#9fe870" }}>Ativar avisos</strong> 🔔</span>
+          </div>
         </div>
       ) : mode === "generic" ? (
         <div style={stepsCard}>
