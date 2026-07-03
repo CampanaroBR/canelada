@@ -37,28 +37,40 @@ function isIOS() {
 export function InstallPrompt() {
   const [show, setShow] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [ios, setIos] = useState(false);
+  const [mode, setMode] = useState<"ios" | "native" | "generic">("native");
   const [deferred, setDeferred] = useState<BeforeInstallPromptEvent | null>(null);
+  const ios = mode === "ios";
 
   useEffect(() => {
     if (isStandalone()) return;
     if (localStorage.getItem(DISMISS_KEY)) return;
 
+    const reveal = () => { setShow(true); requestAnimationFrame(() => setVisible(true)); };
+
     if (isIOS()) {
-      setIos(true);
+      setMode("ios");
       // pequena espera pra não competir com o carregamento da home
-      const t = setTimeout(() => { setShow(true); requestAnimationFrame(() => setVisible(true)); }, 2500);
+      const t = setTimeout(reveal, 2500);
       return () => clearTimeout(t);
     }
 
+    let got = false;
     const onPrompt = (e: Event) => {
       e.preventDefault();
+      got = true;
       setDeferred(e as BeforeInstallPromptEvent);
-      setShow(true);
-      requestAnimationFrame(() => setVisible(true));
+      setMode("native");
+      reveal();
     };
     window.addEventListener("beforeinstallprompt", onPrompt);
-    return () => window.removeEventListener("beforeinstallprompt", onPrompt);
+
+    // Fallback: navegadores Android sem beforeinstallprompt (Firefox, Samsung
+    // Internet…) ganham o tutorial genérico via menu do navegador. No desktop
+    // sem suporte, não mostra nada — push já funciona no navegador mesmo.
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    const t = setTimeout(() => { if (!got && isAndroid) { setMode("generic"); reveal(); } }, 4000);
+
+    return () => { window.removeEventListener("beforeinstallprompt", onPrompt); clearTimeout(t); };
   }, []);
 
   function dismiss() {
@@ -114,6 +126,8 @@ export function InstallPrompt() {
           <p style={{ margin: "2px 0 0", fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12.5, lineHeight: "17px", color: "#8a8a8a" }}>
             {ios
               ? "Pra receber os avisos da votação no iPhone, adiciona o app na tela de início:"
+              : mode === "generic"
+              ? "Pra ter o Canelada na tela do celular, adiciona pelo menu do navegador:"
               : "Recebe os avisos da votação direto na tela do celular."}
           </p>
 
@@ -126,6 +140,17 @@ export function InstallPrompt() {
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={stepBadge}>2</span>
                 <span style={stepText}>Escolhe <PlusSquare size={15} color="#9fe870" weight="bold" style={{ verticalAlign: "-3px" }} /> <strong style={{ color: "#fff" }}>Adicionar à Tela de Início</strong></span>
+              </div>
+            </div>
+          ) : mode === "generic" ? (
+            <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={stepBadge}>1</span>
+                <span style={stepText}>Abre o <strong style={{ color: "#fff" }}>menu ⋮</strong> do navegador</span>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={stepBadge}>2</span>
+                <span style={stepText}>Toca em <PlusSquare size={15} color="#9fe870" weight="bold" style={{ verticalAlign: "-3px" }} /> <strong style={{ color: "#fff" }}>Adicionar à tela inicial</strong> (ou "Instalar")</span>
               </div>
             </div>
           ) : (
