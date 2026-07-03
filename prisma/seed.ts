@@ -16,10 +16,10 @@ const TRAITS = [
   { slug: "racudo",        nome: "Raçudo",          categoria: TraitCategoria.FUTEBOL,       emoji: "💪", descricao: "Se destaca pela entrega, intensidade e vontade de vencer." },
   { slug: "xerife",        nome: "Xerife",          categoria: TraitCategoria.FUTEBOL,       emoji: "👊", descricao: "Lidera dentro de campo, organiza o time e assume a responsabilidade." },
   { slug: "garcom",        nome: "Garçom",          categoria: TraitCategoria.FUTEBOL,       emoji: "🥂", descricao: "Enxerga o jogo como poucos. Cria oportunidades e distribui assistências." },
-  { slug: "driblador",     nome: "Driblador",       categoria: TraitCategoria.FUTEBOL,       emoji: "💨", descricao: "Passa pelos adversários com facilidade e resolve no um contra um." },
+  { slug: "driblador",     nome: "Driblador",       categoria: TraitCategoria.FUTEBOL,       emoji: "⚽💨", descricao: "Desmonta a marcação com dribles, velocidade e muita habilidade." },
   // Grupo 2 — Resenha (opcional)
   { slug: "resenha-forte", nome: "Só Resenha",      categoria: TraitCategoria.PERSONALIDADE, emoji: "🎤", descricao: "Responsável pela animação, brincadeiras e energia do grupo. E não joga nada! 😂" },
-  { slug: "delegado",      nome: "Delegado",        categoria: TraitCategoria.PERSONALIDADE, emoji: "👮", descricao: "Prende a bola, não toca para ninguém e tenta resolver tudo sozinho." },
+  { slug: "delegado",      nome: "Delegado",        categoria: TraitCategoria.PERSONALIDADE, emoji: "🔒⚽", descricao: "A bola é dele. O resto do time só acompanha a jogada." },
   { slug: "chorao",        nome: "Chorão",          categoria: TraitCategoria.PERSONALIDADE, emoji: "😭", descricao: "Sempre encontra um motivo para lamentar uma derrota, lance perdido ou situação adversa." },
   { slug: "reclamao",      nome: "Reclamão",        categoria: TraitCategoria.PERSONALIDADE, emoji: "😡", descricao: "Questiona decisões, marcações e jogadas com frequência." },
   { slug: "paneleiro",     nome: "Paneleiro",       categoria: TraitCategoria.PERSONALIDADE, emoji: "🍳", descricao: "Prefere jogar sempre com os mesmos parceiros e amigos." },

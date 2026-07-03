@@ -6,6 +6,7 @@ import { badgesHome } from "@/lib/badges";
 import { HomeClient } from "./HomeClient";
 import { PushAutoEnroll } from "@/components/PushAutoEnroll";
 import { InstallPrompt } from "@/components/InstallPrompt";
+import { EnableNotificationsPrompt } from "@/components/EnableNotificationsPrompt";
 
 export const dynamic = "force-dynamic";
 
@@ -305,6 +306,7 @@ export default async function FeedPage() {
     <>
     <PushAutoEnroll />
     <InstallPrompt />
+    <EnableNotificationsPrompt />
     <HomeClient
       IMG={{}}
       rodadaId={rodadaAtiva?.id ?? null}
