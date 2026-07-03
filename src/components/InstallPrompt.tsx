@@ -133,13 +133,18 @@ export function InstallPrompt() {
 
           {ios ? (
             <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 8 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
                 <span style={stepBadge}>1</span>
-                <span style={stepText}>Toca em <Export size={15} color="#9fe870" weight="bold" style={{ verticalAlign: "-3px" }} /> <strong style={{ color: "#fff" }}>Compartilhar</strong> aí embaixo</span>
+                <span style={stepText}>
+                  Toca no botão <Export size={15} color="#9fe870" weight="bold" style={{ verticalAlign: "-3px" }} /> <strong style={{ color: "#fff" }}>Compartilhar</strong> do Safari
+                  <span style={{ display: "block", color: "#7a7a7a", fontSize: 11.5, marginTop: 2 }}>
+                    fica na barra de baixo — se não aparecer, toca no <strong style={{ color: "#bbb" }}>≡</strong> ao lado do endereço
+                  </span>
+                </span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={stepBadge}>2</span>
-                <span style={stepText}>Escolhe <PlusSquare size={15} color="#9fe870" weight="bold" style={{ verticalAlign: "-3px" }} /> <strong style={{ color: "#fff" }}>Adicionar à Tela de Início</strong></span>
+                <span style={stepText}>Rola a lista e escolhe <PlusSquare size={15} color="#9fe870" weight="bold" style={{ verticalAlign: "-3px" }} /> <strong style={{ color: "#fff" }}>Adicionar à Tela de Início</strong></span>
               </div>
             </div>
           ) : mode === "generic" ? (
