@@ -38,7 +38,6 @@ export function BottomNav() {
           alignItems: "center",
           padding: "5px 10px",
           borderRadius: 28,
-          border: "1px solid #393939",
           overflow: "clip",
         }}
       >
