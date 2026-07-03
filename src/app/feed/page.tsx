@@ -5,6 +5,7 @@ import { criarRodada } from "@/app/votacao/actions";
 import { badgesHome } from "@/lib/badges";
 import { HomeClient } from "./HomeClient";
 import { PushAutoEnroll } from "@/components/PushAutoEnroll";
+import { InstallPrompt } from "@/components/InstallPrompt";
 
 export const dynamic = "force-dynamic";
 
@@ -303,6 +304,7 @@ export default async function FeedPage() {
   return (
     <>
     <PushAutoEnroll />
+    <InstallPrompt />
     <HomeClient
       IMG={{}}
       rodadaId={rodadaAtiva?.id ?? null}
