@@ -40,7 +40,7 @@ export function BottomNav({ items, value, onChange }: BottomNavProps) {
               alignItems: "center",
               gap: 2,
               padding: active ? "4px 10px" : 5,
-              minWidth: 46,
+              minWidth: 48,
               borderRadius: active ? radius.pill : 12,
               background: active ? token("accent-green-default") : "transparent",
               border: "none",
