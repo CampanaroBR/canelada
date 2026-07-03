@@ -395,8 +395,8 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                             style={{
                               position: "relative",
                               background: "#0a0e0e",
-                              // Todas com borda (comum cinza, raridades coloridas) — grid uniforme
-                              border: `1px solid ${tier !== "comum" ? meta.borda : "#2c2c2c"}`,
+                              // Borda neutra em todas — raridade indicada pelo ponto ao lado do nome
+                              border: "1px solid #2c2c2c",
                               borderRadius: 12,
                               boxSizing: "border-box",
                               height: 118,
@@ -419,7 +419,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                                 ))
                               : (
                                 <div style={{ position: "absolute", top: 7, right: 7, zIndex: 2 }}>
-                                  <LockSimple size={13} color={tier === "epica" ? "#e2c485" : "#fff"} weight="fill" />
+                                  <LockSimple size={13} color="#fff" weight="fill" />
                                 </div>
                               )}
 
@@ -434,22 +434,26 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                               />
                             </div>
 
-                            {/* Nome */}
-                            <p style={{
-                              margin: 0,
-                              fontFamily: "var(--font-display)",
-                              fontWeight: 800,
-                              fontSize: 12,
-                              lineHeight: "14px",
-                              color: unlocked ? "#fff" : "#7a7a7a",
-                              textAlign: "center",
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              maxWidth: "100%",
-                            }}>
-                              {badge.nome}
-                            </p>
+                            {/* Nome + ponto discreto de raridade (só nas não-comuns) */}
+                            <div style={{ display: "flex", alignItems: "center", gap: 5, maxWidth: "100%" }}>
+                              {tier !== "comum" && (
+                                <span aria-label={meta.label} style={{ width: 5, height: 5, borderRadius: "50%", background: meta.cor, flexShrink: 0, opacity: unlocked ? 1 : 0.6 }} />
+                              )}
+                              <p style={{
+                                margin: 0,
+                                fontFamily: "var(--font-display)",
+                                fontWeight: 800,
+                                fontSize: 12,
+                                lineHeight: "14px",
+                                color: unlocked ? "#fff" : "#7a7a7a",
+                                textAlign: "center",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}>
+                                {badge.nome}
+                              </p>
+                            </div>
 
                             {/* Barra de progresso (parte do conteúdo centralizado) */}
                             {temBarra && (
