@@ -38,7 +38,7 @@ export function BottomNav() {
           alignItems: "center",
           padding: "5px 10px",
           borderRadius: 28,
-          overflow: "clip",
+          // sem overflow:clip — no WebKit ele pode desativar o backdrop-filter
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
