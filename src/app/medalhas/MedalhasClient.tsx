@@ -385,8 +385,6 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
                   {visible.map(badge => {
                         const unlocked = unlockedSet.has(badge.slug);
-                        const tier = tierOf(badge.slug);
-                        const meta = TIER_META[tier];
                         const temBarra = !unlocked && badge.slug !== "primeiro-baba" && !!progress[badge.slug];
                         return (
                           <div
@@ -434,26 +432,22 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                               />
                             </div>
 
-                            {/* Nome + ponto discreto de raridade (só nas não-comuns) */}
-                            <div style={{ display: "flex", alignItems: "center", gap: 5, maxWidth: "100%" }}>
-                              {tier !== "comum" && (
-                                <span aria-label={meta.label} style={{ width: 5, height: 5, borderRadius: "50%", background: meta.cor, flexShrink: 0, opacity: unlocked ? 1 : 0.6 }} />
-                              )}
-                              <p style={{
-                                margin: 0,
-                                fontFamily: "var(--font-display)",
-                                fontWeight: 800,
-                                fontSize: 12,
-                                lineHeight: "14px",
-                                color: unlocked ? "#fff" : "#7a7a7a",
-                                textAlign: "center",
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                              }}>
-                                {badge.nome}
-                              </p>
-                            </div>
+                            {/* Nome — raridade fica só no modal de detalhe */}
+                            <p style={{
+                              margin: 0,
+                              fontFamily: "var(--font-display)",
+                              fontWeight: 800,
+                              fontSize: 12,
+                              lineHeight: "14px",
+                              color: unlocked ? "#fff" : "#7a7a7a",
+                              textAlign: "center",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              maxWidth: "100%",
+                            }}>
+                              {badge.nome}
+                            </p>
 
                             {/* Barra de progresso (parte do conteúdo centralizado) */}
                             {temBarra && (
