@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { NovaRodadaForm } from "./NovaRodadaForm";
+import { EmptyState } from "@/ds/components/EmptyState";
+import { Clock } from "@phosphor-icons/react/dist/ssr";
 
 export default async function PeladaPage() {
   const session = await auth();
@@ -21,16 +23,12 @@ export default async function PeladaPage() {
         {isAdmin ? (
           <NovaRodadaForm />
         ) : (
-          <div style={{ padding: "calc(env(safe-area-inset-top, 0px) + 80px) 24px 80px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", gap: 16, minHeight: "80dvh" }}>
-            <span style={{ fontSize: 52 }}>⚽</span>
-            <div>
-              <p style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 22, color: "#fff", letterSpacing: "-.01em", margin: "0 0 6px" }}>
-                AGUARDANDO RODADA
-              </p>
-              <p style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 14, color: "#7a7a7e", lineHeight: 1.5, margin: 0 }}>
-                Nenhuma rodada aberta no momento.<br />O admin vai criar quando o baba acabar.
-              </p>
-            </div>
+          <div style={{ padding: "calc(env(safe-area-inset-top, 0px) + 80px) 16px 80px", display: "flex", flexDirection: "column", justifyContent: "center", minHeight: "80dvh" }}>
+            <EmptyState
+              icon={<Clock size={26} weight="regular" />}
+              title="Aguardando rodada"
+              description="Nenhuma rodada aberta no momento. O admin cria quando o baba acabar — aí a votação libera pra galera."
+            />
           </div>
         )}
       </div>

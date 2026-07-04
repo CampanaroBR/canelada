@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { VotacaoFlow } from "./VotacaoFlow";
 import { criarRodada } from "./actions";
+import { EmptyState } from "@/ds/components/EmptyState";
+import { SoccerBall } from "@phosphor-icons/react/dist/ssr";
 
 export const dynamic = "force-dynamic";
 
@@ -88,65 +90,39 @@ function NoRodadaScreen() {
         flex: 1,
         display: "flex",
         flexDirection: "column",
-        alignItems: "center",
         justifyContent: "center",
-        padding: "24px 24px calc(88px + env(safe-area-inset-bottom, 0px))",
-        textAlign: "center",
-        gap: "20px",
+        padding: "24px 16px calc(88px + env(safe-area-inset-bottom, 0px))",
       }}>
-        <div style={{ fontSize: "72px", opacity: 0.1 }}>🏟️</div>
-        <div>
-          <h2 style={{
-            fontFamily: "var(--font-display)",
-            fontWeight: 900,
-            fontSize: "clamp(42px, 11vw, 56px)",
-            lineHeight: 0.88,
-            letterSpacing: "-0.02em",
-            textTransform: "uppercase",
-            color: "var(--color-text-muted)",
-            marginBottom: "12px",
-          }}>
-            SEM BABA<br />ATIVA.
-          </h2>
-          <p style={{
-            fontSize: "14px",
-            color: "var(--color-text-muted)",
-            fontFamily: "var(--font-body)",
-            opacity: 0.7,
-            maxWidth: "240px",
-            lineHeight: 1.5,
-          }}>
-            Quando alguém marcar "Baba rolou hoje", a votação abre aqui.
-          </p>
-        </div>
-
-        <form action={criarRodada}>
-          <button
-            type="submit"
-            style={{
-              marginTop: "8px",
-              height: "52px",
-              padding: "0 28px",
-              background: "var(--color-accent)",
-              color: "#0D0D0D",
-              border: "none",
-              borderRadius: "var(--radius-pill)",
-              fontFamily: "var(--font-display)",
-              fontWeight: 900,
-              fontSize: "14px",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              WebkitTapHighlightColor: "transparent",
-            }}
-          >
-            <span style={{ fontSize: "16px" }}>⚽</span>
-            BABA ROLOU HOJE
-          </button>
-        </form>
+        <EmptyState
+          icon={<SoccerBall size={26} weight="regular" />}
+          title="Sem baba ativa"
+          description="Quando alguém marcar que o baba rolou, a votação dos personagens abre aqui."
+          action={
+            <form action={criarRodada}>
+              <button
+                type="submit"
+                style={{
+                  height: 48,
+                  padding: "0 24px",
+                  background: "#9fe870",
+                  color: "#0a1a06",
+                  border: "none",
+                  borderRadius: 9999,
+                  fontFamily: "var(--font-display)",
+                  fontWeight: 700,
+                  fontSize: 15,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  WebkitTapHighlightColor: "transparent",
+                }}
+              >
+                ⚽ Baba rolou hoje
+              </button>
+            </form>
+          }
+        />
       </main>
 
       <BottomNav />

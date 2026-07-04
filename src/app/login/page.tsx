@@ -91,8 +91,6 @@ export default function LoginPage() {
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
             <div style={{
               width: 72, height: 72, borderRadius: "50%",
-              border: "2px solid #9fe870",
-              boxShadow: "0 0 32px rgba(159,232,112,0.28)",
               display: "flex", alignItems: "center", justifyContent: "center",
               overflow: "hidden", flexShrink: 0,
             }}>

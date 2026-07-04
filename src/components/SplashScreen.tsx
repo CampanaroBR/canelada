@@ -38,13 +38,12 @@ export function SplashScreen() {
     >
       <style>{`
         @keyframes splash-pop { 0% { transform: scale(0.82); opacity: 0; } 60% { transform: scale(1.06); opacity: 1; } 100% { transform: scale(1); } }
-        @keyframes splash-glow { 0%,100% { box-shadow: 0 0 40px 4px rgba(159,232,112,0.28); } 50% { box-shadow: 0 0 64px 10px rgba(159,232,112,0.45); } }
+        @keyframes splash-glow { 0%,100% { box-shadow: 0 0 32px 2px rgba(159,232,112,0.14); } 50% { box-shadow: 0 0 48px 6px rgba(159,232,112,0.22); } }
         @keyframes splash-text { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
       `}</style>
       <div
         style={{
           width: 96, height: 96, borderRadius: "50%",
-          border: "2px solid #9fe870",
           overflow: "hidden",
           animation: `splash-pop 500ms cubic-bezier(0.34,1.56,0.64,1) both, splash-glow 1.6s ease-in-out infinite`,
         }}

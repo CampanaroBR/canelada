@@ -13,7 +13,10 @@ export interface EmptyStateProps {
   tone?: "surface" | "card";
 }
 
-/** Estado vazio — badge de ícone + título + descrição + ações + link (adaptado do padrão Obra/shadcn). */
+/**
+ * Estado vazio — anatomia shadcn/Empty: media (ícone em caixa com halo) + título +
+ * descrição + content (ações) + link. Dark-first, ícone no verde da marca.
+ */
 export function EmptyState({ icon, title, description, action, link, tone = "surface" }: EmptyStateProps) {
   return (
     <div
@@ -22,39 +25,50 @@ export function EmptyState({ icon, title, description, action, link, tone = "sur
         flexDirection: "column",
         alignItems: "center",
         textAlign: "center",
-        gap: 4,
-        padding: "40px 24px",
+        padding: "48px 24px",
         background: tone === "card" ? token("bg-surface-secondary-default") : token("bg-surface-primary-default"),
-        border: `1px solid ${token("border-primary-default")}`,
-        borderRadius: radius.xl,
+        border: `1px dashed ${token("border-secondary-default")}`,
+        borderRadius: radius["2xl"],
       }}
     >
       {icon && (
-        <div
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: radius.md,
-            background: token("bg-base-default"),
-            border: `1px solid ${token("border-primary-default")}`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: 16,
-            color: token("text-tertiary-default"),
-          }}
-        >
-          {icon}
+        <div style={{ position: "relative", marginBottom: 18 }}>
+          {/* halo suave atrás da caixa do ícone */}
+          <div
+            aria-hidden
+            style={{
+              position: "absolute", inset: -14, borderRadius: "50%",
+              background: "radial-gradient(closest-side, rgba(159,232,112,0.10), transparent)",
+              pointerEvents: "none",
+            }}
+          />
+          <div
+            style={{
+              position: "relative",
+              width: 52,
+              height: 52,
+              borderRadius: 14,
+              background: token("bg-surface-tertiary-default"),
+              border: `1px solid ${token("border-primary-default")}`,
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: token("icon-brand-default"),
+            }}
+          >
+            {icon}
+          </div>
         </div>
       )}
-      <p style={{ margin: 0, fontFamily: font.display, fontWeight: 800, fontSize: 16, lineHeight: "20px", color: token("text-primary-default") }}>{title}</p>
+      <p style={{ margin: 0, fontFamily: font.display, fontWeight: 800, fontSize: 17, lineHeight: "22px", color: token("text-primary-default") }}>{title}</p>
       {description && (
-        <p style={{ margin: 0, fontFamily: font.body, fontWeight: 500, fontSize: 14, lineHeight: "20px", color: token("text-tertiary-default"), maxWidth: 320 }}>
+        <p style={{ margin: "6px 0 0", fontFamily: font.body, fontWeight: 500, fontSize: 14, lineHeight: "21px", color: token("text-tertiary-default"), maxWidth: 300 }}>
           {description}
         </p>
       )}
-      {action && <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap", justifyContent: "center" }}>{action}</div>}
-      {link && <div style={{ marginTop: 8 }}>{link}</div>}
+      {action && <div style={{ display: "flex", gap: 8, marginTop: 20, flexWrap: "wrap", justifyContent: "center" }}>{action}</div>}
+      {link && <div style={{ marginTop: 10 }}>{link}</div>}
     </div>
   );
 }
