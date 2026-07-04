@@ -392,9 +392,10 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                             onClick={() => setSelected(badge)}
                             style={{
                               position: "relative",
-                              background: "#0a0e0e",
-                              // Borda neutra em todas — raridade indicada pelo ponto ao lado do nome
-                              border: "1px solid #2c2c2c",
+                              // Destravada ganha preenchimento (card elevado); bloqueada fica "vazia"
+                              background: unlocked ? "#1a1a1a" : "#0a0e0e",
+                              border: `1px solid ${unlocked ? "#3a3a3a" : "#2c2c2c"}`,
+                              boxShadow: unlocked ? "inset 0 1px 0 rgba(255,255,255,0.05)" : "none",
                               borderRadius: 12,
                               boxSizing: "border-box",
                               height: 118,
