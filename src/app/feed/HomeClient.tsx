@@ -34,36 +34,12 @@ const SelecaoShareModal = dynamic(
   { ssr: false }
 );
 
-// Mapeia achievement slug → arquivo SVG exato no git (case-sensitive no Vercel/Linux)
-const TRAIT_BADGE: Record<string, string> = {
-  "alma-do-grupo":    "/conquistas/alma-do-grupo.png",
-  "completo":         "/conquistas/completo.png",
-  "consistente":      "/conquistas/consistente.png",
-  "em-chamas":        "/conquistas/em-chamas.png",
-  "invicto":          "/conquistas/Invicto.png",
-  "irregular":        "/conquistas/Irregular.png",
-  "jogador-invisivel":"/conquistas/jogador-invisivel.png",
-  "lanterna":         "/conquistas/Lanterna.png",
-  "lenda":            "/conquistas/Lenda.png",
-  "ma-fase":          "/conquistas/ma-fase.png",
-  "mais-presente":    "/conquistas/mais-presente.png",
-  "primeira-vitoria": "/conquistas/primeira-vitoria.png",
-  "racudo-do-mes":    "/conquistas/racudo-do-mes.png",
-  "rei-absoluto":     "/conquistas/rei-absoluto.png",
-  "rei-do-mes":       "/conquistas/rei-do-mes.png",
-  "so-perde":         "/conquistas/so-perde.png",
-  "trofeu-bagre":     "/conquistas/trofeu-bagre.png",
-  "veterano":         "/conquistas/veterano.png",
-  "virada-de-chave":  "/conquistas/virada-de-chave.png",
-};
+import { TRAIT_BADGE } from "@/lib/badgeAssets";
+import { PlayerSlot, PlayerNamed, TSHIRT_OUTLINE, TSHIRT_GK_OUT, TSHIRT_FILLED, TSHIRT_GK_FILL } from "./CampoPlayers";
 
-const CAMPO           = "/campo.jpg";
-const ESTADIO         = "/estadio.jpg";
-const LOGO            = "/logo.png";
-const TSHIRT_OUTLINE  = "/tshirt-outline.svg";
-const TSHIRT_GK_OUT   = "/tshirt-gk-outline.svg";
-const TSHIRT_FILLED   = "/tshirt-filled.svg";
-const TSHIRT_GK_FILL  = "/tshirt-gk-filled.svg";
+const CAMPO   = "/campo.jpg";
+const ESTADIO = "/estadio.jpg";
+const LOGO    = "/logo.png";
 
 type MaisVotado = { apelido: string; qtd: number; categoria: string };
 type Personagem  = { tipo: string; apelido: string; texto: string; data: Date };
@@ -702,58 +678,5 @@ export function HomeClient({
   );
 }
 
-/* Slot vazio: camisa + "VOTE" */
-function PlayerSlot({ tshirt, href }: { tshirt: string; href?: string }) {
-  const inner = (
-    <>
-      <div style={{
-        background: "#1e1e1e", border: "1px solid #555", borderRadius: 22,
-        width: 48, height: 48,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        marginBottom: -8,
-        boxShadow: "0px 5px 6.9px 4px rgba(0,0,0,0.3)",
-        padding: 7, overflow: "clip", flexShrink: 0,
-      }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt="" src={tshirt} style={{ width: 24, height: 24 }} />
-      </div>
-      <p style={{ margin: 0, marginTop: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12, lineHeight: "normal", color: "#fff", textAlign: "center", whiteSpace: "nowrap" }}>VOTE</p>
-    </>
-  );
-  const wrap: React.CSSProperties = { display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1, WebkitTapHighlightColor: "transparent" };
-  return href
-    ? <Link href={href} style={{ ...wrap, textDecoration: "none" }}>{inner}</Link>
-    : <div style={wrap}>{inner}</div>;
-}
-
-/* Slot com nome do jogador (estado pós-votação) */
-function PlayerNamed({ p, tshirt, onShare }: { p: PersonagemSemana | null; tshirt: string; onShare: (p: PersonagemSemana) => void }) {
-  const name = p?.vencedor ?? "?";
-  const clickable = !!p;
-  return (
-    <button
-      onClick={() => p && onShare(p)}
-      disabled={!clickable}
-      style={{
-        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1,
-        background: "none", border: "none", padding: 0, cursor: clickable ? "pointer" : "default",
-        WebkitTapHighlightColor: "transparent",
-      }}
-    >
-      <div style={{
-        background: "#1e1e1e", border: "1px solid #555", borderRadius: 22,
-        width: 48, height: 48,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        marginBottom: -8,
-        boxShadow: "0px 5px 6.9px 4px rgba(0,0,0,0.3)",
-        padding: 7, overflow: "clip", flexShrink: 0,
-      }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt="" src={tshirt} style={{ width: 24, height: 24 }} />
-      </div>
-      <p style={{ margin: 0, marginTop: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12, lineHeight: "normal", color: "#fff", textAlign: "center", whiteSpace: "nowrap", maxWidth: 72, overflow: "hidden", textOverflow: "ellipsis" }}>{name}</p>
-    </button>
-  );
-}
 
 

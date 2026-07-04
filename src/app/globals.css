@@ -162,6 +162,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 .glass-nav {
   position: relative;
+  /* Força camada de composição — sem isso o WebKit/iOS às vezes ignora o
+     backdrop-filter em elementos com border-radius (bug conhecido). */
+  isolation: isolate;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
   /* vidro CLARO: gradiente diagonal branco translúcido — lê como vidro até sobre preto */
   background: linear-gradient(
     135deg,
