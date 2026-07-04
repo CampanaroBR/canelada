@@ -142,13 +142,14 @@ export default async function FeedPage() {
       ...selRaw.filter(Boolean).map(s => s!.vencedorId),
       ...selRawPiores.filter(Boolean).map(s => s!.vencedorId),
     ])];
-    const nmeMap = vIds.length
-      ? Object.fromEntries((await prisma.jogador.findMany({ where: { id: { in: vIds } }, select: { id: true, apelido: true } })).map(j => [j.id, j.apelido]))
-      : {};
     const tSlugs = [...new Set([...raw.map(r => r.slug), ...POSITION_TRAITS, ...NEG_TRAITS])];
-    const tMeta = tSlugs.length
-      ? Object.fromEntries((await prisma.trait.findMany({ where: { slug: { in: tSlugs } }, select: { slug: true, nome: true, emoji: true } })).map(t => [t.slug, t]))
-      : {};
+    // duas buscas independentes → paralelas
+    const [nmeRows, tRows] = await Promise.all([
+      vIds.length ? prisma.jogador.findMany({ where: { id: { in: vIds } }, select: { id: true, apelido: true } }) : Promise.resolve([]),
+      tSlugs.length ? prisma.trait.findMany({ where: { slug: { in: tSlugs } }, select: { slug: true, nome: true, emoji: true } }) : Promise.resolve([]),
+    ]);
+    const nmeMap = Object.fromEntries(nmeRows.map(j => [j.id, j.apelido]));
+    const tMeta = Object.fromEntries(tRows.map(t => [t.slug, t]));
     personagensSemana = raw.map(r => ({
       slug: r.slug,
       nome: tMeta[r.slug]?.nome ?? r.slug,
@@ -212,23 +213,12 @@ export default async function FeedPage() {
 
   // Badges reais do grupo (mesma engine da página de medalhas) — quem desbloqueou na última rodada.
   // Resiliente: se falhar, a home carrega sem o card em vez de quebrar a página toda.
-  let badgesGrupo: { jogadoresComBadge: number; totalJogadores: number; novas: { apelido: string; slug: string; nome: string }[] } =
+  const badgesFallback: { jogadoresComBadge: number; totalJogadores: number; novas: { apelido: string; slug: string; nome: string }[] } =
     { jogadoresComBadge: 0, totalJogadores: 0, novas: [] };
-  try {
-    badgesGrupo = await badgesHome(grupoId);
-  } catch (e) {
-    console.error("badgesHome falhou:", e);
-  }
-  const conquistas: Conquista[] = badgesGrupo.novas.map(n => ({
-    apelido: n.apelido,
-    traitSlug: n.slug,
-    traitNome: n.nome,
-    traitEmoji: null,
-    traitDesc: "Nova conquista desbloqueada!",
-    data: new Date(),
-  }));
 
-  const [jaVotou, top5VotosRaw] = await Promise.all([
+  // 4 consultas independentes em paralelo (badges do grupo, meu voto, top5, rodadas recentes)
+  const [badgesGrupo, jaVotou, top5VotosRaw, rodadasRecentes] = await Promise.all([
+    badgesHome(grupoId).catch((e) => { console.error("badgesHome falhou:", e); return badgesFallback; }),
     rodadaAtiva
       ? prisma.voto.findFirst({
           where: { rodadaId: rodadaAtiva.id, votanteId: jogador.id },
@@ -244,7 +234,22 @@ export default async function FeedPage() {
           take: 5,
         })
       : Promise.resolve([]),
+    prisma.rodada.findMany({
+      where: { grupoId },
+      orderBy: { data: "desc" },
+      take: 3,
+      select: { data: true },
+    }),
   ]);
+
+  const conquistas: Conquista[] = badgesGrupo.novas.map(n => ({
+    apelido: n.apelido,
+    traitSlug: n.slug,
+    traitNome: n.nome,
+    traitEmoji: null,
+    traitDesc: "Nova conquista desbloqueada!",
+    data: new Date(),
+  }));
 
   // Resolve nomes dos top5 da rodada
   const top5Ids = top5VotosRaw.map((v: { votadoId: string }) => v.votadoId);
@@ -278,13 +283,7 @@ export default async function FeedPage() {
     return { fase: "aberta" as const, aberta: true, texto: "Votação aberta até às 15h" };
   })() : null;
 
-  // Tabs de datas da Personagem da Semana: últimas 3 rodadas do grupo (asc → última = ativa)
-  const rodadasRecentes = await prisma.rodada.findMany({
-    where: { grupoId },
-    orderBy: { data: "desc" },
-    take: 3,
-    select: { data: true },
-  });
+  // Tabs de datas da Personagem da Semana: últimas 3 rodadas (asc → última = ativa)
   const datePills = rodadasRecentes
     .slice()
     .reverse()
@@ -308,7 +307,6 @@ export default async function FeedPage() {
     <InstallPrompt />
     <EnableNotificationsPrompt />
     <HomeClient
-      IMG={{}}
       rodadaId={rodadaAtiva?.id ?? null}
       dataRodada={dataRodada}
       horarioJogo={horarioJogo}

@@ -72,7 +72,6 @@ type Conquista   = { apelido: string; traitSlug: string; traitNome: string; trai
 type ProximoBaba = { dataFormatada: string; hora: string; diasRestantes: number };
 
 interface Props {
-  IMG: Record<string, string>;
   rodadaId: string | null;
   top5Rodada: string[];
   dataRodada: string | null;
