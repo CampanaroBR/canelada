@@ -42,7 +42,8 @@ function Shirt({ p, tshirt }: { p: PersonagemSemana | null; tshirt: string }) {
       <div style={{
         background: "#1c1c1c", border: "1px solid #666", borderRadius: 22,
         width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center",
-        marginBottom: -8, boxShadow: "0px 5px 6.9px 4px rgba(0,0,0,0.3)", padding: 7, overflow: "hidden", flexShrink: 0,
+        // sem boxShadow: o html-to-image no iOS renderiza a sombra como quadrado escuro
+        marginBottom: -8, padding: 7, overflow: "hidden", flexShrink: 0,
       }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img alt="" src={tshirt} style={{ width: 24, height: 24 }} />
@@ -59,17 +60,23 @@ export function SelecaoShareModal({ selecao, grupoNome, dataRodada, horarioJogo,
   const cardRef = useRef<HTMLDivElement>(null);
   const [sharing, setSharing] = useState(false);
   const bgData = useDataUrl(SHARE_BG);
+  // só libera o share com o fundo já embutido como data-URL e com alguém votado
+  const bgReady = bgData.startsWith("data:");
+  const temVoto = selecao.some((p) => !!p);
 
   async function handleShare() {
-    if (sharing || !cardRef.current) return;
+    if (sharing || !cardRef.current || !bgReady) return;
     setSharing(true);
     const texto = `${parcial ? "Parcial" : "Time"} da rodada — ${grupoNome}! ⚽`;
     try {
       // garante fontes e imagens prontas antes da captura (iOS)
-      await document.fonts?.ready?.then?.(() => {}).catch?.(() => {});
+      try { await document.fonts.ready; } catch { /* segue */ }
       await Promise.all(
         Array.from(cardRef.current.querySelectorAll("img")).map((img) => img.decode().catch(() => {}))
       );
+      // Safari/iOS: a 1ª captura costuma sair incompleta (imagens/fontes não inline).
+      // Capturamos 2x e usamos a última — workaround conhecido do html-to-image.
+      await toBlob(cardRef.current, { pixelRatio: 2 });
       const blob = await toBlob(cardRef.current, { pixelRatio: 2 });
       if (!blob) throw new Error("sem blob");
       const file = new File([blob], "selecao.png", { type: "image/png" });
@@ -152,19 +159,26 @@ export function SelecaoShareModal({ selecao, grupoNome, dataRodada, horarioJogo,
       </div>
 
       {/* Compartilhar */}
-      <div style={{ position: "relative", display: "flex", justifyContent: "center", padding: "0 24px calc(env(safe-area-inset-bottom, 0px) + 24px)" }}>
+      <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "0 24px calc(env(safe-area-inset-bottom, 0px) + 24px)" }}>
+        {!temVoto && (
+          <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "#8a8a8a", textAlign: "center" }}>
+            Ninguém foi votado ainda — compartilhe depois que a votação rolar.
+          </p>
+        )}
         <button
           onClick={handleShare}
+          disabled={sharing || !bgReady || !temVoto}
           style={{
-            background: "#9fe870", border: "none", borderRadius: 20, height: 54, width: "100%", maxWidth: 382,
+            background: !temVoto ? "#2c2c2c" : "#9fe870", border: "none", borderRadius: 20, height: 54, width: "100%", maxWidth: 382,
             display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-            cursor: "pointer", WebkitTapHighlightColor: "transparent", opacity: sharing ? 0.7 : 1,
+            cursor: sharing || !bgReady || !temVoto ? "default" : "pointer",
+            WebkitTapHighlightColor: "transparent", opacity: sharing || !bgReady ? 0.7 : 1,
           }}
         >
-          <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#090909" }}>
-            {sharing ? "Gerando imagem..." : "Compartilhar"}
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: !temVoto ? "#7a7a7a" : "#090909" }}>
+            {sharing ? "Gerando imagem..." : !bgReady ? "Preparando…" : "Compartilhar"}
           </span>
-          <ShareNetwork size={20} color="#090909" weight="bold" />
+          <ShareNetwork size={20} color={!temVoto ? "#7a7a7a" : "#090909"} weight="bold" />
         </button>
       </div>
     </div>
