@@ -385,6 +385,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
                   {visible.map(badge => {
                         const unlocked = unlockedSet.has(badge.slug);
+                        const epica = tierOf(badge.slug) === "epica";
                         const temBarra = !unlocked && badge.slug !== "primeiro-baba" && !!progress[badge.slug];
                         return (
                           <div
@@ -418,7 +419,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                                 ))
                               : (
                                 <div style={{ position: "absolute", top: 7, right: 7, zIndex: 2 }}>
-                                  <LockSimple size={13} color="#fff" weight="fill" />
+                                  <LockSimple size={13} color={epica ? "#e2c485" : "#fff"} weight="fill" />
                                 </div>
                               )}
 
