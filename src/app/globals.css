@@ -127,7 +127,8 @@ body {
   background: var(--color-bg);
   color: var(--color-text-primary);
   font-family: var(--font-body);
-  overflow-x: hidden;
+  /* NÃO usar overflow-x:hidden aqui — WebKit bug 181739: overflow em ancestral
+     DESATIVA o backdrop-filter dos descendentes (matava o liquid glass no iOS). */
 }
 
 /* Headings: text-wrap balance (make-interfaces-feel-better — typography.md) */
