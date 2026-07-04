@@ -4,8 +4,32 @@ import { prisma } from "@/lib/prisma";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { VotacaoFlow } from "./VotacaoFlow";
 import { criarRodada } from "./actions";
+import Link from "next/link";
+import Image from "next/image";
 import { EmptyState } from "@/ds/components/EmptyState";
-import { SoccerBall } from "@phosphor-icons/react/dist/ssr";
+import { SoccerBall, CaretLeft, Bell } from "@phosphor-icons/react/dist/ssr";
+
+/** Topbar padrão (voltar + logo + sino) pras telas estáticas da votação. */
+function VotacaoTopBar() {
+  return (
+    <div className="glass-bar" style={{
+      position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)",
+      width: "min(100%, 430px)", zIndex: 30, paddingTop: "env(safe-area-inset-top, 0px)",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 8px" }}>
+        <Link href="/feed" aria-label="Voltar" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent" }}>
+          <CaretLeft size={22} color="#fff" weight="bold" />
+        </Link>
+        <div style={{ padding: 4, display: "flex", overflow: "clip" }}>
+          <Image alt="Canelada" src="/logo.png" width={48} height={48} priority style={{ objectFit: "cover", borderRadius: "50%" }} />
+        </div>
+        <div aria-hidden style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Bell size={24} color="#fff" weight="bold" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export const dynamic = "force-dynamic";
 
@@ -67,31 +91,14 @@ export default async function VotacaoPage() {
 function NoRodadaScreen() {
   return (
     <div style={{ minHeight: "100dvh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
-      <header style={{
-        height: "56px",
-        display: "flex",
-        alignItems: "center",
-        padding: "0 20px",
-        boxShadow: "inset 0 -1px 0 rgba(255,255,255,0.05)",
-      }}>
-        <span style={{
-          fontFamily: "var(--font-display)",
-          fontWeight: 900,
-          fontSize: "20px",
-          letterSpacing: "0.08em",
-          color: "var(--color-accent)",
-          textTransform: "uppercase",
-        }}>
-          VOTAÇÃO
-        </span>
-      </header>
+      <VotacaoTopBar />
 
       <main style={{
         flex: 1,
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        padding: "24px 16px calc(88px + env(safe-area-inset-bottom, 0px))",
+        padding: "calc(env(safe-area-inset-top, 0px) + 88px) 16px calc(88px + env(safe-area-inset-bottom, 0px))",
       }}>
         <EmptyState
           icon={<SoccerBall size={26} weight="regular" />}
@@ -118,7 +125,8 @@ function NoRodadaScreen() {
                   WebkitTapHighlightColor: "transparent",
                 }}
               >
-                ⚽ Baba rolou hoje
+                <SoccerBall size={18} weight="bold" color="#0a1a06" />
+                Baba rolou hoje
               </button>
             </form>
           }
@@ -149,24 +157,7 @@ const CATEGORIA_CONFIG: Record<string, { label: string; color: string }> = {
 function JaVotouScreen({ votos }: { votos: VotoComVotado[] }) {
   return (
     <div style={{ minHeight: "100dvh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
-      <header style={{
-        height: "56px",
-        display: "flex",
-        alignItems: "center",
-        padding: "0 20px",
-        boxShadow: "inset 0 -1px 0 rgba(255,255,255,0.05)",
-      }}>
-        <span style={{
-          fontFamily: "var(--font-display)",
-          fontWeight: 900,
-          fontSize: "20px",
-          letterSpacing: "0.08em",
-          color: "var(--color-accent)",
-          textTransform: "uppercase",
-        }}>
-          VOTAÇÃO
-        </span>
-      </header>
+      <VotacaoTopBar />
 
       <main style={{
         flex: 1,
@@ -174,7 +165,7 @@ function JaVotouScreen({ votos }: { votos: VotoComVotado[] }) {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: "24px 24px calc(88px + env(safe-area-inset-bottom, 0px))",
+        padding: "calc(env(safe-area-inset-top, 0px) + 88px) 24px calc(88px + env(safe-area-inset-bottom, 0px))",
         textAlign: "center",
         gap: "24px",
       }}>
