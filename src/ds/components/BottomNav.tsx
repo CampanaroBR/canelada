@@ -21,7 +21,7 @@ export function BottomNav({ items, value, onChange }: BottomNavProps) {
         display: "inline-flex",
         alignItems: "center",
         gap: 6,
-        background: "rgba(0,0,0,0.6)",
+        background: "rgba(0,0,0,0.2)",
         border: `1px solid #393939`,
         borderRadius: 28,
         padding: "5px 10px",
