@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { rateLimit } from "@/lib/ratelimit";
 
-const PUBLIC_PREFIXES = ["/login", "/api/auth", "/glass-test"];
+const PUBLIC_PREFIXES = ["/login", "/api/auth"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
