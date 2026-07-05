@@ -26,6 +26,15 @@ function useConviteCookie() {
   }, []);
 }
 
+/** Login negado pelo portão do convite (signIn callback → ?error=AccessDenied). */
+function useAccessDenied() {
+  const [denied, setDenied] = useState(false);
+  useEffect(() => {
+    setDenied(new URLSearchParams(window.location.search).get("error") === "AccessDenied");
+  }, []);
+  return denied;
+}
+
 function Reveal({ children, delay = 0, visible }: { children: React.ReactNode; delay?: number; visible: boolean }) {
   return (
     <div
@@ -64,6 +73,7 @@ function PressButton({
 export default function LoginPage() {
   const visible = useEntrance();
   useConviteCookie();
+  const accessDenied = useAccessDenied();
   // mostra cada botão só se o provider correspondente estiver ativo (depende das envs na Vercel)
   const [hasGoogle, setHasGoogle] = useState(true);
   const [hasResend, setHasResend] = useState(false);
@@ -137,6 +147,21 @@ export default function LoginPage() {
             </div>
           </div>
         </Reveal>
+
+        {/* Login negado: sem convite válido */}
+        {accessDenied && (
+          <div style={{
+            width: "100%", padding: "14px 16px", borderRadius: 16,
+            background: "rgba(229,103,103,0.10)", border: "1px solid rgba(229,103,103,0.4)",
+          }}>
+            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#e56767" }}>
+              Entrada só por convite
+            </p>
+            <p style={{ margin: "4px 0 0", fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, lineHeight: "18px", color: "#c9a0a0" }}>
+              Pede o link de convite ao admin do baba e abre ele aqui — aí é só logar de novo.
+            </p>
+          </div>
+        )}
 
         {/* Auth Section */}
         <div style={{ display: "flex", flexDirection: "column", gap: 12, width: "100%" }}>
