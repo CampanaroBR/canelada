@@ -127,8 +127,7 @@ body {
   background: var(--color-bg);
   color: var(--color-text-primary);
   font-family: var(--font-body);
-  /* NÃO usar overflow-x:hidden aqui — WebKit bug 181739: overflow em ancestral
-     DESATIVA o backdrop-filter dos descendentes (matava o liquid glass no iOS). */
+  overflow-x: hidden;
 }
 
 /* Headings: text-wrap balance (make-interfaces-feel-better — typography.md) */
@@ -153,40 +152,22 @@ h1, h2, h3, h4, h5, h6 {
 /* ── Liquid glass (iOS 26) ──
    Translucidez + blur + saturação (faz o conteúdo atrás "vibrar")
    + brilho especular interno no topo = sensação de vidro líquido. */
-/* A chave sobre app dark: brightness() no backdrop — blur de conteúdo quase-preto
-   continua preto; clarear o que está atrás é o que torna a translucidez VISÍVEL. */
 .glass-bar {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(16px) saturate(180%) brightness(1.4);
-  -webkit-backdrop-filter: blur(16px) saturate(180%) brightness(1.4);
-  box-shadow:
-    inset 0 -1px 0 rgba(255, 255, 255, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  background: transparent;
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
 }
 .glass-nav {
-  position: relative;
-  isolation: isolate;
-  background: rgba(255, 255, 255, 0.04);
-  /* filtro DIRETO no elemento — Safari não aplica backdrop-filter em ::before/::after */
-  backdrop-filter: blur(12px) saturate(190%) brightness(1.5);
-  -webkit-backdrop-filter: blur(12px) saturate(190%) brightness(1.5);
-  border: none;
+  background: rgba(28, 28, 30, 0.50);
+  backdrop-filter: blur(44px) saturate(200%) brightness(1.12);
+  -webkit-backdrop-filter: blur(44px) saturate(200%) brightness(1.12);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   box-shadow:
-    /* aresta especular no topo (a assinatura do liquid glass) */
-    inset 0 1.5px 1px rgba(255, 255, 255, 0.35),
-    /* aresta inferior mais fraca (luz refletida) */
-    inset 0 -1px 1px rgba(255, 255, 255, 0.10),
-    /* sombra de elevação */
-    0 12px 32px rgba(0, 0, 0, 0.5);
-}
-/* sheen: reflexo radial no canto superior esquerdo, como luz numa lente */
-.glass-nav::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background: radial-gradient(120% 90% at 22% 0%, rgba(255, 255, 255, 0.06), transparent 55%);
+    0 8px 40px rgba(0, 0, 0, 0.50),
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    inset 1px 0 0 rgba(255, 255, 255, 0.06),
+    inset -1px 0 0 rgba(255, 255, 255, 0.06);
 }
 /* Fallback: sem suporte a backdrop-filter, usa fundo mais opaco */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {

@@ -21,13 +21,11 @@ export function BottomNav({ items, value, onChange }: BottomNavProps) {
         display: "inline-flex",
         alignItems: "center",
         gap: 6,
-        background: "rgba(28,28,30,0.5)",
-        border: "1px solid rgba(255,255,255,0.14)",
+        background: "rgba(0,0,0,0.6)",
+        border: `1px solid #393939`,
         borderRadius: 28,
         padding: "5px 10px",
-        backdropFilter: "blur(44px) saturate(200%) brightness(1.12)",
-        WebkitBackdropFilter: "blur(44px) saturate(200%) brightness(1.12)",
-        boxShadow: "0 8px 40px rgba(0,0,0,0.5), inset 0 1.5px 0 rgba(255,255,255,0.25)",
+        backdropFilter: "blur(8px)",
       }}
     >
       {items.map((it) => {
