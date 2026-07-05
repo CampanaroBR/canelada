@@ -156,9 +156,9 @@ h1, h2, h3, h4, h5, h6 {
 /* A chave sobre app dark: brightness() no backdrop — blur de conteúdo quase-preto
    continua preto; clarear o que está atrás é o que torna a translucidez VISÍVEL. */
 .glass-bar {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(14px) saturate(220%) brightness(2);
-  -webkit-backdrop-filter: blur(14px) saturate(220%) brightness(2);
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px) saturate(180%) brightness(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(180%) brightness(1.4);
   box-shadow:
     inset 0 -1px 0 rgba(255, 255, 255, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -166,7 +166,10 @@ h1, h2, h3, h4, h5, h6 {
 .glass-nav {
   position: relative;
   isolation: isolate;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
+  /* filtro DIRETO no elemento — Safari não aplica backdrop-filter em ::before/::after */
+  backdrop-filter: blur(12px) saturate(190%) brightness(1.5);
+  -webkit-backdrop-filter: blur(12px) saturate(190%) brightness(1.5);
   border: none;
   box-shadow:
     /* aresta especular no topo (a assinatura do liquid glass) */
@@ -175,16 +178,6 @@ h1, h2, h3, h4, h5, h6 {
     inset 0 -1px 1px rgba(255, 255, 255, 0.10),
     /* sombra de elevação */
     0 12px 32px rgba(0, 0, 0, 0.5);
-}
-/* backdrop num ::after (z:-1): padrão mais confiável no WebKit com border-radius */
-.glass-nav::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  backdrop-filter: blur(12px) saturate(220%) brightness(2.2);
-  -webkit-backdrop-filter: blur(12px) saturate(220%) brightness(2.2);
 }
 /* sheen: reflexo radial no canto superior esquerdo, como luz numa lente */
 .glass-nav::before {
