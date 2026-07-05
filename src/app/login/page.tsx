@@ -16,6 +16,16 @@ function useEntrance() {
   return visible;
 }
 
+/** Guarda o código do link de convite (?convite=...) pra validação no onboarding. */
+function useConviteCookie() {
+  useEffect(() => {
+    const code = new URLSearchParams(window.location.search).get("convite");
+    if (code) {
+      document.cookie = `convite=${encodeURIComponent(code)}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax`;
+    }
+  }, []);
+}
+
 function Reveal({ children, delay = 0, visible }: { children: React.ReactNode; delay?: number; visible: boolean }) {
   return (
     <div
@@ -53,6 +63,7 @@ function PressButton({
 
 export default function LoginPage() {
   const visible = useEntrance();
+  useConviteCookie();
   // mostra cada botão só se o provider correspondente estiver ativo (depende das envs na Vercel)
   const [hasGoogle, setHasGoogle] = useState(true);
   const [hasResend, setHasResend] = useState(false);

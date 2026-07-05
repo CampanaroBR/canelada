@@ -25,7 +25,7 @@ export default async function GrupoPage() {
   if (!eu) redirect("/onboarding");
 
   const [grupo, jogadores, totalRodadas] = await Promise.all([
-    prisma.grupo.findUnique({ where: { id: eu.grupoId }, select: { nome: true } }),
+    prisma.grupo.findUnique({ where: { id: eu.grupoId }, select: { nome: true, inviteCode: true } }),
     prisma.jogador.findMany({
       where: { grupoId: eu.grupoId },
       select: { apelido: true, nome: true, sobrenome: true, posicao: true, foto: true, role: true, userId: true },
@@ -55,6 +55,7 @@ export default async function GrupoPage() {
       totalRodadas={totalRodadas}
       membros={membros}
       isAdmin={eu.role === "ADMIN" || eu.role === "SUPER_ADMIN"}
+      inviteCode={grupo?.inviteCode ?? ""}
     />
   );
 }

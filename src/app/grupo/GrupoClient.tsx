@@ -9,7 +9,7 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { MenuSheet } from "@/components/MenuSheet";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
 import { BottomSheet } from "@/components/BottomSheet";
-import { renomearGrupo, removerMembro } from "./actions";
+import { renomearGrupo, removerMembro, regenerarConvite } from "./actions";
 import { toast } from "@/ds/toast";
 import { Button, Input } from "@/ds";
 
@@ -29,6 +29,7 @@ interface Props {
   totalRodadas: number;
   membros: Membro[];
   isAdmin: boolean;
+  inviteCode: string;
 }
 
 function initials(name: string) {
@@ -36,7 +37,7 @@ function initials(name: string) {
   return (p.length >= 2 ? p[0][0] + p[1][0] : name.slice(0, 2)).toUpperCase();
 }
 
-export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin }: Props) {
+export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin, inviteCode }: Props) {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -60,16 +61,27 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
   }
 
   async function convidar() {
-    const url = typeof window !== "undefined" ? window.location.origin : "";
+    // Link com o código: só quem abrir por ele consegue completar o cadastro
+    const url = typeof window !== "undefined"
+      ? `${window.location.origin}/login?convite=${inviteCode}`
+      : "";
     const text = `Bora pro baba! ⚽ Entra no nosso grupo "${nome}" no Canelada:`;
     try {
       if (typeof navigator !== "undefined" && navigator.share) {
         await navigator.share({ title: "Canelada", text, url });
       } else if (typeof navigator !== "undefined" && navigator.clipboard) {
         await navigator.clipboard.writeText(`${text} ${url}`);
-        alert("Convite copiado!");
+        toast.success("Convite copiado com sucesso");
       }
     } catch { /* cancelou */ }
+  }
+
+  async function novoConvite() {
+    if (!confirm("Gerar novo link? O link antigo para de funcionar na hora.")) return;
+    const res = await regenerarConvite();
+    if (!res.ok) { toast.error(res.error ?? "Erro ao gerar convite."); return; }
+    router.refresh();
+    toast.success("Novo link de convite gerado com sucesso");
   }
 
   async function salvarNome() {
@@ -140,6 +152,19 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
           </div>
           <Export size={20} color="#9fe870" weight="bold" />
         </button>
+
+        {/* Gerar novo link (admin) — invalida o link antigo na hora */}
+        {isAdmin && (
+          <button onClick={novoConvite} style={{
+            marginTop: -8, alignSelf: "flex-start",
+            background: "none", border: "none", cursor: "pointer", padding: "0 6px",
+            fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12.5, color: "#7a7a7a",
+            textDecoration: "underline", textUnderlineOffset: 3,
+            WebkitTapHighlightColor: "transparent",
+          }}>
+            Gerar novo link (invalida o anterior)
+          </button>
+        )}
 
         {/* Membros */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>

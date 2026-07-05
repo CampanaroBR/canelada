@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -28,6 +29,14 @@ export async function saveOnboarding(apelido: string, nomeNoBaba: string) {
     update: {},
     create: { nome: "Canelada", slug: "canelada" },
   });
+
+  // Portão do convite: entrada só com o código do link (cookie gravado no /login).
+  // Não vale pra quem já é membro — só pra criação de jogador novo.
+  const cookieStore = await cookies();
+  const convite = cookieStore.get("convite")?.value;
+  if (!convite || convite !== grupo.inviteCode) {
+    return { error: "Entrada só por convite — peça o link ao admin do baba e abra por ele." };
+  }
 
   await prisma.jogador.create({
     data: {

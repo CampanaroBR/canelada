@@ -28,6 +28,28 @@ export async function renomearGrupo(nome: string) {
   return { ok: true as const };
 }
 
+/** Gera um novo código de convite (admin). Links antigos param de funcionar na hora. */
+export async function regenerarConvite() {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/login");
+
+  const jogador = await prisma.jogador.findUnique({
+    where: { userId: session.user.id },
+    select: { role: true, grupoId: true },
+  });
+  if (!jogador) return { ok: false as const, error: "Jogador não encontrado." };
+  if (jogador.role !== "ADMIN" && jogador.role !== "SUPER_ADMIN") {
+    return { ok: false as const, error: "Apenas administradores podem gerar convites." };
+  }
+
+  await prisma.grupo.update({
+    where: { id: jogador.grupoId },
+    data: { inviteCode: crypto.randomUUID() },
+  });
+  revalidatePath("/grupo");
+  return { ok: true as const };
+}
+
 /** Remove um membro do grupo (admin). Apaga o Jogador e dados relacionados; mantém a conta (User). */
 export async function removerMembro(apelido: string) {
   const session = await auth();
