@@ -3,10 +3,10 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Bell, SoccerBall, Clock } from "@phosphor-icons/react";
+import { Bell, SoccerBall, Clock, CaretLeft } from "@phosphor-icons/react";
 import { MenuSheet } from "@/components/MenuSheet";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
-import { Button } from "@/ds";
+import { Button, Card, Content, Avatar, Toggle, Tag, Stat } from "@/ds";
 import { parseLista, criarRodada, type ParticipanteImportado } from "./actions";
 
 type Step = "lista" | "confirmacao" | "sucesso";
@@ -25,10 +25,6 @@ function toISO(d: Date) {
 
 const WEEKDAYS_ABBR = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
 const MONTHS_ABBR = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
-
-function initial(name: string) {
-  return (name || "?").charAt(0).toUpperCase();
-}
 
 export function NovaRodadaForm() {
   const [step, setStep] = useState<Step>("lista");
@@ -222,126 +218,76 @@ export function NovaRodadaForm() {
   if (step === "confirmacao") {
     const canConfirm = !isSaving && incluidos.length > 0;
     return (
-      <div style={{ minHeight: "100dvh", background: "#08080a" }}>
-        {/* Teal header — reutilizado para manter consistência */}
+      <div style={{ minHeight: "100dvh", background: "#090909", paddingBottom: "calc(140px + env(safe-area-inset-bottom, 0px))" }}>
+        {/* Header — mesmo padrão do resto do app (dark, arredondado embaixo) */}
         <div style={{
-          background: "#0e4a54",
+          background: "#0a0e0e", border: "1px solid #2c2c2c",
           borderRadius: "0 0 40px 40px",
-          paddingTop: "calc(env(safe-area-inset-top, 0px) + 60px)",
-          paddingBottom: 28,
-          paddingLeft: 16,
-          paddingRight: 16,
+          paddingTop: "calc(env(safe-area-inset-top, 0px) + 20px)",
+          paddingBottom: 20, paddingLeft: 16, paddingRight: 16, boxSizing: "border-box",
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <button
               onClick={() => setStep("lista")}
-              style={{
-                appearance: "none",
-                background: "rgba(255,255,255,0.15)",
-                border: "none",
-                borderRadius: "50%",
-                width: 36,
-                height: 36,
-                color: "#fff",
-                fontSize: 20,
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}
+              aria-label="Voltar"
+              style={{ width: 40, height: 40, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: "#fff", WebkitTapHighlightColor: "transparent" }}
             >
-              ‹
+              <CaretLeft size={22} weight="bold" />
             </button>
-            <div>
-              <p style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 24, color: "#fff", margin: 0, letterSpacing: "-.01em" }}>
-                Confira a galera
-              </p>
-              <p style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "rgba(255,255,255,0.7)", margin: 0 }}>
-                Vinculação automática
-              </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#fff", textTransform: "uppercase" }}>Confira a galera</span>
+              <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "#999" }}>Vinculação automática</span>
             </div>
           </div>
         </div>
 
-        {/* Card body */}
-        <div style={{
-          background: "#171717",
-          border: "1px solid #2e2e2e",
-          borderRadius: "48px 48px 0 0",
-          marginTop: -20,
-          minHeight: "calc(100dvh - 80px)",
-          padding: "24px 16px 140px",
-        }}>
+        {/* Conteúdo */}
+        <main style={{ padding: "16px 8px 0", display: "flex", flexDirection: "column", gap: 16 }}>
           {/* Stats */}
-          <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-            <StatCard value={participantes.length} label="na lista" color="#fff" bg="#101013" border="#232327" />
-            <StatCard value={encontrados.length} label="vinculados" color="#9fe870" bg="rgba(159,232,112,.08)" border="rgba(159,232,112,.3)" />
-            <StatCard value={pendentes.length} label="pendentes" color="#f2c84b" bg="rgba(242,200,75,.08)" border="rgba(242,200,75,.3)" />
+          <div style={{ display: "flex", gap: 8 }}>
+            <Card tone="surface" padding={12} style={{ flex: 1 }}>
+              <Stat value={participantes.length} label="NA LISTA" />
+            </Card>
+            <Card tone="surface" padding={12} bordered={false} style={{ flex: 1, border: "1px solid rgba(159,232,112,0.3)", background: "rgba(159,232,112,0.08)" }}>
+              <Stat value={encontrados.length} label="VINCULADOS" color="#9fe870" />
+            </Card>
+            <Card tone="surface" padding={12} bordered={false} style={{ flex: 1, border: "1px solid rgba(197,151,58,0.35)", background: "rgba(197,151,58,0.08)" }}>
+              <Stat value={pendentes.length} label="PENDENTES" color="#c5973a" />
+            </Card>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {encontrados.map((p) => {
-              const off = excluidos.has(p.jogadorId!);
-              return (
-                <div
-                  key={p.jogadorId}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                    background: off ? "#101013" : "rgba(159,232,112,.05)",
-                    border: `1px solid ${off ? "#232327" : "rgba(159,232,112,.2)"}`,
-                    borderRadius: 16,
-                    padding: "11px 13px",
-                    transition: "background .18s, border-color .18s",
-                  }}
-                >
-                  <Avatar name={p.apelido || p.nome} off={off} />
-                  <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, gap: 1 }}>
-                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15.5, color: off ? "#555" : "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                      {p.apelido || p.nome}
-                    </span>
-                    <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 11.5, color: "#6f6f76" }}>
-                      {p.apelido && p.apelido !== p.nome ? p.nome : "vinculado"}
-                    </span>
+          {/* Lista */}
+          <Card tone="surface" padding={0} style={{ overflow: "hidden" }}>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              {encontrados.map((p, i) => {
+                const off = excluidos.has(p.jogadorId!);
+                return (
+                  <div key={p.jogadorId} style={{ padding: "12px 14px", borderTop: i === 0 ? "none" : "1px solid #1c1c1c", opacity: off ? 0.5 : 1, transition: "opacity 150ms" }}>
+                    <Content
+                      leading={<Avatar name={p.apelido || p.nome} />}
+                      label={p.apelido || p.nome}
+                      description={p.apelido && p.apelido !== p.nome ? p.nome : "vinculado"}
+                      trailing={<Toggle checked={!off} onChange={() => toggle(p.jogadorId!)} />}
+                    />
                   </div>
-                  <Toggle on={!off} onToggle={() => toggle(p.jogadorId!)} />
-                </div>
-              );
-            })}
+                );
+              })}
 
-            {pendentes.map((p, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 12,
-                  background: "#101013",
-                  border: "1px solid #232327",
-                  borderRadius: 16,
-                  padding: "11px 13px",
-                }}
-              >
-                <div style={{ width: 42, height: 42, flexShrink: 0, borderRadius: "50%", background: "#1c1c20", border: "1px solid #2a2a2f", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 17, color: "#f2c84b" }}>
-                  {initial(p.nome)}
+              {pendentes.map((p, i) => (
+                <div key={i} style={{ padding: "12px 14px", borderTop: encontrados.length + i === 0 ? "none" : "1px solid #1c1c1c" }}>
+                  <Content
+                    leading={<Avatar name={p.nome} />}
+                    label={p.nome}
+                    description="não encontrado"
+                    trailing={<Tag tone="gold">PENDENTE</Tag>}
+                  />
                 </div>
-                <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, gap: 1 }}>
-                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15.5, color: "#888", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    {p.nome}
-                  </span>
-                  <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 11.5, color: "#6f6f76" }}>não encontrado</span>
-                </div>
-                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 9.5, letterSpacing: ".08em", color: "#f2c84b", border: "1px solid rgba(242,200,75,.4)", borderRadius: 99, padding: "4px 9px", flexShrink: 0, whiteSpace: "nowrap" }}>
-                  PENDENTE
-                </span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </Card>
 
           {pendentes.length > 0 && (
-            <div style={{ marginTop: 14, display: "flex", gap: 8, alignItems: "flex-start", background: "#101013", border: "1px solid #232327", borderRadius: 14, padding: "12px 14px" }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "flex-start", background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 14, padding: "12px 14px" }}>
               <span style={{ fontSize: 15, lineHeight: 1.2, flexShrink: 0 }}>💡</span>
               <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, lineHeight: 1.4, color: "#8b8b93" }}>
                 Pendentes ficam de fora da votação por enquanto. Quando criarem conta, o app vincula sozinho.
@@ -350,14 +296,14 @@ export function NovaRodadaForm() {
           )}
 
           {error && (
-            <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "#ff4a4a", marginTop: 12 }}>{error}</p>
+            <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "#e56767", margin: 0 }}>{error}</p>
           )}
-        </div>
+        </main>
 
-        {/* CTA fixo */}
-        <div style={{ position: "fixed", left: 0, right: 0, bottom: "max(80px, calc(env(safe-area-inset-bottom, 0px) + 80px))", padding: "0 16px", zIndex: 10 }}>
+        {/* CTA fixo — zIndex acima da BottomNav (30) pra não ficar atrás dela */}
+        <div style={{ position: "fixed", left: "50%", transform: "translateX(-50%)", width: "min(100%, 430px)", bottom: "calc(84px + env(safe-area-inset-bottom, 0px))", padding: "0 16px", zIndex: 35, boxSizing: "border-box" }}>
           <Button fullWidth size="lg" onClick={handleCriar} disabled={!canConfirm}>
-            {isSaving ? "CRIANDO RODADA..." : `CONFIRMAR PRESENÇA · ${incluidos.length}`}
+            {isSaving ? "Criando rodada…" : `Confirmar presença · ${incluidos.length}`}
           </Button>
         </div>
       </div>
@@ -675,58 +621,3 @@ function MiniCalendar({ value, onChange }: { value: string; onChange: (iso: stri
   );
 }
 
-function StatCard({ value, label, color, bg, border }: { value: number; label: string; color: string; bg: string; border: string }) {
-  return (
-    <div style={{ flex: 1, background: bg, border: `1px solid ${border}`, borderRadius: 16, padding: "12px 10px", textAlign: "center" }}>
-      <div style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 22, color }}>{value}</div>
-      <div style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 10, color, letterSpacing: ".04em" }}>{label}</div>
-    </div>
-  );
-}
-
-function Avatar({ name, off }: { name: string; off: boolean }) {
-  return (
-    <div style={{
-      width: 42, height: 42, flexShrink: 0, borderRadius: "50%",
-      background: off ? "#1c1c20" : "rgba(159,232,112,.15)",
-      border: `1px solid ${off ? "#2a2a2f" : "rgba(159,232,112,.3)"}`,
-      display: "flex", alignItems: "center", justifyContent: "center",
-      fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 17,
-      color: off ? "#555" : "#9fe870",
-      transition: "background .18s, border-color .18s, color .18s",
-    }}>
-      {(name || "?").charAt(0).toUpperCase()}
-    </div>
-  );
-}
-
-function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
-  return (
-    <button
-      onClick={onToggle}
-      style={{
-        appearance: "none",
-        cursor: "pointer",
-        width: 48,
-        height: 28,
-        borderRadius: 99,
-        background: on ? "#9fe870" : "#2a2a2f",
-        border: "none",
-        position: "relative",
-        transition: "background .18s ease",
-        flexShrink: 0,
-      }}
-    >
-      <div style={{
-        position: "absolute",
-        top: 3,
-        left: on ? 23 : 3,
-        width: 22,
-        height: 22,
-        borderRadius: "50%",
-        background: "#fff",
-        transition: "left .18s ease",
-      }} />
-    </button>
-  );
-}
