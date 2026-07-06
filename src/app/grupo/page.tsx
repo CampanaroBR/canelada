@@ -11,7 +11,7 @@ const POS_ABBR: Record<string, string> = {
 };
 
 const ROLE_LABEL: Record<string, string> = {
-  SUPER_ADMIN: "Admin", ADMIN: "Admin", PLAYER: "Jogador",
+  SUPER_ADMIN: "Dono", ADMIN: "Admin", PLAYER: "Jogador",
 };
 
 export default async function GrupoPage() {
@@ -35,6 +35,7 @@ export default async function GrupoPage() {
   ]);
 
   const souAdmin = eu.role === "ADMIN" || eu.role === "SUPER_ADMIN";
+  const souSuperAdmin = eu.role === "SUPER_ADMIN";
   const membros: Membro[] = jogadores
     .map((j) => ({
       apelido: j.apelido,
@@ -44,6 +45,8 @@ export default async function GrupoPage() {
       roleLabel: ROLE_LABEL[j.role] ?? "Jogador",
       isAdmin: j.role === "ADMIN" || j.role === "SUPER_ADMIN",
       removivel: souAdmin && j.userId !== session.user!.id && j.role !== "SUPER_ADMIN",
+      // só o dono (SUPER_ADMIN) promove/rebaixa admin — e não a si mesmo
+      podeAlterarAdmin: souSuperAdmin && j.userId !== session.user!.id && j.role !== "SUPER_ADMIN",
     }))
     // admins primeiro, depois ordem alfabética
     .sort((a, b) => Number(b.isAdmin) - Number(a.isAdmin) || a.apelido.localeCompare(b.apelido));

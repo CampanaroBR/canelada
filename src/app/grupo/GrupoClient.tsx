@@ -4,12 +4,12 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bell, UsersThree, UserPlus, Export, CaretRight, PencilSimple, ShieldStar, UserMinus, Warning } from "@phosphor-icons/react";
+import { Bell, UsersThree, UserPlus, Export, CaretRight, PencilSimple, ShieldStar, ShieldPlus, UserMinus, Warning } from "@phosphor-icons/react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { MenuSheet } from "@/components/MenuSheet";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
 import { BottomSheet } from "@/components/BottomSheet";
-import { renomearGrupo, removerMembro, regenerarConvite } from "./actions";
+import { renomearGrupo, removerMembro, regenerarConvite, definirAdmin } from "./actions";
 import { toast } from "@/ds/toast";
 import { Button, Input } from "@/ds";
 
@@ -21,6 +21,7 @@ export interface Membro {
   roleLabel: string;
   isAdmin: boolean;
   removivel: boolean;
+  podeAlterarAdmin: boolean;
 }
 
 interface Props {
@@ -47,6 +48,16 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
   const [removeAlvo, setRemoveAlvo] = useState<Membro | null>(null);
   const [removendo, setRemovendo] = useState(false);
   const [removeErro, setRemoveErro] = useState<string | null>(null);
+  const [alterandoAdmin, setAlterandoAdmin] = useState<string | null>(null);
+
+  async function toggleAdmin(m: Membro) {
+    setAlterandoAdmin(m.apelido);
+    const res = await definirAdmin(m.apelido, !m.isAdmin);
+    setAlterandoAdmin(null);
+    if (!res.ok) { toast.error(res.error ?? "Erro ao alterar admin."); return; }
+    router.refresh();
+    toast.success(m.isAdmin ? `${m.apelido} não é mais admin` : `${m.apelido} agora é admin`);
+  }
 
   async function confirmarRemocao() {
     if (!removeAlvo) return;
@@ -189,15 +200,25 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
                     </span>
                   </div>
                 </Link>
+                {m.podeAlterarAdmin && (
+                  <button
+                    onClick={() => toggleAdmin(m)}
+                    disabled={alterandoAdmin === m.apelido}
+                    aria-label={m.isAdmin ? `Remover admin de ${m.apelido}` : `Tornar ${m.apelido} admin`}
+                    style={{ flexShrink: 0, width: 40, height: 40, margin: "0 2px", borderRadius: 12, background: "transparent", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", WebkitTapHighlightColor: "transparent", opacity: alterandoAdmin === m.apelido ? 0.5 : 1 }}
+                  >
+                    <ShieldPlus size={18} color={m.isAdmin ? "#7a7a7a" : "#9fe870"} weight={m.isAdmin ? "regular" : "bold"} />
+                  </button>
+                )}
                 {m.removivel ? (
                   <button onClick={() => { setRemoveErro(null); setRemoveAlvo(m); }} aria-label={`Remover ${m.apelido}`} style={{ flexShrink: 0, width: 44, height: 44, margin: "0 6px", borderRadius: 12, background: "transparent", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
                     <UserMinus size={18} color="#e56767" weight="bold" />
                   </button>
-                ) : (
+                ) : !m.podeAlterarAdmin ? (
                   <div style={{ flexShrink: 0, width: 30, display: "flex", justifyContent: "center" }}>
                     <CaretRight size={16} color="#555" weight="bold" />
                   </div>
-                )}
+                ) : null}
               </div>
             ))}
           </div>

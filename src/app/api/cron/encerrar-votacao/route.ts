@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { sincronizarBadges, nomeBadge } from "@/lib/badges";
 import { sendPushToSubscriptions } from "@/lib/webpush";
 import { votacaoEncerrada } from "@/lib/votacaoJanela";
+import { limparContasOrfas } from "@/lib/limparContasOrfas";
 
 export const dynamic = "force-dynamic";
 
@@ -90,5 +91,12 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ ok: true, encerradas: aEncerrar.length, novasBadges: totalNovas, pushEnviados });
+  // Piggyback na execução diária desse cron pra não gastar um segundo cron job
+  // da Vercel só pra isso — roda só aos domingos (getUTCDay() === 0).
+  let contasRemovidas = 0;
+  if (new Date().getUTCDay() === 0) {
+    contasRemovidas = await limparContasOrfas();
+  }
+
+  return NextResponse.json({ ok: true, encerradas: aEncerrar.length, novasBadges: totalNovas, pushEnviados, contasRemovidas });
 }

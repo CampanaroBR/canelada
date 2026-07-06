@@ -1,10 +1,11 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { NovaRodadaForm } from "./NovaRodadaForm";
 import { EmptyState } from "@/ds/components/EmptyState";
-import { Clock } from "@phosphor-icons/react/dist/ssr";
+import { Clock, ClockCounterClockwise } from "@phosphor-icons/react/dist/ssr";
 
 export default async function PeladaPage() {
   const session = await auth();
@@ -19,6 +20,17 @@ export default async function PeladaPage() {
 
   return (
     <div style={{ minHeight: "100dvh", background: "#08080a" }}>
+      <Link
+        href="/pelada/historico"
+        aria-label="Histórico de babas"
+        style={{
+          position: "fixed", top: "calc(env(safe-area-inset-top, 0px) + 12px)", right: 12, zIndex: 40,
+          width: 40, height: 40, borderRadius: 20, background: "rgba(20,20,20,0.8)", border: "1px solid #2c2c2c",
+          display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(8px)",
+        }}
+      >
+        <ClockCounterClockwise size={20} color="#9fe870" weight="regular" />
+      </Link>
       <div>
         {isAdmin ? (
           <NovaRodadaForm />

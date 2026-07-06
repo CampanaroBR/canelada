@@ -50,6 +50,37 @@ export async function regenerarConvite() {
   return { ok: true as const };
 }
 
+/** Promove/rebaixa um membro a admin. Só o dono do grupo (SUPER_ADMIN) pode — admins não criam outros admins. */
+export async function definirAdmin(apelido: string, tornarAdmin: boolean) {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/login");
+
+  const eu = await prisma.jogador.findUnique({
+    where: { userId: session.user.id },
+    select: { id: true, role: true, grupoId: true },
+  });
+  if (!eu) return { ok: false as const, error: "Jogador não encontrado." };
+  if (eu.role !== "SUPER_ADMIN") {
+    return { ok: false as const, error: "Só o dono do grupo pode definir admins." };
+  }
+
+  const alvo = await prisma.jogador.findFirst({
+    where: { grupoId: eu.grupoId, apelido: { equals: apelido, mode: "insensitive" } },
+    select: { id: true, role: true },
+  });
+  if (!alvo) return { ok: false as const, error: "Membro não encontrado." };
+  if (alvo.id === eu.id) return { ok: false as const, error: "Você já é o dono do grupo." };
+  if (alvo.role === "SUPER_ADMIN") return { ok: false as const, error: "Não é possível alterar o dono do grupo." };
+
+  await prisma.jogador.update({
+    where: { id: alvo.id },
+    data: { role: tornarAdmin ? "ADMIN" : "PLAYER" },
+  });
+
+  revalidatePath("/grupo");
+  return { ok: true as const };
+}
+
 /** Remove um membro do grupo (admin). Apaga o Jogador e dados relacionados; mantém a conta (User). */
 export async function removerMembro(apelido: string) {
   const session = await auth();
