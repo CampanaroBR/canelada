@@ -5,6 +5,7 @@ import { PushInit } from "@/components/PushInit";
 import { OrientationGuard } from "@/components/OrientationGuard";
 import { Toaster } from "@/ds/toast";
 import { SplashScreen } from "@/components/SplashScreen";
+import { PostHogProvider } from "@/components/PostHogProvider";
 
 // Body/números = Google Sans (self-hosted via @font-face em globals.css). Barlow = display.
 const barlow = Barlow({
@@ -43,6 +44,7 @@ export default function RootLayout({
           }}
         >
           <PushInit />
+          <PostHogProvider />
           {children}
         </div>
         <OrientationGuard />
