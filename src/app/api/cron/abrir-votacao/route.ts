@@ -49,12 +49,12 @@ export async function GET(req: NextRequest) {
 
       let pushEnviados = 0;
       if (subs.length > 0) {
-        const results = await sendPushToSubscriptions(subs, {
+        const r = await sendPushToSubscriptions(subs, {
           title: "⚽ Votação aberta!",
           body: "Vote nos melhores e piores do baba de hoje!",
           url: "/votacao",
         });
-        pushEnviados = results.filter((r) => r.status === "fulfilled").length;
+        pushEnviados = r.entregues;
       }
 
       return { rodadaId: rodada.id, grupo: rodada.grupo.nome, pushEnviados };

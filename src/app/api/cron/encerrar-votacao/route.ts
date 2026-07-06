@@ -46,12 +46,12 @@ export async function GET(req: NextRequest) {
     });
     const subs = membros.flatMap((m) => m.pushSubscriptions);
     if (subs.length > 0) {
-      const results = await sendPushToSubscriptions(subs, {
+      const r = await sendPushToSubscriptions(subs, {
         title: "🏆 Saíram os resultados!",
         body: "A votação encerrou. Vem ver quem foi o craque e quem foi o bagre! 😂",
         url: "/feed",
       });
-      pushEnviados += results.filter(r => r.status === "fulfilled").length;
+      pushEnviados += r.entregues;
     }
   }
 
@@ -85,8 +85,8 @@ export async function GET(req: NextRequest) {
       const body = slugs.length === 1
         ? `Você desbloqueou "${nomeBadge(slugs[0])}"!`
         : `Você desbloqueou ${slugs.length} novas badges!`;
-      const results = await sendPushToSubscriptions(meus, { title: "🏅 Nova badge!", body, url: "/medalhas" });
-      pushEnviados += results.filter(r => r.status === "fulfilled").length;
+      const r = await sendPushToSubscriptions(meus, { title: "🏅 Nova badge!", body, url: "/medalhas" });
+      pushEnviados += r.entregues;
     }
   }
 

@@ -18,5 +18,23 @@ export async function sendPushToSubscriptions(
       )
     )
   );
-  return results;
+
+  // Prune de inscrições mortas: 404/410 = endpoint não existe mais (app desinstalado,
+  // permissão revogada). Removê-las evita "enviados" fantasma e reenvios inúteis.
+  const mortas: string[] = [];
+  results.forEach((r, i) => {
+    if (r.status === "rejected") {
+      const code = (r.reason as { statusCode?: number })?.statusCode;
+      if (code === 404 || code === 410) mortas.push(subscriptions[i].endpoint);
+    }
+  });
+  if (mortas.length) {
+    try {
+      const { prisma } = await import("@/lib/prisma");
+      await prisma.pushSubscription.deleteMany({ where: { endpoint: { in: mortas } } });
+    } catch { /* best-effort */ }
+  }
+
+  const entregues = results.filter((r) => r.status === "fulfilled").length;
+  return { results, entregues, mortas: mortas.length };
 }
