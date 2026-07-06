@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { rateLimit } from "@/lib/ratelimit";
 
-const PUBLIC_PREFIXES = ["/login", "/api/auth"];
+// /api/cron: os handlers têm auth própria (Bearer CRON_SECRET). Sem isto, o
+// middleware redirecionava as requisições do Vercel Cron pro /login (307) e a
+// votação nunca abria/fechava sozinha.
+const PUBLIC_PREFIXES = ["/login", "/api/auth", "/api/cron"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
