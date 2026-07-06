@@ -49,15 +49,16 @@ export function PasswordInput({ label, required, hint, error, strength, disabled
   const borderColor = error ? token("accent-red-default") : token("border-primary-default");
 
   return (
-    <label style={{ display: "block", width: "100%" }}>
+    <label style={{ display: "block", width: "100%", WebkitTapHighlightColor: "transparent" }}>
       {label && (
         <span style={{ display: "block", marginBottom: 6, fontFamily: font.body, fontWeight: 600, fontSize: 14, lineHeight: "20px", color: "#f5f5f5" }}>
           {label}
           {required && <span style={{ color: token("accent-red-default"), marginLeft: 3 }}>*</span>}
         </span>
       )}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, height: 48, background: disabled ? token("bg-surface-secondary-default") : token("bg-surface-primary-default"), border: `1px solid ${borderColor}`, borderRadius: radius.lg, padding: "0 12px 0 16px", boxSizing: "border-box" }}>
+      <div className="ds-input-box" style={{ display: "flex", alignItems: "center", gap: 8, height: 48, background: disabled ? token("bg-surface-secondary-default") : token("bg-surface-primary-default"), border: `1px solid ${borderColor}`, borderRadius: radius.lg, padding: "0 12px 0 16px", boxSizing: "border-box", transition: "border-color 150ms ease, box-shadow 150ms ease" }}>
         <input
+          className="ds-input"
           type={show ? "text" : "password"}
           value={value}
           onChange={onChange}

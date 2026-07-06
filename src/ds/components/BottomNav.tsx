@@ -49,8 +49,8 @@ export function BottomNav({ items, value, onChange }: BottomNavProps) {
               WebkitTapHighlightColor: "transparent",
             }}
           >
-            <span style={{ display: "inline-flex", lineHeight: 0, color: active ? token("text-on-fill-default") : token("text-primary-default") }}>{it.icon}</span>
-            <span style={{ fontFamily: font.display, fontWeight: 800, fontSize: 9.5, lineHeight: "13px" }}>{it.label}</span>
+            <span style={{ display: "inline-flex", lineHeight: 0, color: active ? token("text-on-fill-default") : token("text-primary-default"), filter: active ? "none" : "drop-shadow(0 1px 2px rgba(0,0,0,0.7))" }}>{it.icon}</span>
+            <span style={{ fontFamily: font.display, fontWeight: 800, fontSize: 9.5, lineHeight: "13px", textShadow: active ? "none" : "0 1px 2px rgba(0,0,0,0.7)" }}>{it.label}</span>
           </button>
         );
       })}

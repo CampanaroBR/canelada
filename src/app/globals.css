@@ -176,13 +176,20 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ── Estado de foco dos campos de formulário (Figma: borda accent) ──
-   Feedback claro de que o usuário está interagindo com o campo. */
-input:focus,
+   Feedback claro de que o usuário está interagindo com o campo.
+   :not(.ds-input) exclui o componente Input do DS: ele não tem borda própria
+   (quem desenha a borda arredondada é o div pai), então esse box-shadow reto
+   ficava desalinhado por dentro do container — o DS trata o foco à parte. */
+input:not(.ds-input):focus,
 textarea:focus,
 select:focus {
   border-color: var(--color-accent) !important;
   box-shadow: 0 0 0 1px var(--color-accent);
   caret-color: var(--color-accent);
+}
+.ds-input-box:focus-within {
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 1px var(--color-accent);
 }
 input::placeholder,
 textarea::placeholder {

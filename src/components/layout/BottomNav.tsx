@@ -76,6 +76,9 @@ export function BottomNav() {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
+                      // fundo da navbar é bem transparente (glass) — sombra garante contraste
+                      // do ícone/label inativos mesmo com conteúdo claro passando atrás
+                      filter: isActive ? "none" : "drop-shadow(0 1px 2px rgba(0,0,0,0.7))",
                     }}
                     animate={isActive ? { scale: [1, 1.25, 1] } : { scale: 1 }}
                     transition={{ duration: 0.35, ease: "easeOut" }}
@@ -92,6 +95,7 @@ export function BottomNav() {
                     textAlign: "center",
                     whiteSpace: "nowrap",
                     display: "block",
+                    textShadow: isActive ? "none" : "0 1px 2px rgba(0,0,0,0.7)",
                   }}>
                     {item.label}
                   </span>

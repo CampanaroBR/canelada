@@ -13,7 +13,7 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
 export function Input({ label, required, hint, error, leftIcon, disabled, style, ...rest }: InputProps) {
   const borderColor = error ? token("border-danger-default") : token("border-primary-default");
   return (
-    <label style={{ display: "block", width: "100%" }}>
+    <label style={{ display: "block", width: "100%", WebkitTapHighlightColor: "transparent" }}>
       {label && (
         <span style={{ display: "block", marginBottom: 6, fontFamily: font.body, fontWeight: 600, fontSize: 14, lineHeight: "20px", color: "#f5f5f5" }}>
           {label}
@@ -21,6 +21,7 @@ export function Input({ label, required, hint, error, leftIcon, disabled, style,
         </span>
       )}
       <div
+        className="ds-input-box"
         style={{
           display: "flex",
           alignItems: "center",
@@ -31,10 +32,12 @@ export function Input({ label, required, hint, error, leftIcon, disabled, style,
           borderRadius: radius.lg,
           padding: "0 16px",
           boxSizing: "border-box",
+          transition: "border-color 150ms ease, box-shadow 150ms ease",
         }}
       >
         {leftIcon && <span style={{ display: "inline-flex", flexShrink: 0, color: token("text-tertiary-default") }}>{leftIcon}</span>}
         <input
+          className="ds-input"
           disabled={disabled}
           style={{
             flex: 1,
