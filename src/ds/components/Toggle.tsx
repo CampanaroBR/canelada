@@ -1,4 +1,5 @@
 import React from "react";
+import { motion as fx } from "motion/react";
 import { motion, token } from "../tokens";
 
 export interface ToggleProps {
@@ -7,7 +8,7 @@ export interface ToggleProps {
   disabled?: boolean;
 }
 
-/** Switch on/off do Canelada (ex.: notificações). */
+/** Switch on/off do Canelada (ex.: notificações) — bolinha desliza com mola e "espicha" no meio do caminho. */
 export function Toggle({ checked, onChange, disabled }: ToggleProps) {
   return (
     <button
@@ -29,16 +30,22 @@ export function Toggle({ checked, onChange, disabled }: ToggleProps) {
         WebkitTapHighlightColor: "transparent",
       }}
     >
-      <span
+      <fx.span
         style={{
           position: "absolute",
           top: 2,
-          left: checked ? 20 : 2,
           width: 18,
           height: 18,
           borderRadius: "50%",
           background: "#fff",
-          transition: `left ${motion.duration.base}ms ${motion.ease.out}`,
+        }}
+        animate={{
+          left: checked ? 20 : 2,
+          scaleX: [1, 1.3, 1],
+        }}
+        transition={{
+          left: { type: "spring", stiffness: 700, damping: 32 },
+          scaleX: { duration: 0.28, ease: "easeOut" },
         }}
       />
     </button>
