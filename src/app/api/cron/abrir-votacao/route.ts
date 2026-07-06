@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendPushToSubscriptions } from "@/lib/webpush";
+import { votacaoAtiva } from "@/lib/votacaoJanela";
 
 export const dynamic = "force-dynamic";
 
@@ -15,20 +16,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Rodadas de hoje (em BRT, UTC-3) que ainda não tiveram votação aberta
-  const agora = new Date();
-  const inicioDia = new Date(agora);
-  inicioDia.setUTCHours(3, 0, 0, 0); // 00:00 BRT = 03:00 UTC
-
-  const fimDia = new Date(agora);
-  fimDia.setUTCHours(26, 59, 59, 999); // 23:59 BRT = 02:59 UTC do dia seguinte
-
-  const rodadasHoje = await prisma.rodada.findMany({
-    where: {
-      data: { gte: inicioDia, lte: fimDia },
-      votacaoAberta: false,
-      encerrada: false,
-    },
+  // Abre qualquer rodada cuja JANELA de votação está ativa e ainda não foi aberta.
+  // (Robusto a timezone: não depende de casar "data == hoje em UTC".)
+  const candidatas = await prisma.rodada.findMany({
+    where: { votacaoAberta: false, encerrada: false },
     include: {
       grupo: {
         include: {
@@ -39,6 +30,7 @@ export async function GET(req: NextRequest) {
       },
     },
   });
+  const rodadasHoje = candidatas.filter((r) => votacaoAtiva(r.data));
 
   if (rodadasHoje.length === 0) {
     return NextResponse.json({ ok: true, abertas: 0, mensagem: "Nenhuma rodada para abrir hoje." });

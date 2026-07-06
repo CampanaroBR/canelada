@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sincronizarBadges, nomeBadge } from "@/lib/badges";
 import { sendPushToSubscriptions } from "@/lib/webpush";
+import { votacaoEncerrada } from "@/lib/votacaoJanela";
 
 export const dynamic = "force-dynamic";
 
@@ -10,13 +11,6 @@ function isAuthorized(req: NextRequest) {
   return auth === `Bearer ${process.env.CRON_SECRET}`;
 }
 
-// Votação encerra às 15h (BRT) do dia seguinte ao jogo.
-function janelaFechada(data: Date): boolean {
-  const fim = new Date(data);
-  fim.setDate(fim.getDate() + 1);
-  fim.setUTCHours(18, 0, 0, 0); // 15:00 BRT = 18:00 UTC
-  return new Date() >= fim;
-}
 
 export async function GET(req: NextRequest) {
   if (!isAuthorized(req)) {
@@ -28,7 +22,7 @@ export async function GET(req: NextRequest) {
     where: { encerrada: false },
     select: { id: true, grupoId: true, data: true },
   });
-  const aEncerrar = abertas.filter(r => janelaFechada(r.data));
+  const aEncerrar = abertas.filter(r => votacaoEncerrada(r.data));
 
   if (aEncerrar.length === 0) {
     return NextResponse.json({ ok: true, encerradas: 0, mensagem: "Nenhuma rodada para encerrar." });

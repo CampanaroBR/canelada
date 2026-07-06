@@ -8,6 +8,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { EmptyState } from "@/ds/components/EmptyState";
 import { SoccerBall, CaretLeft, Bell } from "@phosphor-icons/react/dist/ssr";
+import { votacaoAtiva } from "@/lib/votacaoJanela";
 
 /** Topbar padrão (voltar + logo + sino) pras telas estáticas da votação. */
 function VotacaoTopBar() {
@@ -43,10 +44,15 @@ export default async function VotacaoPage() {
   });
   if (!jogador) redirect("/onboarding");
 
-  const rodada = await prisma.rodada.findFirst({
-    where: { grupoId: jogador.grupoId, encerrada: false, votacaoAberta: true },
+  // Acesso por JANELA DE HORÁRIO (não depende do cron ter flipado votacaoAberta).
+  // Pega a rodada aberta mais recente e valida se estamos dentro da janela de votação.
+  const rodadaAtiva = await prisma.rodada.findFirst({
+    where: { grupoId: jogador.grupoId, encerrada: false },
     orderBy: { createdAt: "desc" },
   });
+  const rodada = rodadaAtiva && (rodadaAtiva.votacaoAberta || votacaoAtiva(rodadaAtiva.data))
+    ? rodadaAtiva
+    : null;
 
   if (!rodada) {
     return <NoRodadaScreen />;
