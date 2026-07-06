@@ -5,6 +5,7 @@ import { Slider } from "./Slider";
 const meta: Meta<typeof Slider> = {
   title: "Forms/Slider",
   component: Slider,
+  tags: ["!autodocs"],
   decorators: [(S) => <div style={{ width: 320 }}><S /></div>],
 };
 export default meta;

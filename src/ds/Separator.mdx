@@ -1,0 +1,30 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as SeparatorStories from "./components/Separator.stories";
+
+<Meta of={SeparatorStories} />
+
+# Separator
+
+Linha que divide conteúdo — horizontal (com rótulo opcional, tipo "ou") ou vertical
+(entre stats numa mesma linha).
+
+<Canvas of={SeparatorStories.Horizontal} />
+<Canvas of={SeparatorStories.ComRotulo} />
+
+## Quando usar
+
+- Dividir seções verticalmente sem precisar de um `Card`/borda ao redor.
+- `label` só se aplica à orientação horizontal (ex.: "ou" entre "Entrar com Google" e
+  "Entrar com e-mail").
+- Vertical entre valores curtos numa mesma linha (ex.: "12 jogos · 3 MVPs").
+
+<Canvas of={SeparatorStories.Vertical} />
+
+## Do & Don't
+
+- ✅ Use `spacing` pra controlar a margem sem precisar envolver em outro `<div>`.
+- 🚫 Não empilhe dois Separators seguidos — vira uma linha dupla sem função.
+
+## Props
+
+<Controls />

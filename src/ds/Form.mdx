@@ -1,0 +1,36 @@
+import { Meta, Canvas } from "@storybook/addon-docs/blocks";
+import * as FormStories from "./components/Form.stories";
+
+<Meta of={FormStories} />
+
+# Form
+
+Composição de 4 peças pra montar formulários com espaçamento e rodapé de ações
+consistentes: **Form** (container + título opcional), **FormRow** (campos lado a lado),
+**FormField** (label/hint/erro em volta de um controle que não é um Input nativo do DS)
+e **FormActions** (rodapé de botões, empilhado ou lado a lado).
+
+<Canvas of={FormStories.EditarPerfil} />
+
+## Quando usar
+
+- `Form` envolve tudo — cuida do espaçamento vertical (`gap`) e do `onSubmit`.
+- `FormRow` pra 2 campos na mesma linha (ex.: Nome | Sobrenome).
+- `FormField` só quando o controle não é `Input`/`Select`/`Dropdown` (que já têm seu
+  próprio label/hint/erro embutido) — ex.: em volta de um `Toggle` ou `Slider`.
+- `FormActions direction="row"` pra 2 botões lado a lado; default é empilhado.
+
+<Canvas of={FormStories.ComErro} />
+
+## Do & Don't
+
+- ✅ Deixe o botão de confirmação por último em `FormActions` (ordem de leitura = ordem
+  de ação).
+- 🚫 Não aninhe `Form` dentro de `Form` — é só um `<form>` HTML por vez.
+
+## Props
+
+- **Form**: `title?`, `gap?` (default 16), `onSubmit?`
+- **FormRow**: `gap?` (default 10)
+- **FormField**: `label?`, `required?`, `hint?`, `error?`
+- **FormActions**: `direction?` (`"row" | "column"`, default `"column"`)

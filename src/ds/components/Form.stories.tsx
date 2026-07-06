@@ -8,6 +8,7 @@ import { Button } from "./Button";
 
 const meta: Meta = {
   title: "Forms/Form",
+  tags: ["!autodocs"],
   parameters: { layout: "padded" },
   decorators: [(S) => <div style={{ width: 360 }}><S /></div>],
 };

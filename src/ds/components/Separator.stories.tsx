@@ -5,6 +5,7 @@ import { Text } from "./Text";
 const meta: Meta<typeof Separator> = {
   title: "Core/Separator",
   component: Separator,
+  tags: ["!autodocs"],
   decorators: [(S) => <div style={{ width: 320 }}><S /></div>],
 };
 export default meta;

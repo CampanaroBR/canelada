@@ -1,0 +1,33 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as BottomSheetStories from "./components/BottomSheet.stories";
+
+<Meta of={BottomSheetStories} />
+
+# BottomSheet
+
+Painel que sobe do rodapé da tela — o padrão do app pra formulários, confirmações e
+detalhes que precisam de mais espaço ou rolagem. Arrasta o handle pra baixo (ou toca no
+fundo) pra fechar; acompanha o teclado no iOS pra nunca ficar escondido atrás dele.
+
+<Canvas of={BottomSheetStories.Default} />
+
+## Quando usar
+
+- Formulários e fluxos com múltiplos campos (editar perfil, criar rodada).
+- Confirmações que precisam de mais contexto que um Modal central — veja também **ConfirmDialog**, que já empacota o padrão de confirmação em cima do BottomSheet.
+- Detalhe de um item da lista (ex.: detalhe de badge).
+- Para decisões curtas sem scroll, um **Modal** central pode bastar.
+
+<Canvas of={BottomSheetStories.CorCustomizada} />
+
+## Do & Don't
+
+- ✅ Use `bg`/`boxShadow` só quando o conteúdo pede destaque (ex.: badge rara com glow).
+- ✅ Deixe o handle visível — é a affordance de arrastar pra fechar.
+- ✅ Trate o fechamento por drag, backdrop e botão explícito da mesma forma.
+- 🚫 Não abra um BottomSheet de dentro de outro.
+- 🚫 Não desative o fechamento por backdrop sem um motivo forte (ex.: ação em andamento).
+
+## Props
+
+<Controls />

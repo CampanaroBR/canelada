@@ -1,0 +1,34 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as DropdownStories from "./components/Dropdown.stories";
+
+<Meta of={DropdownStories} />
+
+# Dropdown
+
+Select customizado: trigger com ícone opcional + popover de opções, com check no item
+selecionado e fechamento por clique fora.
+
+<Canvas of={DropdownStories.Default} />
+
+## Quando usar
+
+- Quando cada opção precisa de um ícone (ex.: posição no campo) — o `Select` nativo do
+  DS não suporta isso.
+- Quando o popover customizado (fechamento animado, `role="listbox"`) importa mais que
+  o comportamento nativo do `<select>`.
+- Pra listas simples de texto sem ícone, prefira o `Select` nativo — menos JS, acessibilidade
+  de graça do navegador.
+
+<Canvas of={DropdownStories.ComIcone} />
+<Canvas of={DropdownStories.Estados} />
+
+## Do & Don't
+
+- ✅ Use `required` + `label` juntos pra campos obrigatórios de formulário.
+- ✅ `error` deixa a borda vermelha — combine com uma mensagem de erro externa (via `FormField`).
+- 🚫 Não abra dois Dropdowns ao mesmo tempo — o clique-fora de um pode fechar o outro
+  de forma inesperada.
+
+## Props
+
+<Controls />

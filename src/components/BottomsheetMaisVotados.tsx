@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Lightning, X, ShareNetwork, MedalMilitary } from "@phosphor-icons/react";
-import { BottomSheet } from "./BottomSheet";
+import { BottomSheet } from "@/ds";
 
 export type LeaderboardEntry = {
   rank: number;

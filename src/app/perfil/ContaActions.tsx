@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { UserCircle, Medal, Bell, ShieldCheck, FileText, SignOut, CaretRight, Warning } from "@phosphor-icons/react";
-import { BottomSheet } from "@/components/BottomSheet";
-import { Button, Toggle, IconBox, RowItem, Divider, toast } from "@/ds";
+import { UserCircle, Medal, Bell, ShieldCheck, FileText, SignOut, CaretRight } from "@phosphor-icons/react";
+import { Toggle, IconBox, RowItem, Divider, toast, ConfirmDialog } from "@/ds";
 import { excluirConta } from "./actions";
 
 interface Props {
@@ -128,22 +127,16 @@ export function ContaActions({ email, grupoNome, roleLabel, onEditar }: Props) {
       <p style={{ margin: 0, textAlign: "center", fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 11, color: "#5a5a5a" }}>Canelada · v1.0</p>
 
       {/* Confirmação de exclusão */}
-      <BottomSheet open={confirmOpen} onClose={() => !deleting && setConfirmOpen(false)}>
-        <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", alignItems: "center", gap: 12, textAlign: "center" }}>
-          <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#2a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Warning size={28} color="#e56767" weight="fill" />
-          </div>
-          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 20, color: "#fff" }}>Excluir conta?</h2>
-          <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 14, lineHeight: "20px", color: "#7a7a7a", maxWidth: 320 }}>
-            Isso apaga <strong style={{ color: "#fff" }}>permanentemente</strong> seu perfil, votos, personagens e badges. Não dá pra desfazer.
-          </p>
-          {delError && <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "#e56767" }}>{delError}</p>}
-          <div style={{ display: "flex", gap: 8, width: "100%", paddingTop: 8 }}>
-            <Button style={{ flex: 1 }} variant="secondary" onClick={() => setConfirmOpen(false)} disabled={deleting}>Cancelar</Button>
-            <Button style={{ flex: 1 }} variant="danger" onClick={confirmarExclusao} disabled={deleting}>{deleting ? "Excluindo…" : "Excluir"}</Button>
-          </div>
-        </div>
-      </BottomSheet>
+      <ConfirmDialog
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        title="Excluir conta?"
+        description={<>Isso apaga <strong style={{ color: "#fff" }}>permanentemente</strong> seu perfil, votos, personagens e badges. Não dá pra desfazer.</>}
+        error={delError ?? undefined}
+        confirmLabel={deleting ? "Excluindo…" : "Excluir"}
+        onConfirm={confirmarExclusao}
+        loading={deleting}
+      />
     </div>
   );
 }

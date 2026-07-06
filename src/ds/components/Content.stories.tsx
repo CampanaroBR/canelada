@@ -14,6 +14,7 @@ import { colors } from "../tokens";
 const meta: Meta<typeof Content> = {
   title: "Core/Content",
   component: Content,
+  tags: ["!autodocs"],
   decorators: [(S) => <div style={{ width: 420 }}><S /></div>],
 };
 export default meta;

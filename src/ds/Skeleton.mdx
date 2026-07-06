@@ -1,0 +1,31 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as SkeletonStories from "./components/Skeleton.stories";
+
+<Meta of={SkeletonStories} />
+
+# Skeleton
+
+Placeholder de carregamento com shimmer — mostra enquanto o conteúdo real não chegou
+(dados de rede, imagem, etc).
+
+<Canvas of={SkeletonStories.Anatomia} />
+
+## Quando usar
+
+- Qualquer estado de loading que substitui conteúdo real (não use spinner pra blocos
+  inteiros de UI).
+- `circle` é atalho pra avatar/foto (usa `height` como diâmetro).
+- Componha vários Skeletons imitando o layout final — o usuário já reconhece a forma
+  antes do conteúdo chegar.
+
+<Canvas of={SkeletonStories.Tipos} />
+<Canvas of={SkeletonStories.CardCarregando} />
+
+## Do & Don't
+
+- ✅ Combine `radiusToken` com o raio do elemento real que ele está substituindo.
+- 🚫 Não deixe um Skeleton sozinho sem contexto — sempre imite a forma real do conteúdo.
+
+## Props
+
+<Controls />

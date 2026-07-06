@@ -3,11 +3,10 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { BottomNav } from "@/components/layout/BottomNav";
-import { BottomSheet } from "@/components/BottomSheet";
 import { MenuSheet } from "@/components/MenuSheet";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
 import { LockSimple, CheckCircle, MedalMilitary, Bell, Export } from "@phosphor-icons/react";
-import { SegmentedControl } from "@/ds";
+import { SegmentedControl, BottomSheet } from "@/ds";
 
 function loadImg(src: string): Promise<HTMLImageElement> {
   return new Promise((res, rej) => {

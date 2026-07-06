@@ -5,6 +5,7 @@ import { SegmentedControl } from "./SegmentedControl";
 const meta: Meta<typeof SegmentedControl> = {
   title: "Core/SegmentedControl",
   component: SegmentedControl,
+  tags: ["!autodocs"],
 };
 export default meta;
 type Story = StoryObj<typeof SegmentedControl>;

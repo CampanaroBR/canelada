@@ -12,7 +12,7 @@ import {
 } from "@phosphor-icons/react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
-import { SegmentedControl } from "@/ds";
+import { SegmentedControl, SectionHeader, Stat } from "@/ds";
 import type { LeaderboardEntry } from "@/components/BottomsheetMaisVotados";
 import type { PersonagemSemana } from "@/components/ShareCardModal";
 
@@ -466,12 +466,7 @@ export function HomeClient({
         {personagensSemana.length > 0 && (
           <div style={{ background: "#171717", border: "1px solid #2c2c2c", borderRadius: 20, padding: "17px 9px", display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Header */}
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <div style={{ background: "#171717", border: "1px solid #2c2c2c", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <CalendarStar size={24} color="#9fe870" weight="regular" />
-              </div>
-              <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>PERSONAGEM DA SEMANA</h2>
-            </div>
+            <SectionHeader icon={<CalendarStar size={24} color="#9fe870" weight="regular" />} title="PERSONAGEM DA SEMANA" />
 
             {/* Date pills */}
             {datePills.length > 0 && (
@@ -531,33 +526,29 @@ export function HomeClient({
         {badgesGrupo.total > 0 && (
           <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 20, padding: "17px 9px", display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Header */}
-            <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-              <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 8 }}>
-                <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <Medal size={24} color="#9fe870" weight="regular" />
-                </div>
-                <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>BADGES</h2>
-              </div>
-              <Link href="/medalhas" style={{
-                display: "flex", alignItems: "center", gap: 4, textDecoration: "none", flexShrink: 0,
-                background: "#2c2c2c", border: "1px solid #424242",
-                borderRadius: 9999, padding: "9px 13px",
-              }}>
-                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: "#fff", whiteSpace: "nowrap" }}>Ver mais</span>
-                <CaretRight size={12} color="#fff" weight="bold" />
-              </Link>
-            </div>
+            <SectionHeader
+              icon={<Medal size={24} color="#9fe870" weight="regular" />}
+              title="BADGES"
+              trailing={
+                <Link href="/medalhas" style={{
+                  display: "flex", alignItems: "center", gap: 4, textDecoration: "none", flexShrink: 0,
+                  background: "#2c2c2c", border: "1px solid #424242",
+                  borderRadius: 9999, padding: "9px 13px",
+                }}>
+                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: "#fff", whiteSpace: "nowrap" }}>Ver mais</span>
+                  <CaretRight size={12} color="#fff" weight="bold" />
+                </Link>
+              }
+            />
 
             {/* Stats bar */}
-            <div style={{ background: "#242424", border: "1px solid #424242", borderRadius: 12, padding: "9px 13px", display: "flex", gap: 12, alignItems: "center" }}>
-              <span style={{ fontFamily: "var(--font-body)", fontSize: 18, lineHeight: "27px", letterSpacing: "-0.44px", flexShrink: 0 }}>🏅</span>
-              <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 4 }}>
-                <p style={{ margin: 0, whiteSpace: "nowrap" }}>
-                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#fff" }}>{badgesGrupo.comBadge}/</span>
-                  <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 16, lineHeight: "1.4", color: "#7a7a7a" }}>{badgesGrupo.total} jogadores</span>
-                </p>
-                <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 14, lineHeight: "20px", color: "#666", whiteSpace: "nowrap" }}>já conquistaram uma medalha</p>
-              </div>
+            <div style={{ background: "#242424", border: "1px solid #424242", borderRadius: 12, padding: "9px 13px" }}>
+              <Stat
+                direction="inline"
+                icon={<span style={{ fontFamily: "var(--font-body)", fontSize: 18, lineHeight: "27px", letterSpacing: "-0.44px" }}>🏅</span>}
+                value={<>{badgesGrupo.comBadge}/<span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 16, lineHeight: "1.4", color: "#7a7a7a" }}>{badgesGrupo.total} jogadores</span></>}
+                label="já conquistaram uma medalha"
+              />
             </div>
 
             {/* Achievement cards */}

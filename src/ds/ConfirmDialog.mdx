@@ -1,0 +1,33 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as ConfirmDialogStories from "./components/ConfirmDialog.stories";
+
+<Meta of={ConfirmDialogStories} />
+
+# ConfirmDialog
+
+Confirmação de ação destrutiva (excluir conta, remover membro do grupo) — empacota o
+padrão que se repetia à mão em cima do **BottomSheet**: ícone de aviso, título, descrição,
+erro opcional e a dupla de botões Cancelar/Confirmar. Mesmo vocabulário de props do
+**Modal**, só que com o chrome de bottom sheet em vez de central.
+
+<Canvas of={ConfirmDialogStories.ExcluirConta} />
+
+## Quando usar
+
+- Excluir/remover algo que não tem volta (conta, membro do grupo).
+- Quando a confirmação precisa do contexto de bottom sheet (mobile-first) em vez de um
+  modal central — para diálogos mais simples, avalie o **Modal**.
+
+<Canvas of={ConfirmDialogStories.ComErro} />
+
+## Do & Don't
+
+- ✅ `confirmVariant="danger"` (default) pra ações destrutivas; troque só se a confirmação
+  não for destrutiva.
+- ✅ `description` aceita `ReactNode` — use `<strong>` pra destacar o nome/dado afetado.
+- ✅ Passe `loading` durante a chamada assíncrona pra travar os dois botões.
+- 🚫 Não use pra confirmações reversíveis simples — isso é só fricção extra.
+
+## Props
+
+<Controls />

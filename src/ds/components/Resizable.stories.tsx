@@ -5,6 +5,7 @@ import { Text } from "./Text";
 const meta: Meta<typeof Resizable> = {
   title: "Layout/Resizable",
   component: Resizable,
+  tags: ["!autodocs"],
   parameters: { layout: "padded" },
   decorators: [(S) => <div style={{ width: 520 }}><S /></div>],
 };

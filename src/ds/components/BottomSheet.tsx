@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { token } from "../tokens";
 
-interface Props {
+export interface BottomSheetProps {
   open: boolean;
   onClose: () => void;
   children: React.ReactNode;
@@ -17,7 +18,7 @@ const DUR = 300;
  * Bottom sheet compartilhado: slide suave, arrastar o handle pra baixo pra fechar,
  * toque no fundo pra fechar, ancorado no rodapé com safe-area (sem mostrar a tela atrás embaixo).
  */
-export function BottomSheet({ open, onClose, children, maxHeight = "88dvh", bg = "#1a1a1a", boxShadow }: Props) {
+export function BottomSheet({ open, onClose, children, maxHeight = "88dvh", bg, boxShadow }: BottomSheetProps) {
   const [mounted, setMounted] = useState(open);
   const [visible, setVisible] = useState(false);
   const [drag, setDrag] = useState(0);
@@ -85,8 +86,8 @@ export function BottomSheet({ open, onClose, children, maxHeight = "88dvh", bg =
           width: "min(100%, 430px)", zIndex: 51,
           maxHeight: kb > 0 ? `calc(${maxHeight} - ${kb}px)` : maxHeight,
           display: "flex", flexDirection: "column",
-          background: bg,
-          border: "1px solid #2c2c2c", borderBottom: "none",
+          background: bg ?? token("bg-surface-secondary-default"),
+          border: `1px solid ${token("border-primary-default")}`, borderBottom: "none",
           borderRadius: "28px 28px 0 0",
           boxShadow: boxShadow ?? "0 -8px 40px rgba(0,0,0,0.5)",
           transition: dragging ? "none" : "transform 300ms cubic-bezier(0.32,0.72,0,1)",

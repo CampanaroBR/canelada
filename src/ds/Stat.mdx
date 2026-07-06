@@ -1,0 +1,31 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as StatStories from "./components/Stat.stories";
+
+<Meta of={StatStories} />
+
+# Stat
+
+Número grande + label — pra métricas rápidas (overall do jogador, contagem de badges,
+pontos). Duas formas: **stacked** (número em cima, label embaixo, pensado pra grid) e
+**inline** (ícone + número + label, lado a lado).
+
+<Canvas of={StatStories.Empilhado} />
+<Canvas of={StatStories.EmLinha} />
+
+## Quando usar
+
+- Grid de estatísticas de perfil/jogador → `direction="stacked"` (default).
+- Barra de resumo com ícone (ex.: "12/20 jogadores já conquistaram uma medalha") →
+  `direction="inline"`.
+- `value` aceita `ReactNode` — use pra compor números com estilos diferentes na mesma
+  linha (ex.: contagem em destaque + "/total" em cor mais fraca).
+
+## Do & Don't
+
+- ✅ Use `color` só quando o valor precisa se destacar (ex.: ouro pro 1º lugar).
+- 🚫 Não force o placar do pódio do ranking nisso aqui — aquele tem cor por posição e
+  tamanho variável, é um padrão próprio da tela de ranking.
+
+## Props
+
+<Controls />

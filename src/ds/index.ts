@@ -39,3 +39,7 @@ export { Separator } from "./components/Separator";
 export { Pagination } from "./components/Pagination";
 export { Slider } from "./components/Slider";
 export { Resizable } from "./components/Resizable";
+export { BottomSheet } from "./components/BottomSheet";
+export { ConfirmDialog } from "./components/ConfirmDialog";
+export { SectionHeader } from "./components/SectionHeader";
+export { Stat } from "./components/Stat";

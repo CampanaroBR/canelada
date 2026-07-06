@@ -1,0 +1,28 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as ResizableStories from "./components/Resizable.stories";
+
+<Meta of={ResizableStories} />
+
+# Resizable
+
+Dois painéis lado a lado com um divisor arrastável — pensado pra ferramentas internas
+(admin, debug), não pra telas comuns do app mobile.
+
+<Canvas of={ResizableStories.Default} />
+
+## Quando usar
+
+- Layouts de painel duplo em telas mais largas (desktop/tablet), tipo comparar dois
+  conteúdos lado a lado.
+- `initial`/`min`/`max` são todos em porcentagem da largura do container.
+- No mobile-first do Canelada, praticamente não se aplica — considere antes se o
+  conteúdo não cabe melhor empilhado.
+
+## Do & Don't
+
+- ✅ Defina `min`/`max` que façam sentido pro conteúdo (evite painéis espremidos a 0%).
+- 🚫 Não use em telas estreitas — o divisor arrastável não funciona bem com pouco espaço.
+
+## Props
+
+<Controls />

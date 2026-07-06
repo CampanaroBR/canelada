@@ -1,0 +1,34 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as ContentStories from "./components/Content.stories";
+
+<Meta of={ContentStories} />
+
+# Content
+
+Primitivo base de linha de lista: `leading` (ícone/avatar/controle) + label + badge
+opcional + descrição + `trailing` (caret/valor/ação). É a peça que sustenta listas,
+seleção e telas de configurações no app.
+
+<Canvas of={ContentStories.Anatomia} />
+
+## Quando usar
+
+- Base de qualquer linha de lista (conta, configurações, seleção de membros).
+- `align="start"` quando a descrição tem mais de uma linha.
+- Passe `onClick` só quando a linha inteira for clicável — senão deixe a interação pro
+  `trailing` (Toggle, Checkbox, Radio).
+
+<Canvas of={ContentStories.ListaDeConta} />
+<Canvas of={ContentStories.SelecaoMembros} />
+<Canvas of={ContentStories.ComRadio} />
+
+## Do & Don't
+
+- ✅ Use `IconBox` no `leading` pra manter o padrão visual dos ícones em caixa.
+- ✅ Combine com `Divider` entre linhas dentro de um `Card`.
+- 🚫 Não passe `onClick` E um controle interativo no `trailing` ao mesmo tempo (dois
+  alvos de toque na mesma linha confundem).
+
+## Props
+
+<Controls />

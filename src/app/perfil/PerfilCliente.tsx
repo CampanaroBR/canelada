@@ -5,6 +5,7 @@ import { toPng } from "html-to-image";
 import { Export } from "@phosphor-icons/react";
 import { ContaActions } from "./ContaActions";
 import { EditarPerfilSheet, type PerfilInitial } from "./EditarPerfilSheet";
+import { Stat } from "@/ds";
 
 const ACCENT = "#9fe870";
 
@@ -124,10 +125,7 @@ export function PerfilCliente(props: Props) {
         {/* stats */}
         <div style={{ display: "flex", gap: 12, width: "100%" }}>
           {stats.map((s) => (
-            <div key={s.label} style={{ flex: "1 0 0", minWidth: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-              <span style={{ fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 22, color: s.color, fontVariantNumeric: "tabular-nums" }}>{s.value}</span>
-              <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 10, lineHeight: "14px", color: "#7a7a7a", textAlign: "center" }}>{s.label}</span>
-            </div>
+            <Stat key={s.label} value={s.value} label={s.label} color={s.color} />
           ))}
         </div>
       </div>

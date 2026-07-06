@@ -1,0 +1,29 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as PaginationStories from "./components/Pagination.stories";
+
+<Meta of={PaginationStories} />
+
+# Pagination
+
+Navegação de páginas com Anterior/Próxima, números e reticências — pra listas/tabelas
+paginadas no servidor.
+
+<Canvas of={PaginationStories.Interativo} />
+
+## Quando usar
+
+- Resultado paginado server-side (não pra scroll infinito client-side).
+- `siblings` controla quantos números vizinhos aparecem ao redor da página atual antes
+  de colapsar em "…" — o default (1) funciona bem até ~10 páginas.
+
+<Canvas of={PaginationStories.Variacoes} />
+
+## Do & Don't
+
+- ✅ Sempre mostre a primeira e a última página (o componente já garante isso).
+- ✅ Desabilite visualmente Anterior/Próxima nos extremos (já é o comportamento default).
+- 🚫 Não use pra menos de ~2 páginas — não agrega nada.
+
+## Props
+
+<Controls of={PaginationStories.Interativo} />

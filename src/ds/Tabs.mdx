@@ -1,0 +1,34 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as TabsStories from "./components/Tabs.stories";
+
+<Meta of={TabsStories} />
+
+# Tabs
+
+Fileira de pílulas de filtro/segmento — cada pílula é independente (sem indicador
+compartilhado deslizando entre elas, ao contrário do `SegmentedControl`).
+
+<Canvas of={TabsStories.Scroll} />
+
+## Quando usar
+
+- Filtros com texto de tamanho variável ou lista longa que precisa rolar horizontalmente
+  → `layout="scroll"` (default).
+- 2-3 opções de largura parecida que devem dividir o espaço → `layout="fill"`.
+- **Também serve pra fileiras de pills de data/categoria com estado ativo/inativo** —
+  antes de criar um componente novo de "pill", verifique se `Tabs` já resolve.
+- Pra exatamente uma opção sempre selecionada com indicador deslizante único, use
+  `SegmentedControl`.
+
+<Canvas of={TabsStories.Fill} />
+
+## Do & Don't
+
+- ✅ Sempre controle `value`/`onChange` — não existe estado interno.
+- 🚫 Não use `Tabs` pra elementos puramente decorativos/não-clicáveis (ex.: uma tira de
+  datas que só exibe informação sem alternar nada) — isso não é uma Tab, é só um
+  indicador visual; não force interatividade que não existe.
+
+## Props
+
+<Controls />

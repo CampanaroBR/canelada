@@ -4,14 +4,13 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bell, UsersThree, UserPlus, Export, CaretRight, PencilSimple, ShieldStar, ShieldPlus, UserMinus, Warning } from "@phosphor-icons/react";
+import { Bell, UsersThree, UserPlus, Export, CaretRight, PencilSimple, ShieldStar, ShieldPlus, UserMinus } from "@phosphor-icons/react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { MenuSheet } from "@/components/MenuSheet";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
-import { BottomSheet } from "@/components/BottomSheet";
 import { renomearGrupo, removerMembro, regenerarConvite, definirAdmin } from "./actions";
 import { toast } from "@/ds/toast";
-import { Button, Input } from "@/ds";
+import { Button, Input, BottomSheet, ConfirmDialog } from "@/ds";
 
 export interface Membro {
   apelido: string;
@@ -258,22 +257,16 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
       </BottomSheet>
 
       {/* Confirmar remoção de membro */}
-      <BottomSheet open={!!removeAlvo} onClose={() => !removendo && setRemoveAlvo(null)}>
-        <div style={{ padding: "0 16px", display: "flex", flexDirection: "column", alignItems: "center", gap: 12, textAlign: "center" }}>
-          <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#2a0a0a", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Warning size={28} color="#e56767" weight="fill" />
-          </div>
-          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 20, color: "#fff" }}>Remover {removeAlvo?.apelido}?</h2>
-          <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 14, lineHeight: "20px", color: "#7a7a7a", maxWidth: 320 }}>
-            Tira <strong style={{ color: "#fff" }}>{removeAlvo?.apelido}</strong> do grupo e apaga votos, personagens e badges desse jogador. Não dá pra desfazer.
-          </p>
-          {removeErro && <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "#e56767" }}>{removeErro}</p>}
-          <div style={{ display: "flex", gap: 8, width: "100%", paddingTop: 8 }}>
-            <Button style={{ flex: 1 }} variant="secondary" onClick={() => setRemoveAlvo(null)} disabled={removendo}>Cancelar</Button>
-            <Button style={{ flex: 1 }} variant="danger" onClick={confirmarRemocao} disabled={removendo}>{removendo ? "Removendo…" : "Remover"}</Button>
-          </div>
-        </div>
-      </BottomSheet>
+      <ConfirmDialog
+        open={!!removeAlvo}
+        onClose={() => setRemoveAlvo(null)}
+        title={`Remover ${removeAlvo?.apelido}?`}
+        description={<>Tira <strong style={{ color: "#fff" }}>{removeAlvo?.apelido}</strong> do grupo e apaga votos, personagens e badges desse jogador. Não dá pra desfazer.</>}
+        error={removeErro ?? undefined}
+        confirmLabel={removendo ? "Removendo…" : "Remover"}
+        onConfirm={confirmarRemocao}
+        loading={removendo}
+      />
 
       <BottomNav />
       <MenuSheet open={menuOpen} onClose={() => setMenuOpen(false)} />

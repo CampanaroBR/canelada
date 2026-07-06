@@ -1,0 +1,31 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as SegmentedControlStories from "./components/SegmentedControl.stories";
+
+<Meta of={SegmentedControlStories} />
+
+# SegmentedControl
+
+Pílula única com um indicador que desliza e redimensiona por trás do item ativo — pra
+escolher exatamente uma opção entre poucas (Semanal/Mensal, Os melhores/Os piores).
+
+<Canvas of={SegmentedControlStories.Anatomia} />
+
+## Quando usar
+
+- Alternar entre 2-4 opções mutuamente exclusivas, com uma única opção sempre ativa.
+- `fullWidth` quando são só 2-3 itens que devem dividir a largura toda; sem `fullWidth`,
+  o controle encolhe pro conteúdo.
+- **Contraste com Tabs**: aqui existe um track/indicador compartilhado que desliza entre
+  os itens (uma peça visual só); no `Tabs`, cada pílula é independente, sem track — use
+  `Tabs` quando os itens têm larguras bem diferentes ou quando a lista rola horizontalmente.
+
+<Canvas of={SegmentedControlStories.TamanhoAutomatico} />
+
+## Do & Don't
+
+- ✅ Mantenha os labels curtos — o indicador precisa medir e animar o tamanho de cada um.
+- 🚫 Não use pra mais de ~4 opções — nesse caso, `Tabs` com `layout="scroll"` escala melhor.
+
+## Props
+
+<Controls />

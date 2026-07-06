@@ -6,6 +6,7 @@ import { Dropdown } from "./Dropdown";
 const meta: Meta<typeof Dropdown> = {
   title: "Forms/Dropdown",
   component: Dropdown,
+  tags: ["!autodocs"],
   decorators: [(S) => <div style={{ width: 300 }}><S /></div>],
 };
 export default meta;

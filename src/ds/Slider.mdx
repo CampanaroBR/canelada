@@ -1,0 +1,29 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as SliderStories from "./components/Slider.stories";
+
+<Meta of={SliderStories} />
+
+# Slider
+
+Input de valor único numa faixa — trilha preenchida em verde até o thumb. É um
+`<input type="range">` nativo por baixo, então herda navegação por teclado e
+acessibilidade de graça do navegador.
+
+<Canvas of={SliderStories.Default} />
+
+## Quando usar
+
+- Ajustar um valor numérico dentro de uma faixa conhecida (min/max/step).
+- `showValue` exibe o número atual ao lado do label — use quando o valor exato importa
+  pro usuário (não só a posição relativa).
+
+<Canvas of={SliderStories.SemLabel} />
+
+## Do & Don't
+
+- ✅ Defina `step` compatível com a granularidade que faz sentido pro dado.
+- 🚫 Não use Slider pra escolhas discretas/categóricas — isso é `SegmentedControl` ou `Tabs`.
+
+## Props
+
+<Controls />

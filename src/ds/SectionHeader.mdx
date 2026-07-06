@@ -1,0 +1,31 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as SectionHeaderStories from "./components/SectionHeader.stories";
+
+<Meta of={SectionHeaderStories} />
+
+# SectionHeader
+
+Cabeçalho de seção (ícone em caixa + título, com subtítulo e ação à direita opcionais) —
+o mesmo bloco visual que abre cada card de conteúdo do app (Classificação, Personagem da
+Semana, Badges).
+
+<Canvas of={SectionHeaderStories.Simples} />
+<Canvas of={SectionHeaderStories.ComSubtitulo} />
+<Canvas of={SectionHeaderStories.ComTrailing} />
+
+## Quando usar
+
+- No topo de qualquer bloco/card de conteúdo que precisa de um título com ícone.
+- `subtitle` quando o título sozinho não dá contexto suficiente (ex.: período do ranking).
+- `trailing` pra uma ação relacionada à seção inteira (Ver mais, Compartilhar) — não use
+  pra ações de item individual dentro da seção.
+
+## Do & Don't
+
+- ✅ Título em caixa alta, curto (uma linha).
+- ✅ Reaproveite o mesmo ícone do "assunto" da seção (ex.: troféu pra ranking).
+- 🚫 Não empilhe `SectionHeader` sem conteúdo embaixo — ele é o topo de algo, não um título solto.
+
+## Props
+
+<Controls />

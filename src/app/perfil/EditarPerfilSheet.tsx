@@ -3,10 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, UserCircle } from "@phosphor-icons/react";
-import { BottomSheet } from "@/components/BottomSheet";
 import { atualizarPerfil, uploadFoto } from "./actions";
 import { toast } from "@/ds/toast";
-import { Button, Input, Select, FormRow } from "@/ds";
+import { Button, Input, Select, FormRow, BottomSheet } from "@/ds";
 
 const POSICOES = ["Goleiro", "Zagueiro", "Lateral", "Volante", "Meio-Campo", "Atacante"];
 const PES = ["Direito", "Esquerdo", "Ambidestro"];

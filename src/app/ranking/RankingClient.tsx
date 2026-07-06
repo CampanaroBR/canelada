@@ -7,7 +7,7 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { MenuSheet } from "@/components/MenuSheet";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
 import type { RankingGrupo, RankRow } from "@/lib/badges";
-import { EmptyState, SegmentedControl } from "@/ds";
+import { EmptyState, SegmentedControl, SectionHeader } from "@/ds";
 
 // ouro / prata / bronze (Figma)
 const PODIUM = ["#c5973a", "#999999", "#734524"];
@@ -79,24 +79,21 @@ export function RankingClient({ ranking, grupoNome, meuId }: Props) {
         paddingBottom: 20, paddingLeft: 16, paddingRight: 16, boxSizing: "border-box",
       }}>
         {/* Section header */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 42, paddingLeft: 8 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ background: "#171717", border: "1px solid #2c2c2c", borderRadius: 12, padding: 8, display: "flex" }}>
-              <ChartBar size={24} color="#9fe870" weight="fill" />
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>CLASSIFICAÇÃO</span>
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 16, lineHeight: "20px", color: "#999" }}>Pontuação da galera</span>
-            </div>
-          </div>
-          {/* Compartilhar */}
-          <button onClick={compartilhar} aria-label="Compartilhar classificação" style={{
-            background: "#171717", border: "1px solid #2c2c2c", borderRadius: 16,
-            width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center",
-            cursor: "pointer", flexShrink: 0, WebkitTapHighlightColor: "transparent",
-          }}>
-            <Export size={24} color="#9fe870" weight="bold" />
-          </button>
+        <div style={{ height: 42, paddingLeft: 8, display: "flex", alignItems: "center" }}>
+          <SectionHeader
+            icon={<ChartBar size={24} color="#9fe870" weight="fill" />}
+            title="CLASSIFICAÇÃO"
+            subtitle="Pontuação da galera"
+            trailing={
+              <button onClick={compartilhar} aria-label="Compartilhar classificação" style={{
+                background: "#171717", border: "1px solid #2c2c2c", borderRadius: 16,
+                width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: "pointer", flexShrink: 0, WebkitTapHighlightColor: "transparent",
+              }}>
+                <Export size={24} color="#9fe870" weight="bold" />
+              </button>
+            }
+          />
         </div>
 
         {/* Toggle Semanal / Mensal */}
