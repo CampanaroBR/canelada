@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Bell, X } from "@phosphor-icons/react";
+import { X } from "@phosphor-icons/react";
 import { enablePush } from "@/lib/pushClient";
+import { AnimatedBell } from "@/components/icons/AnimatedBell";
 
 const DISMISS_KEY = "canelada-notif-prompt-dismissed";
 const EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
@@ -75,7 +76,7 @@ export function EnableNotificationsPrompt() {
           background: "rgba(159,232,112,0.14)",
           display: "flex", alignItems: "center", justifyContent: "center",
         }}>
-          <Bell size={24} color="#9fe870" weight="regular" />
+          <AnimatedBell size={24} color="#9fe870" trigger={visible} />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 17, lineHeight: "22px", color: "#fff" }}>

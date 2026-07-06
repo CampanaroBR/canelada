@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "motion/react";
 import { House, SoccerBall, Medal, ChartBar } from "@phosphor-icons/react";
 
 const NAV_ITEMS: Array<{
@@ -66,17 +67,21 @@ export function BottomNav() {
                   overflow: "clip",
                   transition: "background 180ms cubic-bezier(0.34,1.56,0.64,1), border-radius 180ms cubic-bezier(0.34,1.56,0.64,1)",
                 }}>
-                  <div style={{
-                    width: 24,
-                    height: 24,
-                    marginBottom: -1,
-                    flexShrink: 0,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}>
+                  <motion.div
+                    style={{
+                      width: 24,
+                      height: 24,
+                      marginBottom: -1,
+                      flexShrink: 0,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                    animate={isActive ? { scale: [1, 1.25, 1] } : { scale: 1 }}
+                    transition={{ duration: 0.35, ease: "easeOut" }}
+                  >
                     <item.Icon size={24} color={isActive ? "#000" : "#fff"} weight="regular" />
-                  </div>
+                  </motion.div>
                   <span style={{
                     fontFamily: "var(--font-display)",
                     fontWeight: isActive ? 800 : 600,
