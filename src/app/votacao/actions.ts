@@ -270,15 +270,16 @@ export async function listarVotos(rodadaId: string) {
       orderBy: { createdAt: "desc" },
     }),
     prisma.jogador.findMany({ where: { grupoId: eu.grupoId }, select: { id: true, apelido: true }, orderBy: { apelido: "asc" } }),
-    prisma.trait.findMany({ select: { slug: true, nome: true } }),
+    prisma.trait.findMany({ select: { slug: true, nome: true, emoji: true } }),
   ]);
 
-  const traitNome = Object.fromEntries(traits.map((t) => [t.slug, t.nome]));
+  const traitMeta = Object.fromEntries(traits.map((t) => [t.slug, t]));
   return {
     votos: votos.map((v) => ({
       id: v.id,
       categoria: v.categoria,
-      traitLabel: v.traitSlug ? (traitNome[v.traitSlug] ?? v.traitSlug) : v.categoria,
+      traitLabel: v.traitSlug ? (traitMeta[v.traitSlug]?.nome ?? v.traitSlug) : v.categoria,
+      traitEmoji: v.traitSlug ? (traitMeta[v.traitSlug]?.emoji ?? null) : null,
       votanteId: v.votanteId,
       votanteApelido: v.votante.apelido,
       votadoId: v.votadoId,
