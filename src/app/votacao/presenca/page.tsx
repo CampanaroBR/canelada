@@ -35,6 +35,7 @@ export default async function PresencaPage() {
       jogadores={jogadores}
       presentesIniciais={rodada.presentes.map((j) => j.id)}
       pendentesIniciais={rodada.pendentes}
+      isSuperAdmin={jogador.role === "SUPER_ADMIN"}
     />
   );
 }

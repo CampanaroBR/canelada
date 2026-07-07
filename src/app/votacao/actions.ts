@@ -218,3 +218,136 @@ export async function salvarPresenca(rodadaId: string, jogadorIds: string[]) {
 
   return { success: true } as const;
 }
+
+/** Ajusta o contador de JogadorTrait pra refletir um voto TRAIT removido/movido. */
+async function ajustarContadorTrait(jogadorId: string, traitSlug: string, delta: 1 | -1) {
+  if (delta === 1) {
+    await prisma.jogadorTrait.upsert({
+      where: { jogadorId_traitSlug: { jogadorId, traitSlug } },
+      update: { contador: { increment: 1 } },
+      create: { jogadorId, traitSlug },
+    });
+    return;
+  }
+  const atual = await prisma.jogadorTrait.findUnique({
+    where: { jogadorId_traitSlug: { jogadorId, traitSlug } },
+    select: { contador: true },
+  });
+  if (!atual) return;
+  if (atual.contador <= 1) {
+    await prisma.jogadorTrait.delete({ where: { jogadorId_traitSlug: { jogadorId, traitSlug } } });
+  } else {
+    await prisma.jogadorTrait.update({
+      where: { jogadorId_traitSlug: { jogadorId, traitSlug } },
+      data: { contador: { decrement: 1 } },
+    });
+  }
+}
+
+/** Lista todos os votos da rodada — só o dono do grupo (SUPER_ADMIN) pode editar votação. */
+export async function listarVotos(rodadaId: string) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Não autenticado." } as const;
+
+  const eu = await prisma.jogador.findUnique({
+    where: { userId: session.user.id },
+    select: { grupoId: true, role: true },
+  });
+  if (!eu) return { error: "Jogador não encontrado." } as const;
+  if (eu.role !== "SUPER_ADMIN") return { error: "Só o dono do grupo pode editar votos." } as const;
+
+  const rodada = await prisma.rodada.findUnique({ where: { id: rodadaId }, select: { grupoId: true } });
+  if (!rodada || rodada.grupoId !== eu.grupoId) return { error: "Rodada inválida." } as const;
+
+  const [votos, jogadores, traits] = await Promise.all([
+    prisma.voto.findMany({
+      where: { rodadaId },
+      select: {
+        id: true, categoria: true, traitSlug: true, votanteId: true, votadoId: true, createdAt: true,
+        votante: { select: { apelido: true } },
+        votado: { select: { apelido: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.jogador.findMany({ where: { grupoId: eu.grupoId }, select: { id: true, apelido: true }, orderBy: { apelido: "asc" } }),
+    prisma.trait.findMany({ select: { slug: true, nome: true } }),
+  ]);
+
+  const traitNome = Object.fromEntries(traits.map((t) => [t.slug, t.nome]));
+  return {
+    votos: votos.map((v) => ({
+      id: v.id,
+      categoria: v.categoria,
+      traitLabel: v.traitSlug ? (traitNome[v.traitSlug] ?? v.traitSlug) : v.categoria,
+      votanteId: v.votanteId,
+      votanteApelido: v.votante.apelido,
+      votadoId: v.votadoId,
+      votadoApelido: v.votado.apelido,
+      autovoto: v.votanteId === v.votadoId,
+    })),
+    jogadores,
+  } as const;
+}
+
+/** Reatribui um voto a outro jogador (ex.: corrigir autovotação). */
+export async function editarVoto(votoId: string, novoVotadoId: string) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Não autenticado." } as const;
+
+  const eu = await prisma.jogador.findUnique({
+    where: { userId: session.user.id },
+    select: { grupoId: true, role: true },
+  });
+  if (!eu) return { error: "Jogador não encontrado." } as const;
+  if (eu.role !== "SUPER_ADMIN") return { error: "Só o dono do grupo pode editar votos." } as const;
+
+  const voto = await prisma.voto.findUnique({
+    where: { id: votoId },
+    select: { rodadaId: true, votanteId: true, votadoId: true, categoria: true, traitSlug: true, rodada: { select: { grupoId: true } } },
+  });
+  if (!voto || voto.rodada.grupoId !== eu.grupoId) return { error: "Voto inválido." } as const;
+  if (novoVotadoId === voto.votanteId) return { error: "Não pode votar em si mesmo." } as const;
+
+  const alvo = await prisma.jogador.findUnique({ where: { id: novoVotadoId }, select: { grupoId: true } });
+  if (!alvo || alvo.grupoId !== eu.grupoId) return { error: "Jogador inválido." } as const;
+
+  await prisma.voto.update({ where: { id: votoId }, data: { votadoId: novoVotadoId } });
+
+  if (voto.categoria === "TRAIT" && voto.traitSlug) {
+    await ajustarContadorTrait(voto.votadoId, voto.traitSlug, -1);
+    await ajustarContadorTrait(novoVotadoId, voto.traitSlug, 1);
+  }
+
+  await gerarStories(voto.rodadaId);
+
+  return { success: true } as const;
+}
+
+/** Exclui um voto (ex.: autovotação que passou pela validação por algum motivo). */
+export async function excluirVoto(votoId: string) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Não autenticado." } as const;
+
+  const eu = await prisma.jogador.findUnique({
+    where: { userId: session.user.id },
+    select: { grupoId: true, role: true },
+  });
+  if (!eu) return { error: "Jogador não encontrado." } as const;
+  if (eu.role !== "SUPER_ADMIN") return { error: "Só o dono do grupo pode editar votos." } as const;
+
+  const voto = await prisma.voto.findUnique({
+    where: { id: votoId },
+    select: { rodadaId: true, votadoId: true, categoria: true, traitSlug: true, rodada: { select: { grupoId: true } } },
+  });
+  if (!voto || voto.rodada.grupoId !== eu.grupoId) return { error: "Voto inválido." } as const;
+
+  await prisma.voto.delete({ where: { id: votoId } });
+
+  if (voto.categoria === "TRAIT" && voto.traitSlug) {
+    await ajustarContadorTrait(voto.votadoId, voto.traitSlug, -1);
+  }
+
+  await gerarStories(voto.rodadaId);
+
+  return { success: true } as const;
+}

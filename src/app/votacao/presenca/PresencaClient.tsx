@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { CaretLeft, LinkSimple } from "@phosphor-icons/react";
+import { CaretLeft, LinkSimple, PencilSimpleLine } from "@phosphor-icons/react";
 import { Content, Avatar, Toggle, Button, Select } from "@/ds";
 import { toast } from "@/ds/toast";
 import { salvarPresenca, vincularPendente } from "../actions";
@@ -15,9 +15,10 @@ interface Props {
   jogadores: Jogador[];
   presentesIniciais: string[];
   pendentesIniciais: string[];
+  isSuperAdmin: boolean;
 }
 
-export function PresencaClient({ rodadaId, jogadores, presentesIniciais, pendentesIniciais }: Props) {
+export function PresencaClient({ rodadaId, jogadores, presentesIniciais, pendentesIniciais, isSuperAdmin }: Props) {
   const router = useRouter();
   const [presentes, setPresentes] = useState(() => new Set(presentesIniciais));
   const [pendentes, setPendentes] = useState(pendentesIniciais);
@@ -63,9 +64,14 @@ export function PresencaClient({ rodadaId, jogadores, presentesIniciais, pendent
         <Link href="/votacao" aria-label="Voltar" style={{ width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
           <CaretLeft size={20} weight="bold" />
         </Link>
-        <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#fff" }}>
+        <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#fff", flex: 1 }}>
           Quem jogou hoje?
         </span>
+        {isSuperAdmin && (
+          <Link href="/votacao/admin" aria-label="Editar votos" style={{ width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", color: "#c5973a" }}>
+            <PencilSimpleLine size={20} weight="bold" />
+          </Link>
+        )}
       </header>
 
       <p style={{
