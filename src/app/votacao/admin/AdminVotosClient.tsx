@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CaretLeft, Trash, Warning, PencilSimple } from "@phosphor-icons/react";
+import { CaretLeft, Trash, Warning, PencilSimple, MagnifyingGlass } from "@phosphor-icons/react";
 import { Select, Button, EmptyState, Avatar } from "@/ds";
 import { toast } from "@/ds/toast";
 import { listarVotos, editarVoto, excluirVoto } from "../actions";
@@ -26,6 +26,8 @@ export function AdminVotosClient({ rodadaId }: { rodadaId: string }) {
   const [editando, setEditando] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [reatribuir, setReatribuir] = useState<Record<string, string>>({});
+  const [busca, setBusca] = useState("");
+  const [buscaFocada, setBuscaFocada] = useState(false);
 
   async function carregar() {
     const res = await listarVotos(rodadaId);
@@ -57,8 +59,16 @@ export function AdminVotosClient({ rodadaId }: { rodadaId: string }) {
     carregar();
   }
 
-  const autovotos = votos?.filter((v) => v.autovoto) ?? [];
-  const outros = votos?.filter((v) => !v.autovoto) ?? [];
+  const buscaNorm = busca.trim().toLowerCase();
+  const bate = (v: Voto) =>
+    !buscaNorm ||
+    v.votanteApelido.toLowerCase().includes(buscaNorm) ||
+    v.votadoApelido.toLowerCase().includes(buscaNorm) ||
+    v.traitLabel.toLowerCase().includes(buscaNorm);
+
+  const filtrados = (votos ?? []).filter(bate);
+  const autovotos = filtrados.filter((v) => v.autovoto);
+  const outros = filtrados.filter((v) => !v.autovoto);
 
   return (
     <div style={{ minHeight: "100dvh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
@@ -77,10 +87,35 @@ export function AdminVotosClient({ rodadaId }: { rodadaId: string }) {
       </header>
 
       <main style={{ flex: 1, padding: "16px 12px 40px", display: "flex", flexDirection: "column", gap: 18 }}>
+        {votos !== null && votos.length > 0 && (
+          <div style={{
+            display: "flex", alignItems: "center", gap: 8,
+            background: buscaFocada ? "#111" : "#141414",
+            border: buscaFocada ? "2px solid #9fe870" : "1px solid #2a2a2d",
+            borderRadius: 14, padding: buscaFocada ? "11px 15px" : "12px 16px",
+          }}>
+            <MagnifyingGlass size={18} color="#8a8a8a" weight="regular" />
+            <input
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              onFocus={() => setBuscaFocada(true)}
+              onBlur={() => setBuscaFocada(false)}
+              placeholder="Buscar jogador ou personagem…"
+              style={{
+                flex: 1, background: "transparent", border: "none", outline: "none",
+                fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 14,
+                color: "#fff", caretColor: "#9fe870",
+              }}
+            />
+          </div>
+        )}
+
         {votos === null ? (
           <p style={{ textAlign: "center", color: "#8a8a8a", fontFamily: "var(--font-body)", fontSize: 13, padding: 24 }}>Carregando…</p>
         ) : votos.length === 0 ? (
           <EmptyState icon={<Warning size={26} weight="regular" />} title="Sem votos ainda" description="Ninguém votou nessa rodada até agora." />
+        ) : filtrados.length === 0 ? (
+          <p style={{ textAlign: "center", color: "#555", fontFamily: "var(--font-body)", fontSize: 13, padding: 24 }}>Nenhum voto encontrado.</p>
         ) : (
           <>
             {autovotos.length > 0 && (
