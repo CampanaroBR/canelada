@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CaretLeft } from "@phosphor-icons/react";
@@ -19,7 +19,7 @@ interface Props {
 export function PresencaClient({ rodadaId, jogadores, presentesIniciais }: Props) {
   const router = useRouter();
   const [presentes, setPresentes] = useState(() => new Set(presentesIniciais));
-  const [saving, startTransition] = useTransition();
+  const [saving, setSaving] = useState(false);
 
   function toggle(id: string) {
     setPresentes((prev) => {
@@ -30,14 +30,13 @@ export function PresencaClient({ rodadaId, jogadores, presentesIniciais }: Props
     });
   }
 
-  function salvar() {
-    startTransition(async () => {
-      const res = await salvarPresenca(rodadaId, Array.from(presentes));
-      if ("error" in res) { toast.error(res.error ?? "Erro ao salvar."); return; }
-      toast.success("Lista de presença atualizada");
-      router.push("/votacao");
-      router.refresh();
-    });
+  async function salvar() {
+    setSaving(true);
+    const res = await salvarPresenca(rodadaId, Array.from(presentes));
+    setSaving(false);
+    if ("error" in res) { toast.error(res.error ?? "Erro ao salvar."); return; }
+    toast.success("Lista de presença atualizada");
+    router.push("/votacao");
   }
 
   return (
