@@ -22,7 +22,7 @@ export default async function FeedPage() {
 
   const jogador = await prisma.jogador.findUnique({
     where: { userId: session.user.id },
-    select: { id: true, grupoId: true, grupo: { select: { nome: true } } },
+    select: { id: true, grupoId: true, role: true, grupo: { select: { nome: true } } },
   });
   if (!jogador) redirect("/onboarding");
 
@@ -322,6 +322,7 @@ export default async function FeedPage() {
     <InstallPrompt />
     <EnableNotificationsPrompt />
     <HomeClient
+      isSuperAdmin={jogador.role === "SUPER_ADMIN"}
       rodadaId={rodadaAtiva?.id ?? null}
       dataRodada={dataRodada}
       horarioJogo={horarioJogo}

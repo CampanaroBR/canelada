@@ -8,7 +8,7 @@ import Link from "next/link";
 import {
   Lightning, Medal, CaretRight, Check,
   CalendarBlank, Alarm, CalendarStar,
-  Bell, MedalMilitary, Export,
+  Bell, MedalMilitary, Export, PencilSimpleLine,
 } from "@phosphor-icons/react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
@@ -66,6 +66,7 @@ interface Props {
   grupoNome: string;
   proximoBaba: ProximoBaba | null;
   criarRodadaAction: () => Promise<void>;
+  isSuperAdmin: boolean;
 }
 
 const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
@@ -73,7 +74,7 @@ const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
 export function HomeClient({
   rodadaId, dataRodada, dataCurta, horarioJogo, votacao, jaVotou, top5Rodada,
   maisVotados, personagensPorRodada, personagensSemana, selecao, selecaoPiores, conquistas, badgesGrupo, datePills, grupoNome,
-  proximoBaba, criarRodadaAction,
+  proximoBaba, criarRodadaAction, isSuperAdmin,
 }: Props) {
   const [bsOpen, setBsOpen] = useState(false);
   const [bsMounted, setBsMounted] = useState(false); // só monta o sheet após 1ª abertura
@@ -148,6 +149,21 @@ export function HomeClient({
         <p style={{ position: "relative", margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 18, lineHeight: "20px", color: "#fff", textAlign: "center", width: "100%" }}>
           Votação da rodada
         </p>
+
+        {/* Editar votos (só dono do grupo) — bem visível, não escondida em telas internas */}
+        {rodadaId && isSuperAdmin && (
+          <Link href="/votacao/admin" style={{
+            position: "relative", alignSelf: "center", textDecoration: "none",
+            display: "flex", alignItems: "center", gap: 6,
+            background: "rgba(197,151,58,0.14)", border: "1px solid rgba(197,151,58,0.4)",
+            borderRadius: 9999, padding: "6px 14px", WebkitTapHighlightColor: "transparent",
+          }}>
+            <PencilSimpleLine size={14} color="#e0b868" weight="bold" />
+            <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, color: "#e0b868" }}>
+              Editar votos da rodada
+            </span>
+          </Link>
+        )}
 
         {/* Tabs: Os melhores / Os piores — pill com indicador deslizante */}
         <div style={{ position: "relative", width: "100%" }}>
