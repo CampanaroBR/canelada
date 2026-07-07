@@ -7,11 +7,11 @@ import { criarRodada } from "./actions";
 import Link from "next/link";
 import Image from "next/image";
 import { EmptyState } from "@/ds/components/EmptyState";
-import { SoccerBall, CaretLeft, Bell, UsersThree } from "@phosphor-icons/react/dist/ssr";
+import { SoccerBall, CaretLeft, Bell, UsersThree, PencilSimpleLine } from "@phosphor-icons/react/dist/ssr";
 import { votacaoAtiva, MIN_JOGADORES_VOTACAO } from "@/lib/votacaoJanela";
 
 /** Topbar padrão (voltar + logo + sino) pras telas estáticas da votação. */
-function VotacaoTopBar({ isAdmin }: { isAdmin?: boolean }) {
+function VotacaoTopBar({ isAdmin, isSuperAdmin }: { isAdmin?: boolean; isSuperAdmin?: boolean }) {
   return (
     <div className="glass-bar" style={{
       position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)",
@@ -25,9 +25,16 @@ function VotacaoTopBar({ isAdmin }: { isAdmin?: boolean }) {
           <Image alt="Canelada" src="/logo.png" width={48} height={48} priority style={{ objectFit: "cover", borderRadius: "50%" }} />
         </div>
         {isAdmin ? (
-          <Link href="/votacao/presenca" aria-label="Editar quem jogou" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent" }}>
-            <UsersThree size={24} color="#fff" weight="bold" />
-          </Link>
+          <div style={{ display: "flex", alignItems: "center" }}>
+            {isSuperAdmin && (
+              <Link href="/votacao/admin" aria-label="Editar votos" style={{ width: 48, height: 56, display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent" }}>
+                <PencilSimpleLine size={22} color="#c5973a" weight="bold" />
+              </Link>
+            )}
+            <Link href="/votacao/presenca" aria-label="Editar quem jogou" style={{ width: 48, height: 56, display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent" }}>
+              <UsersThree size={24} color="#fff" weight="bold" />
+            </Link>
+          </div>
         ) : (
           <div aria-hidden style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center" }}>
             <Bell size={24} color="#fff" weight="bold" />
@@ -50,6 +57,7 @@ export default async function VotacaoPage() {
   });
   if (!jogador) redirect("/onboarding");
   const isAdmin = jogador.role === "ADMIN" || jogador.role === "SUPER_ADMIN";
+  const isSuperAdmin = jogador.role === "SUPER_ADMIN";
 
   // Acesso por JANELA DE HORÁRIO (não depende do cron ter flipado votacaoAberta).
   // Pega a rodada aberta mais recente e valida se estamos dentro da janela de votação.
@@ -70,7 +78,7 @@ export default async function VotacaoPage() {
   }
 
   if (!rodada) {
-    return <NoRodadaScreen isAdmin={isAdmin} />;
+    return <NoRodadaScreen isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} />;
   }
 
   const jaVotou = await prisma.voto.findFirst({
@@ -85,7 +93,7 @@ export default async function VotacaoPage() {
         trait: { select: { nome: true, emoji: true } },
       },
     });
-    return <JaVotouScreen votos={votos} isAdmin={isAdmin} />;
+    return <JaVotouScreen votos={votos} isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} />;
   }
 
   // Presença marcada manualmente pra essa rodada restringe quem pode ser
@@ -121,10 +129,10 @@ export default async function VotacaoPage() {
   );
 }
 
-function NoRodadaScreen({ isAdmin }: { isAdmin: boolean }) {
+function NoRodadaScreen({ isAdmin, isSuperAdmin }: { isAdmin: boolean; isSuperAdmin: boolean }) {
   return (
     <div style={{ minHeight: "100dvh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
-      <VotacaoTopBar isAdmin={isAdmin} />
+      <VotacaoTopBar isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} />
 
       <main style={{
         flex: 1,
@@ -187,10 +195,10 @@ const CATEGORIA_CONFIG: Record<string, { label: string; color: string }> = {
   TRAIT:   { label: "Trait",   color: "#A78BFA" },
 };
 
-function JaVotouScreen({ votos, isAdmin }: { votos: VotoComVotado[]; isAdmin: boolean }) {
+function JaVotouScreen({ votos, isAdmin, isSuperAdmin }: { votos: VotoComVotado[]; isAdmin: boolean; isSuperAdmin: boolean }) {
   return (
     <div style={{ minHeight: "100dvh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
-      <VotacaoTopBar isAdmin={isAdmin} />
+      <VotacaoTopBar isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} />
 
       <main style={{
         flex: 1,

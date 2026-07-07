@@ -36,13 +36,13 @@ export default async function FeedPage() {
   });
 
   const [topTraitsRaw, recentStories, recentTraits] = await Promise.all([
-    // Mais votados: jogadores mais votados NESSA rodada (não é total histórico —
-    // jogadorTrait.contador é cumulativo pra sempre, inflava o "parcial da rodada"
-    // com votos de rodadas antigas já encerradas).
+    // Mais votados = parcial do MVP da rodada. MVP oficial é quem vence o
+    // trait "categoria" (ver lib/stories.ts) — antes somava os 16 traits
+    // juntos, inflando o número e sem relação com quem de fato vira MVP.
     rodadaAtiva
       ? prisma.voto.groupBy({
           by: ["votadoId"],
-          where: { rodadaId: rodadaAtiva.id, categoria: "TRAIT" },
+          where: { rodadaId: rodadaAtiva.id, categoria: "TRAIT", traitSlug: "categoria" },
           _count: { votadoId: true },
           orderBy: { _count: { votadoId: "desc" } },
           take: 6,
