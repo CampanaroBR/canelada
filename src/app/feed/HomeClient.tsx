@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Lightning, Medal, CaretRight, Check,
+  Lightning, Medal, CaretRight, Check, Skull,
   CalendarBlank, Alarm, CalendarStar,
   Bell, MedalMilitary, Export, PencilSimpleLine,
 } from "@phosphor-icons/react";
@@ -56,6 +56,7 @@ interface Props {
   votacao: { fase: "antes" | "aberta" | "encerrada"; aberta: boolean; texto: string } | null;
   jaVotou: boolean;
   maisVotados: MaisVotado[];
+  maisVotadosPiores: MaisVotado[];
   personagensPorRodada: Personagem[][];
   personagensSemana: PersonagemSemana[];
   selecao: (PersonagemSemana | null)[];
@@ -73,7 +74,7 @@ const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
 
 export function HomeClient({
   rodadaId, dataRodada, dataCurta, horarioJogo, votacao, jaVotou, top5Rodada,
-  maisVotados, personagensPorRodada, personagensSemana, selecao, selecaoPiores, conquistas, badgesGrupo, datePills, grupoNome,
+  maisVotados, maisVotadosPiores, personagensPorRodada, personagensSemana, selecao, selecaoPiores, conquistas, badgesGrupo, datePills, grupoNome,
   proximoBaba, criarRodadaAction, isSuperAdmin,
 }: Props) {
   const [bsOpen, setBsOpen] = useState(false);
@@ -471,6 +472,47 @@ export function HomeClient({
                       {/* Medal icon */}
                       <div style={{ background: "#090909", border: "1px solid #353535", borderRadius: 12, width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 4, overflow: "clip" }}>
                         <MedalMilitary size={28} weight="fill" color={MEDAL_COLORS[i] ?? "#555"} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── 2b. PIOR DA RODADA ── */}
+        {maisVotadosPiores.length > 0 && (
+          <div style={{ background: "#171717", border: "1px solid #3a2424", borderRadius: 20, padding: "17px 9px", display: "flex", flexDirection: "column", gap: 16 }}>
+            {/* Header */}
+            <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+              <div style={{ background: "#171717", border: "1px solid #3a2424", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <Skull size={24} color="#e56767" weight="regular" />
+              </div>
+              <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>PIOR DA RODADA</h2>
+            </div>
+
+            {/* Leaderboard rows */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {maisVotadosPiores.slice(0, 5).map((v, i) => (
+                <div key={i} style={{ background: "#090909", border: "1px solid #3a2424", borderRadius: 14, paddingLeft: 24, paddingRight: 8, paddingTop: 8, paddingBottom: 8 }}>
+                  <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 20, lineHeight: "18px", color: "#fff", whiteSpace: "nowrap", flexShrink: 0 }}>{i + 1}.</span>
+                    <div style={{ background: "#1b1414", flex: 1, height: 52, borderRadius: 12, padding: 8, display: "flex", alignItems: "center", gap: 8, minWidth: 0 }}>
+                      <div style={{ display: "flex", flex: 1, gap: 8, alignItems: "center", overflow: "clip", minWidth: 0 }}>
+                        {/* Qtd box */}
+                        <div style={{ background: "#3a2424", width: 40, height: 40, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 4, overflow: "clip" }}>
+                          <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 20, lineHeight: "18px", color: "#fff", whiteSpace: "nowrap" }}>{v.qtd}x</span>
+                        </div>
+                        {/* Name + category */}
+                        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "center", lineHeight: "18px" }}>
+                          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{v.apelido.toUpperCase()}</p>
+                          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 14, color: "#a97d7d" }}>{v.categoria}</p>
+                        </div>
+                      </div>
+                      {/* Skull icon */}
+                      <div style={{ background: "#090909", border: "1px solid #3a2424", borderRadius: 12, width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 4, overflow: "clip" }}>
+                        <Skull size={24} weight="fill" color="#e56767" />
                       </div>
                     </div>
                   </div>

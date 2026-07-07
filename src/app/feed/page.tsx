@@ -63,11 +63,13 @@ export default async function FeedPage() {
     }),
   ]);
 
-  // maisVotados é construído mais abaixo, a partir do selRaw (mesma base da
-  // "Seleção") — 1 vencedor por trait positivo, cada um com o rótulo certo.
-  // Antes essa lista vinha de uma query separada só do trait "categoria" com
-  // take:6, e todo mundo aparecia rotulado "MVP" (deveria ser só o 1º).
+  // maisVotados/maisVotadosPiores são construídos mais abaixo — 1 vencedor
+  // por trait (positivo/negativo), cada um com o rótulo certo. Antes vinha de
+  // uma query só do trait "categoria" com take:6 rotulando todo mundo "MVP",
+  // e ficava restrito aos 5 traits da formação da Seleção (faltava driblador
+  // e xerife, que não têm posição no campo mas são traits positivos válidos).
   let maisVotados: MaisVotado[] = [];
+  let maisVotadosPiores: MaisVotado[] = [];
 
   // ── Personagens da Semana: traits mais votados na rodada atual ──
   // Filtro de relevância: líder com ≥40% dos votos do personagem E ≥3 votos.
@@ -165,17 +167,20 @@ export default async function FeedPage() {
     selecao = selRaw.map(toSlot);
     selecaoPiores = selRawPiores.map(toSlot);
 
-    // Mais votados (card "Parcial da rodada"): 1 vencedor por trait positivo,
-    // cada um rotulado com o nome real do trait — só o vencedor de "categoria"
-    // é de fato o MVP, os outros são o líder de cada trait (Matador, Raçudo…).
-    maisVotados = selRaw
-      .filter((s): s is { slug: string; vencedorId: string; votos: number } => !!s)
-      .map((s) => ({
-        apelido: nmeMap[s.vencedorId] ?? "?",
-        qtd: s.votos,
-        categoria: s.slug === "categoria" ? "MVP" : (tMeta[s.slug]?.nome ?? s.slug).toUpperCase(),
-      }))
-      .sort((a, b) => b.qtd - a.qtd);
+    // Rankings da Home ("Parcial da rodada" / "Pior da rodada"): 1 vencedor
+    // por trait, sem exclusão cruzada entre traits (aqui não é formação de
+    // time, é lista de conquistas — a mesma pessoa pode liderar mais de um
+    // trait). Usa `raw` (todos os traits com arte, já calculado acima) em vez
+    // de só os 5 traits da Seleção — senão faltava driblador/xerife, que são
+    // positivos mas não têm posição no campo.
+    const POSITIVOS_TODOS = ["categoria", "matador", "paredao", "racudo", "xerife", "garcom", "driblador"];
+    const toRankingEntry = (r: { slug: string; vencedorId: string; votos: number }): MaisVotado => ({
+      apelido: nmeMap[r.vencedorId] ?? "?",
+      qtd: r.votos,
+      categoria: r.slug === "categoria" ? "MVP" : (tMeta[r.slug]?.nome ?? r.slug).toUpperCase(),
+    });
+    maisVotados = raw.filter(r => POSITIVOS_TODOS.includes(r.slug)).map(toRankingEntry).sort((a, b) => b.qtd - a.qtd);
+    maisVotadosPiores = raw.filter(r => NEG_TRAITS.includes(r.slug)).map(toRankingEntry).sort((a, b) => b.qtd - a.qtd);
   }
 
   const PERSONAGEM_TITLES: Record<string, string> = {
@@ -325,6 +330,7 @@ export default async function FeedPage() {
       jaVotou={jaVotou}
       top5Rodada={top5Rodada}
       maisVotados={maisVotados}
+      maisVotadosPiores={maisVotadosPiores}
       personagensPorRodada={personagensPorRodada}
       personagensSemana={personagensSemana}
       selecao={selecao}
