@@ -25,14 +25,22 @@ function VotacaoTopBar({ isAdmin, isSuperAdmin }: { isAdmin?: boolean; isSuperAd
           <Image alt="Canelada" src="/logo.png" width={48} height={48} priority style={{ objectFit: "cover", borderRadius: "50%" }} />
         </div>
         {isAdmin ? (
-          <div style={{ display: "flex", alignItems: "center" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             {isSuperAdmin && (
-              <Link href="/votacao/admin" aria-label="Editar votos" style={{ width: 48, height: 56, display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent" }}>
-                <PencilSimpleLine size={22} color="#c5973a" weight="bold" />
+              <Link href="/votacao/admin" aria-label="Editar votos" style={{
+                width: 40, height: 40, borderRadius: 14, flexShrink: 0,
+                background: "#0d0d0d", border: "1px solid #090909",
+                display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent",
+              }}>
+                <PencilSimpleLine size={19} color="#fff" weight="bold" />
               </Link>
             )}
-            <Link href="/votacao/presenca" aria-label="Editar quem jogou" style={{ width: 48, height: 56, display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent" }}>
-              <UsersThree size={24} color="#fff" weight="bold" />
+            <Link href="/votacao/presenca" aria-label="Editar quem jogou" style={{
+              width: 40, height: 40, borderRadius: 14, flexShrink: 0,
+              background: "#0d0d0d", border: "1px solid #090909",
+              display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent",
+            }}>
+              <UsersThree size={19} color="#fff" weight="bold" />
             </Link>
           </div>
         ) : (

@@ -146,18 +146,18 @@ export function HomeClient({
         <div aria-hidden style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)", borderBottomLeftRadius: 48, borderBottomRightRadius: 48, pointerEvents: "none" }} />
 
         {/* Título — editar votos (só dono do grupo) alinhado no canto direito */}
-        <div style={{ position: "relative", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ position: "relative", width: "100%", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 18, lineHeight: "20px", color: "#fff", textAlign: "center" }}>
             Votação da rodada
           </p>
           {rodadaId && isSuperAdmin && (
             <Link href="/votacao/admin" aria-label="Editar votos da rodada" style={{
               position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)",
-              width: 36, height: 36, borderRadius: 12, flexShrink: 0,
+              width: 40, height: 40, borderRadius: 14, flexShrink: 0,
               background: "#0d0d0d", border: "1px solid #090909",
               display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent",
             }}>
-              <PencilSimpleLine size={17} color="#fff" weight="bold" />
+              <PencilSimpleLine size={19} color="#fff" weight="bold" />
             </Link>
           )}
         </div>
