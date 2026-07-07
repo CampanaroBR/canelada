@@ -134,8 +134,7 @@ export default async function FeedPage() {
     // posição anterior, some do pool das seguintes (pega o próximo mais votado).
     const POSITION_TRAITS = ["matador", "categoria", "racudo", "garcom", "paredao"];
     const NEG_TRAITS = ["bagre", "cone", "chorao", "reclamao", "paneleiro"];
-    const topPorTraitSemRepetir = (slugs: string[]) => {
-      const usados = new Set<string>();
+    const topPorTraitSemRepetir = (slugs: string[], usados: Set<string>) => {
       return slugs.map((slug) => {
         const e = perTrait.get(slug);
         if (!e || e.total === 0) return null;
@@ -146,8 +145,12 @@ export default async function FeedPage() {
         return { slug, vencedorId: winner.id, votos: winner.count };
       });
     };
-    const selRaw = topPorTraitSemRepetir(POSITION_TRAITS);
-    const selRawPiores = topPorTraitSemRepetir(NEG_TRAITS);
+    // Melhores e piores também não compartilham jogador — quem já ficou numa
+    // escalação some do pool da outra (senão a mesma pessoa vira "melhor" e
+    // "pior" ao mesmo tempo, o que não faz sentido pro usuário).
+    const usadosGeral = new Set<string>();
+    const selRaw = topPorTraitSemRepetir(POSITION_TRAITS, usadosGeral);
+    const selRawPiores = topPorTraitSemRepetir(NEG_TRAITS, usadosGeral);
 
     // Resolve nomes + meta de TODOS (personagens + seleção + piores) numa tacada
     const vIds = [...new Set([

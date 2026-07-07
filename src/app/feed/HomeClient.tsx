@@ -145,25 +145,22 @@ export function HomeClient({
         </div>
         <div aria-hidden style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)", borderBottomLeftRadius: 48, borderBottomRightRadius: 48, pointerEvents: "none" }} />
 
-        {/* Título */}
-        <p style={{ position: "relative", margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 18, lineHeight: "20px", color: "#fff", textAlign: "center", width: "100%" }}>
-          Votação da rodada
-        </p>
-
-        {/* Editar votos (só dono do grupo) — bem visível, não escondida em telas internas */}
-        {rodadaId && isSuperAdmin && (
-          <Link href="/votacao/admin" style={{
-            position: "relative", alignSelf: "center", textDecoration: "none",
-            display: "flex", alignItems: "center", gap: 6,
-            background: "rgba(197,151,58,0.14)", border: "1px solid rgba(197,151,58,0.4)",
-            borderRadius: 9999, padding: "6px 14px", WebkitTapHighlightColor: "transparent",
-          }}>
-            <PencilSimpleLine size={14} color="#e0b868" weight="bold" />
-            <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, color: "#e0b868" }}>
-              Editar votos da rodada
-            </span>
-          </Link>
-        )}
+        {/* Título — editar votos (só dono do grupo) alinhado no canto direito */}
+        <div style={{ position: "relative", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 18, lineHeight: "20px", color: "#fff", textAlign: "center" }}>
+            Votação da rodada
+          </p>
+          {rodadaId && isSuperAdmin && (
+            <Link href="/votacao/admin" aria-label="Editar votos da rodada" style={{
+              position: "absolute", right: 0, top: "50%", transform: "translateY(-50%)",
+              width: 36, height: 36, borderRadius: 12, flexShrink: 0,
+              background: "#0d0d0d", border: "1px solid #090909",
+              display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent",
+            }}>
+              <PencilSimpleLine size={17} color="#fff" weight="bold" />
+            </Link>
+          )}
+        </div>
 
         {/* Tabs: Os melhores / Os piores — pill com indicador deslizante */}
         <div style={{ position: "relative", width: "100%" }}>
