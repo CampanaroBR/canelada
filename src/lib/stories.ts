@@ -1,5 +1,6 @@
 import { prisma } from "./prisma";
 import { CategoriaVoto, StoryTipo } from "@prisma/client";
+import { pickWinner } from "./tieBreak";
 
 export async function gerarStories(rodadaId: string): Promise<void> {
   const votos = await prisma.voto.findMany({
@@ -24,10 +25,11 @@ export async function gerarStories(rodadaId: string): Promise<void> {
 
   const getWinner = (cat: CategoriaVoto) => {
     const m = tallies.get(cat);
-    if (!m || m.size === 0) return null;
-    const [winnerId, count] = [...m.entries()].sort(([, a], [, b]) => b - a)[0];
-    const apelido = votos.find((v) => v.votadoId === winnerId)?.votado.apelido ?? "";
-    return { apelido, count };
+    if (!m) return null;
+    const winner = pickWinner(m, `${rodadaId}:${cat}`);
+    if (!winner) return null;
+    const apelido = votos.find((v) => v.votadoId === winner.id)?.votado.apelido ?? "";
+    return { apelido, count: winner.count };
   };
 
   const stories: { rodadaId: string; tipo: StoryTipo; texto: string }[] = [];

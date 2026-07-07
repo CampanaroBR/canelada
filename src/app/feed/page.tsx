@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { criarRodada } from "@/app/votacao/actions";
 import { badgesHome } from "@/lib/badges";
 import { janelaVotacao } from "@/lib/votacaoJanela";
+import { pickWinner } from "@/lib/tieBreak";
 import { HomeClient } from "./HomeClient";
 import { PushAutoEnroll } from "@/components/PushAutoEnroll";
 import { InstallPrompt } from "@/components/InstallPrompt";
@@ -114,11 +115,10 @@ export default async function FeedPage() {
     }
     const raw: { slug: string; vencedorId: string; votos: number }[] = [];
     for (const [slug, e] of perTrait) {
-      let topId: string | null = null, topN = 0;
-      for (const [pid, n] of e.players) if (n > topN) { topN = n; topId = pid; }
+      const winner = pickWinner(e.players, `${rodadaAtiva.id}:${slug}`);
       // Relevância: precisa ter arte e pelo menos 1 voto (filtro estrito ≥3+40% pode ser reativado depois)
-      if (topId && topN >= 1 && ART_BY_SLUG[slug]) {
-        raw.push({ slug, vencedorId: topId, votos: topN });
+      if (winner && ART_BY_SLUG[slug]) {
+        raw.push({ slug, vencedorId: winner.id, votos: winner.count });
       }
     }
     raw.sort((a, b) => b.votos - a.votos);
@@ -130,9 +130,8 @@ export default async function FeedPage() {
     const topPorTrait = (slug: string) => {
       const e = perTrait.get(slug);
       if (!e || e.total === 0) return null;
-      let topId: string | null = null, topN = 0;
-      for (const [pid, n] of e.players) if (n > topN) { topN = n; topId = pid; }
-      return topId ? { slug, vencedorId: topId, votos: topN } : null;
+      const winner = pickWinner(e.players, `${rodadaAtiva.id}:${slug}`);
+      return winner ? { slug, vencedorId: winner.id, votos: winner.count } : null;
     };
     const selRaw = POSITION_TRAITS.map(topPorTrait);
     const selRawPiores = NEG_TRAITS.map(topPorTrait);
