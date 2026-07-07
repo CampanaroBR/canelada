@@ -31,7 +31,7 @@ export default async function FeedPage() {
   const [rodadaAtiva, topTraitsRaw, recentStories, recentTraits] = await Promise.all([
     prisma.rodada.findFirst({
       where: { grupoId, encerrada: false },
-      select: { id: true, data: true },
+      select: { id: true, data: true, votacaoAberta: true },
       orderBy: { createdAt: "desc" },
     }),
     // Mais votados: top jogadores por total de traits recebidos
@@ -278,6 +278,9 @@ export default async function FeedPage() {
   const votacao = rodadaAtiva ? (() => {
     const { abre, fecha } = janelaVotacao(rodadaAtiva.data);
     const agora = new Date();
+    // votacaoAberta=true (setado pelo cron ou manualmente) sempre vence a janela
+    // calculada — evita esse widget divergir de /votacao, que já respeita a flag.
+    if (rodadaAtiva.votacaoAberta) return { fase: "aberta" as const, aberta: true, texto: "Votação aberta até às 15h" };
     if (agora < abre)   return { fase: "antes" as const, aberta: false, texto: "Votação abre às 22:30" };
     if (agora >= fecha) return { fase: "encerrada" as const, aberta: false, texto: "Votação encerrada" };
     return { fase: "aberta" as const, aberta: true, texto: "Votação aberta até às 15h" };
