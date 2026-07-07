@@ -1,8 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
-import Image from "next/image";
-import { toPng } from "html-to-image";
+import { useEffect, useRef, useState } from "react";
+import { toBlob } from "html-to-image";
 import { X, ShareNetwork } from "@phosphor-icons/react";
 
 export type PersonagemSemana = {
@@ -20,6 +19,23 @@ interface Props {
   onClose: () => void;
 }
 
+// Pré-carrega a arte como data-URL — html-to-image não embute <img>/next/image
+// remoto (via /_next/image) a tempo, e o fundo sai preto na captura (iOS e não só).
+function useDataUrl(src: string): string {
+  const [url, setUrl] = useState(src);
+  useEffect(() => {
+    let on = true;
+    setUrl(src);
+    fetch(src)
+      .then((r) => r.blob())
+      .then((b) => new Promise<string>((res) => { const fr = new FileReader(); fr.onload = () => res(fr.result as string); fr.readAsDataURL(b); }))
+      .then((d) => { if (on) setUrl(d); })
+      .catch(() => {});
+    return () => { on = false; };
+  }, [src]);
+  return url;
+}
+
 /** Card premium full-screen do personagem da semana — arte bakeada + compartilhar. */
 export function ShareCardModal({ personagem, grupoNome, onClose }: Props) {
   const [sharing, setSharing] = useState(false);
@@ -27,19 +43,23 @@ export function ShareCardModal({ personagem, grupoNome, onClose }: Props) {
   const cardRef = useRef<HTMLDivElement>(null);
   const shareBtnRef = useRef<HTMLButtonElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
+  const artData = useDataUrl(art);
+  const artReady = artData.startsWith("data:");
 
   async function handleShare() {
-    if (sharing || !cardRef.current) return;
+    if (sharing || !cardRef.current || !artReady) return;
     setSharing(true);
     const texto = `${vencedor} foi eleito o ${nome} do jogo por ${votos} jogadores do ${grupoNome}! ⚽`;
     try {
-      // Captura a tela real (arte + nome do vencedor sobreposto), não só a
-      // arte estática — senão a imagem compartilhada fica "vazia" (genérica).
-      const dataUrl = await toPng(cardRef.current, {
+      try { await document.fonts.ready; } catch { /* segue */ }
+      // Safari/iOS: a 1ª captura costuma sair incompleta — captura 2x e usa a última.
+      const opts = {
         pixelRatio: 2, cacheBust: true,
-        filter: (n) => n !== shareBtnRef.current && n !== closeBtnRef.current,
-      });
-      const blob = await (await fetch(dataUrl)).blob();
+        filter: (n: HTMLElement) => n !== shareBtnRef.current && n !== closeBtnRef.current,
+      };
+      await toBlob(cardRef.current, opts);
+      const blob = await toBlob(cardRef.current, opts);
+      if (!blob) throw new Error("sem blob");
       const file = new File([blob], `${personagem.slug}.png`, { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], text: texto });
@@ -59,7 +79,8 @@ export function ShareCardModal({ personagem, grupoNome, onClose }: Props) {
 
   return (
     <div ref={cardRef} style={{ position: "fixed", inset: 0, zIndex: 80, background: "#0a0e0e", overflow: "hidden" }}>
-      <Image alt={nome} src={art} fill priority sizes="430px" style={{ objectFit: "cover" }} />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img alt={nome} src={artData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
 
       {/* Close */}
       <button
@@ -90,15 +111,16 @@ export function ShareCardModal({ personagem, grupoNome, onClose }: Props) {
         <button
           ref={shareBtnRef}
           onClick={handleShare}
+          disabled={sharing || !artReady}
           style={{
             background: "#9fe870", border: "none", borderRadius: 20, height: 54,
             display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-            padding: "0 24px", cursor: "pointer", WebkitTapHighlightColor: "transparent",
-            opacity: sharing ? 0.7 : 1,
+            padding: "0 24px", cursor: sharing || !artReady ? "default" : "pointer", WebkitTapHighlightColor: "transparent",
+            opacity: sharing || !artReady ? 0.7 : 1,
           }}
         >
           <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#090909" }}>
-            {sharing ? "Compartilhando..." : "Compartilhar"}
+            {sharing ? "Compartilhando..." : !artReady ? "Preparando…" : "Compartilhar"}
           </span>
           <ShareNetwork size={20} color="#090909" weight="bold" />
         </button>
