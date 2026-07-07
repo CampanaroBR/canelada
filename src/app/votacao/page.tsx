@@ -116,6 +116,7 @@ export default async function VotacaoPage() {
       meuId={jogador.id}
       jogadores={jogadores}
       traits={traits}
+      isAdmin={isAdmin}
     />
   );
 }

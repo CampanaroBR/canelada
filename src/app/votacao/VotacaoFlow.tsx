@@ -2,9 +2,10 @@
 
 import { useState, useTransition, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { submitVotos } from "./actions";
 // TRAIT_SVG removido — usamos ilustrações de personagens PNG no hero
-import { CaretLeft, CaretRight, MagnifyingGlass, CheckCircle, Check, Confetti } from "@phosphor-icons/react";
+import { CaretLeft, CaretRight, MagnifyingGlass, CheckCircle, Check, Confetti, UsersThree } from "@phosphor-icons/react";
 
 type Jogador = { id: string; apelido: string };
 type Trait = { slug: string; nome: string; categoria: string; emoji: string | null; descricao: string | null };
@@ -14,6 +15,7 @@ interface Props {
   meuId: string;
   jogadores: Jogador[];
   traits: Trait[];
+  isAdmin?: boolean;
 }
 
 // Ordem oficial do PRD "Sistema de Traits do Canelada" — 16 personagens em 3 grupos.
@@ -105,7 +107,7 @@ function getAvatarColor(apelido: string) {
   return colors[h % colors.length];
 }
 
-export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
+export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Props) {
   const steps = ORDERED_SLUGS
     .map((slug) => traits.find((t) => t.slug === slug))
     .filter((t): t is Trait => !!t);
@@ -290,6 +292,19 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits }: Props) {
             >
               Pular
             </button>
+          ) : isAdmin ? (
+            <Link
+              href="/votacao/presenca"
+              aria-label="Editar quem jogou"
+              style={{
+                width: 48, height: 48, borderRadius: 24, flexShrink: 0,
+                background: "rgba(0,0,0,0.4)", border: "1px solid #424242",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                pointerEvents: "auto",
+              }}
+            >
+              <UsersThree size={20} color="#fff" weight="bold" />
+            </Link>
           ) : (
             <div style={{ width: 48, flexShrink: 0 }} />
           )}
