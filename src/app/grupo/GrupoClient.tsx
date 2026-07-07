@@ -75,12 +75,14 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
     const url = typeof window !== "undefined"
       ? `${window.location.origin}/login?convite=${inviteCode}`
       : "";
-    const text = `Bora pro baba! ⚽ Entra no nosso grupo "${nome}" no Canelada:`;
+    // Link embutido no mesmo campo "text" — passar url separado no navigator.share
+    // faz o WhatsApp no iOS descartar o link e mandar só o texto (bug conhecido).
+    const text = `Bora pro baba! ⚽ Entra no nosso grupo "${nome}" no Canelada:\n${url}`;
     try {
       if (typeof navigator !== "undefined" && navigator.share) {
-        await navigator.share({ title: "Canelada", text, url });
+        await navigator.share({ title: "Canelada", text });
       } else if (typeof navigator !== "undefined" && navigator.clipboard) {
-        await navigator.clipboard.writeText(`${text} ${url}`);
+        await navigator.clipboard.writeText(text);
         toast.success("Convite copiado com sucesso");
       }
     } catch { /* cancelou */ }
