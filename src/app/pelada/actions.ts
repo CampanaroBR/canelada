@@ -39,7 +39,7 @@ export async function parseLista(lista: string): Promise<ParticipanteImportado[]
   });
 }
 
-export async function criarRodada(data: string, participantesIds: string[]) {
+export async function criarRodada(data: string, participantesIds: string[], pendentesNomes: string[] = []) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
@@ -72,6 +72,7 @@ export async function criarRodada(data: string, participantesIds: string[]) {
     data: {
       grupoId: jogador.grupoId,
       data: new Date(data),
+      pendentes: pendentesNomes,
       ...(participantesIds.length > 0
         ? { presentes: { connect: participantesIds.map((id) => ({ id })) } }
         : {}),

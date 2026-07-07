@@ -131,7 +131,7 @@ export async function getPresenca(rodadaId: string) {
 
   const rodada = await prisma.rodada.findUnique({
     where: { id: rodadaId },
-    select: { grupoId: true, presentes: { select: { id: true } } },
+    select: { grupoId: true, presentes: { select: { id: true } }, pendentes: true },
   });
   if (!rodada || rodada.grupoId !== eu.grupoId) return { error: "Rodada inválida." } as const;
 
@@ -141,7 +141,46 @@ export async function getPresenca(rodadaId: string) {
     orderBy: { apelido: "asc" },
   });
 
-  return { jogadores, presentesIds: rodada.presentes.map((j) => j.id) } as const;
+  return { jogadores, presentesIds: rodada.presentes.map((j) => j.id), pendentes: rodada.pendentes } as const;
+}
+
+/**
+ * Associa um nome pendente (da lista do baba, sem conta na hora da criação
+ * da rodada) a um jogador já cadastrado — some da lista de pendentes e
+ * entra na lista de presença. Pode ser usado antes ou durante a votação.
+ */
+export async function vincularPendente(rodadaId: string, nomePendente: string, jogadorId: string) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Não autenticado." } as const;
+
+  const eu = await prisma.jogador.findUnique({
+    where: { userId: session.user.id },
+    select: { grupoId: true, role: true },
+  });
+  if (!eu) return { error: "Jogador não encontrado." } as const;
+  if (eu.role !== "ADMIN" && eu.role !== "SUPER_ADMIN") {
+    return { error: "Só admins podem vincular jogadores." } as const;
+  }
+
+  const rodada = await prisma.rodada.findUnique({
+    where: { id: rodadaId },
+    select: { grupoId: true, pendentes: true },
+  });
+  if (!rodada || rodada.grupoId !== eu.grupoId) return { error: "Rodada inválida." } as const;
+  if (!rodada.pendentes.includes(nomePendente)) return { error: "Nome já foi vinculado ou removido." } as const;
+
+  const alvo = await prisma.jogador.findUnique({ where: { id: jogadorId }, select: { grupoId: true } });
+  if (!alvo || alvo.grupoId !== eu.grupoId) return { error: "Jogador inválido." } as const;
+
+  await prisma.rodada.update({
+    where: { id: rodadaId },
+    data: {
+      pendentes: rodada.pendentes.filter((n) => n !== nomePendente),
+      presentes: { connect: { id: jogadorId } },
+    },
+  });
+
+  return { success: true } as const;
 }
 
 /** Salva a lista de presença da rodada. Lista vazia = sem restrição (mostra o grupo todo). */

@@ -55,8 +55,9 @@ export function NovaRodadaForm() {
 
   function handleCriar() {
     const ids = incluidos.map((p) => p.jogadorId!);
+    const nomesPendentes = pendentes.map((p) => p.nome);
     startSave(async () => {
-      const result = await criarRodada(data, ids);
+      const result = await criarRodada(data, ids, nomesPendentes);
       if (result?.error) {
         setError(result.error);
       } else if (result?.rodadaId) {

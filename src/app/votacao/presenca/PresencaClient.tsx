@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { CaretLeft } from "@phosphor-icons/react";
-import { Content, Avatar, Toggle, Button } from "@/ds";
+import { CaretLeft, LinkSimple } from "@phosphor-icons/react";
+import { Content, Avatar, Toggle, Button, Select } from "@/ds";
 import { toast } from "@/ds/toast";
-import { salvarPresenca } from "../actions";
+import { salvarPresenca, vincularPendente } from "../actions";
 
 type Jogador = { id: string; apelido: string };
 
@@ -14,12 +14,16 @@ interface Props {
   rodadaId: string;
   jogadores: Jogador[];
   presentesIniciais: string[];
+  pendentesIniciais: string[];
 }
 
-export function PresencaClient({ rodadaId, jogadores, presentesIniciais }: Props) {
+export function PresencaClient({ rodadaId, jogadores, presentesIniciais, pendentesIniciais }: Props) {
   const router = useRouter();
   const [presentes, setPresentes] = useState(() => new Set(presentesIniciais));
+  const [pendentes, setPendentes] = useState(pendentesIniciais);
   const [saving, setSaving] = useState(false);
+  const [vinculando, setVinculando] = useState<string | null>(null);
+  const [escolha, setEscolha] = useState<Record<string, string>>({});
 
   function toggle(id: string) {
     setPresentes((prev) => {
@@ -30,6 +34,18 @@ export function PresencaClient({ rodadaId, jogadores, presentesIniciais }: Props
     });
   }
 
+  async function vincular(nome: string) {
+    const jogadorId = escolha[nome];
+    if (!jogadorId) return;
+    setVinculando(nome);
+    const res = await vincularPendente(rodadaId, nome, jogadorId);
+    setVinculando(null);
+    if ("error" in res) { toast.error(res.error ?? "Erro ao vincular."); return; }
+    setPendentes((prev) => prev.filter((n) => n !== nome));
+    setPresentes((prev) => new Set(prev).add(jogadorId));
+    toast.success(`${nome} vinculado`);
+  }
+
   async function salvar() {
     setSaving(true);
     const res = await salvarPresenca(rodadaId, Array.from(presentes));
@@ -38,6 +54,8 @@ export function PresencaClient({ rodadaId, jogadores, presentesIniciais }: Props
     toast.success("Lista de presença atualizada");
     router.push("/votacao");
   }
+
+  const opcoesJogadores = jogadores.map((j) => ({ value: j.id, label: j.apelido }));
 
   return (
     <div style={{ minHeight: "100dvh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
@@ -57,7 +75,41 @@ export function PresencaClient({ rodadaId, jogadores, presentesIniciais }: Props
         Desmarque quem se cadastrou no app mas não estava no baba. Se ninguém for marcado, todo o grupo fica disponível pra votação.
       </p>
 
-      <main style={{ flex: 1, padding: "16px 8px 96px" }}>
+      <main style={{ flex: 1, padding: "16px 8px 0", display: "flex", flexDirection: "column", gap: 16 }}>
+        {pendentes.length > 0 && (
+          <div>
+            <p style={{ margin: "0 0 8px 6px", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, letterSpacing: "0.08em", color: "#c5973a", textTransform: "uppercase" }}>
+              Sem conta ainda · vincular
+            </p>
+            <div style={{ background: "#141414", border: "1px solid rgba(197,151,58,0.35)", borderRadius: 16, overflow: "hidden" }}>
+              {pendentes.map((nome, i) => (
+                <div key={nome} style={{ padding: "12px 14px", borderTop: i === 0 ? "none" : "1px solid #1f1f1f", display: "flex", flexDirection: "column", gap: 8 }}>
+                  <Content leading={<Avatar name={nome} />} label={nome} description="não tinha conta na criação da rodada" />
+                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    <div style={{ flex: 1 }}>
+                      <Select
+                        options={opcoesJogadores}
+                        value={escolha[nome] ?? ""}
+                        onChange={(v) => setEscolha((prev) => ({ ...prev, [nome]: v }))}
+                        placeholder="Escolher conta…"
+                      />
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={() => vincular(nome)}
+                      loading={vinculando === nome}
+                      disabled={!escolha[nome]}
+                      leftIcon={<LinkSimple size={16} weight="bold" />}
+                    >
+                      Vincular
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div style={{ background: "#141414", border: "1px solid #2c2c2c", borderRadius: 16, overflow: "hidden" }}>
           {jogadores.map((j, i) => (
             <div key={j.id} style={{ padding: "12px 14px", borderTop: i === 0 ? "none" : "1px solid #1f1f1f" }}>
@@ -69,6 +121,7 @@ export function PresencaClient({ rodadaId, jogadores, presentesIniciais }: Props
             </div>
           ))}
         </div>
+        <div style={{ height: 96 }} />
       </main>
 
       <div style={{

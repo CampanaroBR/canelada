@@ -131,6 +131,10 @@ model Rodada {
   encerrada      Boolean      @default(false)
   votacaoAberta  Boolean      @default(false)
   createdAt      DateTime     @default(now())
+  // Nomes da lista do baba que não tinham conta no app na hora da criação da
+  // rodada. Admin resolve depois (antes ou durante a votação) associando
+  // cada nome a um jogador cadastrado, em /votacao/presenca.
+  pendentes      String[]     @default([])
 
   grupo       Grupo        @relation(fields: [grupoId], references: [id])
   votos       Voto[]

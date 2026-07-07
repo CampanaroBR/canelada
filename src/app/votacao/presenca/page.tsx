@@ -19,7 +19,7 @@ export default async function PresencaPage() {
   const rodada = await prisma.rodada.findFirst({
     where: { grupoId: jogador.grupoId, encerrada: false },
     orderBy: { createdAt: "desc" },
-    select: { id: true, presentes: { select: { id: true } } },
+    select: { id: true, presentes: { select: { id: true } }, pendentes: true },
   });
   if (!rodada) redirect("/votacao");
 
@@ -34,6 +34,7 @@ export default async function PresencaPage() {
       rodadaId={rodada.id}
       jogadores={jogadores}
       presentesIniciais={rodada.presentes.map((j) => j.id)}
+      pendentesIniciais={rodada.pendentes}
     />
   );
 }
