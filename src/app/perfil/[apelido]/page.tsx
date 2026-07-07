@@ -84,7 +84,8 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
     { label: "PRESENÇAS", value: presencaCount, color: "#9fe870" },
     { label: "MVP's", value: mvpCount, color: "#B5FF4D" },
     { label: "BAGRES", value: bagreCount, color: "#e56767" },
-    { label: "PERSONAGENS", value: traitsUnlocked, color: "#A78BFA" },
+    // /medalhas só mostra as badges da própria conta — link só faz sentido no próprio perfil
+    { label: "PERSONAGENS", value: traitsUnlocked, color: "#A78BFA", href: isOwner ? "/medalhas" : undefined },
   ];
 
   return (

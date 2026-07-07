@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Link from "next/link";
 import { toPng } from "html-to-image";
 import { Export, ShieldStar } from "@phosphor-icons/react";
 import { ContaActions } from "./ContaActions";
@@ -17,7 +18,7 @@ interface Props {
   posAbbr: string;
   joinYear: number;
   foto: string;
-  stats: { label: string; value: number; color: string }[];
+  stats: { label: string; value: number; color: string; href?: string }[];
   email: string;
   grupoNome: string;
   roleLabel: string;
@@ -128,9 +129,15 @@ export function PerfilCliente(props: Props) {
 
         {/* stats */}
         <div style={{ display: "flex", gap: 12, width: "100%" }}>
-          {stats.map((s) => (
-            <Stat key={s.label} value={s.value} label={s.label} color={s.color} />
-          ))}
+          {stats.map((s) =>
+            s.href ? (
+              <Link key={s.label} href={s.href} style={{ flex: "1 0 0", minWidth: 0, textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
+                <Stat value={s.value} label={s.label} color={s.color} />
+              </Link>
+            ) : (
+              <Stat key={s.label} value={s.value} label={s.label} color={s.color} />
+            )
+          )}
         </div>
       </div>
 
