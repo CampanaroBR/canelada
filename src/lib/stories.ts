@@ -15,18 +15,16 @@ export async function gerarStories(rodadaId: string): Promise<void> {
 
   if (votos.length === 0) return;
 
-  // Tally votes per category per player
-  const tallies = new Map<string, Map<string, number>>();
-  for (const v of votos) {
-    if (!tallies.has(v.categoria)) tallies.set(v.categoria, new Map());
-    const m = tallies.get(v.categoria)!;
-    m.set(v.votadoId, (m.get(v.votadoId) ?? 0) + 1);
-  }
-
-  const getWinner = (cat: CategoriaVoto) => {
-    const m = tallies.get(cat);
-    if (!m) return null;
-    const winner = pickWinner(m, `${rodadaId}:${cat}`);
+  // MVP/BAGRE não são votados como categoria própria — a votação real usa
+  // só os 16 traits (categoria=TRAIT). O trait "categoria" (👑, "dono da bola
+  // e do campo") é o equivalente ao MVP, e "bagre" ao BAGRE da rodada.
+  const getTraitWinner = (traitSlug: string) => {
+    const m = new Map<string, number>();
+    for (const v of votos) {
+      if (v.categoria !== CategoriaVoto.TRAIT || v.traitSlug !== traitSlug) continue;
+      m.set(v.votadoId, (m.get(v.votadoId) ?? 0) + 1);
+    }
+    const winner = pickWinner(m, `${rodadaId}:${traitSlug}`);
     if (!winner) return null;
     const apelido = votos.find((v) => v.votadoId === winner.id)?.votado.apelido ?? "";
     return { apelido, count: winner.count };
@@ -34,7 +32,7 @@ export async function gerarStories(rodadaId: string): Promise<void> {
 
   const stories: { rodadaId: string; tipo: StoryTipo; texto: string }[] = [];
 
-  const mvp = getWinner(CategoriaVoto.MVP);
+  const mvp = getTraitWinner("categoria");
   if (mvp) {
     stories.push({
       rodadaId,
@@ -43,7 +41,7 @@ export async function gerarStories(rodadaId: string): Promise<void> {
     });
   }
 
-  const bagre = getWinner(CategoriaVoto.BAGRE);
+  const bagre = getTraitWinner("bagre");
   if (bagre) {
     stories.push({
       rodadaId,
