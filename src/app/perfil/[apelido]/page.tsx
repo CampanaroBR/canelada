@@ -48,10 +48,15 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
     );
   }
 
+  // Só rodadas encerradas contam pras estatísticas de carreira — igual ao
+  // Ranking/Badges (lib/badges.ts). Sem isso, votos da rodada em andamento
+  // apareciam aqui na hora mas só refletiam no Ranking depois de fechar,
+  // dando números divergentes entre as telas.
+  const votoEncerrada = { rodada: { encerrada: true } } as const;
   const [mvpCount, bagreCount, presencaRows] = await Promise.all([
-    prisma.voto.count({ where: { votadoId: jogador.id, categoria: "MVP" } }),
-    prisma.voto.count({ where: { votadoId: jogador.id, categoria: "BAGRE" } }),
-    prisma.voto.findMany({ where: { votadoId: jogador.id }, select: { rodadaId: true }, distinct: ["rodadaId"] }),
+    prisma.voto.count({ where: { votadoId: jogador.id, categoria: "MVP", ...votoEncerrada } }),
+    prisma.voto.count({ where: { votadoId: jogador.id, categoria: "BAGRE", ...votoEncerrada } }),
+    prisma.voto.findMany({ where: { votadoId: jogador.id, ...votoEncerrada }, select: { rodadaId: true }, distinct: ["rodadaId"] }),
   ]);
 
   const isOwner = jogador.userId === session.user.id;
@@ -61,8 +66,8 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
   const traitsUnlocked = jogador.traitsRecebidas.length;
   const presencaCount = presencaRows.length;
   const joinYear = new Date(jogador.createdAt).getFullYear();
-  const racudoCount = await prisma.voto.count({ where: { votadoId: jogador.id, categoria: "RACUDO" } });
-  const resenhaCount = await prisma.voto.count({ where: { votadoId: jogador.id, categoria: "RESENHA" } });
+  const racudoCount = await prisma.voto.count({ where: { votadoId: jogador.id, categoria: "RACUDO", ...votoEncerrada } });
+  const resenhaCount = await prisma.voto.count({ where: { votadoId: jogador.id, categoria: "RESENHA", ...votoEncerrada } });
 
   const conquiStats = { mvpCount, bagreCount, racudoCount, resenhaCount, traitsUnlocked, presencaCount };
   const overall = computeOverall(conquiStats);
