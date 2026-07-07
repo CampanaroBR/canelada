@@ -95,6 +95,7 @@ model Jogador {
   traitsRecebidas JogadorTrait[]
   pushSubscriptions PushSubscription[]
   badgeUnlocks    BadgeUnlock[]
+  rodadasPresente Rodada[]       @relation("RodadaPresentes")
 }
 
 model BadgeUnlock {
@@ -131,6 +132,10 @@ model Rodada {
   grupo       Grupo        @relation(fields: [grupoId], references: [id])
   votos       Voto[]
   stories     Story[]
+  // Lista de presença: quem realmente jogou (ou foi marcado presente) nessa
+  // rodada, editável manualmente. Vazio = sem restrição (mostra todo o grupo,
+  // comportamento antigo — mantém rodadas passadas funcionando sem migração).
+  presentes   Jogador[]    @relation("RodadaPresentes")
 }
 
 model Voto {

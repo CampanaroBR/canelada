@@ -7,11 +7,11 @@ import { criarRodada } from "./actions";
 import Link from "next/link";
 import Image from "next/image";
 import { EmptyState } from "@/ds/components/EmptyState";
-import { SoccerBall, CaretLeft, Bell } from "@phosphor-icons/react/dist/ssr";
+import { SoccerBall, CaretLeft, Bell, UsersThree } from "@phosphor-icons/react/dist/ssr";
 import { votacaoAtiva, MIN_JOGADORES_VOTACAO } from "@/lib/votacaoJanela";
 
 /** Topbar padrão (voltar + logo + sino) pras telas estáticas da votação. */
-function VotacaoTopBar() {
+function VotacaoTopBar({ isAdmin }: { isAdmin?: boolean }) {
   return (
     <div className="glass-bar" style={{
       position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)",
@@ -24,9 +24,15 @@ function VotacaoTopBar() {
         <div style={{ padding: 4, display: "flex", overflow: "clip" }}>
           <Image alt="Canelada" src="/logo.png" width={48} height={48} priority style={{ objectFit: "cover", borderRadius: "50%" }} />
         </div>
-        <div aria-hidden style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <Bell size={24} color="#fff" weight="bold" />
-        </div>
+        {isAdmin ? (
+          <Link href="/votacao/presenca" aria-label="Editar quem jogou" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent" }}>
+            <UsersThree size={24} color="#fff" weight="bold" />
+          </Link>
+        ) : (
+          <div aria-hidden style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Bell size={24} color="#fff" weight="bold" />
+          </div>
+        )}
       </div>
     </div>
   );
@@ -40,9 +46,10 @@ export default async function VotacaoPage() {
 
   const jogador = await prisma.jogador.findUnique({
     where: { userId: session.user.id },
-    select: { id: true, grupoId: true },
+    select: { id: true, grupoId: true, role: true },
   });
   if (!jogador) redirect("/onboarding");
+  const isAdmin = jogador.role === "ADMIN" || jogador.role === "SUPER_ADMIN";
 
   // Acesso por JANELA DE HORÁRIO (não depende do cron ter flipado votacaoAberta).
   // Pega a rodada aberta mais recente e valida se estamos dentro da janela de votação.
@@ -63,7 +70,7 @@ export default async function VotacaoPage() {
   }
 
   if (!rodada) {
-    return <NoRodadaScreen />;
+    return <NoRodadaScreen isAdmin={isAdmin} />;
   }
 
   const jaVotou = await prisma.voto.findFirst({
@@ -78,12 +85,23 @@ export default async function VotacaoPage() {
         trait: { select: { nome: true, emoji: true } },
       },
     });
-    return <JaVotouScreen votos={votos} />;
+    return <JaVotouScreen votos={votos} isAdmin={isAdmin} />;
   }
+
+  // Presença marcada manualmente pra essa rodada restringe quem pode ser
+  // votado (evita votar em quem se cadastrou mas não jogou naquele dia).
+  // Sem ninguém marcado (rodadas antigas ou sem edição), mostra o grupo todo.
+  const presentesCount = await prisma.rodada.findUnique({
+    where: { id: rodada.id },
+    select: { _count: { select: { presentes: true } } },
+  });
+  const filtroPresentes = (presentesCount?._count.presentes ?? 0) > 0
+    ? { rodadasPresente: { some: { id: rodada.id } } }
+    : {};
 
   const [jogadores, traits] = await Promise.all([
     prisma.jogador.findMany({
-      where: { grupoId: jogador.grupoId },
+      where: { grupoId: jogador.grupoId, ...filtroPresentes },
       select: { id: true, apelido: true },
       orderBy: { apelido: "asc" },
     }),
@@ -102,10 +120,10 @@ export default async function VotacaoPage() {
   );
 }
 
-function NoRodadaScreen() {
+function NoRodadaScreen({ isAdmin }: { isAdmin: boolean }) {
   return (
     <div style={{ minHeight: "100dvh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
-      <VotacaoTopBar />
+      <VotacaoTopBar isAdmin={isAdmin} />
 
       <main style={{
         flex: 1,
@@ -168,10 +186,10 @@ const CATEGORIA_CONFIG: Record<string, { label: string; color: string }> = {
   TRAIT:   { label: "Trait",   color: "#A78BFA" },
 };
 
-function JaVotouScreen({ votos }: { votos: VotoComVotado[] }) {
+function JaVotouScreen({ votos, isAdmin }: { votos: VotoComVotado[]; isAdmin: boolean }) {
   return (
     <div style={{ minHeight: "100dvh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
-      <VotacaoTopBar />
+      <VotacaoTopBar isAdmin={isAdmin} />
 
       <main style={{
         flex: 1,

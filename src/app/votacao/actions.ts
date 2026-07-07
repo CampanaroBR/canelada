@@ -114,3 +114,68 @@ export async function submitVotos(rodadaId: string, votos: VotoInput[]) {
 
   return { success: true };
 }
+
+/** Lista de jogadores do grupo + quem está marcado presente na rodada (pra tela de edição). */
+export async function getPresenca(rodadaId: string) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Não autenticado." } as const;
+
+  const eu = await prisma.jogador.findUnique({
+    where: { userId: session.user.id },
+    select: { grupoId: true, role: true },
+  });
+  if (!eu) return { error: "Jogador não encontrado." } as const;
+  if (eu.role !== "ADMIN" && eu.role !== "SUPER_ADMIN") {
+    return { error: "Só admins podem editar a lista de presença." } as const;
+  }
+
+  const rodada = await prisma.rodada.findUnique({
+    where: { id: rodadaId },
+    select: { grupoId: true, presentes: { select: { id: true } } },
+  });
+  if (!rodada || rodada.grupoId !== eu.grupoId) return { error: "Rodada inválida." } as const;
+
+  const jogadores = await prisma.jogador.findMany({
+    where: { grupoId: eu.grupoId },
+    select: { id: true, apelido: true },
+    orderBy: { apelido: "asc" },
+  });
+
+  return { jogadores, presentesIds: rodada.presentes.map((j) => j.id) } as const;
+}
+
+/** Salva a lista de presença da rodada. Lista vazia = sem restrição (mostra o grupo todo). */
+export async function salvarPresenca(rodadaId: string, jogadorIds: string[]) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Não autenticado." } as const;
+
+  const eu = await prisma.jogador.findUnique({
+    where: { userId: session.user.id },
+    select: { grupoId: true, role: true },
+  });
+  if (!eu) return { error: "Jogador não encontrado." } as const;
+  if (eu.role !== "ADMIN" && eu.role !== "SUPER_ADMIN") {
+    return { error: "Só admins podem editar a lista de presença." } as const;
+  }
+
+  const rodada = await prisma.rodada.findUnique({
+    where: { id: rodadaId },
+    select: { grupoId: true },
+  });
+  if (!rodada || rodada.grupoId !== eu.grupoId) return { error: "Rodada inválida." } as const;
+
+  // Segurança: só aceita ids de jogadores do próprio grupo.
+  const membros = await prisma.jogador.findMany({
+    where: { grupoId: eu.grupoId },
+    select: { id: true },
+  });
+  const validos = new Set(membros.map((m) => m.id));
+  const ids = jogadorIds.filter((id) => validos.has(id));
+
+  await prisma.rodada.update({
+    where: { id: rodadaId },
+    data: { presentes: { set: ids.map((id) => ({ id })) } },
+  });
+
+  return { success: true } as const;
+}
