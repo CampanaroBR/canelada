@@ -29,20 +29,25 @@ export default async function FeedPage() {
   const grupoId = jogador.grupoId;
   const grupoNome = jogador.grupo?.nome ?? "";
 
-  const [rodadaAtiva, topTraitsRaw, recentStories, recentTraits] = await Promise.all([
-    prisma.rodada.findFirst({
-      where: { grupoId, encerrada: false },
-      select: { id: true, data: true, votacaoAberta: true },
-      orderBy: { createdAt: "desc" },
-    }),
-    // Mais votados: top jogadores por total de traits recebidos
-    prisma.jogadorTrait.groupBy({
-      by: ["jogadorId"],
-      where: { jogador: { grupoId } },
-      _sum: { contador: true },
-      orderBy: { _sum: { contador: "desc" } },
-      take: 6,
-    }),
+  const rodadaAtiva = await prisma.rodada.findFirst({
+    where: { grupoId, encerrada: false },
+    select: { id: true, data: true, votacaoAberta: true },
+    orderBy: { createdAt: "desc" },
+  });
+
+  const [topTraitsRaw, recentStories, recentTraits] = await Promise.all([
+    // Mais votados: jogadores mais votados NESSA rodada (não é total histórico —
+    // jogadorTrait.contador é cumulativo pra sempre, inflava o "parcial da rodada"
+    // com votos de rodadas antigas já encerradas).
+    rodadaAtiva
+      ? prisma.voto.groupBy({
+          by: ["votadoId"],
+          where: { rodadaId: rodadaAtiva.id, categoria: "TRAIT" },
+          _count: { votadoId: true },
+          orderBy: { _count: { votadoId: "desc" } },
+          take: 6,
+        })
+      : Promise.resolve([]),
     // Personagem da semana: stories MVP/BAGRE agrupados por rodada
     prisma.story.findMany({
       where: { rodada: { grupoId }, tipo: { in: ["MVP", "BAGRE"] } },
@@ -71,7 +76,7 @@ export default async function FeedPage() {
   ]);
 
   // Resolve nomes dos mais votados por trait
-  const jogadoresIds = topTraitsRaw.map(t => t.jogadorId);
+  const jogadoresIds = topTraitsRaw.map(t => t.votadoId);
   const jogadoresMap = jogadoresIds.length > 0
     ? await prisma.jogador.findMany({
         where: { id: { in: jogadoresIds } },
@@ -80,8 +85,8 @@ export default async function FeedPage() {
     : {};
 
   const maisVotados: MaisVotado[] = topTraitsRaw.map(t => ({
-    apelido: jogadoresMap[t.jogadorId] ?? "?",
-    qtd: t._sum.contador ?? 0,
+    apelido: jogadoresMap[t.votadoId] ?? "?",
+    qtd: t._count.votadoId,
     categoria: "MVP",
   }));
 
