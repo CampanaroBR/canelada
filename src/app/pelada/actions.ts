@@ -66,10 +66,15 @@ export async function criarRodada(data: string, participantesIds: string[]) {
     return { error: "Já existe uma rodada recente/aberta neste grupo. Aguarde encerrar." };
   }
 
+  // Só ids de jogadores com conta no app entram na lista de presença — os
+  // "pendentes" (nome digitado sem conta ainda) não existem como Jogador.
   const rodada = await prisma.rodada.create({
     data: {
       grupoId: jogador.grupoId,
       data: new Date(data),
+      ...(participantesIds.length > 0
+        ? { presentes: { connect: participantesIds.map((id) => ({ id })) } }
+        : {}),
     },
   });
 
