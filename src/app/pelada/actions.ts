@@ -84,7 +84,9 @@ export async function criarRodada(data: string, participantesIds: string[]) {
       const { sendPushToSubscriptions } = await import("@/lib/webpush");
       await sendPushToSubscriptions(subs, {
         title: "📋 Baba confirmado!",
-        body: `Lista fechada com ${participantesIds.length} jogadores. Votação abre às 22:30!`,
+        body: participantesIds.length > 0
+          ? `Lista fechada com ${participantesIds.length} jogador${participantesIds.length > 1 ? "es" : ""}. Votação abre às 22:30!`
+          : "Rodada criada! Votação abre às 22:30.",
         url: "/feed",
       });
     }

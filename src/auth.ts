@@ -53,5 +53,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   pages: {
     signIn: "/login",
+    // Sem isso, erro (ex.: AccessDenied do portão do convite) cai na página
+    // genérica do NextAuth em vez da nossa — que já tem o banner explicando
+    // que falta o link de convite (useAccessDenied em /login).
+    error: "/login",
   },
 });

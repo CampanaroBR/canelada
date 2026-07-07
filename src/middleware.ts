@@ -25,6 +25,22 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
+  // Cookie do convite gravado no servidor (não depende de JS do client rodar a
+  // tempo do usuário tocar em "Entrar com Google" — falhava em navegador in-app
+  // do WhatsApp/conexão lenta, derrubando o login com AccessDenied).
+  if (pathname === "/login") {
+    const convite = request.nextUrl.searchParams.get("convite");
+    if (convite) {
+      const res = NextResponse.next();
+      res.cookies.set("convite", convite, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 30,
+        sameSite: "lax",
+      });
+      return res;
+    }
+  }
+
   // Rate limit no envio de login (signin POST) por IP — fail-open sem Upstash.
   if (request.method === "POST" && pathname.startsWith("/api/auth/signin")) {
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "anon";

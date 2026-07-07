@@ -216,7 +216,9 @@ export function NovaRodadaForm() {
 
   /* ─── STEP: CONFIRMAÇÃO ─── */
   if (step === "confirmacao") {
-    const canConfirm = !isSaving && incluidos.length > 0;
+    // Não exige ninguém vinculado: a rodada não trava a ids confirmados em lugar
+    // nenhum (é só pra notificação) — quem ainda não tem conta vota assim que criar.
+    const canConfirm = !isSaving;
     return (
       <div style={{ minHeight: "100dvh", background: "#090909", paddingBottom: "calc(140px + env(safe-area-inset-bottom, 0px))" }}>
         {/* Header — mesmo padrão do resto do app (dark, arredondado embaixo) */}
@@ -303,7 +305,7 @@ export function NovaRodadaForm() {
         {/* CTA fixo — zIndex acima da BottomNav (30) pra não ficar atrás dela */}
         <div style={{ position: "fixed", left: "50%", transform: "translateX(-50%)", width: "min(100%, 430px)", bottom: "calc(84px + env(safe-area-inset-bottom, 0px))", padding: "0 16px", zIndex: 35, boxSizing: "border-box" }}>
           <Button fullWidth size="lg" onClick={handleCriar} disabled={!canConfirm}>
-            {isSaving ? "Criando rodada…" : `Confirmar presença · ${incluidos.length}`}
+            {isSaving ? "Criando rodada…" : incluidos.length > 0 ? `Confirmar presença · ${incluidos.length}` : "Criar rodada"}
           </Button>
         </div>
       </div>
