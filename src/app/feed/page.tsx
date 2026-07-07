@@ -35,19 +35,7 @@ export default async function FeedPage() {
     orderBy: { createdAt: "desc" },
   });
 
-  const [topTraitsRaw, recentStories, recentTraits] = await Promise.all([
-    // Mais votados = parcial do MVP da rodada. MVP oficial é quem vence o
-    // trait "categoria" (ver lib/stories.ts) — antes somava os 16 traits
-    // juntos, inflando o número e sem relação com quem de fato vira MVP.
-    rodadaAtiva
-      ? prisma.voto.groupBy({
-          by: ["votadoId"],
-          where: { rodadaId: rodadaAtiva.id, categoria: "TRAIT", traitSlug: "categoria" },
-          _count: { votadoId: true },
-          orderBy: { _count: { votadoId: "desc" } },
-          take: 6,
-        })
-      : Promise.resolve([]),
+  const [recentStories, recentTraits] = await Promise.all([
     // Personagem da semana: stories MVP/BAGRE agrupados por rodada
     prisma.story.findMany({
       where: { rodada: { grupoId }, tipo: { in: ["MVP", "BAGRE"] } },
@@ -75,20 +63,11 @@ export default async function FeedPage() {
     }),
   ]);
 
-  // Resolve nomes dos mais votados por trait
-  const jogadoresIds = topTraitsRaw.map(t => t.votadoId);
-  const jogadoresMap = jogadoresIds.length > 0
-    ? await prisma.jogador.findMany({
-        where: { id: { in: jogadoresIds } },
-        select: { id: true, apelido: true },
-      }).then(jogs => Object.fromEntries(jogs.map(j => [j.id, j.apelido])))
-    : {};
-
-  const maisVotados: MaisVotado[] = topTraitsRaw.map(t => ({
-    apelido: jogadoresMap[t.votadoId] ?? "?",
-    qtd: t._count.votadoId,
-    categoria: "MVP",
-  }));
+  // maisVotados é construído mais abaixo, a partir do selRaw (mesma base da
+  // "Seleção") — 1 vencedor por trait positivo, cada um com o rótulo certo.
+  // Antes essa lista vinha de uma query separada só do trait "categoria" com
+  // take:6, e todo mundo aparecia rotulado "MVP" (deveria ser só o 1º).
+  let maisVotados: MaisVotado[] = [];
 
   // ── Personagens da Semana: traits mais votados na rodada atual ──
   // Filtro de relevância: líder com ≥40% dos votos do personagem E ≥3 votos.
@@ -185,6 +164,18 @@ export default async function FeedPage() {
       } : null;
     selecao = selRaw.map(toSlot);
     selecaoPiores = selRawPiores.map(toSlot);
+
+    // Mais votados (card "Parcial da rodada"): 1 vencedor por trait positivo,
+    // cada um rotulado com o nome real do trait — só o vencedor de "categoria"
+    // é de fato o MVP, os outros são o líder de cada trait (Matador, Raçudo…).
+    maisVotados = selRaw
+      .filter((s): s is { slug: string; vencedorId: string; votos: number } => !!s)
+      .map((s) => ({
+        apelido: nmeMap[s.vencedorId] ?? "?",
+        qtd: s.votos,
+        categoria: s.slug === "categoria" ? "MVP" : (tMeta[s.slug]?.nome ?? s.slug).toUpperCase(),
+      }))
+      .sort((a, b) => b.qtd - a.qtd);
   }
 
   const PERSONAGEM_TITLES: Record<string, string> = {
