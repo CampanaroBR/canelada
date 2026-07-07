@@ -3,8 +3,11 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // Migrações no Neon precisam de conexão DIRETA (sem pgbouncer) — advisory
+  // locks de sessão não funcionam direito com pooling em modo transação.
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
