@@ -61,7 +61,7 @@ export function PresencaClient({ rodadaId, jogadores, presentesIniciais }: Props
       <main style={{ flex: 1, padding: "16px 8px 96px" }}>
         <div style={{ background: "#141414", border: "1px solid #2c2c2c", borderRadius: 16, overflow: "hidden" }}>
           {jogadores.map((j, i) => (
-            <div key={j.id} style={{ borderTop: i === 0 ? "none" : "1px solid #1f1f1f" }}>
+            <div key={j.id} style={{ padding: "12px 14px", borderTop: i === 0 ? "none" : "1px solid #1f1f1f" }}>
               <Content
                 leading={<Avatar name={j.apelido} />}
                 label={j.apelido}
