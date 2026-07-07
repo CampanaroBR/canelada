@@ -3,10 +3,14 @@ import { PremioScreen } from "./PremioScreen";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import { pickWinner } from "@/lib/tieBreak";
 
 export const dynamic = "force-dynamic";
 
-// Categoria slug → config
+// Categoria slug → config. A rota já É o slug do trait (matador/categoria/
+// paredao) — antes isso apontava pra um CategoriaVoto (MVP/BAGRE/RACUDO)
+// que nunca existe de verdade (a votação real só usa categoria=TRAIT),
+// então o vencedor nunca aparecia.
 const CONFIGS: Record<string, {
   title: string;
   bgImg: string;
@@ -15,7 +19,6 @@ const CONFIGS: Record<string, {
   glowColor: string;
   nameColor: string;
   footerBorder: string;
-  votaCategoria: "MVP" | "BAGRE" | "RACUDO";
 }> = {
   matador: {
     title: "MATADOR",
@@ -25,7 +28,6 @@ const CONFIGS: Record<string, {
     glowColor: "#0a5c69",
     nameColor: "#9fe870",
     footerBorder: "#42bace",
-    votaCategoria: "MVP",
   },
   categoria: {
     title: "CATEGORIA",
@@ -35,7 +37,6 @@ const CONFIGS: Record<string, {
     glowColor: "#5f450f",
     nameColor: "#d6ffbc",
     footerBorder: "#c5c5c5",
-    votaCategoria: "RACUDO",
   },
   paredao: {
     title: "PAREDÃO",
@@ -45,7 +46,6 @@ const CONFIGS: Record<string, {
     glowColor: "#5f0005",
     nameColor: "#d6ffbc",
     footerBorder: "#c5c5c5",
-    votaCategoria: "BAGRE",
   },
 };
 
@@ -73,19 +73,19 @@ export default async function PremioPage({ params }: { params: Promise<{ categor
 
   let vencedor: { apelido: string; qtd: number } | null = null;
   if (ultimaRodada) {
-    const top = await prisma.voto.groupBy({
-      by: ["votadoId"],
-      where: { rodadaId: ultimaRodada.id, categoria: config.votaCategoria },
-      _count: { votadoId: true },
-      orderBy: { _count: { votadoId: "desc" } },
-      take: 1,
+    const votos = await prisma.voto.findMany({
+      where: { rodadaId: ultimaRodada.id, categoria: "TRAIT", traitSlug: categoria },
+      select: { votadoId: true },
     });
-    if (top.length > 0) {
+    const contagem = new Map<string, number>();
+    for (const v of votos) contagem.set(v.votadoId, (contagem.get(v.votadoId) ?? 0) + 1);
+    const winner = pickWinner(contagem, `${ultimaRodada.id}:${categoria}`);
+    if (winner) {
       const j = await prisma.jogador.findUnique({
-        where: { id: top[0].votadoId },
+        where: { id: winner.id },
         select: { apelido: true },
       });
-      vencedor = { apelido: j?.apelido ?? "Jogador", qtd: top[0]._count.votadoId };
+      vencedor = { apelido: j?.apelido ?? "Jogador", qtd: winner.count };
     }
   }
 
