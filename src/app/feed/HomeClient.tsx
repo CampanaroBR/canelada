@@ -78,6 +78,7 @@ export function HomeClient({
   const [bsOpen, setBsOpen] = useState(false);
   const [bsMounted, setBsMounted] = useState(false); // só monta o sheet após 1ª abertura
   const [shareCard, setShareCard] = useState<PersonagemSemana | null>(null);
+  const [mostrarTodosPersonagens, setMostrarTodosPersonagens] = useState(false);
   const [shareSelecao, setShareSelecao] = useState(false);
   const [campoTab, setCampoTab] = useState<"melhores" | "piores">("melhores");
 
@@ -488,7 +489,7 @@ export function HomeClient({
 
             {/* Cards */}
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {personagensSemana.map((p) => (
+              {(mostrarTodosPersonagens ? personagensSemana : personagensSemana.slice(0, 3)).map((p) => (
                 <div key={p.slug} style={{ background: "#090909", border: "1px solid #2c2c2c", borderRadius: 16, padding: 17, display: "flex", gap: 16, alignItems: "flex-start" }}>
                   {/* Award container */}
                   <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start", flexShrink: 0 }}>
@@ -519,6 +520,21 @@ export function HomeClient({
                 </div>
               ))}
             </div>
+
+            {personagensSemana.length > 3 && (
+              <button
+                onClick={() => setMostrarTodosPersonagens((v) => !v)}
+                style={{
+                  alignSelf: "center", cursor: "pointer", WebkitTapHighlightColor: "transparent",
+                  background: "none", border: "none",
+                  display: "flex", alignItems: "center", gap: 4,
+                  fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, color: "#9fe870",
+                }}
+              >
+                {mostrarTodosPersonagens ? "Ver menos" : `Ver mais (${personagensSemana.length - 3})`}
+                <CaretRight size={12} weight="bold" style={{ transform: mostrarTodosPersonagens ? "rotate(-90deg)" : "rotate(90deg)", transition: "transform 150ms ease" }} />
+              </button>
+            )}
           </div>
         )}
 
