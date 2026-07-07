@@ -2,8 +2,8 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { BottomNav } from "@/components/layout/BottomNav";
-import Link from "next/link";
 import { PerfilCliente } from "../PerfilCliente";
+import { BackButton } from "../BackButton";
 import { computeConquistas, computeOverall } from "@/lib/conquistas";
 
 export const dynamic = "force-dynamic";
@@ -37,10 +37,8 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
   if (!jogador) {
     return (
       <div style={{ minHeight: "100dvh", background: "#090909", display: "flex", flexDirection: "column" }}>
-        <header style={{ height: 56, display: "flex", alignItems: "center", padding: "0 16px" }}>
-          <Link href="/feed" style={{ color: "#7a7a7a", display: "flex", alignItems: "center" }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
-          </Link>
+        <header style={{ height: 56, display: "flex", alignItems: "center", padding: "0 8px" }}>
+          <BackButton size={20} />
         </header>
         <main style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }}>
           <p style={{ color: "#7a7a7a", fontFamily: "var(--font-body)", fontSize: 14 }}>Jogador não encontrado.</p>
@@ -88,9 +86,7 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
     <div style={{ minHeight: "100dvh", background: "#090909" }}>
       {/* ── Topbar ── */}
       <header className="glass-bar" style={{ position: "sticky", top: 0, zIndex: 30, height: 56, display: "flex", alignItems: "center", padding: "0 8px" }}>
-        <Link href="/feed" aria-label="Voltar" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", textDecoration: "none", flexShrink: 0 }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
-        </Link>
+        <BackButton />
       </header>
 
       <main style={{ padding: "0 8px", paddingBottom: "calc(96px + env(safe-area-inset-bottom, 0px))", display: "flex", flexDirection: "column", gap: 16 }}>
