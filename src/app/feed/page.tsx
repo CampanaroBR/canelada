@@ -124,17 +124,25 @@ export default async function FeedPage() {
     raw.sort((a, b) => b.votos - a.votos);
 
     // Seleção da Rodada: 1 vencedor por posição (CF, mid, mid, mid, GK).
-    // Sem filtro estrito (basta ≥1 voto) — é a escalação da rodada.
+    // Sem filtro estrito (basta ≥1 voto) — é a escalação da rodada. Um jogador
+    // não pode ocupar 2 posições na mesma escalação — se já foi escalado numa
+    // posição anterior, some do pool das seguintes (pega o próximo mais votado).
     const POSITION_TRAITS = ["matador", "categoria", "racudo", "garcom", "paredao"];
     const NEG_TRAITS = ["bagre", "cone", "chorao", "reclamao", "paneleiro"];
-    const topPorTrait = (slug: string) => {
-      const e = perTrait.get(slug);
-      if (!e || e.total === 0) return null;
-      const winner = pickWinner(e.players, `${rodadaAtiva.id}:${slug}`);
-      return winner ? { slug, vencedorId: winner.id, votos: winner.count } : null;
+    const topPorTraitSemRepetir = (slugs: string[]) => {
+      const usados = new Set<string>();
+      return slugs.map((slug) => {
+        const e = perTrait.get(slug);
+        if (!e || e.total === 0) return null;
+        const disponiveis = new Map([...e.players].filter(([pid]) => !usados.has(pid)));
+        const winner = pickWinner(disponiveis, `${rodadaAtiva.id}:${slug}`);
+        if (!winner) return null;
+        usados.add(winner.id);
+        return { slug, vencedorId: winner.id, votos: winner.count };
+      });
     };
-    const selRaw = POSITION_TRAITS.map(topPorTrait);
-    const selRawPiores = NEG_TRAITS.map(topPorTrait);
+    const selRaw = topPorTraitSemRepetir(POSITION_TRAITS);
+    const selRawPiores = topPorTraitSemRepetir(NEG_TRAITS);
 
     // Resolve nomes + meta de TODOS (personagens + seleção + piores) numa tacada
     const vIds = [...new Set([

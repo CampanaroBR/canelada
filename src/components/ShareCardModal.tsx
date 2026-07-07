@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
+import { toPng } from "html-to-image";
 import { X, ShareNetwork } from "@phosphor-icons/react";
 
 export type PersonagemSemana = {
@@ -23,22 +24,30 @@ interface Props {
 export function ShareCardModal({ personagem, grupoNome, onClose }: Props) {
   const [sharing, setSharing] = useState(false);
   const { nome, art, vencedor, votos } = personagem;
+  const cardRef = useRef<HTMLDivElement>(null);
+  const shareBtnRef = useRef<HTMLButtonElement>(null);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
 
   async function handleShare() {
-    if (sharing) return;
+    if (sharing || !cardRef.current) return;
     setSharing(true);
     const texto = `${vencedor} foi eleito o ${nome} do jogo por ${votos} jogadores do ${grupoNome}! ⚽`;
     try {
-      const res = await fetch(art);
-      const blob = await res.blob();
-      const file = new File([blob], `${personagem.slug}.jpg`, { type: blob.type || "image/jpeg" });
+      // Captura a tela real (arte + nome do vencedor sobreposto), não só a
+      // arte estática — senão a imagem compartilhada fica "vazia" (genérica).
+      const dataUrl = await toPng(cardRef.current, {
+        pixelRatio: 2, cacheBust: true,
+        filter: (n) => n !== shareBtnRef.current && n !== closeBtnRef.current,
+      });
+      const blob = await (await fetch(dataUrl)).blob();
+      const file = new File([blob], `${personagem.slug}.png`, { type: "image/png" });
       if (navigator.canShare?.({ files: [file] })) {
         await navigator.share({ files: [file], text: texto });
       } else if (navigator.share) {
         await navigator.share({ text: texto });
       } else {
         const url = URL.createObjectURL(blob);
-        Object.assign(document.createElement("a"), { href: url, download: `${personagem.slug}.jpg` }).click();
+        Object.assign(document.createElement("a"), { href: url, download: `${personagem.slug}.png` }).click();
         URL.revokeObjectURL(url);
       }
     } catch (e) {
@@ -49,11 +58,12 @@ export function ShareCardModal({ personagem, grupoNome, onClose }: Props) {
   }
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 80, background: "#0a0e0e", overflow: "hidden" }}>
+    <div ref={cardRef} style={{ position: "fixed", inset: 0, zIndex: 80, background: "#0a0e0e", overflow: "hidden" }}>
       <Image alt={nome} src={art} fill priority sizes="430px" style={{ objectFit: "cover" }} />
 
       {/* Close */}
       <button
+        ref={closeBtnRef}
         onClick={onClose}
         aria-label="Fechar"
         style={{
@@ -78,6 +88,7 @@ export function ShareCardModal({ personagem, grupoNome, onClose }: Props) {
         </p>
 
         <button
+          ref={shareBtnRef}
           onClick={handleShare}
           style={{
             background: "#9fe870", border: "none", borderRadius: 20, height: 54,
