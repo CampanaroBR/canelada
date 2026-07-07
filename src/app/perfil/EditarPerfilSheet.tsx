@@ -57,10 +57,16 @@ export function EditarPerfilSheet({ open, onClose, initial }: Props) {
     setUploading(true); setError(null);
     const fd = new FormData();
     fd.append("file", file);
-    const res = await uploadFoto(fd);
-    setUploading(false);
-    if (!res.ok) { setError(res.error ?? "Falha no upload."); toast.error(res.error ?? "Falha no upload."); return; }
-    if (res.url) { setFoto(res.url); router.refresh(); toast.success("Foto atualizada com sucesso"); }
+    try {
+      const res = await uploadFoto(fd);
+      if (!res.ok) { setError(res.error ?? "Falha no upload."); toast.error(res.error ?? "Falha no upload."); return; }
+      if (res.url) { setFoto(res.url); router.refresh(); toast.success("Foto atualizada com sucesso"); }
+    } catch {
+      setError("Falha ao enviar a foto. Tente de novo.");
+      toast.error("Falha ao enviar a foto. Tente de novo.");
+    } finally {
+      setUploading(false);
+    }
   }
 
   async function salvar() {

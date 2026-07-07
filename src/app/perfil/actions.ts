@@ -49,12 +49,12 @@ export async function uploadFoto(formData: FormData): Promise<{ ok: boolean; err
   if (!file.type.startsWith("image/")) return { ok: false, error: "Envie uma imagem." };
   if (file.size > 5 * 1024 * 1024) return { ok: false, error: "Foto muito grande (máx. 5MB)." };
 
-  const jogador = await prisma.jogador.findUnique({ where: { userId: session.user.id }, select: { id: true, apelido: true } });
-  if (!jogador) return { ok: false, error: "Jogador não encontrado." };
-
-  // sanitiza a extensão (só letras/números) pra não injetar caminho na key do Blob
-  const ext = ((file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg").slice(0, 5);
   try {
+    const jogador = await prisma.jogador.findUnique({ where: { userId: session.user.id }, select: { id: true, apelido: true } });
+    if (!jogador) return { ok: false, error: "Jogador não encontrado." };
+
+    // sanitiza a extensão (só letras/números) pra não injetar caminho na key do Blob
+    const ext = ((file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg").slice(0, 5);
     const blob = await put(`avatars/${jogador.id}-${Date.now()}.${ext}`, file, { access: "public", contentType: file.type });
     await prisma.jogador.update({ where: { id: jogador.id }, data: { foto: blob.url } });
     revalidatePath("/perfil");
