@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendPushToSubscriptions } from "@/lib/webpush";
-import { votacaoAtiva } from "@/lib/votacaoJanela";
+import { votacaoAtiva, MIN_JOGADORES_VOTACAO } from "@/lib/votacaoJanela";
 
 export const dynamic = "force-dynamic";
 
@@ -30,10 +30,14 @@ export async function GET(req: NextRequest) {
       },
     },
   });
-  const rodadasHoje = candidatas.filter((r) => votacaoAtiva(r.data));
+  const naJanela = candidatas.filter((r) => votacaoAtiva(r.data));
+  // Grupo pequeno demais ainda (poucos jogadores cadastrados): não abre — a
+  // rodada fica sem votação e é encerrada normalmente quando a janela passar.
+  const rodadasHoje = naJanela.filter((r) => r.grupo.jogadores.length >= MIN_JOGADORES_VOTACAO);
+  const puladasPoucosJogadores = naJanela.length - rodadasHoje.length;
 
   if (rodadasHoje.length === 0) {
-    return NextResponse.json({ ok: true, abertas: 0, mensagem: "Nenhuma rodada para abrir hoje." });
+    return NextResponse.json({ ok: true, abertas: 0, puladasPoucosJogadores, mensagem: "Nenhuma rodada para abrir hoje." });
   }
 
   const resultados = await Promise.all(
@@ -61,5 +65,5 @@ export async function GET(req: NextRequest) {
     })
   );
 
-  return NextResponse.json({ ok: true, abertas: resultados.length, resultados });
+  return NextResponse.json({ ok: true, abertas: resultados.length, puladasPoucosJogadores, resultados });
 }

@@ -8,7 +8,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { EmptyState } from "@/ds/components/EmptyState";
 import { SoccerBall, CaretLeft, Bell } from "@phosphor-icons/react/dist/ssr";
-import { votacaoAtiva } from "@/lib/votacaoJanela";
+import { votacaoAtiva, MIN_JOGADORES_VOTACAO } from "@/lib/votacaoJanela";
 
 /** Topbar padrão (voltar + logo + sino) pras telas estáticas da votação. */
 function VotacaoTopBar() {
@@ -50,9 +50,17 @@ export default async function VotacaoPage() {
     where: { grupoId: jogador.grupoId, encerrada: false },
     orderBy: { createdAt: "desc" },
   });
-  const rodada = rodadaAtiva && (rodadaAtiva.votacaoAberta || votacaoAtiva(rodadaAtiva.data))
+  let rodada = rodadaAtiva && (rodadaAtiva.votacaoAberta || votacaoAtiva(rodadaAtiva.data))
     ? rodadaAtiva
     : null;
+
+  // Grupo pequeno demais ainda: não libera votação (ficaria vazia/sem graça).
+  // Só vale pra quem ainda não foi aberta oficialmente — uma vez aberta
+  // (votacaoAberta=true, seja pelo cron ou manualmente), continua valendo até fechar.
+  if (rodada && !rodada.votacaoAberta) {
+    const totalJogadores = await prisma.jogador.count({ where: { grupoId: jogador.grupoId } });
+    if (totalJogadores < MIN_JOGADORES_VOTACAO) rodada = null;
+  }
 
   if (!rodada) {
     return <NoRodadaScreen />;

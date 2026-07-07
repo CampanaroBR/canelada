@@ -3,6 +3,10 @@
 // Robusto a timezone: Vercel roda em UTC, então derivamos a data BRT e
 // construímos os instantes com Date.UTC (que normaliza horas > 24).
 
+// Grupo pequeno demais (poucos jogadores cadastrados) faz a votação ficar
+// vazia/sem graça — só abre automaticamente com esse mínimo de candidatos.
+export const MIN_JOGADORES_VOTACAO = 10;
+
 export function janelaVotacao(data: Date): { abre: Date; fecha: Date } {
   // `data` guarda a DATA do baba (form → meia-noite UTC dessa data). Usamos as
   // partes UTC direto: elas já representam o dia-calendário correto do baba.

@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { toPng } from "html-to-image";
-import { Export } from "@phosphor-icons/react";
+import { Export, ShieldStar } from "@phosphor-icons/react";
 import { ContaActions } from "./ContaActions";
 import { EditarPerfilSheet, type PerfilInitial } from "./EditarPerfilSheet";
 import { Stat } from "@/ds";
@@ -21,12 +21,13 @@ interface Props {
   email: string;
   grupoNome: string;
   roleLabel: string;
+  isAdmin: boolean;
   initial: PerfilInitial;
   isOwner: boolean;
 }
 
 export function PerfilCliente(props: Props) {
-  const { displayName, subtitle, initials, overall, posAbbr, joinYear, foto, stats, email, grupoNome, roleLabel, initial, isOwner } = props;
+  const { displayName, subtitle, initials, overall, posAbbr, joinYear, foto, stats, email, grupoNome, roleLabel, isAdmin, initial, isOwner } = props;
   const [editOpen, setEditOpen] = useState(false);
   const [sharing, setSharing] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -106,7 +107,10 @@ export function PerfilCliente(props: Props) {
           )}
 
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, width: "100%", textAlign: "center" }}>
-            <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 28, lineHeight: "32px", color: "#fff", textTransform: "uppercase" }}>{displayName}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 28, lineHeight: "32px", color: "#fff", textTransform: "uppercase" }}>{displayName}</span>
+              {isAdmin && <ShieldStar size={22} color={ACCENT} weight="fill" aria-label={roleLabel} />}
+            </div>
             {subtitle && <span style={{ fontFamily: "var(--font-body)", fontWeight: 400, fontSize: 14, lineHeight: "1.4", color: "#7a7a7a" }}>{subtitle}</span>}
           </div>
 

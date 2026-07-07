@@ -105,7 +105,8 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
           stats={STATS}
           email={session.user.email ?? ""}
           grupoNome={jogador.grupo?.nome ?? "Canelada"}
-          roleLabel={jogador.role === "PLAYER" ? "Jogador" : "Admin"}
+          roleLabel={jogador.role === "PLAYER" ? "Jogador" : jogador.role === "SUPER_ADMIN" ? "Dono" : "Admin"}
+          isAdmin={jogador.role === "ADMIN" || jogador.role === "SUPER_ADMIN"}
           isOwner={isOwner}
           initial={{ nome: jogador.nome ?? "", sobrenome: jogador.sobrenome ?? "", apelido: jogador.apelido, posicao: jogador.posicao ?? "", peDominante: jogador.peDominante ?? "", foto: jogador.foto ?? "" }}
         />
