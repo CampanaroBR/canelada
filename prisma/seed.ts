@@ -28,6 +28,8 @@ const TRAITS = [
   { slug: "pregueiro",     nome: "Pregueiro",       categoria: TraitCategoria.RESENHA,       emoji: "🦥", descricao: "Corre pouco, não se dedica e parece estar sempre economizando energia." },
   { slug: "cone",          nome: "Cone",            categoria: TraitCategoria.RESENHA,       emoji: "🚧", descricao: "Teve pouca participação na partida. A bola bateu e voltou." },
   { slug: "bagre",         nome: "Bagre da Noite",  categoria: TraitCategoria.RESENHA,       emoji: "🐟", descricao: "Representa a pior atuação da rodada. Errou passes, perdeu gols e teve dificuldades durante a partida." },
+  { slug: "frangueiro",    nome: "Frangueiro",      categoria: TraitCategoria.RESENHA,       emoji: "🐔", descricao: "O goleiro que aceita um gol totalmente defensável. Aquela bola fácil que escapa da mão, passa entre as pernas ou entra no canto sem necessidade." },
+  { slug: "bragueiro",     nome: "Bragueiro",       categoria: TraitCategoria.RESENHA,       emoji: "🐴", descricao: "O jogador que entrega a bola para o adversário. Um passe errado, saída de bola desastrosa ou falha que resulta diretamente em gol do adversário." },
   // Traits extras / legadas (fora do fluxo ordenado, mantidas para badges/perfis já existentes)
   { slug: "corpo-mole",    nome: "Corpo Mole",      categoria: TraitCategoria.RESENHA,       emoji: "🛋️", descricao: "Corre pouco e parece estar sempre economizando energia." },
   { slug: "catimbeiro",    nome: "Catimbeiro",      categoria: TraitCategoria.PERSONALIDADE, emoji: "🐢" },

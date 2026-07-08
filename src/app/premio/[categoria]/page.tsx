@@ -47,6 +47,24 @@ const CONFIGS: Record<string, {
     nameColor: "#d6ffbc",
     footerBorder: "#c5c5c5",
   },
+  frangueiro: {
+    title: "FRANGUEIRO",
+    bgImg:     "/votacao-bg/frangueiro.png",
+    bakedImg:  "/premio/frangueiro.jpg",
+    mascotImg: "/votacao-mascot/frangueiro.png",
+    glowColor: "#504723",
+    nameColor: "#d6ffbc",
+    footerBorder: "#c5c5c5",
+  },
+  bragueiro: {
+    title: "BRAGUEIRO",
+    bgImg:     "/votacao-bg/bragueiro.png",
+    bakedImg:  "/premio/bragueiro.jpg",
+    mascotImg: "/votacao-mascot/bragueiro.png",
+    glowColor: "#72141d",
+    nameColor: "#d6ffbc",
+    footerBorder: "#c5c5c5",
+  },
 };
 
 export default async function PremioPage({ params }: { params: Promise<{ categoria: string }> }) {

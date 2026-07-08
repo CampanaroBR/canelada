@@ -8,6 +8,7 @@ export type PersonagemSemana = {
   slug: string;
   nome: string;
   emoji: string | null;
+  descricao: string | null;
   art: string;
   vencedor: string;
   votos: number;
@@ -39,7 +40,7 @@ function useDataUrl(src: string): string {
 /** Card premium full-screen do personagem da semana — arte bakeada + compartilhar. */
 export function ShareCardModal({ personagem, grupoNome, onClose }: Props) {
   const [sharing, setSharing] = useState(false);
-  const { nome, art, vencedor, votos } = personagem;
+  const { nome, descricao, art, vencedor, votos } = personagem;
   const cardRef = useRef<HTMLDivElement>(null);
   const shareBtnRef = useRef<HTMLButtonElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
@@ -101,6 +102,12 @@ export function ShareCardModal({ personagem, grupoNome, onClose }: Props) {
         position: "absolute", left: 0, right: 0, bottom: 0,
         display: "flex", flexDirection: "column", alignItems: "center", gap: 24, padding: "0 24px 0",
       }}>
+        {descricao && (
+          <p style={{ margin: 0, maxWidth: 340, fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 20, lineHeight: "24px", color: "#fff", textAlign: "center" }}>
+            {descricao}
+          </p>
+        )}
+
         <p style={{ margin: 0, maxWidth: 320, fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 20, lineHeight: "24px", color: "#fff", letterSpacing: "-1px", textAlign: "center" }}>
           <span style={{ color: "#9fe870" }}>{vencedor}</span>
           {" foi eleito o "}
@@ -113,16 +120,16 @@ export function ShareCardModal({ personagem, grupoNome, onClose }: Props) {
           onClick={handleShare}
           disabled={sharing || !artReady}
           style={{
-            background: "#9fe870", border: "none", borderRadius: 20, height: 54,
+            background: "#090909", border: "1px solid #9fe870", borderRadius: 20, height: 64,
             display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             padding: "0 24px", cursor: sharing || !artReady ? "default" : "pointer", WebkitTapHighlightColor: "transparent",
             opacity: sharing || !artReady ? 0.7 : 1,
           }}
         >
-          <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#090909" }}>
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#9fe870" }}>
             {sharing ? "Compartilhando..." : !artReady ? "Preparando…" : "Compartilhar"}
           </span>
-          <ShareNetwork size={20} color="#090909" weight="bold" />
+          <ShareNetwork size={20} color="#9fe870" weight="bold" />
         </button>
 
         <div style={{

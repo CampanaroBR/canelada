@@ -81,8 +81,9 @@ export default async function FeedPage() {
     paneleiro: "/premio/paneleiro.jpg", firuleiro: "/premio/firuleiro.jpg",
     pregueiro: "/premio/pregueiro.jpg", "corpo-mole": "/premio/pregueiro.jpg",
     cone: "/premio/cone.jpg", bagre: "/premio/bagredanoite.jpg",
+    frangueiro: "/premio/frangueiro.jpg", bragueiro: "/premio/bragueiro.jpg",
   };
-  type PersonagemSemana = { slug: string; nome: string; emoji: string | null; art: string; vencedor: string; votos: number };
+  type PersonagemSemana = { slug: string; nome: string; emoji: string | null; descricao: string | null; art: string; vencedor: string; votos: number };
   let personagensSemana: PersonagemSemana[] = [];
   let selecao: (PersonagemSemana | null)[] = [];
   let selecaoPiores: (PersonagemSemana | null)[] = [];
@@ -114,7 +115,11 @@ export default async function FeedPage() {
     // não pode ocupar 2 posições na mesma escalação — se já foi escalado numa
     // posição anterior, some do pool das seguintes (pega o próximo mais votado).
     const POSITION_TRAITS = ["matador", "categoria", "racudo", "garcom", "paredao"];
+    // NEG_TRAITS alimenta a formação fixa de 5 posições da Seleção — não pode
+    // crescer sem quebrar o layout. Ranking "Pior da rodada" usa a lista mais
+    // ampla NEG_TRAITS_RANKING (abaixo), que inclui frangueiro/bragueiro.
     const NEG_TRAITS = ["bagre", "cone", "chorao", "reclamao", "paneleiro"];
+    const NEG_TRAITS_RANKING = [...NEG_TRAITS, "frangueiro", "bragueiro"];
     const topPorTraitSemRepetir = (slugs: string[], usados: Set<string>) => {
       return slugs.map((slug) => {
         const e = perTrait.get(slug);
@@ -143,7 +148,7 @@ export default async function FeedPage() {
     // duas buscas independentes → paralelas
     const [nmeRows, tRows] = await Promise.all([
       vIds.length ? prisma.jogador.findMany({ where: { id: { in: vIds } }, select: { id: true, apelido: true } }) : Promise.resolve([]),
-      tSlugs.length ? prisma.trait.findMany({ where: { slug: { in: tSlugs } }, select: { slug: true, nome: true, emoji: true } }) : Promise.resolve([]),
+      tSlugs.length ? prisma.trait.findMany({ where: { slug: { in: tSlugs } }, select: { slug: true, nome: true, emoji: true, descricao: true } }) : Promise.resolve([]),
     ]);
     const nmeMap = Object.fromEntries(nmeRows.map(j => [j.id, j.apelido]));
     const tMeta = Object.fromEntries(tRows.map(t => [t.slug, t]));
@@ -151,6 +156,7 @@ export default async function FeedPage() {
       slug: r.slug,
       nome: tMeta[r.slug]?.nome ?? r.slug,
       emoji: tMeta[r.slug]?.emoji ?? null,
+      descricao: tMeta[r.slug]?.descricao ?? null,
       art: ART_BY_SLUG[r.slug],
       vencedor: nmeMap[r.vencedorId] ?? "?",
       votos: r.votos,
@@ -160,6 +166,7 @@ export default async function FeedPage() {
         slug: s.slug,
         nome: tMeta[s.slug]?.nome ?? s.slug,
         emoji: tMeta[s.slug]?.emoji ?? null,
+        descricao: tMeta[s.slug]?.descricao ?? null,
         art: ART_BY_SLUG[s.slug],
         vencedor: nmeMap[s.vencedorId] ?? "?",
         votos: s.votos,
@@ -180,7 +187,7 @@ export default async function FeedPage() {
       categoria: r.slug === "categoria" ? "MVP" : (tMeta[r.slug]?.nome ?? r.slug).toUpperCase(),
     });
     maisVotados = raw.filter(r => POSITIVOS_TODOS.includes(r.slug)).map(toRankingEntry).sort((a, b) => b.qtd - a.qtd);
-    maisVotadosPiores = raw.filter(r => NEG_TRAITS.includes(r.slug)).map(toRankingEntry).sort((a, b) => b.qtd - a.qtd);
+    maisVotadosPiores = raw.filter(r => NEG_TRAITS_RANKING.includes(r.slug)).map(toRankingEntry).sort((a, b) => b.qtd - a.qtd);
   }
 
   const PERSONAGEM_TITLES: Record<string, string> = {

@@ -23,7 +23,7 @@ interface Props {
 const GROUPS = [
   { label: "Futebol", required: true, slugs: ["categoria", "matador", "paredao", "racudo", "xerife", "garcom", "driblador"] },
   { label: "Resenha", required: false, slugs: ["resenha-forte", "delegado", "chorao", "reclamao", "paneleiro"] },
-  { label: "Destaques", required: false, slugs: ["firuleiro", "pregueiro", "cone", "bagre"] },
+  { label: "Destaques", required: false, slugs: ["firuleiro", "pregueiro", "cone", "bagre", "frangueiro", "bragueiro"] },
 ];
 const ORDERED_SLUGS = GROUPS.flatMap((g) => g.slugs);
 const REQUIRED_COUNT = GROUPS.filter((g) => g.required).reduce((n, g) => n + g.slugs.length, 0);
@@ -51,6 +51,8 @@ const BG_IMAGES: Record<string, string> = {
   bagre:           "/votacao-bg/bagre.png",
   driblador:       "/votacao-bg/driblador.png",
   delegado:        "/votacao-bg/delegado.png",
+  frangueiro:      "/votacao-bg/frangueiro.png",
+  bragueiro:       "/votacao-bg/bragueiro.png",
 };
 
 // Cores do glow atrás do mascote — extraídas do Figma
@@ -72,6 +74,8 @@ const GLOW_COLORS: Record<string, string> = {
   bagre:           "#0e394f",
   driblador:       "#5a2a12",
   delegado:        "#333333",
+  frangueiro:      "#504723",
+  bragueiro:       "#72141d",
 };
 
 // Mascotes: PNGs do Figma em /public/votacao-mascot/
@@ -93,6 +97,8 @@ const MASCOTE: Record<string, string> = {
   bagre:           "/votacao-mascot/bagre.png",
   driblador:       "/votacao-mascot/driblador.png",
   delegado:        "/votacao-mascot/delegado.png",
+  frangueiro:      "/votacao-mascot/frangueiro.png",
+  bragueiro:       "/votacao-mascot/bragueiro.png",
 };
 
 
