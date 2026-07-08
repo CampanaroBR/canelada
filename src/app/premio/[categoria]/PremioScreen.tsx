@@ -131,10 +131,10 @@ export function PremioScreen({
 
         {/* Título + descrição + frase do vencedor */}
         <div style={{
-          display: "flex", flexDirection: "column", alignItems: "center", gap: "clamp(10px, 2.5dvh, 24px)",
-          width: "100%", maxWidth: 340, padding: "0 24px", marginTop: "clamp(12px, 3dvh, 40px)",
+          display: "flex", flexDirection: "column", alignItems: "center", gap: "clamp(16px, 2.5dvh, 24px)",
+          width: "100%", maxWidth: 340, padding: "0 24px", marginTop: "clamp(24px, 3dvh, 40px)",
         }}>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "clamp(6px, 1.5dvh, 16px)", width: "100%", textAlign: "center" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "clamp(10px, 1.5dvh, 16px)", width: "100%", textAlign: "center" }}>
             <p style={{
               margin: 0, width: "100%",
               fontFamily: "var(--font-display)", fontWeight: 700,
@@ -177,7 +177,7 @@ export function PremioScreen({
           onClick={handleShare}
           aria-disabled={sharing || !artReady}
           style={{
-            marginTop: "clamp(10px, 3dvh, 32px)", appearance: "none", WebkitAppearance: "none",
+            marginTop: "clamp(20px, 3dvh, 32px)", appearance: "none", WebkitAppearance: "none",
             background: "#090909", border: "1px solid #9fe870", borderRadius: 20,
             height: "clamp(46px, 7dvh, 64px)", flexShrink: 0,
             display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
@@ -193,9 +193,9 @@ export function PremioScreen({
 
         {/* Footer */}
         <div style={{
-          width: "100%", marginTop: "clamp(8px, 2dvh, 24px)",
+          width: "100%", marginTop: "clamp(16px, 2dvh, 24px)",
           borderTop: `1px solid ${footerBorder}`,
-          padding: "clamp(8px, 1.5dvh, 16px) 16px calc(env(safe-area-inset-bottom, 0px) + clamp(8px, 1.5dvh, 16px))",
+          padding: "clamp(12px, 1.5dvh, 16px) 16px calc(env(safe-area-inset-bottom, 0px) + clamp(12px, 1.5dvh, 16px))",
           display: "flex", alignItems: "center", justifyContent: "center",
         }}>
           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 11, lineHeight: "15px", color: "#fff", whiteSpace: "nowrap" }}>
