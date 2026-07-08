@@ -186,6 +186,37 @@ export function NovaRodadaForm() {
               </span>
             </button>
 
+            {/* Sem sincronização automática pra alguém = fica "pendente" na rodada
+                (nome importado sem conta vinculada) — manda direto pra tela de
+                presença, onde dá pra vincular cada pendente a um jogador
+                cadastrado, em vez de deixar sem nenhum caminho até lá. */}
+            {pendentes.length > 0 && (
+              <Link href="/votacao/presenca" style={{ textDecoration: "none", width: "100%" }}>
+                <div style={{
+                  background: "transparent",
+                  border: "1px solid #9fe870",
+                  borderRadius: 16,
+                  padding: "16px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "100%",
+                  boxSizing: "border-box",
+                }}>
+                  <span style={{
+                    fontFamily: "var(--font-display)",
+                    fontWeight: 700,
+                    fontSize: 16,
+                    lineHeight: "20px",
+                    color: "#9fe870",
+                    textAlign: "center",
+                  }}>
+                    Vincular {pendentes.length} pendente{pendentes.length > 1 ? "s" : ""}
+                  </span>
+                </div>
+              </Link>
+            )}
+
             <Link href="/feed" style={{ textDecoration: "none", width: "100%" }}>
               <div style={{
                 background: "#9fe870",
