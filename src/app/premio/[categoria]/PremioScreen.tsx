@@ -84,16 +84,16 @@ export function PremioScreen({
   }
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 60, background: "#0a0e0e", display: "flex", justifyContent: "center", alignItems: "center" }}>
-      {/* Wrapper com a MESMA proporção da arte (393:852), mas dimensionado tipo
-          "letterbox": a largura é o MENOR entre a largura real da tela e a
-          largura que caberia inteira na altura real (100dvh * 393/852). Isso
-          garante que o card SEMPRE caiba por inteiro na tela, sem cortar e
-          sem precisar rolar, em qualquer proporção de aparelho — encolhendo
-          o card todo (não só o texto) em telas mais baixas, em vez de vazar.
-          alignItems:"center" no pai centraliza o card quando ele fica menor
-          que a largura da tela (aparelhos mais baixos/largos). */}
-      <div ref={cardRef} style={{ position: "relative", width: "min(100%, calc(100dvh * 393 / 852))", maxWidth: 430, aspectRatio: "393 / 852", flexShrink: 0 }}>
+    <div style={{ position: "fixed", inset: 0, zIndex: 60, background: "#0a0e0e", display: "flex", justifyContent: "center", alignItems: "flex-start", overflowY: "auto" }}>
+      {/* Wrapper com a MESMA proporção da arte (393:852) — preenche a largura
+          toda (sem barras pretas laterais). Com a descrição curta já sobra
+          espaço de sobra antes do botão/rodapé na maioria dos aparelhos;
+          overflowY:auto no pai é só uma rede de segurança pra telas muito
+          baixas, não a estratégia principal (que seria encolher o card
+          inteiro e criar as barras laterais indesejadas).
+          alignItems:"flex-start" é obrigatório — o padrão do flexbox é
+          "stretch", que estica esse wrapper e anula o aspectRatio. */}
+      <div ref={cardRef} style={{ position: "relative", width: "100%", maxWidth: 430, aspectRatio: "393 / 852", flexShrink: 0 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img alt={title} src={artData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
 
