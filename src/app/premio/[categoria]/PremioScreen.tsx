@@ -1,11 +1,14 @@
 "use client";
 
-import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toBlob } from "html-to-image";
 import { X, ShareNetwork } from "@phosphor-icons/react";
 
 interface Props {
+  slug: string;
   title: string;
+  descricao: string | null;
   bgImg: string;
   bakedImg?: string;
   mascotImg: string;
@@ -19,23 +22,70 @@ interface Props {
   data: string;
 }
 
+// Pré-carrega a arte como data-URL — html-to-image não embute <img>/next/image
+// remoto (via /_next/image) a tempo, e o fundo sai preto na captura (iOS e não só).
+function useDataUrl(src: string): string {
+  const [url, setUrl] = useState(src);
+  useEffect(() => {
+    let on = true;
+    setUrl(src);
+    fetch(src)
+      .then((r) => r.blob())
+      .then((b) => new Promise<string>((res) => { const fr = new FileReader(); fr.onload = () => res(fr.result as string); fr.readAsDataURL(b); }))
+      .then((d) => { if (on) setUrl(d); })
+      .catch(() => {});
+    return () => { on = false; };
+  }, [src]);
+  return url;
+}
+
 export function PremioScreen({
-  title, bgImg, bakedImg, mascotImg, glowColor, nameColor, footerBorder,
+  slug, title, descricao, bgImg, bakedImg, mascotImg, glowColor, nameColor, footerBorder,
   vencedorNome, vencedorQtd, categoriaLabel, grupoNome, data,
 }: Props) {
   const router = useRouter();
+  const [sharing, setSharing] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const shareBtnRef = useRef<HTMLButtonElement>(null);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+  const artData = useDataUrl(bakedImg ?? bgImg);
+  const artReady = artData.startsWith("data:");
+  const mascotData = useDataUrl(mascotImg);
 
-  function handleShare() {
-    if (navigator.share) {
-      navigator.share({
-        title: `${vencedorNome} é o ${categoriaLabel}!`,
-        text: `${vencedorNome} foi eleito o ${categoriaLabel} do jogo por ${vencedorQtd} jogadores.`,
-      }).catch(() => null);
+  async function handleShare() {
+    if (sharing || !cardRef.current || !artReady) return;
+    setSharing(true);
+    const texto = `${vencedorNome} foi eleito o ${categoriaLabel} do jogo por ${vencedorQtd} jogadores do ${grupoNome}! ⚽`;
+    try {
+      try { await document.fonts.ready; } catch { /* segue */ }
+      // Safari/iOS: a 1ª captura costuma sair incompleta — captura 2x e usa a última.
+      const opts = {
+        pixelRatio: 2, cacheBust: true,
+        filter: (n: HTMLElement) => n !== shareBtnRef.current && n !== closeBtnRef.current,
+      };
+      await toBlob(cardRef.current, opts);
+      const blob = await toBlob(cardRef.current, opts);
+      if (!blob) throw new Error("sem blob");
+      const file = new File([blob], `${slug}.png`, { type: "image/png" });
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], text: texto });
+      } else if (navigator.share) {
+        await navigator.share({ text: texto });
+      } else {
+        const url = URL.createObjectURL(blob);
+        Object.assign(document.createElement("a"), { href: url, download: `${slug}.png` }).click();
+        URL.revokeObjectURL(url);
+      }
+    } catch (e) {
+      if ((e as Error)?.name !== "AbortError") console.error(e);
+    } finally {
+      setSharing(false);
     }
   }
 
   const closeBtn = (
     <button
+      ref={closeBtnRef}
       onClick={() => router.back()}
       aria-label="Fechar"
       style={{
@@ -53,32 +103,29 @@ export function PremioScreen({
 
   const shareBtn = (
     <button
+      ref={shareBtnRef}
       onClick={handleShare}
+      disabled={sharing || !artReady}
       style={{
-        background: "#9fe870", border: "none", borderRadius: 20, height: 54,
+        background: "#090909", border: "1px solid #9fe870", borderRadius: 20, height: 64,
         display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-        padding: "0 24px", cursor: "pointer", WebkitTapHighlightColor: "transparent",
+        padding: "0 24px", cursor: sharing || !artReady ? "default" : "pointer", WebkitTapHighlightColor: "transparent",
+        opacity: sharing || !artReady ? 0.7 : 1,
       }}
     >
-      <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#090909" }}>Compartilhar</span>
-      <ShareNetwork size={20} color="#090909" weight="bold" />
+      <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#9fe870" }}>
+        {sharing ? "Compartilhando..." : !artReady ? "Preparando…" : "Compartilhar"}
+      </span>
+      <ShareNetwork size={20} color="#9fe870" weight="bold" />
     </button>
-  );
-
-  const subtitle = (
-    <p style={{ margin: 0, maxWidth: 320, fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 20, lineHeight: "24px", color: "#fff", letterSpacing: "-1px", textAlign: "center" }}>
-      <span style={{ color: nameColor }}>{vencedorNome}</span>
-      {" foi eleito o "}
-      <span style={{ color: nameColor }}>{categoriaLabel}</span>
-      {` do jogo por ${vencedorQtd} jogadores do ${grupoNome}.`}
-    </p>
   );
 
   // ── Layout PREMIUM: arte bakeada (mascote + título + bolinhas) como fundo ──
   if (bakedImg) {
     return (
-      <div style={{ position: "fixed", inset: 0, zIndex: 60, background: "#0a0e0e", overflow: "hidden" }}>
-        <Image alt={title} src={bakedImg} fill priority sizes="430px" style={{ objectFit: "cover" }} />
+      <div ref={cardRef} style={{ position: "fixed", inset: 0, zIndex: 60, background: "#0a0e0e", overflow: "hidden" }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img alt={title} src={artData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
         {closeBtn}
         {/* Overlays posicionados na zona inferior da arte (proporcional) */}
         <div style={{
@@ -87,7 +134,17 @@ export function PremioScreen({
           gap: 24,
           padding: "0 24px 0",
         }}>
-          {subtitle}
+          {descricao && (
+            <p style={{ margin: 0, maxWidth: 340, fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 20, lineHeight: "24px", color: "#fff", textAlign: "center" }}>
+              {descricao}
+            </p>
+          )}
+          <p style={{ margin: 0, maxWidth: 320, fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 20, lineHeight: "24px", color: "#fff", letterSpacing: "-1px", textAlign: "center" }}>
+            <span style={{ color: nameColor }}>{vencedorNome}</span>
+            {" foi eleito o "}
+            <span style={{ color: nameColor }}>{categoriaLabel}</span>
+            {` do jogo por ${vencedorQtd} jogadores do ${grupoNome}.`}
+          </p>
           {shareBtn}
           <div style={{
             width: "100%", borderTop: `1px solid ${footerBorder}`,
@@ -105,30 +162,13 @@ export function PremioScreen({
   }
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 60, background: "#0a0e0e", overflow: "hidden", display: "flex", flexDirection: "column" }}>
+    <div ref={cardRef} style={{ position: "fixed", inset: 0, zIndex: 60, background: "#0a0e0e", overflow: "hidden", display: "flex", flexDirection: "column" }}>
 
       {/* Background gradient image */}
-      <Image alt="" aria-hidden src={bgImg} fill priority sizes="430px" style={{ objectFit: "cover", pointerEvents: "none" }} />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img alt="" aria-hidden src={artData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
 
-      {/* Close button — respiro do topo via safe-area */}
-      <button
-        onClick={() => router.back()}
-        style={{
-          position: "absolute",
-          top: "calc(env(safe-area-inset-top, 0px) + 16px)",
-          right: 16,
-          zIndex: 2,
-          width: 48, height: 48,
-          background: "#000",
-          border: "1px solid #424242",
-          borderRadius: 24,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          cursor: "pointer",
-        }}
-        aria-label="Fechar"
-      >
-        <X size={16} color="#fff" weight="bold" />
-      </button>
+      {closeBtn}
 
       {/* Conteúdo centralizado verticalmente, preenchendo a tela */}
       <div style={{
@@ -147,7 +187,8 @@ export function PremioScreen({
             position: "absolute", width: 289, height: 296,
             background: glowColor, filter: "blur(88.6px)", borderRadius: "50%", pointerEvents: "none",
           }} />
-          <Image alt={title} src={mascotImg} width={264} height={264} priority style={{ position: "relative", width: "100%", height: "100%", objectFit: "contain" }} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img alt={title} src={mascotData} style={{ position: "relative", width: "100%", height: "100%", objectFit: "contain" }} />
         </div>
 
         {/* Title */}
@@ -165,6 +206,12 @@ export function PremioScreen({
           {title}
         </h1>
 
+        {descricao && (
+          <p style={{ margin: 0, maxWidth: 340, fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 20, lineHeight: "24px", color: "#fff", textAlign: "center" }}>
+            {descricao}
+          </p>
+        )}
+
         {/* Subtitle */}
         <p style={{ margin: 0, maxWidth: 320, fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 20, lineHeight: "24px", color: "#fff", letterSpacing: "-1px", textAlign: "center" }}>
           <span style={{ color: nameColor }}>{vencedorNome}</span>
@@ -173,28 +220,7 @@ export function PremioScreen({
           {` do jogo por ${vencedorQtd} jogadores do ${grupoNome}.`}
         </p>
 
-        {/* Share button — padrão do app */}
-        <button
-          onClick={handleShare}
-          style={{
-            marginTop: 12,
-            background: "#2a2a2a",
-            border: "1px solid #3a3a3a",
-            borderRadius: 16,
-            height: 54,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 8,
-            padding: "0 24px",
-            cursor: "pointer",
-            boxShadow: "0px 4px 9.8px 2px rgba(0,0,0,0.25)",
-            WebkitTapHighlightColor: "transparent",
-          }}
-        >
-          <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#9fe870" }}>Compartilhar</span>
-          <ShareNetwork size={20} color="#9fe870" weight="bold" />
-        </button>
+        {shareBtn}
       </div>
 
       {/* Footer fixo na base */}

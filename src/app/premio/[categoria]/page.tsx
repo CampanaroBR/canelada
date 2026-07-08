@@ -111,9 +111,13 @@ export default async function PremioPage({ params }: { params: Promise<{ categor
     ? new Date(ultimaRodada.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })
     : "—";
 
+  const trait = await prisma.trait.findUnique({ where: { slug: categoria }, select: { descricao: true } });
+
   return (
     <PremioScreen
+      slug={categoria}
       title={config.title}
+      descricao={trait?.descricao ?? null}
       bgImg={config.bgImg}
       bakedImg={config.bakedImg}
       mascotImg={config.mascotImg}
