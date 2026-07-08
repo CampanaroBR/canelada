@@ -92,8 +92,12 @@ export function PremioScreen({
   }
 
   return (
-    <div ref={cardRef} style={{ position: "relative", height: "100dvh", overflowY: "auto", background: "#0a0e0e" }}>
-      {/* Container 1 — fundo gradiente + listras, cobre toda a altura real do conteúdo */}
+    <div ref={cardRef} style={{ position: "relative", minHeight: "100dvh", background: "#0a0e0e" }}>
+      {/* Container 1 — fundo gradiente + listras. width/height:100% de um pai
+          com altura FIXA (100dvh) não acompanha conteúdo que cresce além da
+          tela (mascote maior deixou o preto do body aparecer embaixo) — o
+          pai precisa crescer junto (minHeight, sem overflow próprio) pra essa
+          imagem cobrir a altura real do conteúdo, não só a da viewport. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img alt="" aria-hidden src={bgData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
 
