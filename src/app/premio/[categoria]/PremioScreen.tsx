@@ -9,6 +9,7 @@ interface Props {
   slug: string;
   title: string;
   bakedImg: string;
+  bakedRatio: number; // largura/altura da arte "assada" — cada uma tem tamanho próprio
   nameColor: string;
   footerBorder: string;
   vencedorNome: string;
@@ -36,12 +37,13 @@ function useDataUrl(src: string): string {
 }
 
 // Arte "assada" (fundo + mascote + título + descrição já renderizados numa
-// imagem 2x) igual matador/categoria/paredão — evita qualquer risco de layout
-// quebrar em viewport real (o que aconteceu repetidamente tentando montar
-// tudo em camadas CSS vivas). Só a frase do vencedor, o botão e o rodapé
-// ficam por cima, dinâmicos.
+// imagem 2x) — só até onde a descrição termina, sem sobra de canvas em
+// branco. O resto (frase do vencedor, botão, rodapé) flui em sequência
+// normal logo abaixo, colado — nada de vão gigante nem cálculo de proporção
+// de tela: a altura total é só a soma do conteúdo real, então cabe em
+// qualquer aparelho sem cortar e sem esticar.
 export function PremioScreen({
-  slug, title, bakedImg, nameColor, footerBorder,
+  slug, title, bakedImg, bakedRatio, nameColor, footerBorder,
   vencedorNome, vencedorQtd, categoriaLabel, grupoNome, data,
 }: Props) {
   const router = useRouter();
@@ -84,20 +86,13 @@ export function PremioScreen({
   }
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 60, background: "#0a0e0e", display: "flex", justifyContent: "center", alignItems: "flex-start", overflowY: "auto" }}>
-      {/* Wrapper com a MESMA proporção da arte (393:852) — preenche a largura
-          toda (sem barras pretas laterais). Com a descrição curta já sobra
-          espaço de sobra antes do botão/rodapé na maioria dos aparelhos;
-          overflowY:auto no pai é só uma rede de segurança pra telas muito
-          baixas, não a estratégia principal (que seria encolher o card
-          inteiro e criar as barras laterais indesejadas).
-          alignItems:"flex-start" é obrigatório — o padrão do flexbox é
-          "stretch", que estica esse wrapper e anula o aspectRatio. */}
-      <div ref={cardRef} style={{ position: "relative", width: "100%", maxWidth: 430, aspectRatio: "393 / 852", flexShrink: 0 }}>
+    <div ref={cardRef} style={{ position: "relative", minHeight: "100dvh", background: "#0a0e0e", display: "flex", flexDirection: "column" }}>
+      {/* Arte assada — altura definida só pela proporção real da imagem
+          (sem canvas em branco extra), full-bleed na largura da tela. */}
+      <div style={{ position: "relative", width: "100%", aspectRatio: String(bakedRatio), flexShrink: 0 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img alt={title} src={artData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
 
-        {/* Close Button */}
         <button
           ref={closeBtnRef}
           onClick={() => router.back()}
@@ -113,51 +108,50 @@ export function PremioScreen({
         >
           <X size={16} color="#fff" weight="bold" />
         </button>
+      </div>
 
-        {/* Overlays na zona inferior da arte — frase do vencedor, botão, rodapé */}
+      {/* Conteúdo dinâmico — flui logo depois da arte, sem vão */}
+      <div style={{
+        flex: 1, display: "flex", flexDirection: "column", alignItems: "center",
+        gap: 24, padding: "24px 24px 0", background: "#0a0e0e",
+      }}>
+        <p style={{ margin: 0, maxWidth: 320, fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 20, lineHeight: "24px", color: "#fff", letterSpacing: "-1px", textAlign: "center" }}>
+          <span style={{ color: nameColor }}>{vencedorNome}</span>
+          {" foi eleito o "}
+          <span style={{ color: nameColor }}>{categoriaLabel}</span>
+          {` do jogo por ${vencedorQtd} jogadores do ${grupoNome}.`}
+        </p>
+
+        {/* Sem `disabled` nativo: em alguns navegadores mobile (Samsung Internet,
+            WebViews OEM) um <button disabled> ignora background/border customizados
+            e cai no chrome nativo do SO, ficando invisível sobre o fundo. */}
+        <button
+          ref={shareBtnRef}
+          onClick={handleShare}
+          aria-disabled={sharing || !artReady}
+          style={{
+            appearance: "none", WebkitAppearance: "none",
+            background: "#090909", border: "1px solid #9fe870", borderRadius: 20, height: 64,
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+            padding: "0 24px", cursor: sharing || !artReady ? "default" : "pointer", WebkitTapHighlightColor: "transparent",
+            opacity: sharing || !artReady ? 0.7 : 1,
+          }}
+        >
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#9fe870" }}>
+            {sharing ? "Compartilhando..." : !artReady ? "Preparando…" : "Compartilhar"}
+          </span>
+          <ShareNetwork size={20} color="#9fe870" weight="bold" />
+        </button>
+
         <div style={{
-          position: "absolute", left: 0, right: 0, bottom: 0,
-          display: "flex", flexDirection: "column", alignItems: "center",
-          gap: 24, padding: "0 24px 0",
+          width: "100%", marginTop: "auto",
+          borderTop: `1px solid ${footerBorder}`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: "16px 14px calc(env(safe-area-inset-bottom, 0px) + 20px)",
         }}>
-          <p style={{ margin: 0, maxWidth: 320, fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 20, lineHeight: "24px", color: "#fff", letterSpacing: "-1px", textAlign: "center" }}>
-            <span style={{ color: nameColor }}>{vencedorNome}</span>
-            {" foi eleito o "}
-            <span style={{ color: nameColor }}>{categoriaLabel}</span>
-            {` do jogo por ${vencedorQtd} jogadores do ${grupoNome}.`}
+          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "15px", color: "#fff", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>
+            CONCLUÍDO · {data}
           </p>
-
-          {/* Sem `disabled` nativo: em alguns navegadores mobile (Samsung Internet,
-              WebViews OEM) um <button disabled> ignora background/border customizados
-              e cai no chrome nativo do SO, ficando invisível sobre o fundo. */}
-          <button
-            ref={shareBtnRef}
-            onClick={handleShare}
-            aria-disabled={sharing || !artReady}
-            style={{
-              appearance: "none", WebkitAppearance: "none",
-              background: "#090909", border: "1px solid #9fe870", borderRadius: 20, height: 64,
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-              padding: "0 24px", cursor: sharing || !artReady ? "default" : "pointer", WebkitTapHighlightColor: "transparent",
-              opacity: sharing || !artReady ? 0.7 : 1,
-            }}
-          >
-            <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#9fe870" }}>
-              {sharing ? "Compartilhando..." : !artReady ? "Preparando…" : "Compartilhar"}
-            </span>
-            <ShareNetwork size={20} color="#9fe870" weight="bold" />
-          </button>
-
-          <div style={{
-            width: "100%", borderTop: `1px solid ${footerBorder}`,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            padding: "16px 14px calc(env(safe-area-inset-bottom, 0px) + 20px)",
-            marginTop: 8,
-          }}>
-            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "15px", color: "#fff", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>
-              CONCLUÍDO · {data}
-            </p>
-          </div>
         </div>
       </div>
     </div>
