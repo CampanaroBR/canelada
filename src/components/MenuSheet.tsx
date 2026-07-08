@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { User, UsersThree, SignOut } from "@phosphor-icons/react";
+import { User, UsersThree, UserCheck, SignOut } from "@phosphor-icons/react";
 
 interface Props {
   open: boolean;
@@ -15,6 +15,10 @@ const ITEMS = [
   { icon: UsersThree, label: "Meu Grupo", href: "/grupo" },
 ];
 
+// Item só pra admin/super_admin — leva pra tela de vincular pendentes da
+// rodada aberta (redireciona pra /votacao se não houver nenhuma no momento).
+const ADMIN_ITEM = { icon: UserCheck, label: "Vincular presença", href: "/votacao/presenca" };
+
 const EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
 
 /**
@@ -25,11 +29,16 @@ const EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
 export function MenuSheet({ open, onClose }: Props) {
   const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (open) {
       setMounted(true);
       const raf = requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)));
+      fetch("/api/me")
+        .then((r) => r.json())
+        .then((d) => setIsAdmin(d.role === "ADMIN" || d.role === "SUPER_ADMIN"))
+        .catch(() => {});
       return () => cancelAnimationFrame(raf);
     }
     setVisible(false);
@@ -38,6 +47,8 @@ export function MenuSheet({ open, onClose }: Props) {
   }, [open]);
 
   if (!mounted) return null;
+
+  const items = isAdmin ? [...ITEMS, ADMIN_ITEM] : ITEMS;
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 200, pointerEvents: "none" }}>
@@ -66,7 +77,7 @@ export function MenuSheet({ open, onClose }: Props) {
           transition: `opacity 180ms ${EASE}, transform 180ms ${EASE}`,
         }}
       >
-        {ITEMS.map((item) => {
+        {items.map((item) => {
           const Icon = item.icon;
           return (
             <Link
