@@ -162,13 +162,16 @@ export function PremioScreen({
           </p>
         </div>
 
-        {/* AuthButton — Compartilhar */}
+        {/* AuthButton — Compartilhar. Sem `disabled` nativo: em alguns navegadores
+            mobile (Samsung Internet, WebViews OEM) um <button disabled> ignora
+            background/border customizados e cai no chrome nativo do SO, ficando
+            invisível sobre o fundo. A trava de clique fica só na lógica. */}
         <button
           ref={shareBtnRef}
           onClick={handleShare}
-          disabled={sharing || !artReady}
+          aria-disabled={sharing || !artReady}
           style={{
-            marginTop: 40,
+            marginTop: 40, appearance: "none", WebkitAppearance: "none",
             background: "#090909", border: "1px solid #9fe870", borderRadius: 20, height: 64,
             display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             padding: "0 33px", cursor: sharing || !artReady ? "default" : "pointer", WebkitTapHighlightColor: "transparent",
