@@ -13,49 +13,37 @@ export const dynamic = "force-dynamic";
 // então o vencedor nunca aparecia.
 const CONFIGS: Record<string, {
   title: string;
-  bgImg: string;
-  mascotImg: string;
-  glowColor: string;
+  bakedImg: string;
   nameColor: string;
   footerBorder: string;
 }> = {
   matador: {
     title: "MATADOR",
-    bgImg:     "/votacao-bg/matador.png",
-    mascotImg: "/ilustracoes/tubarao.png",
-    glowColor: "#0a5c69",
+    bakedImg:  "/premio/matador.jpg",
     nameColor: "#9fe870",
     footerBorder: "#42bace",
   },
   categoria: {
     title: "CATEGORIA",
-    bgImg:     "/votacao-bg/categoria.png",
-    mascotImg: "/ilustracoes/corpo-mole.png",
-    glowColor: "#5f450f",
+    bakedImg:  "/premio/categoria.jpg",
     nameColor: "#d6ffbc",
     footerBorder: "#c5c5c5",
   },
   paredao: {
     title: "PAREDÃO",
-    bgImg:     "/votacao-bg/paredao.png",
-    mascotImg: "/ilustracoes/bagre.png",
-    glowColor: "#5f0005",
+    bakedImg:  "/premio/paredao.jpg",
     nameColor: "#d6ffbc",
     footerBorder: "#c5c5c5",
   },
   frangueiro: {
     title: "FRANGUEIRO",
-    bgImg:     "/votacao-bg/frangueiro.png",
-    mascotImg: "/votacao-mascot/frangueiro.png",
-    glowColor: "#504723",
+    bakedImg:  "/premio/frangueiro.jpg",
     nameColor: "#d6ffbc",
     footerBorder: "#c5c5c5",
   },
   bragueiro: {
     title: "BRAGUEIRO",
-    bgImg:     "/votacao-bg/bragueiro.png",
-    mascotImg: "/votacao-mascot/bragueiro.png",
-    glowColor: "#72141d",
+    bakedImg:  "/premio/bragueiro.jpg",
     nameColor: "#d6ffbc",
     footerBorder: "#c5c5c5",
   },
@@ -105,16 +93,11 @@ export default async function PremioPage({ params }: { params: Promise<{ categor
     ? new Date(ultimaRodada.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })
     : "—";
 
-  const trait = await prisma.trait.findUnique({ where: { slug: categoria }, select: { descricao: true } });
-
   return (
     <PremioScreen
       slug={categoria}
       title={config.title}
-      descricao={trait?.descricao ?? null}
-      bgImg={config.bgImg}
-      mascotImg={config.mascotImg}
-      glowColor={config.glowColor}
+      bakedImg={config.bakedImg}
       nameColor={config.nameColor}
       footerBorder={config.footerBorder}
       vencedorNome={vencedor?.apelido ?? "?"}

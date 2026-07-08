@@ -8,10 +8,7 @@ import { X, ShareNetwork } from "@phosphor-icons/react";
 interface Props {
   slug: string;
   title: string;
-  descricao: string | null;
-  bgImg: string;
-  mascotImg: string;
-  glowColor: string;
+  bakedImg: string;
   nameColor: string;
   footerBorder: string;
   vencedorNome: string;
@@ -38,17 +35,13 @@ function useDataUrl(src: string): string {
   return url;
 }
 
-// Espelha a tela "unlocked-gift" do Figma (node 743:137/743:174): fundo
-// gradiente+listras, mascote com glow, título branco, descrição e frase do
-// vencedor em preto (var(--bg/surface) e var(--neutral/1000) do design).
-// Tamanhos em clamp(...vw) — a LARGURA do celular varia pouco (360-430px),
-// diferente da altura (que some com barra de endereço, teclado etc.) — usar
-// vh pra escalar fazia o mascote/texto encolherem e ficarem desproporcionais
-// ao Figma em telas mais baixas. Com vw, tudo mantém a proporção exata do
-// Figma (mascote ~67% da largura, título ~14%, etc.) em qualquer aparelho;
-// overflowY:auto é só uma rede de segurança pra textos muito longos.
+// Arte "assada" (fundo + mascote + título + descrição já renderizados numa
+// imagem 2x) igual matador/categoria/paredão — evita qualquer risco de layout
+// quebrar em viewport real (o que aconteceu repetidamente tentando montar
+// tudo em camadas CSS vivas). Só a frase do vencedor, o botão e o rodapé
+// ficam por cima, dinâmicos.
 export function PremioScreen({
-  slug, title, descricao, bgImg, mascotImg, glowColor, nameColor, footerBorder,
+  slug, title, bakedImg, nameColor, footerBorder,
   vencedorNome, vencedorQtd, categoriaLabel, grupoNome, data,
 }: Props) {
   const router = useRouter();
@@ -56,9 +49,8 @@ export function PremioScreen({
   const cardRef = useRef<HTMLDivElement>(null);
   const shareBtnRef = useRef<HTMLButtonElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
-  const bgData = useDataUrl(bgImg);
-  const mascotData = useDataUrl(mascotImg);
-  const artReady = bgData.startsWith("data:") && mascotData.startsWith("data:");
+  const artData = useDataUrl(bakedImg);
+  const artReady = artData.startsWith("data:");
 
   async function handleShare() {
     if (sharing || !cardRef.current || !artReady) return;
@@ -92,14 +84,9 @@ export function PremioScreen({
   }
 
   return (
-    <div ref={cardRef} style={{ position: "relative", minHeight: "100dvh", background: "#0a0e0e" }}>
-      {/* Container 1 — fundo gradiente + listras. width/height:100% de um pai
-          com altura FIXA (100dvh) não acompanha conteúdo que cresce além da
-          tela (mascote maior deixou o preto do body aparecer embaixo) — o
-          pai precisa crescer junto (minHeight, sem overflow próprio) pra essa
-          imagem cobrir a altura real do conteúdo, não só a da viewport. */}
+    <div ref={cardRef} style={{ position: "fixed", inset: 0, zIndex: 60, background: "#0a0e0e", overflow: "hidden" }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img alt="" aria-hidden src={bgData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
+      <img alt={title} src={artData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
 
       {/* Close Button */}
       <button
@@ -110,102 +97,55 @@ export function PremioScreen({
           position: "absolute",
           top: "calc(env(safe-area-inset-top, 0px) + 16px)",
           right: 16, zIndex: 2,
-          width: 44, height: 44,
-          background: "#000", border: "1px solid #424242", borderRadius: 22,
+          width: 48, height: 48,
+          background: "#000", border: "1px solid #424242", borderRadius: 24,
           display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
         }}
       >
         <X size={16} color="#fff" weight="bold" />
       </button>
 
-      {/* Conteúdo — proporção fiel ao Figma (escala por largura, não altura) */}
+      {/* Overlays na zona inferior da arte — frase do vencedor, botão, rodapé */}
       <div style={{
-        position: "relative", minHeight: "100dvh",
+        position: "absolute", left: 0, right: 0, bottom: 0,
         display: "flex", flexDirection: "column", alignItems: "center",
-        paddingTop: "calc(env(safe-area-inset-top, 0px) + clamp(56px, 15vw, 70px))",
+        gap: 24, padding: "0 24px 0",
       }}>
-        {/* Mascote + glow — 264/393 ≈ 67% da largura no Figma */}
-        <div style={{ position: "relative", width: "clamp(200px, 67vw, 264px)", height: "clamp(200px, 67vw, 264px)", flexShrink: 0 }}>
-          <div aria-hidden style={{
-            position: "absolute", left: "50%", top: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "110%", height: "112%", borderRadius: "50%",
-            background: glowColor, filter: "blur(clamp(66px, 22vw, 89px))",
-          }} />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt={title} src={mascotData} style={{ position: "relative", width: "100%", height: "100%", objectFit: "contain" }} />
-        </div>
+        <p style={{ margin: 0, maxWidth: 320, fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 20, lineHeight: "24px", color: "#fff", letterSpacing: "-1px", textAlign: "center" }}>
+          <span style={{ color: nameColor }}>{vencedorNome}</span>
+          {" foi eleito o "}
+          <span style={{ color: nameColor }}>{categoriaLabel}</span>
+          {` do jogo por ${vencedorQtd} jogadores do ${grupoNome}.`}
+        </p>
 
-        {/* Título + descrição + frase do vencedor */}
-        <div style={{
-          display: "flex", flexDirection: "column", alignItems: "center", gap: "clamp(18px, 6vw, 24px)",
-          width: "100%", maxWidth: 340, padding: "0 24px", marginTop: "clamp(24px, 8vw, 32px)",
-        }}>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "clamp(10px, 4vw, 16px)", width: "100%", textAlign: "center" }}>
-            <p style={{
-              margin: 0, width: "100%",
-              fontFamily: "var(--font-display)", fontWeight: 700,
-              fontSize: "clamp(38px, 14vw, 56px)", lineHeight: 1.1,
-              color: "#ffffff", letterSpacing: "-1.5px",
-            }}>
-              {title}
-            </p>
-            {descricao && (
-              <p style={{
-                margin: 0, width: "100%",
-                fontFamily: "var(--font-body)", fontWeight: 700,
-                fontSize: "clamp(16px, 5vw, 20px)", lineHeight: 1.3,
-                color: "#0a0e0e", letterSpacing: "-0.4px",
-              }}>
-                {descricao}
-              </p>
-            )}
-          </div>
-
-          <p style={{
-            margin: 0, width: "100%",
-            fontFamily: "var(--font-body)", fontWeight: 700,
-            fontSize: "clamp(16px, 5vw, 20px)", lineHeight: 1.3,
-            color: "#090909", textAlign: "center",
-          }}>
-            <span style={{ color: nameColor }}>{vencedorNome}</span>
-            {" foi eleito o "}
-            <span style={{ color: nameColor }}>{categoriaLabel}</span>
-            {` do jogo por ${vencedorQtd} jogadores do ${grupoNome}.`}
-          </p>
-        </div>
-
-        {/* AuthButton — Compartilhar. Sem `disabled` nativo: em alguns navegadores
-            mobile (Samsung Internet, WebViews OEM) um <button disabled> ignora
-            background/border customizados e cai no chrome nativo do SO, ficando
-            invisível sobre o fundo. A trava de clique fica só na lógica. */}
+        {/* Sem `disabled` nativo: em alguns navegadores mobile (Samsung Internet,
+            WebViews OEM) um <button disabled> ignora background/border customizados
+            e cai no chrome nativo do SO, ficando invisível sobre o fundo. */}
         <button
           ref={shareBtnRef}
           onClick={handleShare}
           aria-disabled={sharing || !artReady}
           style={{
-            marginTop: "clamp(24px, 8vw, 32px)", appearance: "none", WebkitAppearance: "none",
-            background: "#090909", border: "1px solid #9fe870", borderRadius: 20,
-            height: "clamp(52px, 16vw, 64px)", flexShrink: 0,
+            appearance: "none", WebkitAppearance: "none",
+            background: "#090909", border: "1px solid #9fe870", borderRadius: 20, height: 64,
             display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-            padding: "0 28px", cursor: sharing || !artReady ? "default" : "pointer", WebkitTapHighlightColor: "transparent",
+            padding: "0 24px", cursor: sharing || !artReady ? "default" : "pointer", WebkitTapHighlightColor: "transparent",
             opacity: sharing || !artReady ? 0.7 : 1,
           }}
         >
-          <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "clamp(16px, 5vw, 20px)", color: "#9fe870" }}>
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#9fe870" }}>
             {sharing ? "Compartilhando..." : !artReady ? "Preparando…" : "Compartilhar"}
           </span>
           <ShareNetwork size={20} color="#9fe870" weight="bold" />
         </button>
 
-        {/* Footer */}
         <div style={{
-          width: "100%", marginTop: "clamp(16px, 5vw, 24px)",
-          borderTop: `1px solid ${footerBorder}`,
-          padding: "clamp(12px, 4vw, 16px) 16px calc(env(safe-area-inset-bottom, 0px) + clamp(12px, 4vw, 16px))",
+          width: "100%", borderTop: `1px solid ${footerBorder}`,
           display: "flex", alignItems: "center", justifyContent: "center",
+          padding: "16px 14px calc(env(safe-area-inset-bottom, 0px) + 20px)",
+          marginTop: 8,
         }}>
-          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 11, lineHeight: "15px", color: "#fff", whiteSpace: "nowrap" }}>
+          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "15px", color: "#fff", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>
             CONCLUÍDO · {data}
           </p>
         </div>
