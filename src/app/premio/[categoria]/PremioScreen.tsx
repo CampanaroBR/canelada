@@ -41,9 +41,12 @@ function useDataUrl(src: string): string {
 // Espelha a tela "unlocked-gift" do Figma (node 743:137/743:174): fundo
 // gradiente+listras, mascote com glow, título branco, descrição e frase do
 // vencedor em preto (var(--bg/surface) e var(--neutral/1000) do design).
-// Tamanhos em clamp(...dvh) — não px fixo — pra caber numa tela só (sem
-// rolagem) em qualquer altura real de celular, comprimindo proporcionalmente
-// em telas menores e crescendo até o valor do Figma em telas maiores.
+// Tamanhos em clamp(...vw) — a LARGURA do celular varia pouco (360-430px),
+// diferente da altura (que some com barra de endereço, teclado etc.) — usar
+// vh pra escalar fazia o mascote/texto encolherem e ficarem desproporcionais
+// ao Figma em telas mais baixas. Com vw, tudo mantém a proporção exata do
+// Figma (mascote ~67% da largura, título ~14%, etc.) em qualquer aparelho;
+// overflowY:auto é só uma rede de segurança pra textos muito longos.
 export function PremioScreen({
   slug, title, descricao, bgImg, mascotImg, glowColor, nameColor, footerBorder,
   vencedorNome, vencedorQtd, categoriaLabel, grupoNome, data,
@@ -111,19 +114,19 @@ export function PremioScreen({
         <X size={16} color="#fff" weight="bold" />
       </button>
 
-      {/* Conteúdo — altura mínima = tela, comprime proporcionalmente pra caber sem rolar */}
+      {/* Conteúdo — proporção fiel ao Figma (escala por largura, não altura) */}
       <div style={{
         position: "relative", minHeight: "100dvh",
         display: "flex", flexDirection: "column", alignItems: "center",
-        paddingTop: "calc(env(safe-area-inset-top, 0px) + clamp(20px, 6dvh, 56px))",
+        paddingTop: "calc(env(safe-area-inset-top, 0px) + clamp(56px, 15vw, 70px))",
       }}>
-        {/* Mascote + glow */}
-        <div style={{ position: "relative", width: "clamp(120px, 24dvh, 240px)", height: "clamp(120px, 24dvh, 240px)", flexShrink: 0 }}>
+        {/* Mascote + glow — 264/393 ≈ 67% da largura no Figma */}
+        <div style={{ position: "relative", width: "clamp(200px, 67vw, 264px)", height: "clamp(200px, 67vw, 264px)", flexShrink: 0 }}>
           <div aria-hidden style={{
             position: "absolute", left: "50%", top: "50%",
             transform: "translate(-50%, -50%)",
             width: "110%", height: "112%", borderRadius: "50%",
-            background: glowColor, filter: "blur(clamp(50px, 8dvh, 89px))",
+            background: glowColor, filter: "blur(clamp(66px, 22vw, 89px))",
           }} />
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img alt={title} src={mascotData} style={{ position: "relative", width: "100%", height: "100%", objectFit: "contain" }} />
@@ -131,14 +134,14 @@ export function PremioScreen({
 
         {/* Título + descrição + frase do vencedor */}
         <div style={{
-          display: "flex", flexDirection: "column", alignItems: "center", gap: "clamp(16px, 2.5dvh, 24px)",
-          width: "100%", maxWidth: 340, padding: "0 24px", marginTop: "clamp(24px, 3dvh, 40px)",
+          display: "flex", flexDirection: "column", alignItems: "center", gap: "clamp(18px, 6vw, 24px)",
+          width: "100%", maxWidth: 340, padding: "0 24px", marginTop: "clamp(24px, 8vw, 32px)",
         }}>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "clamp(10px, 1.5dvh, 16px)", width: "100%", textAlign: "center" }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "clamp(10px, 4vw, 16px)", width: "100%", textAlign: "center" }}>
             <p style={{
               margin: 0, width: "100%",
               fontFamily: "var(--font-display)", fontWeight: 700,
-              fontSize: "clamp(30px, 7dvh, 56px)", lineHeight: 1.1,
+              fontSize: "clamp(38px, 14vw, 56px)", lineHeight: 1.1,
               color: "#ffffff", letterSpacing: "-1.5px",
             }}>
               {title}
@@ -147,7 +150,7 @@ export function PremioScreen({
               <p style={{
                 margin: 0, width: "100%",
                 fontFamily: "var(--font-body)", fontWeight: 700,
-                fontSize: "clamp(13px, 2.2dvh, 20px)", lineHeight: 1.3,
+                fontSize: "clamp(16px, 5vw, 20px)", lineHeight: 1.3,
                 color: "#0a0e0e", letterSpacing: "-0.4px",
               }}>
                 {descricao}
@@ -158,7 +161,7 @@ export function PremioScreen({
           <p style={{
             margin: 0, width: "100%",
             fontFamily: "var(--font-body)", fontWeight: 700,
-            fontSize: "clamp(13px, 2.2dvh, 20px)", lineHeight: 1.3,
+            fontSize: "clamp(16px, 5vw, 20px)", lineHeight: 1.3,
             color: "#090909", textAlign: "center",
           }}>
             <span style={{ color: nameColor }}>{vencedorNome}</span>
@@ -177,15 +180,15 @@ export function PremioScreen({
           onClick={handleShare}
           aria-disabled={sharing || !artReady}
           style={{
-            marginTop: "clamp(20px, 3dvh, 32px)", appearance: "none", WebkitAppearance: "none",
+            marginTop: "clamp(24px, 8vw, 32px)", appearance: "none", WebkitAppearance: "none",
             background: "#090909", border: "1px solid #9fe870", borderRadius: 20,
-            height: "clamp(46px, 7dvh, 64px)", flexShrink: 0,
+            height: "clamp(52px, 16vw, 64px)", flexShrink: 0,
             display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             padding: "0 28px", cursor: sharing || !artReady ? "default" : "pointer", WebkitTapHighlightColor: "transparent",
             opacity: sharing || !artReady ? 0.7 : 1,
           }}
         >
-          <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "clamp(14px, 2.2dvh, 20px)", color: "#9fe870" }}>
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: "clamp(16px, 5vw, 20px)", color: "#9fe870" }}>
             {sharing ? "Compartilhando..." : !artReady ? "Preparando…" : "Compartilhar"}
           </span>
           <ShareNetwork size={20} color="#9fe870" weight="bold" />
@@ -193,9 +196,9 @@ export function PremioScreen({
 
         {/* Footer */}
         <div style={{
-          width: "100%", marginTop: "clamp(16px, 2dvh, 24px)",
+          width: "100%", marginTop: "clamp(16px, 5vw, 24px)",
           borderTop: `1px solid ${footerBorder}`,
-          padding: "clamp(12px, 1.5dvh, 16px) 16px calc(env(safe-area-inset-bottom, 0px) + clamp(12px, 1.5dvh, 16px))",
+          padding: "clamp(12px, 4vw, 16px) 16px calc(env(safe-area-inset-bottom, 0px) + clamp(12px, 4vw, 16px))",
           display: "flex", alignItems: "center", justifyContent: "center",
         }}>
           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 11, lineHeight: "15px", color: "#fff", whiteSpace: "nowrap" }}>
