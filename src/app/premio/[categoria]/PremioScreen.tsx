@@ -84,7 +84,7 @@ export function PremioScreen({
   }
 
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 60, background: "#0a0e0e", display: "flex", justifyContent: "center", overflowY: "auto" }}>
+    <div style={{ position: "fixed", inset: 0, zIndex: 60, background: "#0a0e0e", display: "flex", justifyContent: "center", alignItems: "flex-start", overflowY: "auto" }}>
       {/* Wrapper com a MESMA proporção da arte (393:852) — o texto por cima é
           posicionado relativo a este wrapper, não à tela do navegador. Usar
           position:fixed/inset:0 no lugar deste wrapper fazia a imagem (cover)
@@ -92,7 +92,10 @@ export function PremioScreen({
           real do navegador diferia do design (barra de endereço, etc.) —
           texto ficava em cima da descrição já "assada" na imagem. Com a
           proporção travada, imagem e overlay sempre se alinham exatamente
-          igual ao Figma, em qualquer aparelho. */}
+          igual ao Figma, em qualquer aparelho.
+          alignItems:"flex-start" no pai é obrigatório — o padrão do flexbox
+          é "stretch", que esticava esse wrapper pra altura da viewport e
+          anulava o aspectRatio, recriando o mesmo bug do desalinhamento. */}
       <div ref={cardRef} style={{ position: "relative", width: "100%", maxWidth: 430, aspectRatio: "393 / 852", flexShrink: 0 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img alt={title} src={artData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
