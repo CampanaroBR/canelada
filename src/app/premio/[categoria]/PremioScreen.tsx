@@ -10,7 +10,6 @@ interface Props {
   title: string;
   descricao: string | null;
   bgImg: string;
-  bakedImg?: string;
   mascotImg: string;
   glowColor: string;
   nameColor: string;
@@ -39,8 +38,12 @@ function useDataUrl(src: string): string {
   return url;
 }
 
+// Espelha 1:1 a tela "unlocked-gift" do Figma (node 743:137/743:174): camadas
+// absolutas sobre o fundo (gradiente+listras), sem nada "assado" em imagem —
+// título branco, descrição e frase do vencedor em preto (var(--bg/surface) e
+// var(--neutral/1000) do design, não branco).
 export function PremioScreen({
-  slug, title, descricao, bgImg, bakedImg, mascotImg, glowColor, nameColor, footerBorder,
+  slug, title, descricao, bgImg, mascotImg, glowColor, nameColor, footerBorder,
   vencedorNome, vencedorQtd, categoriaLabel, grupoNome, data,
 }: Props) {
   const router = useRouter();
@@ -48,9 +51,9 @@ export function PremioScreen({
   const cardRef = useRef<HTMLDivElement>(null);
   const shareBtnRef = useRef<HTMLButtonElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
-  const artData = useDataUrl(bakedImg ?? bgImg);
-  const artReady = artData.startsWith("data:");
+  const bgData = useDataUrl(bgImg);
   const mascotData = useDataUrl(mascotImg);
+  const artReady = bgData.startsWith("data:") && mascotData.startsWith("data:");
 
   async function handleShare() {
     if (sharing || !cardRef.current || !artReady) return;
@@ -83,165 +86,106 @@ export function PremioScreen({
     }
   }
 
-  const closeBtn = (
-    <button
-      ref={closeBtnRef}
-      onClick={() => router.back()}
-      aria-label="Fechar"
-      style={{
-        position: "absolute",
-        top: "calc(env(safe-area-inset-top, 0px) + 16px)",
-        right: 16, zIndex: 2,
-        width: 48, height: 48,
-        background: "#000", border: "1px solid #424242", borderRadius: 24,
-        display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
-      }}
-    >
-      <X size={16} color="#fff" weight="bold" />
-    </button>
-  );
+  return (
+    <div ref={cardRef} style={{ position: "fixed", inset: 0, zIndex: 60, background: "#0a0e0e", overflow: "hidden" }}>
+      {/* Container 1 — fundo gradiente + listras, full-bleed */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img alt="" aria-hidden src={bgData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
 
-  const shareBtn = (
-    <button
-      ref={shareBtnRef}
-      onClick={handleShare}
-      disabled={sharing || !artReady}
-      style={{
-        background: "#090909", border: "1px solid #9fe870", borderRadius: 20, height: 64,
-        display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-        padding: "0 24px", cursor: sharing || !artReady ? "default" : "pointer", WebkitTapHighlightColor: "transparent",
-        opacity: sharing || !artReady ? 0.7 : 1,
-      }}
-    >
-      <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#9fe870" }}>
-        {sharing ? "Compartilhando..." : !artReady ? "Preparando…" : "Compartilhar"}
-      </span>
-      <ShareNetwork size={20} color="#9fe870" weight="bold" />
-    </button>
-  );
+      {/* Close Button */}
+      <button
+        ref={closeBtnRef}
+        onClick={() => router.back()}
+        aria-label="Fechar"
+        style={{
+          position: "absolute",
+          top: "calc(env(safe-area-inset-top, 0px) + 22px)",
+          right: 16, zIndex: 2,
+          width: 48, height: 48,
+          background: "#000", border: "1px solid #424242", borderRadius: 24,
+          display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+        }}
+      >
+        <X size={16} color="#fff" weight="bold" />
+      </button>
 
-  // ── Layout PREMIUM: arte bakeada (mascote + título + bolinhas) como fundo ──
-  if (bakedImg) {
-    return (
-      <div ref={cardRef} style={{ position: "fixed", inset: 0, zIndex: 60, background: "#0a0e0e", overflow: "hidden" }}>
+      {/* Glow: 289x296, blur 88.6px, centrado um pouco acima do meio */}
+      <div aria-hidden style={{
+        position: "absolute", left: "50%", top: "calc(50% - 196px)",
+        transform: "translate(-50%, -50%)",
+        width: 289, height: 296, borderRadius: "50%",
+        background: glowColor, filter: "blur(88.6px)",
+      }} />
+
+      {/* Vector — mascote 264x264, mesmo centro vertical do glow */}
+      <div style={{
+        position: "absolute", left: "50%", top: "calc(50% - 196px)",
+        transform: "translate(-50%, -50%)",
+        width: 264, height: 264,
+      }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt={title} src={artData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-        {closeBtn}
-        {/* Overlays posicionados na zona inferior da arte (proporcional) */}
-        <div style={{
-          position: "absolute", left: 0, right: 0, bottom: 0,
-          display: "flex", flexDirection: "column", alignItems: "center",
-          gap: 24,
-          padding: "0 24px 0",
-        }}>
+        <img alt={title} src={mascotData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }} />
+      </div>
+
+      {/* Título + descrição + frase do vencedor */}
+      <div style={{
+        position: "absolute", left: 40, right: 40, top: 394,
+        display: "flex", flexDirection: "column", alignItems: "center", gap: 24,
+      }}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, width: "100%", textAlign: "center" }}>
+          <p style={{
+            margin: 0, width: "100%",
+            fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 56, lineHeight: "64px",
+            color: "#ffffff", letterSpacing: "-2px",
+          }}>
+            {title}
+          </p>
           {descricao && (
-            <p style={{ margin: 0, maxWidth: 340, fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 20, lineHeight: "24px", color: "#fff", textAlign: "center" }}>
+            <p style={{
+              margin: 0, width: "100%",
+              fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 20, lineHeight: "22px",
+              color: "#0a0e0e", letterSpacing: "-0.8px",
+            }}>
               {descricao}
             </p>
           )}
-          <p style={{ margin: 0, maxWidth: 320, fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 20, lineHeight: "24px", color: "#fff", letterSpacing: "-1px", textAlign: "center" }}>
-            <span style={{ color: nameColor }}>{vencedorNome}</span>
-            {" foi eleito o "}
-            <span style={{ color: nameColor }}>{categoriaLabel}</span>
-            {` do jogo por ${vencedorQtd} jogadores do ${grupoNome}.`}
-          </p>
-          {shareBtn}
-          <div style={{
-            width: "100%", borderTop: `1px solid ${footerBorder}`,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            padding: "16px 14px calc(env(safe-area-inset-bottom, 0px) + 20px)",
-            marginTop: 8,
-          }}>
-            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "15px", color: "#fff", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>
-              CONCLUÍDO · {data}
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div ref={cardRef} style={{ position: "fixed", inset: 0, zIndex: 60, background: "#0a0e0e", overflow: "hidden", display: "flex", flexDirection: "column" }}>
-
-      {/* Background gradient image */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img alt="" aria-hidden src={artData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", pointerEvents: "none" }} />
-
-      {closeBtn}
-
-      {/* Conteúdo centralizado verticalmente, preenchendo a tela */}
-      <div style={{
-        position: "relative",
-        flex: 1,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 28,
-        padding: "calc(env(safe-area-inset-top, 0px) + 80px) 24px 24px",
-      }}>
-        {/* Mascot + glow */}
-        <div style={{ position: "relative", width: 264, height: 264, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <div aria-hidden style={{
-            position: "absolute", width: 289, height: 296,
-            background: glowColor, filter: "blur(88.6px)", borderRadius: "50%", pointerEvents: "none",
-          }} />
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img alt={title} src={mascotData} style={{ position: "relative", width: "100%", height: "100%", objectFit: "contain" }} />
         </div>
 
-        {/* Title */}
-        <h1 style={{
-          margin: 0,
-          fontFamily: "var(--font-display)",
-          fontWeight: 700,
-          fontSize: 56,
-          lineHeight: "60px",
-          color: "#ffffff",
-          letterSpacing: "-2px",
-          textAlign: "center",
-          textShadow: "0 2px 14px rgba(0,0,0,0.22)",
-        }}>
-          {title}
-        </h1>
-
-        {descricao && (
-          <p style={{ margin: 0, maxWidth: 340, fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 20, lineHeight: "24px", color: "#fff", textAlign: "center" }}>
-            {descricao}
-          </p>
-        )}
-
-        {/* Subtitle */}
-        <p style={{ margin: 0, maxWidth: 320, fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 20, lineHeight: "24px", color: "#fff", letterSpacing: "-1px", textAlign: "center" }}>
+        <p style={{ margin: 0, width: "100%", fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 20, lineHeight: "24px", color: "#090909", textAlign: "center" }}>
           <span style={{ color: nameColor }}>{vencedorNome}</span>
           {" foi eleito o "}
           <span style={{ color: nameColor }}>{categoriaLabel}</span>
           {` do jogo por ${vencedorQtd} jogadores do ${grupoNome}.`}
         </p>
-
-        {shareBtn}
       </div>
 
-      {/* Footer fixo na base */}
+      {/* AuthButton — Compartilhar */}
+      <button
+        ref={shareBtnRef}
+        onClick={handleShare}
+        disabled={sharing || !artReady}
+        style={{
+          position: "absolute", left: "calc(50% + 0.5px)", top: 708, transform: "translateX(-50%)",
+          background: "#090909", border: "1px solid #9fe870", borderRadius: 20, height: 64,
+          display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+          padding: "0 33px", cursor: sharing || !artReady ? "default" : "pointer", WebkitTapHighlightColor: "transparent",
+          opacity: sharing || !artReady ? 0.7 : 1,
+        }}
+      >
+        <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 20, color: "#9fe870" }}>
+          {sharing ? "Compartilhando..." : !artReady ? "Preparando…" : "Compartilhar"}
+        </span>
+        <ShareNetwork size={24} color="#9fe870" weight="bold" />
+      </button>
+
+      {/* Footer */}
       <div style={{
-        position: "relative",
-        flexShrink: 0,
-        width: "100%",
+        position: "absolute", left: 0, right: 0, bottom: 0,
         borderTop: `1px solid ${footerBorder}`,
+        height: 56, padding: "16px",
         display: "flex", alignItems: "center", justifyContent: "center",
-        padding: "16px 14px calc(env(safe-area-inset-bottom, 0px) + 20px)",
       }}>
-        <p style={{
-          margin: 0,
-          fontFamily: "var(--font-display)",
-          fontWeight: 600,
-          fontSize: 12,
-          lineHeight: "15px",
-          color: "#fff",
-          letterSpacing: "0.5px",
-          whiteSpace: "nowrap",
-        }}>
+        <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#fff", whiteSpace: "nowrap" }}>
           CONCLUÍDO · {data}
         </p>
       </div>

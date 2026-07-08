@@ -14,7 +14,6 @@ export const dynamic = "force-dynamic";
 const CONFIGS: Record<string, {
   title: string;
   bgImg: string;
-  bakedImg?: string;
   mascotImg: string;
   glowColor: string;
   nameColor: string;
@@ -23,7 +22,6 @@ const CONFIGS: Record<string, {
   matador: {
     title: "MATADOR",
     bgImg:     "/votacao-bg/matador.png",
-    bakedImg:  "/premio/matador.jpg",
     mascotImg: "/ilustracoes/tubarao.png",
     glowColor: "#0a5c69",
     nameColor: "#9fe870",
@@ -32,7 +30,6 @@ const CONFIGS: Record<string, {
   categoria: {
     title: "CATEGORIA",
     bgImg:     "/votacao-bg/categoria.png",
-    bakedImg:  "/premio/categoria.jpg",
     mascotImg: "/ilustracoes/corpo-mole.png",
     glowColor: "#5f450f",
     nameColor: "#d6ffbc",
@@ -41,7 +38,6 @@ const CONFIGS: Record<string, {
   paredao: {
     title: "PAREDÃO",
     bgImg:     "/votacao-bg/paredao.png",
-    bakedImg:  "/premio/paredao.jpg",
     mascotImg: "/ilustracoes/bagre.png",
     glowColor: "#5f0005",
     nameColor: "#d6ffbc",
@@ -50,7 +46,6 @@ const CONFIGS: Record<string, {
   frangueiro: {
     title: "FRANGUEIRO",
     bgImg:     "/votacao-bg/frangueiro.png",
-    bakedImg:  "/premio/frangueiro.jpg",
     mascotImg: "/votacao-mascot/frangueiro.png",
     glowColor: "#504723",
     nameColor: "#d6ffbc",
@@ -59,7 +54,6 @@ const CONFIGS: Record<string, {
   bragueiro: {
     title: "BRAGUEIRO",
     bgImg:     "/votacao-bg/bragueiro.png",
-    bakedImg:  "/premio/bragueiro.jpg",
     mascotImg: "/votacao-mascot/bragueiro.png",
     glowColor: "#72141d",
     nameColor: "#d6ffbc",
@@ -119,7 +113,6 @@ export default async function PremioPage({ params }: { params: Promise<{ categor
       title={config.title}
       descricao={trait?.descricao ?? null}
       bgImg={config.bgImg}
-      bakedImg={config.bakedImg}
       mascotImg={config.mascotImg}
       glowColor={config.glowColor}
       nameColor={config.nameColor}
