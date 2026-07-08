@@ -9,9 +9,9 @@ interface Props {
   slug: string;
   title: string;
   bakedImg: string;
-  bakedRatio: number; // largura/altura da arte "assada" — cada uma tem tamanho próprio
   nameColor: string;
   footerBorder: string;
+  descricao: string | null;
   vencedorNome: string;
   vencedorQtd: number;
   categoriaLabel: string;
@@ -36,14 +36,14 @@ function useDataUrl(src: string): string {
   return url;
 }
 
-// Arte "assada" (fundo + mascote + título + descrição já renderizados numa
-// imagem 2x) — só até onde a descrição termina, sem sobra de canvas em
-// branco. O resto (frase do vencedor, botão, rodapé) flui em sequência
-// normal logo abaixo, colado — nada de vão gigante nem cálculo de proporção
-// de tela: a altura total é só a soma do conteúdo real, então cabe em
-// qualquer aparelho sem cortar e sem esticar.
+// Mesmo padrão do ShareCardModal (personagem da semana): arte "assada" (fundo +
+// mascote + título + emoji, canvas fixo 393x852 @2x) full-bleed via
+// position:fixed+cover, com o resto (descrição, frase do vencedor, botão,
+// rodapé) como overlay absoluto na zona inferior — não flui depois da imagem,
+// fica por cima dela, então a área em branco da arte é exatamente o espaço
+// reservado pro overlay, sem vão nem corte em nenhum aparelho.
 export function PremioScreen({
-  slug, title, bakedImg, bakedRatio, nameColor, footerBorder,
+  slug, title, bakedImg, nameColor, footerBorder, descricao,
   vencedorNome, vencedorQtd, categoriaLabel, grupoNome, data,
 }: Props) {
   const router = useRouter();
@@ -86,35 +86,33 @@ export function PremioScreen({
   }
 
   return (
-    <div ref={cardRef} style={{ position: "relative", minHeight: "100dvh", background: "#0a0e0e", display: "flex", flexDirection: "column" }}>
-      {/* Arte assada — altura definida só pela proporção real da imagem
-          (sem canvas em branco extra), full-bleed na largura da tela. */}
-      <div style={{ position: "relative", width: "100%", aspectRatio: String(bakedRatio), flexShrink: 0 }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt={title} src={artData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+    <div ref={cardRef} style={{ position: "fixed", inset: 0, zIndex: 80, background: "#0a0e0e", overflow: "hidden" }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img alt={title} src={artData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
 
-        <button
-          ref={closeBtnRef}
-          onClick={() => router.back()}
-          aria-label="Fechar"
-          style={{
-            position: "absolute",
-            top: "calc(env(safe-area-inset-top, 0px) + 16px)",
-            right: 16, zIndex: 2,
-            width: 48, height: 48,
-            background: "#000", border: "1px solid #424242", borderRadius: 24,
-            display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
-          }}
-        >
-          <X size={16} color="#fff" weight="bold" />
-        </button>
-      </div>
+      <button
+        ref={closeBtnRef}
+        onClick={() => router.back()}
+        aria-label="Fechar"
+        style={{
+          position: "absolute", top: "calc(env(safe-area-inset-top, 0px) + 16px)", right: 16, zIndex: 2,
+          width: 48, height: 48, background: "#000", border: "1px solid #424242", borderRadius: 24,
+          display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+        }}
+      >
+        <X size={16} color="#fff" weight="bold" />
+      </button>
 
-      {/* Conteúdo dinâmico — flui logo depois da arte, sem vão */}
       <div style={{
-        flex: 1, display: "flex", flexDirection: "column", alignItems: "center",
-        gap: 24, padding: "24px 24px 0", background: "#0a0e0e",
+        position: "absolute", left: 0, right: 0, bottom: 0,
+        display: "flex", flexDirection: "column", alignItems: "center", gap: 24, padding: "0 24px 0",
       }}>
+        {descricao && (
+          <p style={{ margin: 0, maxWidth: 340, fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 20, lineHeight: "24px", color: "#fff", textAlign: "center" }}>
+            {descricao}
+          </p>
+        )}
+
         <p style={{ margin: 0, maxWidth: 320, fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 20, lineHeight: "24px", color: "#fff", letterSpacing: "-1px", textAlign: "center" }}>
           <span style={{ color: nameColor }}>{vencedorNome}</span>
           {" foi eleito o "}
@@ -144,10 +142,9 @@ export function PremioScreen({
         </button>
 
         <div style={{
-          width: "100%", marginTop: "auto",
-          borderTop: `1px solid ${footerBorder}`,
+          width: "100%", borderTop: `1px solid ${footerBorder}`,
           display: "flex", alignItems: "center", justifyContent: "center",
-          padding: "16px 14px calc(env(safe-area-inset-bottom, 0px) + 20px)",
+          padding: "16px 14px calc(env(safe-area-inset-bottom, 0px) + 20px)", marginTop: 8,
         }}>
           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "15px", color: "#fff", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>
             CONCLUÍDO · {data}

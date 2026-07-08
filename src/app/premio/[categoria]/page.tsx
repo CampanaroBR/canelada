@@ -11,48 +11,42 @@ export const dynamic = "force-dynamic";
 // paredao) — antes isso apontava pra um CategoriaVoto (MVP/BAGRE/RACUDO)
 // que nunca existe de verdade (a votação real só usa categoria=TRAIT),
 // então o vencedor nunca aparecia.
-// bakedRatio = largura/altura real do arquivo (cada arte foi recortada até
-// onde o conteúdo termina, sem canvas em branco sobrando — cada uma tem seu
-// próprio tamanho, então o valor vem daqui, não de uma proporção fixa).
+// Todas as artes seguem o mesmo canvas fixo (786x1704 @2x, igual ao
+// ShareCardModal): fundo + mascote + título + emoji. Sem descrição assada —
+// vem ao vivo do Trait.descricao, igual ao card de "personagem da semana".
 const CONFIGS: Record<string, {
   title: string;
   bakedImg: string;
-  bakedRatio: number;
   nameColor: string;
   footerBorder: string;
 }> = {
   matador: {
     title: "MATADOR",
     bakedImg:  "/premio/matador.jpg",
-    bakedRatio: 786 / 1700,
     nameColor: "#9fe870",
     footerBorder: "#42bace",
   },
   categoria: {
     title: "CATEGORIA",
     bakedImg:  "/premio/categoria.jpg",
-    bakedRatio: 786 / 1704,
     nameColor: "#d6ffbc",
     footerBorder: "#c5c5c5",
   },
   paredao: {
     title: "PAREDÃO",
     bakedImg:  "/premio/paredao.jpg",
-    bakedRatio: 786 / 1704,
     nameColor: "#d6ffbc",
     footerBorder: "#c5c5c5",
   },
   frangueiro: {
     title: "FRANGUEIRO",
     bakedImg:  "/premio/frangueiro.jpg",
-    bakedRatio: 786 / 1160,
     nameColor: "#d6ffbc",
     footerBorder: "#c5c5c5",
   },
   bragueiro: {
     title: "BRAGUEIRO",
     bakedImg:  "/premio/bragueiro.jpg",
-    bakedRatio: 786 / 1160,
     nameColor: "#d6ffbc",
     footerBorder: "#c5c5c5",
   },
@@ -72,6 +66,11 @@ export default async function PremioPage({ params }: { params: Promise<{ categor
   });
   if (!jogador) redirect("/onboarding");
   const grupoNome = jogador.grupo?.nome ?? "Baba";
+
+  const trait = await prisma.trait.findUnique({
+    where: { slug: categoria },
+    select: { descricao: true },
+  });
 
   // Most voted player for this category in the latest closed rodada
   const ultimaRodada = await prisma.rodada.findFirst({
@@ -107,9 +106,9 @@ export default async function PremioPage({ params }: { params: Promise<{ categor
       slug={categoria}
       title={config.title}
       bakedImg={config.bakedImg}
-      bakedRatio={config.bakedRatio}
       nameColor={config.nameColor}
       footerBorder={config.footerBorder}
+      descricao={trait?.descricao ?? null}
       vencedorNome={vencedor?.apelido ?? "?"}
       vencedorQtd={vencedor?.qtd ?? 0}
       categoriaLabel={config.title.charAt(0) + config.title.slice(1).toLowerCase()}
