@@ -6,7 +6,6 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { NovaRodadaForm } from "./NovaRodadaForm";
 import { EmptyState } from "@/ds/components/EmptyState";
 import { Card } from "@/ds/components/Card";
-import { Button } from "@/ds/components/Button";
 import { Clock, ClockCounterClockwise, SoccerBall } from "@phosphor-icons/react/dist/ssr";
 
 function formatDataLonga(d: Date) {
@@ -65,9 +64,15 @@ export default async function PeladaPage() {
               </p>
               {rodadaAberta.pendentes.length > 0 && (
                 <Link href="/votacao/presenca" style={{ textDecoration: "none" }}>
-                  <Button variant="secondary" fullWidth>
-                    Vincular {rodadaAberta.pendentes.length} pendente{rodadaAberta.pendentes.length > 1 ? "s" : ""}
-                  </Button>
+                  <div style={{
+                    background: "transparent", border: "1px solid #9fe870", borderRadius: 16,
+                    padding: "14px", display: "flex", alignItems: "center", justifyContent: "center",
+                    width: "100%", boxSizing: "border-box",
+                  }}>
+                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#9fe870" }}>
+                      Vincular {rodadaAberta.pendentes.length} pendente{rodadaAberta.pendentes.length > 1 ? "s" : ""}
+                    </span>
+                  </div>
                 </Link>
               )}
             </Card>
