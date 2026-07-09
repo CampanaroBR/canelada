@@ -19,12 +19,20 @@ interface Props {
 }
 
 // Estrutura híbrida: 4 personagens "hero" (tela cheia, obrigatórios — os que
-// viram assunto no grupo depois do jogo) e os outros 14 numa lista compacta
-// só, dividida em Positivo/Negativo, opcional/pulável. Antes eram 7 telas
-// cheias obrigatórias seguidas — gente reclamou de cansaço; isso corta pra 4.
+// viram assunto no grupo depois do jogo) e os outros numa lista compacta só,
+// dividida em Positivo/Negativo, opcional/pulável. Antes eram 7 telas cheias
+// obrigatórias seguidas — gente reclamou de cansaço; isso corta pra 4.
+//
+// De 18 pra 15 traits votáveis: cortados Reclamão (redundante com Chorão —
+// mesma ideia de "lamenta/reclama"), Cone (redundante com Pregueiro — mesma
+// ideia de "baixo impacto/correu pouco") e Delegado (redundante com
+// Categoria — "a bola é dele" já é o que Categoria cobre). Frangueiro
+// mantido de propósito: é o único trait negativo específico de goleiro.
+// Os traits continuam existindo no banco (histórico/badges intactos), só
+// não aparecem mais pra votar.
 const HERO_SLUGS = ["categoria", "matador", "paredao", "bagre"];
-const POSITIVO_SLUGS = ["racudo", "xerife", "garcom", "driblador", "resenha-forte", "delegado"];
-const NEGATIVO_SLUGS = ["chorao", "reclamao", "paneleiro", "firuleiro", "pregueiro", "cone", "frangueiro", "bragueiro"];
+const POSITIVO_SLUGS = ["racudo", "xerife", "garcom", "driblador", "resenha-forte"];
+const NEGATIVO_SLUGS = ["chorao", "paneleiro", "firuleiro", "pregueiro", "frangueiro", "bragueiro"];
 const LISTA_SLUGS = [...POSITIVO_SLUGS, ...NEGATIVO_SLUGS];
 const ALL_SLUGS = [...HERO_SLUGS, ...LISTA_SLUGS];
 
