@@ -35,7 +35,7 @@ export default async function FeedPage() {
     orderBy: { createdAt: "desc" },
   });
 
-  const [recentStories, recentTraits] = await Promise.all([
+  const [recentStories, recentTraits, rodadasRecentes] = await Promise.all([
     // Personagem da semana: stories MVP/BAGRE agrupados por rodada
     prisma.story.findMany({
       where: { rodada: { grupoId }, tipo: { in: ["MVP", "BAGRE"] } },
@@ -60,6 +60,15 @@ export default async function FeedPage() {
       },
       orderBy: { updatedAt: "desc" },
       take: 3,
+    }),
+    // Últimas 3 rodadas do grupo (id + data) — base das tabs de data do card
+    // "Personagem da semana" (cada pill precisa buscar os votos DAQUELA
+    // rodada, não só repetir a atual).
+    prisma.rodada.findMany({
+      where: { grupoId },
+      orderBy: { data: "desc" },
+      take: 3,
+      select: { id: true, data: true },
     }),
   ]);
 
@@ -190,6 +199,71 @@ export default async function FeedPage() {
     maisVotadosPiores = raw.filter(r => NEG_TRAITS_RANKING.includes(r.slug)).map(toRankingEntry).sort((a, b) => b.qtd - a.qtd);
   }
 
+  // ── Personagem da semana por rodada (tabs de data) ──
+  // As tabs de data eram só decorativas — sempre mostravam a rodada atual,
+  // não importa qual pill estivesse marcada como ativa. Aqui calcula os
+  // personagens votados em CADA uma das outras rodadas recentes (a atual já
+  // foi calculada acima como `personagensSemana`), pra cada pill mostrar os
+  // dados de verdade da rodada que representa.
+  const outrasRodadas = rodadasRecentes.filter(r => r.id !== rodadaAtiva?.id);
+  const personagensSemanaOutras = new Map<string, PersonagemSemana[]>();
+  if (outrasRodadas.length > 0) {
+    const votosOutras = await prisma.voto.findMany({
+      where: { rodadaId: { in: outrasRodadas.map(r => r.id) }, categoria: "TRAIT", traitSlug: { not: null } },
+      select: { rodadaId: true, traitSlug: true, votadoId: true },
+    });
+    const perRodada = new Map<string, Map<string, { players: Map<string, number> }>>();
+    for (const v of votosOutras) {
+      const slug = v.traitSlug as string;
+      if (!perRodada.has(v.rodadaId)) perRodada.set(v.rodadaId, new Map());
+      const perTraitR = perRodada.get(v.rodadaId)!;
+      if (!perTraitR.has(slug)) perTraitR.set(slug, { players: new Map() });
+      const e = perTraitR.get(slug)!;
+      e.players.set(v.votadoId, (e.players.get(v.votadoId) ?? 0) + 1);
+    }
+
+    const rawPorRodada = new Map<string, { slug: string; vencedorId: string; votos: number }[]>();
+    for (const r of outrasRodadas) {
+      const perTraitR = perRodada.get(r.id);
+      const rawR: { slug: string; vencedorId: string; votos: number }[] = [];
+      if (perTraitR) {
+        for (const [slug, e] of perTraitR) {
+          const winner = pickWinner(e.players, `${r.id}:${slug}`);
+          if (winner && ART_BY_SLUG[slug]) rawR.push({ slug, vencedorId: winner.id, votos: winner.count });
+        }
+      }
+      rawR.sort((a, b) => b.votos - a.votos);
+      rawPorRodada.set(r.id, rawR);
+    }
+
+    const vIds2 = [...new Set([...rawPorRodada.values()].flat().map(r => r.vencedorId))];
+    const tSlugs2 = [...new Set([...rawPorRodada.values()].flat().map(r => r.slug))];
+    const [nmeRows2, tRows2] = await Promise.all([
+      vIds2.length ? prisma.jogador.findMany({ where: { id: { in: vIds2 } }, select: { id: true, apelido: true } }) : Promise.resolve([]),
+      tSlugs2.length ? prisma.trait.findMany({ where: { slug: { in: tSlugs2 } }, select: { slug: true, nome: true, emoji: true, descricao: true } }) : Promise.resolve([]),
+    ]);
+    const nmeMap2 = Object.fromEntries(nmeRows2.map(j => [j.id, j.apelido]));
+    const tMeta2 = Object.fromEntries(tRows2.map(t => [t.slug, t]));
+
+    for (const [rodadaId, rawR] of rawPorRodada) {
+      personagensSemanaOutras.set(rodadaId, rawR.map(r => ({
+        slug: r.slug,
+        nome: tMeta2[r.slug]?.nome ?? r.slug,
+        emoji: tMeta2[r.slug]?.emoji ?? null,
+        descricao: tMeta2[r.slug]?.descricao ?? null,
+        art: ART_BY_SLUG[r.slug],
+        vencedor: nmeMap2[r.vencedorId] ?? "?",
+        votos: r.votos,
+      })));
+    }
+  }
+
+  // Ordem asc (mais antiga → mais recente) pra bater com datePills (última = ativa)
+  const personagensSemanaPorData: PersonagemSemana[][] = rodadasRecentes
+    .slice()
+    .reverse()
+    .map(r => (r.id === rodadaAtiva?.id ? personagensSemana : (personagensSemanaOutras.get(r.id) ?? [])));
+
   const PERSONAGEM_TITLES: Record<string, string> = {
     MVP:    "MATADOR",
     BAGRE:  "BAGRE DA NOITE",
@@ -235,8 +309,8 @@ export default async function FeedPage() {
   const badgesFallback: { jogadoresComBadge: number; totalJogadores: number; novas: { apelido: string; slug: string; nome: string }[] } =
     { jogadoresComBadge: 0, totalJogadores: 0, novas: [] };
 
-  // 4 consultas independentes em paralelo (badges do grupo, meu voto, top5, rodadas recentes)
-  const [badgesGrupo, jaVotou, top5VotosRaw, rodadasRecentes] = await Promise.all([
+  // 3 consultas independentes em paralelo (badges do grupo, meu voto, top5)
+  const [badgesGrupo, jaVotou, top5VotosRaw] = await Promise.all([
     badgesHome(grupoId).catch((e) => { console.error("badgesHome falhou:", e); return badgesFallback; }),
     rodadaAtiva
       ? prisma.voto.findFirst({
@@ -253,12 +327,6 @@ export default async function FeedPage() {
           take: 5,
         })
       : Promise.resolve([]),
-    prisma.rodada.findMany({
-      where: { grupoId },
-      orderBy: { data: "desc" },
-      take: 3,
-      select: { data: true },
-    }),
   ]);
 
   const conquistas: Conquista[] = badgesGrupo.novas.map(n => ({
@@ -340,6 +408,7 @@ export default async function FeedPage() {
       maisVotadosPiores={maisVotadosPiores}
       personagensPorRodada={personagensPorRodada}
       personagensSemana={personagensSemana}
+      personagensSemanaPorData={personagensSemanaPorData}
       selecao={selecao}
       selecaoPiores={selecaoPiores}
       conquistas={conquistas}

@@ -59,6 +59,7 @@ interface Props {
   maisVotadosPiores: MaisVotado[];
   personagensPorRodada: Personagem[][];
   personagensSemana: PersonagemSemana[];
+  personagensSemanaPorData: PersonagemSemana[][];
   selecao: (PersonagemSemana | null)[];
   selecaoPiores: (PersonagemSemana | null)[];
   conquistas: Conquista[];
@@ -74,15 +75,21 @@ const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
 
 export function HomeClient({
   rodadaId, dataRodada, dataCurta, horarioJogo, votacao, jaVotou, top5Rodada,
-  maisVotados, maisVotadosPiores, personagensPorRodada, personagensSemana, selecao, selecaoPiores, conquistas, badgesGrupo, datePills, grupoNome,
+  maisVotados, maisVotadosPiores, personagensPorRodada, personagensSemana, personagensSemanaPorData, selecao, selecaoPiores, conquistas, badgesGrupo, datePills, grupoNome,
   proximoBaba, criarRodadaAction, isSuperAdmin,
 }: Props) {
   const [bsOpen, setBsOpen] = useState(false);
   const [bsMounted, setBsMounted] = useState(false); // só monta o sheet após 1ª abertura
+  const [bsPioresOpen, setBsPioresOpen] = useState(false);
+  const [bsPioresMounted, setBsPioresMounted] = useState(false);
   const [shareCard, setShareCard] = useState<PersonagemSemana | null>(null);
   const [mostrarTodosPersonagens, setMostrarTodosPersonagens] = useState(false);
   const [shareSelecao, setShareSelecao] = useState(false);
   const [campoTab, setCampoTab] = useState<"melhores" | "piores">("melhores");
+  // Tabs de data do "Personagem da semana" — última pill (rodada mais recente)
+  // vem ativa por padrão, igual ao comportamento anterior.
+  const [dataAtivaIdx, setDataAtivaIdx] = useState(() => Math.max(0, personagensSemanaPorData.length - 1));
+  const personagensSemanaAtual = personagensSemanaPorData[dataAtivaIdx] ?? personagensSemana;
 
   // Campinho: conjunto ativo conforme a aba
   const campoSel = campoTab === "melhores" ? selecao : selecaoPiores;
@@ -101,6 +108,12 @@ export function HomeClient({
 
 
   const lbEntries: LeaderboardEntry[] = maisVotados.slice(0, 6).map((v, i) => ({
+    rank: i + 1,
+    apelido: v.apelido,
+    qtd: v.qtd,
+    categoria: v.categoria,
+  }));
+  const lbEntriesPiores: LeaderboardEntry[] = maisVotadosPiores.map((v, i) => ({
     rank: i + 1,
     apelido: v.apelido,
     qtd: v.qtd,
@@ -481,20 +494,30 @@ export function HomeClient({
           </div>
         )}
 
-        {/* ── 2b. PIOR DA RODADA ── */}
+        {/* ── 2b. PIORES DA RODADA ── */}
         {maisVotadosPiores.length > 0 && (
           <div style={{ background: "#171717", border: "1px solid #3a2424", borderRadius: 20, padding: "17px 9px", display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Header */}
             <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-              <div style={{ background: "#171717", border: "1px solid #3a2424", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <Skull size={24} color="#e56767" weight="regular" />
+              <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 8 }}>
+                <div style={{ background: "#171717", border: "1px solid #3a2424", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <Skull size={24} color="#e56767" weight="regular" />
+                </div>
+                <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>PIORES DA RODADA</h2>
               </div>
-              <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>PIOR DA RODADA</h2>
+              <button onClick={() => { setBsPioresMounted(true); setBsPioresOpen(true); }} style={{
+                display: "flex", alignItems: "center", gap: 4, flexShrink: 0,
+                background: "#2a1818", border: "1px solid #3a2424",
+                borderRadius: 9999, padding: "7px 13px", cursor: "pointer",
+              }}>
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "18px", color: "#fff", whiteSpace: "nowrap" }}>Ver mais</span>
+                <CaretRight size={12} color="#fff" weight="bold" />
+              </button>
             </div>
 
             {/* Leaderboard rows */}
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {maisVotadosPiores.slice(0, 5).map((v, i) => (
+              {maisVotadosPiores.slice(0, 3).map((v, i) => (
                 <div key={i} style={{ background: "#090909", border: "1px solid #3a2424", borderRadius: 14, paddingLeft: 24, paddingRight: 8, paddingTop: 8, paddingBottom: 8 }}>
                   <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
                     <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 20, lineHeight: "18px", color: "#fff", whiteSpace: "nowrap", flexShrink: 0 }}>{i + 1}.</span>
@@ -523,64 +546,75 @@ export function HomeClient({
         )}
 
         {/* ── 3. PERSONAGEM DA SEMANA ── */}
-        {personagensSemana.length > 0 && (
+        {personagensSemanaPorData.some((arr) => arr.length > 0) && (
           <div style={{ background: "#171717", border: "1px solid #2c2c2c", borderRadius: 20, padding: "17px 9px", display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Header */}
             <SectionHeader icon={<CalendarStar size={24} color="#9fe870" weight="regular" />} title="PERSONAGEM DA SEMANA" />
 
-            {/* Date pills */}
+            {/* Date pills — clicáveis, trocam qual rodada os cards abaixo mostram */}
             {datePills.length > 0 && (
               <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 2 }}>
                 {datePills.map((d, i) => {
-                  const ativo = i === datePills.length - 1;
+                  const ativo = i === dataAtivaIdx;
                   return (
-                    <div key={i} style={{
-                      flexShrink: 0, borderRadius: 9999, padding: "9px 13px",
-                      background: ativo ? "#9fe870" : "#0a0e0e",
-                      border: ativo ? "1px solid #9fe870" : "1px solid #2c2c2c",
-                    }}>
+                    <button
+                      key={i}
+                      onClick={() => { setDataAtivaIdx(i); setMostrarTodosPersonagens(false); }}
+                      style={{
+                        flexShrink: 0, borderRadius: 9999, padding: "9px 13px", cursor: "pointer",
+                        WebkitTapHighlightColor: "transparent",
+                        background: ativo ? "#9fe870" : "#0a0e0e",
+                        border: ativo ? "1px solid #9fe870" : "1px solid #2c2c2c",
+                      }}
+                    >
                       <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: ativo ? "#090909" : "#666", whiteSpace: "nowrap", textTransform: "capitalize" }}>{d}</span>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
             )}
 
             {/* Cards */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {(mostrarTodosPersonagens ? personagensSemana : personagensSemana.slice(0, 3)).map((p) => (
-                <div key={p.slug} style={{ background: "#090909", border: "1px solid #2c2c2c", borderRadius: 16, padding: 17, display: "flex", gap: 16, alignItems: "flex-start" }}>
-                  {/* Award container */}
-                  <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start", flexShrink: 0 }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-start" }}>
-                      <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, lineHeight: "24px", color: "#fff", whiteSpace: "nowrap", textTransform: "uppercase" }}>{p.nome}</p>
-                        <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#f9a8d4" }}>{p.vencedor}</p>
+            {personagensSemanaAtual.length === 0 ? (
+              <p style={{ margin: 0, padding: "8px 4px", fontFamily: "var(--font-body)", fontSize: 13, color: "#7a7a7a", textAlign: "center" }}>
+                Sem votos suficientes nessa rodada.
+              </p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {(mostrarTodosPersonagens ? personagensSemanaAtual : personagensSemanaAtual.slice(0, 3)).map((p) => (
+                  <div key={p.slug} style={{ background: "#090909", border: "1px solid #2c2c2c", borderRadius: 16, padding: 17, display: "flex", gap: 16, alignItems: "flex-start" }}>
+                    {/* Award container */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-start", flexShrink: 0 }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-start" }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, lineHeight: "24px", color: "#fff", whiteSpace: "nowrap", textTransform: "uppercase" }}>{p.nome}</p>
+                          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#f9a8d4" }}>{p.vencedor}</p>
+                        </div>
+                        <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 11, lineHeight: "16.5px", color: "#9fe870" }}>
+                          Votado {p.votos}x{datePills[dataAtivaIdx] ? <span style={{ color: "#838383" }}> · {datePills[dataAtivaIdx]}</span> : null}
+                        </p>
                       </div>
-                      <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 11, lineHeight: "16.5px", color: "#9fe870" }}>
-                        Votado {p.votos}x{dataCurta ? <span style={{ color: "#838383" }}> · {dataCurta}</span> : null}
-                      </p>
+                      <button onClick={() => setShareCard(p)} style={{
+                        cursor: "pointer", WebkitTapHighlightColor: "transparent",
+                        background: "#2c2c2c", border: "1px solid #424242", borderRadius: 9999, padding: "9px 13px",
+                        display: "flex", alignItems: "center", gap: 4,
+                      }}>
+                        <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: "#fff" }}>Ver mais</span>
+                        <CaretRight size={12} color="#fff" weight="bold" />
+                      </button>
                     </div>
-                    <button onClick={() => setShareCard(p)} style={{
-                      cursor: "pointer", WebkitTapHighlightColor: "transparent",
-                      background: "#2c2c2c", border: "1px solid #424242", borderRadius: 9999, padding: "9px 13px",
-                      display: "flex", alignItems: "center", gap: 4,
-                    }}>
-                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: "#fff" }}>Ver mais</span>
-                      <CaretRight size={12} color="#fff" weight="bold" />
-                    </button>
-                  </div>
-                  {/* Mascote */}
-                  <div style={{ flex: 1, minWidth: 0, display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
-                    <div style={{ width: 117, height: 117, position: "relative", flexShrink: 0 }}>
-                      <Image alt={p.nome} src={`/votacao-mascot/${p.slug}.png`} fill sizes="117px" style={{ objectFit: "contain" }} />
+                    {/* Mascote */}
+                    <div style={{ flex: 1, minWidth: 0, display: "flex", justifyContent: "flex-end", alignItems: "center" }}>
+                      <div style={{ width: 117, height: 117, position: "relative", flexShrink: 0 }}>
+                        <Image alt={p.nome} src={`/votacao-mascot/${p.slug}.png`} fill sizes="117px" style={{ objectFit: "contain" }} />
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
-            {personagensSemana.length > 3 && (
+            {personagensSemanaAtual.length > 3 && (
               <button
                 onClick={() => setMostrarTodosPersonagens((v) => !v)}
                 style={{
@@ -590,7 +624,7 @@ export function HomeClient({
                   fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, color: "#9fe870",
                 }}
               >
-                {mostrarTodosPersonagens ? "Ver menos" : `Ver mais (${personagensSemana.length - 3})`}
+                {mostrarTodosPersonagens ? "Ver menos" : `Ver mais (${personagensSemanaAtual.length - 3})`}
                 <CaretRight size={12} weight="bold" style={{ transform: mostrarTodosPersonagens ? "rotate(-90deg)" : "rotate(90deg)", transition: "transform 150ms ease" }} />
               </button>
             )}
@@ -717,6 +751,17 @@ export function HomeClient({
           entries={lbEntries}
           datas={datePills}
           dataAtiva={datePills.length - 1}
+        />
+      )}
+
+      {bsPioresMounted && (
+        <BottomsheetMaisVotados
+          open={bsPioresOpen}
+          onClose={() => setBsPioresOpen(false)}
+          entries={lbEntriesPiores}
+          datas={datePills}
+          dataAtiva={datePills.length - 1}
+          variant="piores"
         />
       )}
 

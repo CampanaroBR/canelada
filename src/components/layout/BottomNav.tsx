@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
@@ -18,6 +19,17 @@ const NAV_ITEMS: Array<{
 
 export function BottomNav() {
   const pathname = usePathname();
+  // Aba "Baba" é só de administração de rodada (criar/gerenciar) — usuário
+  // comum não faz nada útil ali (vê só "Aguardando rodada"). Some pra ele,
+  // deixando só os 3 ícones que ele realmente usa.
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    fetch("/api/me")
+      .then((r) => r.json())
+      .then((d) => setIsAdmin(d.role === "ADMIN" || d.role === "SUPER_ADMIN"))
+      .catch(() => {});
+  }, []);
+  const items = isAdmin ? NAV_ITEMS : NAV_ITEMS.filter((i) => i.href !== "/pelada");
 
   return (
     <div style={{
@@ -44,7 +56,7 @@ export function BottomNav() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          {NAV_ITEMS.map((item, i) => {
+          {items.map((item, i) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
             return (
               <Link
