@@ -124,8 +124,8 @@ export default async function FeedPage() {
     // não mais "1 vencedor por trait fixo". Pesos definidos junto com o
     // usuário — 3 = decide o jogo sozinho, 2 = impacto real, 1 = mais
     // estilo/comportamento que resultado.
-    const POSITIVO_ATIVOS = ["categoria", "matador", "paredao", "racudo", "xerife", "garcom", "driblador", "resenha-forte"];
-    const NEGATIVO_ATIVOS = ["bagre", "frangueiro", "bragueiro", "reclamao", "pregueiro", "paneleiro", "firuleiro"];
+    const POSITIVO_ATIVOS = ["categoria", "matador", "paredao", "xerife", "garcom", "driblador"];
+    const NEGATIVO_ATIVOS = ["bagre", "frangueiro", "bragueiro", "reclamao", "pregueiro", "paneleiro"];
     const pesoRows = await prisma.trait.findMany({
       where: { slug: { in: [...POSITIVO_ATIVOS, ...NEGATIVO_ATIVOS] } },
       select: { slug: true, peso: true },

@@ -32,8 +32,8 @@ interface Props {
 // Os traits continuam existindo no banco (histórico/badges intactos), só
 // não aparecem mais pra votar.
 const HERO_SLUGS = ["categoria", "matador", "paredao", "bagre"];
-const POSITIVO_SLUGS = ["racudo", "xerife", "garcom", "driblador", "resenha-forte"];
-const NEGATIVO_SLUGS = ["reclamao", "paneleiro", "firuleiro", "pregueiro", "frangueiro", "bragueiro"];
+const POSITIVO_SLUGS = ["xerife", "garcom", "driblador"];
+const NEGATIVO_SLUGS = ["reclamao", "paneleiro", "pregueiro", "frangueiro", "bragueiro"];
 const LISTA_SLUGS = [...POSITIVO_SLUGS, ...NEGATIVO_SLUGS];
 const ALL_SLUGS = [...HERO_SLUGS, ...LISTA_SLUGS];
 
