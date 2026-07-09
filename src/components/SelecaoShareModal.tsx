@@ -24,14 +24,16 @@ function useDataUrl(src: string): string {
 }
 const TSHIRT_FILLED = "/tshirt-filled.svg";
 const TSHIRT_GK_FILL = "/tshirt-gk-filled.svg";
+const TSHIRT_FILLED_PIORES = "/tshirt-filled-piores.svg";
+const TSHIRT_GK_FILL_PIORES = "/tshirt-gk-filled-piores.svg";
 
 interface Props {
   selecao: (PersonagemSemana | null)[];
   grupoNome: string;
   dataRodada: string | null;
   horarioJogo: string;
-  parcial: boolean; // true = "Time parcial", false = "Time da rodada"
-  gkVermelho: boolean; // GK com camisa vermelha (melhores)
+  parcial: boolean; // true = "parcial", false = "fechado"
+  pior: boolean; // true = time dos piores (camisas vermelhas + rótulo "Piores da rodada")
   onClose: () => void;
 }
 
@@ -56,18 +58,21 @@ function Shirt({ p, tshirt }: { p: PersonagemSemana | null; tshirt: string }) {
 }
 
 /** Tela full-screen pra compartilhar a escalação inteira (parcial ou fechada). */
-export function SelecaoShareModal({ selecao, grupoNome, dataRodada, horarioJogo, parcial, gkVermelho, onClose }: Props) {
+export function SelecaoShareModal({ selecao, grupoNome, dataRodada, horarioJogo, parcial, pior, onClose }: Props) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [sharing, setSharing] = useState(false);
   const bgData = useDataUrl(SHARE_BG);
   // só libera o share com o fundo já embutido como data-URL e com alguém votado
   const bgReady = bgData.startsWith("data:");
   const temVoto = selecao.some((p) => !!p);
+  const tituloTime = pior ? "Piores da rodada" : (parcial ? "Time parcial" : "Time da rodada");
+  const tshirtLinha = pior ? TSHIRT_FILLED_PIORES : TSHIRT_FILLED;
+  const tshirtGk = pior ? TSHIRT_GK_FILL_PIORES : TSHIRT_GK_FILL;
 
   async function handleShare() {
     if (sharing || !cardRef.current || !bgReady) return;
     setSharing(true);
-    const texto = `${parcial ? "Parcial" : "Time"} da rodada — ${grupoNome}! ⚽`;
+    const texto = `${tituloTime} — ${grupoNome}! ⚽`;
     try {
       // garante fontes e imagens prontas antes da captura (iOS)
       try { await document.fonts.ready; } catch { /* segue */ }
@@ -125,7 +130,7 @@ export function SelecaoShareModal({ selecao, grupoNome, dataRodada, horarioJogo,
           <div style={{ position: "absolute", top: "7.5%", left: 0, right: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
               <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 28, lineHeight: "32px", color: "#fff", textAlign: "center", textTransform: "uppercase" }}>{grupoNome}</p>
-              <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#fff", textAlign: "center" }}>{parcial ? "Time parcial" : "Time da rodada"}</p>
+              <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: pior ? "#e56767" : "#fff", textAlign: "center" }}>{tituloTime}</p>
             </div>
             {dataRodada && (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
@@ -144,15 +149,15 @@ export function SelecaoShareModal({ selecao, grupoNome, dataRodada, horarioJogo,
           {/* Escalação sobre o gramado */}
           <div style={{ position: "absolute", left: "13%", right: "13%", top: "39%", bottom: "27%", display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems: "center" }}>
             <div style={{ display: "flex", justifyContent: "center", width: "60%" }}>
-              <Shirt p={selecao[0]} tshirt={TSHIRT_FILLED} />
+              <Shirt p={selecao[0]} tshirt={tshirtLinha} />
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
-              <Shirt p={selecao[1]} tshirt={TSHIRT_FILLED} />
-              <Shirt p={selecao[2]} tshirt={TSHIRT_FILLED} />
-              <Shirt p={selecao[3]} tshirt={TSHIRT_FILLED} />
+              <Shirt p={selecao[1]} tshirt={tshirtLinha} />
+              <Shirt p={selecao[2]} tshirt={tshirtLinha} />
+              <Shirt p={selecao[3]} tshirt={tshirtLinha} />
             </div>
             <div style={{ display: "flex", justifyContent: "center", width: "60%" }}>
-              <Shirt p={selecao[4]} tshirt={gkVermelho ? TSHIRT_GK_FILL : TSHIRT_FILLED} />
+              <Shirt p={selecao[4]} tshirt={tshirtGk} />
             </div>
           </div>
         </div>

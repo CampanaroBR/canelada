@@ -786,7 +786,7 @@ export function HomeClient({
           dataRodada={dataRodada}
           horarioJogo={horarioJogo}
           parcial={votacao?.fase === "aberta"}
-          gkVermelho={campoTab === "melhores"}
+          pior={campoTab === "piores"}
           onClose={() => setShareSelecao(false)}
         />
       )}
