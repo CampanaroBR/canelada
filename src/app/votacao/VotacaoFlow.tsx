@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { submitVotos } from "./actions";
 import { CaretLeft, CaretRight, MagnifyingGlass, CheckCircle, Check, UsersThree, Trophy, Skull, SoccerBall, X } from "@phosphor-icons/react";
-import { BottomSheet, Avatar } from "@/ds";
+import { BottomSheet } from "@/ds";
 
 type Jogador = { id: string; apelido: string };
 type Trait = { slug: string; nome: string; categoria: string; emoji: string | null; descricao: string | null };
@@ -752,7 +752,6 @@ function ListaCompacta({
               value={pickerSearch}
               onChange={(e) => setPickerSearch(e.target.value)}
               placeholder="Buscar jogador…"
-              autoFocus
               style={{
                 flex: 1, background: "transparent", border: "none", outline: "none",
                 fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 14,
@@ -761,33 +760,65 @@ function ListaCompacta({
             />
           </div>
 
-          <div style={{ maxHeight: "50dvh", overflowY: "auto", display: "flex", flexDirection: "column", gap: 4, WebkitOverflowScrolling: "touch" }}>
+          <div style={{ maxHeight: "50dvh", overflowY: "auto", WebkitOverflowScrolling: "touch" }}>
             {pickerFiltered.length === 0 ? (
               <p style={{ color: "#555", fontFamily: "var(--font-body)", fontSize: 13, textAlign: "center", padding: "20px 0" }}>
                 Nenhum jogador encontrado
               </p>
-            ) : pickerFiltered.map((j) => {
-              const active = pickerSlug ? selections[pickerSlug] === j.id : false;
-              return (
-                <button
-                  key={j.id}
-                  onClick={() => pickFor(j.id)}
-                  style={{
-                    display: "flex", alignItems: "center", gap: 12, width: "100%",
-                    padding: "10px 8px", borderRadius: 14,
-                    background: active ? "rgba(159,232,112,0.1)" : "none",
-                    border: "none", cursor: "pointer", textAlign: "left",
-                    WebkitTapHighlightColor: "transparent",
-                  }}
-                >
-                  <Avatar name={j.apelido} />
-                  <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {j.apelido}
-                  </span>
-                  {active && <Check size={18} color="#9fe870" weight="bold" />}
-                </button>
-              );
-            })}
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                {pickerFiltered.map((j) => {
+                  const active = pickerSlug ? selections[pickerSlug] === j.id : false;
+                  const initial = getInitial(j.apelido);
+                  const color = getAvatarColor(j.apelido);
+                  return (
+                    <button
+                      key={j.id}
+                      onClick={() => pickFor(j.id)}
+                      style={{
+                        appearance: "none", cursor: "pointer",
+                        background: "#000",
+                        border: active ? "2px solid #9fe870" : "1px solid #2e2e2e",
+                        borderRadius: 12, padding: "13px 8px",
+                        display: "flex", flexDirection: "column",
+                        alignItems: "center", gap: 4,
+                        WebkitTapHighlightColor: "transparent",
+                      }}
+                    >
+                      <div style={{ position: "relative", flexShrink: 0 }}>
+                        <div style={{
+                          width: 48, height: 48, borderRadius: "50%",
+                          background: active ? color + "33" : "#2a2a2a",
+                          border: active ? `1px solid ${color}` : "none",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                        }}>
+                          <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 18, color: active ? color : "#fff" }}>{initial}</span>
+                        </div>
+                        <div style={{
+                          position: "absolute", right: -2, bottom: -2,
+                          width: 20, height: 20, borderRadius: "50%",
+                          background: "#9fe870", border: "2px solid #000",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          transform: active ? "scale(1)" : "scale(0)",
+                          opacity: active ? 1 : 0,
+                          transition: "transform 200ms cubic-bezier(0.32,0.72,0,1), opacity 160ms ease",
+                        }}>
+                          <Check size={12} color="#0a1a06" weight="bold" />
+                        </div>
+                      </div>
+                      <span style={{
+                        fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 11,
+                        color: "#ccc", textAlign: "center", lineHeight: "13.75px",
+                        maxWidth: "100%", overflow: "hidden",
+                        textOverflow: "ellipsis", whiteSpace: "nowrap" as const,
+                      }}>
+                        {j.apelido}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </BottomSheet>
