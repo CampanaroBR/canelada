@@ -79,33 +79,28 @@ export function ShareCardModal({ personagem, grupoNome, onClose }: Props) {
   }
 
   return (
-    <div ref={cardRef} style={{
-      position: "fixed", inset: 0, zIndex: 80, background: "#0a0e0e",
-      overflowY: "auto", WebkitOverflowScrolling: "touch",
-      display: "flex", flexDirection: "column",
-    }}>
-      <div style={{ position: "relative", width: "100%", aspectRatio: "786 / 1704", flexShrink: 0 }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt={nome} src={artData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+    <div ref={cardRef} style={{ position: "fixed", inset: 0, zIndex: 80, background: "#0a0e0e", overflow: "hidden" }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img alt={nome} src={artData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
 
-        {/* Close */}
-        <button
-          ref={closeBtnRef}
-          onClick={onClose}
-          aria-label="Fechar"
-          style={{
-            position: "absolute", top: "calc(env(safe-area-inset-top, 0px) + 16px)", right: 16, zIndex: 2,
-            width: 48, height: 48, background: "#000", border: "1px solid #424242", borderRadius: 24,
-            display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
-          }}
-        >
-          <X size={16} color="#fff" weight="bold" />
-        </button>
-      </div>
+      {/* Close */}
+      <button
+        ref={closeBtnRef}
+        onClick={onClose}
+        aria-label="Fechar"
+        style={{
+          position: "absolute", top: "calc(env(safe-area-inset-top, 0px) + 16px)", right: 16, zIndex: 2,
+          width: 48, height: 48, background: "#000", border: "1px solid #424242", borderRadius: 24,
+          display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+        }}
+      >
+        <X size={16} color="#fff" weight="bold" />
+      </button>
 
-      {/* Conteúdo flui abaixo da arte — nunca sobrepõe */}
+      {/* Overlays na zona inferior */}
       <div style={{
-        flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 24, padding: "24px 24px 0",
+        position: "absolute", left: 0, right: 0, bottom: 0,
+        display: "flex", flexDirection: "column", alignItems: "center", gap: 24, padding: "0 24px 0",
       }}>
         {descricao && (
           <p style={{ margin: 0, maxWidth: 340, fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 20, lineHeight: "24px", color: "#fff", textAlign: "center" }}>

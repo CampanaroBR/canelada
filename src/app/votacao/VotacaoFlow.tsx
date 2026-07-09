@@ -401,6 +401,11 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
                 onFocus={() => setSearchFocused(true)}
                 onBlur={() => setSearchFocused(false)}
                 placeholder="Buscar jogador…"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+                name="buscar-jogador-hero"
                 style={{
                   flex: 1, background: "transparent", border: "none", outline: "none",
                   fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 14,
@@ -573,6 +578,7 @@ function PersonagensList({
 }) {
   const [pickerSlug, setPickerSlug] = useState<string | null>(null);
   const [pickerSearch, setPickerSearch] = useState("");
+  const [pickerSearchFocused, setPickerSearchFocused] = useState(false);
   const outros = jogadores.filter((j) => j.id !== meuId);
   const positivos = listaTraits.filter((t) => POSITIVO_SLUGS.includes(t.slug));
   const negativos = listaTraits.filter((t) => NEGATIVO_SLUGS.includes(t.slug));
@@ -689,7 +695,7 @@ function PersonagensList({
         </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: "16px 8px 8px", display: "flex", flexDirection: "column", gap: 24, WebkitOverflowScrolling: "touch" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: "16px 8px 96px", display: "flex", flexDirection: "column", gap: 24, WebkitOverflowScrolling: "touch" }}>
         <Section
           title="Personagens que foram bem"
           icon={<Trophy size={22} color="#9fe870" weight="fill" />}
@@ -706,16 +712,21 @@ function PersonagensList({
           border="#3a2424"
           traitsIn={negativos}
         />
+      </div>
 
+      {/* Botão flutuante — sempre visível, não depende de rolar até o fim */}
+      <div style={{
+        position: "absolute", left: 0, right: 0, bottom: 0,
+        padding: "12px 16px calc(env(safe-area-inset-bottom, 0px) + 12px)",
+        background: "linear-gradient(180deg, rgba(9,9,9,0) 0%, #090909 40%)",
+      }}>
         <button
           onClick={onFinish}
           style={{
             width: "100%", height: 54, borderRadius: 9999, border: "none",
-            background: "#9fe870", cursor: "pointer", flexShrink: 0,
+            background: "#9fe870", cursor: "pointer",
             fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#0a1a06",
             WebkitTapHighlightColor: "transparent",
-            marginTop: 8,
-            marginBottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)",
           }}
         >
           Revisar e enviar
@@ -753,13 +764,22 @@ function PersonagensList({
 
           <div style={{
             display: "flex", alignItems: "center", gap: 8,
-            background: "#141414", border: "1px solid #2a2a2d", borderRadius: 14, padding: "12px 15px",
+            background: pickerSearchFocused ? "#111" : "#141414",
+            border: pickerSearchFocused ? "2px solid #9fe870" : "1px solid #2a2a2d",
+            borderRadius: 14, padding: pickerSearchFocused ? "11px 14px" : "12px 15px",
           }}>
             <MagnifyingGlass size={18} color="#fff" weight="regular" />
             <input
               value={pickerSearch}
               onChange={(e) => setPickerSearch(e.target.value)}
+              onFocus={() => setPickerSearchFocused(true)}
+              onBlur={() => setPickerSearchFocused(false)}
               placeholder="Buscar jogador…"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              name="buscar-jogador-picker"
               style={{
                 flex: 1, background: "transparent", border: "none", outline: "none",
                 fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 14,
