@@ -117,7 +117,7 @@ function getAvatarColor(apelido: string) {
   return colors[h % colors.length];
 }
 
-type Phase = "hero" | "lista" | "review" | "done";
+type Phase = "hero" | "bem" | "abaixo" | "review" | "done";
 
 export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Props) {
   const traitBySlug = new Map(traits.map((t) => [t.slug, t]));
@@ -169,13 +169,14 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
     setPending(null);
     setSearch("");
     if (heroStep < heroTraits.length - 1) setHeroStep((s) => s + 1);
-    else setPhase("lista");
+    else setPhase("bem");
   }
 
   function handleBack() {
     if (phase === "hero" && heroStep === 0) router.push("/feed");
     else if (phase === "hero") setHeroStep((s) => s - 1);
-    else if (phase === "lista") { setPhase("hero"); setHeroStep(heroTraits.length - 1); }
+    else if (phase === "bem") { setPhase("hero"); setHeroStep(heroTraits.length - 1); }
+    else if (phase === "abaixo") setPhase("bem");
   }
 
   // Editar um voto a partir da revisão: volta pro passo/tela correspondente.
@@ -185,8 +186,10 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
     if (heroIdx >= 0) {
       setPhase("hero");
       setHeroStep(heroIdx);
+    } else if (POSITIVO_SLUGS.includes(slug)) {
+      setPhase("bem");
     } else {
-      setPhase("lista");
+      setPhase("abaixo");
     }
   }
 
@@ -217,22 +220,46 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
       error={error}
       onEdit={editSlug}
       onSubmit={() => submitAllWith(selections)}
-      onBack={() => setPhase("lista")}
+      onBack={() => setPhase("abaixo")}
     />
   );
-  if (phase === "lista") return (
-    <ListaCompacta
-      listaTraits={listaTraits}
+  const selectHandler = (slug: string, jogadorId: string | null) => setSelections((prev) => {
+    const next = { ...prev };
+    if (jogadorId) next[slug] = jogadorId; else delete next[slug];
+    return next;
+  });
+  if (phase === "bem") return (
+    <PersonagensList
+      title="Personagens que foram bem"
+      icon={<Trophy size={22} color="#9fe870" weight="fill" />}
+      tone="#9fe870"
+      bg="rgba(159,232,112,0.08)"
+      border="#2c2c2c"
+      traitsIn={listaTraits.filter((t) => POSITIVO_SLUGS.includes(t.slug))}
       jogadores={jogadores}
       meuId={meuId}
       selections={selections}
-      onSelect={(slug, jogadorId) => setSelections((prev) => {
-        const next = { ...prev };
-        if (jogadorId) next[slug] = jogadorId; else delete next[slug];
-        return next;
-      })}
+      onSelect={selectHandler}
+      onBack={handleBack}
+      onFinish={() => setPhase("abaixo")}
+      finishLabel="Continuar"
+    />
+  );
+  if (phase === "abaixo") return (
+    <PersonagensList
+      title="Personagens que foram abaixo"
+      icon={<Skull size={22} color="#e56767" weight="fill" />}
+      tone="#e56767"
+      bg="rgba(229,103,103,0.08)"
+      border="#3a2424"
+      traitsIn={listaTraits.filter((t) => NEGATIVO_SLUGS.includes(t.slug))}
+      jogadores={jogadores}
+      meuId={meuId}
+      selections={selections}
+      onSelect={selectHandler}
       onBack={handleBack}
       onFinish={() => setPhase("review")}
+      finishLabel="Revisar e enviar"
     />
   );
   if (!trait) return null;
@@ -550,29 +577,34 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
   );
 }
 
-/* ─── Tela de lista compacta: os 14 traits opcionais, 1 toque por linha ───
-   Header de seção no mesmo padrão do resto do app (ícone em caixinha +
-   título — igual "PARCIAL DA RODADA"/"PIORES DA RODADA" no feed). Sem emoji
-   nas linhas (poluía). Escolher jogador abre um bottom sheet com busca em
-   vez de carrossel — mais rápido de usar com listas de 20-30+ jogadores. */
-function ListaCompacta({
-  listaTraits, jogadores, meuId, selections, onSelect, onBack, onFinish,
+/* ─── Tela de lista de personagens: uma seção por tela (bem / abaixo),
+   igual ao Figma (764:355 e 764:682) — telas separadas, não uma única
+   página com duas seções. Header de seção (ícone em caixinha + título +
+   subtítulo "Os votos aqui são opcionais") + lista de linhas 72px de
+   altura (avatar 56px, nome, pill de seleção). Escolher jogador abre um
+   bottom sheet com busca em vez de carrossel — mais rápido de usar com
+   listas de 20-30+ jogadores. */
+function PersonagensList({
+  title, icon, tone, bg, border, traitsIn, jogadores, meuId, selections, onSelect, onBack, onFinish, finishLabel,
 }: {
-  listaTraits: Trait[];
+  title: string;
+  icon: React.ReactNode;
+  tone: string;
+  bg: string;
+  border: string;
+  traitsIn: Trait[];
   jogadores: Jogador[];
   meuId: string;
   selections: Record<string, string>;
   onSelect: (slug: string, jogadorId: string | null) => void;
   onBack: () => void;
   onFinish: () => void;
+  finishLabel: string;
 }) {
   const [pickerSlug, setPickerSlug] = useState<string | null>(null);
   const [pickerSearch, setPickerSearch] = useState("");
   const outros = jogadores.filter((j) => j.id !== meuId);
-  const positivos = listaTraits.filter((t) => POSITIVO_SLUGS.includes(t.slug));
-  const negativos = listaTraits.filter((t) => NEGATIVO_SLUGS.includes(t.slug));
-  const votados = listaTraits.filter((t) => selections[t.slug]).length;
-  const pickerTrait = pickerSlug ? listaTraits.find((t) => t.slug === pickerSlug) ?? null : null;
+  const pickerTrait = pickerSlug ? traitsIn.find((t) => t.slug === pickerSlug) ?? null : null;
   const pickerFiltered = outros.filter((j) => j.apelido.toLowerCase().includes(pickerSearch.toLowerCase()));
 
   function openPicker(slug: string) {
@@ -586,12 +618,23 @@ function ListaCompacta({
     setPickerSlug(null);
   }
 
-  function Section({ label, tone, bg, border, traitsIn, icon }: {
-    label: string; tone: string; bg: string; border: string; traitsIn: Trait[]; icon: React.ReactNode;
-  }) {
-    return (
-      <div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "0 8px 10px" }}>
+  return (
+    <div style={{
+      position: "fixed", top: 0, bottom: 0, left: "50%", transform: "translateX(-50%)",
+      width: "min(100%, 430px)", background: "#090909", display: "flex", flexDirection: "column", overflow: "hidden",
+    }}>
+      <div style={{
+        flexShrink: 0, padding: "calc(env(safe-area-inset-top, 0px) + 20px) 16px 16px",
+        borderBottom: "1px solid #1c1c1c",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <button onClick={onBack} aria-label="Voltar" style={{
+            width: 44, height: 44, borderRadius: 22, flexShrink: 0,
+            background: "rgba(255,255,255,0.06)", border: "1px solid #2c2c2c",
+            display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+          }}>
+            <CaretLeft size={16} color="#fff" weight="bold" />
+          </button>
           <div style={{
             width: 40, height: 40, borderRadius: 12, flexShrink: 0,
             background: "#171717", border: `1px solid ${border}`,
@@ -599,10 +642,18 @@ function ListaCompacta({
           }}>
             {icon}
           </div>
-          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>
-            {label}
-          </h2>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 18, color: "#fff", textTransform: "uppercase" }}>
+              {title}
+            </p>
+            <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, color: tone }}>
+              Os votos aqui são opcionais
+            </p>
+          </div>
         </div>
+      </div>
+
+      <div style={{ flex: 1, overflowY: "auto", padding: "16px 8px 96px", WebkitOverflowScrolling: "touch" }}>
         <div style={{ background: "#141414", border: `1px solid ${border}`, borderRadius: 20, overflow: "hidden" }}>
           {traitsIn.map((t, i) => {
             const votadoId = selections[t.slug];
@@ -612,14 +663,14 @@ function ListaCompacta({
                 key={t.slug}
                 style={{
                   display: "flex", alignItems: "center", gap: 12,
-                  padding: "12px 14px", background: votado ? bg : "none",
+                  padding: "8px 12px", background: votado ? bg : "none",
                   borderTop: i === 0 ? "none" : "1px solid #1f1f1f",
                 }}
               >
-                <div style={{ width: 44, height: 44, position: "relative", flexShrink: 0 }}>
-                  <Image alt={t.nome} src={MASCOTE[t.slug] ?? "/ilustracoes/gato.png"} fill sizes="44px" style={{ objectFit: "contain" }} />
+                <div style={{ width: 56, height: 56, position: "relative", flexShrink: 0 }}>
+                  <Image alt={t.nome} src={MASCOTE[t.slug] ?? "/ilustracoes/gato.png"} fill sizes="56px" style={{ objectFit: "contain" }} />
                 </div>
-                <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 14, letterSpacing: "0.04em", color: "#fff", textTransform: "uppercase" }}>
+                <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 15, letterSpacing: "0.04em", color: "#fff", textTransform: "uppercase" }}>
                   {t.nome}
                 </span>
                 <button
@@ -646,55 +697,6 @@ function ListaCompacta({
           })}
         </div>
       </div>
-    );
-  }
-
-  return (
-    <div style={{
-      position: "fixed", top: 0, bottom: 0, left: "50%", transform: "translateX(-50%)",
-      width: "min(100%, 430px)", background: "#090909", display: "flex", flexDirection: "column", overflow: "hidden",
-    }}>
-      <div style={{
-        flexShrink: 0, padding: "calc(env(safe-area-inset-top, 0px) + 20px) 16px 16px",
-        borderBottom: "1px solid #1c1c1c",
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button onClick={onBack} aria-label="Voltar" style={{
-            width: 44, height: 44, borderRadius: 22, flexShrink: 0,
-            background: "rgba(255,255,255,0.06)", border: "1px solid #2c2c2c",
-            display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
-          }}>
-            <CaretLeft size={16} color="#fff" weight="bold" />
-          </button>
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, color: "#fff" }}>
-              O resto da galera
-            </p>
-            <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, color: "#8a8a8a" }}>
-              Opcional · {votados} de {listaTraits.length} votados
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div style={{ flex: 1, overflowY: "auto", padding: "16px 8px 96px", display: "flex", flexDirection: "column", gap: 20, WebkitOverflowScrolling: "touch" }}>
-        <Section
-          label="Positivo"
-          tone="#9fe870"
-          bg="rgba(159,232,112,0.08)"
-          border="#2c2c2c"
-          traitsIn={positivos}
-          icon={<Trophy size={20} color="#9fe870" weight="fill" />}
-        />
-        <Section
-          label="Negativo"
-          tone="#e56767"
-          bg="rgba(229,103,103,0.08)"
-          border="#3a2424"
-          traitsIn={negativos}
-          icon={<Skull size={20} color="#e56767" weight="fill" />}
-        />
-      </div>
 
       <div style={{
         position: "absolute", left: 0, right: 0, bottom: 0,
@@ -710,7 +712,7 @@ function ListaCompacta({
             WebkitTapHighlightColor: "transparent",
           }}
         >
-          Revisar e enviar
+          {finishLabel}
         </button>
       </div>
 
