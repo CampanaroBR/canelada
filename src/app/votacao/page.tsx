@@ -7,10 +7,7 @@ import { criarRodada } from "./actions";
 import Link from "next/link";
 import Image from "next/image";
 import { EmptyState } from "@/ds/components/EmptyState";
-import { Card } from "@/ds/components/Card";
-import { Content } from "@/ds/components/Content";
-import { Separator } from "@/ds/components/Separator";
-import { SoccerBall, CaretLeft, Bell, UsersThree, PencilSimpleLine } from "@phosphor-icons/react/dist/ssr";
+import { SoccerBall, CaretLeft, Bell, UsersThree, PencilSimpleLine, Trophy, Skull, CheckCircle } from "@phosphor-icons/react/dist/ssr";
 import { votacaoAtiva, MIN_JOGADORES_VOTACAO } from "@/lib/votacaoJanela";
 
 /** Topbar padrão (voltar + logo + sino) pras telas estáticas da votação. */
@@ -251,7 +248,19 @@ const CATEGORIA_LABEL: Record<string, string> = {
   MVP: "MVP", BAGRE: "Bagre", RACUDO: "Raçudo", RESENHA: "Resenha", TRAIT: "Trait",
 };
 
+// Mesmo agrupamento usado no fluxo de voto (VotacaoFlow) e na revisão —
+// mantém a tela "já votou" com a cara do resto do produto em vez de uma
+// lista genérica com emoji solto.
+const HERO_SLUGS = ["categoria", "matador", "paredao", "bagre"];
+const POSITIVO_SLUGS = ["racudo", "xerife", "garcom", "driblador", "resenha-forte"];
+
 function JaVotouScreen({ votos, isAdmin, isSuperAdmin }: { votos: VotoComVotado[]; isAdmin: boolean; isSuperAdmin: boolean }) {
+  const grupos = [
+    { label: "Os 4 da noite", tone: "#9fe870", border: "#2c2c2c", bg: "rgba(159,232,112,0.08)", icon: <Trophy size={20} color="#9fe870" weight="fill" />, votosIn: votos.filter(v => v.traitSlug && HERO_SLUGS.includes(v.traitSlug)) },
+    { label: "Positivo", tone: "#9fe870", border: "#2c2c2c", bg: "rgba(159,232,112,0.08)", icon: <Trophy size={20} color="#9fe870" weight="fill" />, votosIn: votos.filter(v => v.traitSlug && POSITIVO_SLUGS.includes(v.traitSlug)) },
+    { label: "Negativo", tone: "#e56767", border: "#3a2424", bg: "rgba(229,103,103,0.08)", icon: <Skull size={20} color="#e56767" weight="fill" />, votosIn: votos.filter(v => v.traitSlug && !HERO_SLUGS.includes(v.traitSlug) && !POSITIVO_SLUGS.includes(v.traitSlug)) },
+  ].filter(g => g.votosIn.length > 0);
+
   return (
     <div style={{ minHeight: "100dvh", background: "#090909", display: "flex", flexDirection: "column" }}>
       <VotacaoTopBar isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} />
@@ -261,15 +270,16 @@ function JaVotouScreen({ votos, isAdmin, isSuperAdmin }: { votos: VotoComVotado[
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        padding: "calc(env(safe-area-inset-top, 0px) + 88px) 24px calc(88px + env(safe-area-inset-bottom, 0px))",
+        padding: "calc(env(safe-area-inset-top, 0px) + 88px) 16px calc(88px + env(safe-area-inset-bottom, 0px))",
         textAlign: "center",
         gap: 24,
       }}>
         <div style={{
-          width: 88, height: 88, borderRadius: "50%", background: "#9fe870",
+          width: 72, height: 72, borderRadius: "50%", background: "#9fe870",
           display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+          boxShadow: "0 8px 24px rgba(159,232,112,0.25)",
         }}>
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden>
             <path d="M4 12.5L9.5 18L20 6" stroke="#090909" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </div>
@@ -277,37 +287,72 @@ function JaVotouScreen({ votos, isAdmin, isSuperAdmin }: { votos: VotoComVotado[
         <div>
           <h2 style={{
             fontFamily: "var(--font-display)",
-            fontWeight: 800,
-            fontSize: "clamp(36px, 10vw, 48px)",
+            fontWeight: 900,
+            fontSize: "clamp(32px, 9vw, 40px)",
             lineHeight: 1,
             letterSpacing: "-0.02em",
             color: "#fff",
-            margin: "0 0 10px",
+            margin: "0 0 8px",
           }}>
             Já votou <span style={{ color: "#9fe870" }}>hoje.</span>
           </h2>
-          <p style={{ margin: 0, fontSize: 15, color: "#7a7a7a", fontFamily: "var(--font-body)" }}>
+          <p style={{ margin: 0, fontSize: 14, color: "#8a8a8a", fontFamily: "var(--font-body)" }}>
             Seus votos foram registrados.
           </p>
         </div>
 
-        {votos.length > 0 && (
-          <Card padding={16} style={{ width: "100%", maxWidth: 340, textAlign: "left" }}>
-            {votos.map((v, i) => (
-              <div key={v.id}>
-                {i > 0 && <Separator spacing={12} />}
-                <Content
-                  leading={<span style={{ fontSize: 20 }}>{v.trait?.emoji ?? "⚽"}</span>}
-                  label={v.trait?.nome ?? CATEGORIA_LABEL[v.categoria] ?? v.categoria}
-                  trailing={
-                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#9fe870" }}>
-                      {v.votado.apelido}
-                    </span>
-                  }
-                />
+        {grupos.length > 0 && (
+          <div style={{ width: "100%", maxWidth: 380, display: "flex", flexDirection: "column", gap: 20, textAlign: "left" }}>
+            {grupos.map((g) => (
+              <div key={g.label}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "0 8px 10px" }}>
+                  <div style={{
+                    width: 40, height: 40, borderRadius: 12, flexShrink: 0,
+                    background: "#171717", border: `1px solid ${g.border}`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    {g.icon}
+                  </div>
+                  <h3 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#fff" }}>
+                    {g.label}
+                  </h3>
+                </div>
+                <div style={{ background: "#141414", border: `1px solid ${g.border}`, borderRadius: 20, overflow: "hidden" }}>
+                  {g.votosIn.map((v, i) => (
+                    <div key={v.id} style={{
+                      display: "flex", alignItems: "center", gap: 12,
+                      padding: "10px 14px", background: g.bg,
+                      borderTop: i === 0 ? "none" : "1px solid #1f1f1f",
+                    }}>
+                      <div style={{ width: 44, height: 44, position: "relative", flexShrink: 0 }}>
+                        {v.traitSlug ? (
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img alt="" src={`/votacao-mascot/${v.traitSlug}.png`} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }} />
+                        ) : (
+                          <span style={{ fontSize: 22 }}>{v.trait?.emoji ?? "⚽"}</span>
+                        )}
+                      </div>
+                      <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 14, letterSpacing: "0.04em", color: "#fff", textTransform: "uppercase" }}>
+                        {v.trait?.nome ?? CATEGORIA_LABEL[v.categoria] ?? v.categoria}
+                      </span>
+                      <div style={{
+                        flexShrink: 0, display: "flex", alignItems: "center", gap: 6,
+                        height: 32, padding: "0 14px", borderRadius: 9999, background: "#9fe870",
+                      }}>
+                        <span style={{
+                          fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, color: "#0a1a06",
+                          maxWidth: 90, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                        }}>
+                          {v.votado.apelido}
+                        </span>
+                        <CheckCircle size={16} color="#0a1a06" weight="fill" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
-          </Card>
+          </div>
         )}
       </main>
 
