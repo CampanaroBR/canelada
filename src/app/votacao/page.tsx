@@ -107,20 +107,20 @@ export default async function VotacaoPage() {
     return <JaVotouScreen votos={votos} isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} />;
   }
 
-  // Presença marcada manualmente pra essa rodada restringe quem pode ser
-  // votado (evita votar em quem se cadastrou mas não jogou naquele dia).
-  // Sem ninguém marcado (rodadas antigas ou sem edição), mostra o grupo todo.
-  const presentesCount = await prisma.rodada.findUnique({
-    where: { id: rodada.id },
-    select: { _count: { select: { presentes: true } } },
+  // Só quem foi marcado como presente nessa rodada pode votar OU ser votado —
+  // sem esse filtro, gente que acabou de se cadastrar e nunca jogou naquele
+  // dia entrava como candidato (e conseguia votar) só por estar no grupo.
+  const souPresente = await prisma.rodada.findFirst({
+    where: { id: rodada.id, presentes: { some: { id: jogador.id } } },
+    select: { id: true },
   });
-  const filtroPresentes = (presentesCount?._count.presentes ?? 0) > 0
-    ? { rodadasPresente: { some: { id: rodada.id } } }
-    : {};
+  if (!souPresente) {
+    return <SemPresencaScreen isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} />;
+  }
 
   const [jogadores, traits] = await Promise.all([
     prisma.jogador.findMany({
-      where: { grupoId: jogador.grupoId, ...filtroPresentes },
+      where: { grupoId: jogador.grupoId, rodadasPresente: { some: { id: rodada.id } } },
       select: { id: true, apelido: true },
       orderBy: { apelido: "asc" },
     }),
@@ -182,6 +182,53 @@ function NoRodadaScreen({ isAdmin, isSuperAdmin }: { isAdmin: boolean; isSuperAd
               </button>
             </form>
           }
+        />
+      </main>
+
+      <BottomNav />
+    </div>
+  );
+}
+
+function SemPresencaScreen({ isAdmin, isSuperAdmin }: { isAdmin: boolean; isSuperAdmin: boolean }) {
+  return (
+    <div style={{ minHeight: "100dvh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
+      <VotacaoTopBar isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} />
+
+      <main style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        padding: "calc(env(safe-area-inset-top, 0px) + 88px) 16px calc(88px + env(safe-area-inset-bottom, 0px))",
+      }}>
+        <EmptyState
+          icon={<UsersThree size={26} weight="regular" />}
+          title="Você não jogou essa rodada"
+          description="Só quem foi marcado como presente pode votar (e ser votado). Se você jogou e não foi marcado, peça pra um admin te adicionar."
+          action={isAdmin ? (
+            <Link
+              href="/votacao/presenca"
+              style={{
+                height: 48,
+                padding: "0 24px",
+                background: "#9fe870",
+                color: "#0a1a06",
+                borderRadius: 9999,
+                fontFamily: "var(--font-display)",
+                fontWeight: 700,
+                fontSize: 15,
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                textDecoration: "none",
+                WebkitTapHighlightColor: "transparent",
+              }}
+            >
+              <UsersThree size={18} weight="bold" color="#0a1a06" />
+              Marcar presença
+            </Link>
+          ) : undefined}
         />
       </main>
 
