@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/encerrar-votacao",
-      "schedule": "5 18 * * *"
+      "schedule": "5 23 * * *"
     }
   ]
 }

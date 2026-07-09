@@ -93,7 +93,7 @@ export function HomeClient({
 
   // Campinho: conjunto ativo conforme a aba
   const campoSel = campoTab === "melhores" ? selecao : selecaoPiores;
-  // Janela de votação: parcial ao vivo na fase aberta, oficial após encerrar (15h); botão só ativo na janela aberta
+  // Janela de votação: parcial ao vivo na fase aberta, oficial após encerrar (20h); botão só ativo na janela aberta
   const mostrarResultados = votacao ? votacao.fase !== "antes" : false;
   const podeVotar = votacao?.fase === "aberta" && !jaVotou;
 

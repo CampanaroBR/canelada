@@ -430,17 +430,17 @@ export default async function FeedPage() {
     : null;
 
   // Regras de horário (derivadas da data do jogo):
-  // jogo 20:00 · votação abre 22:30 (mesmo dia) · fecha 15h (dia seguinte)
+  // jogo 20:00 · votação abre 22:30 (mesmo dia) · fecha 20h (dia seguinte)
   const horarioJogo = "20:00";
   const votacao = rodadaAtiva ? (() => {
     const { abre, fecha } = janelaVotacao(rodadaAtiva.data);
     const agora = new Date();
     // votacaoAberta=true (setado pelo cron ou manualmente) sempre vence a janela
     // calculada — evita esse widget divergir de /votacao, que já respeita a flag.
-    if (rodadaAtiva.votacaoAberta) return { fase: "aberta" as const, aberta: true, texto: "Votação aberta até às 15h" };
+    if (rodadaAtiva.votacaoAberta) return { fase: "aberta" as const, aberta: true, texto: "Votação aberta até às 20h" };
     if (agora < abre)   return { fase: "antes" as const, aberta: false, texto: "Votação abre às 22:30" };
     if (agora >= fecha) return { fase: "encerrada" as const, aberta: false, texto: "Votação encerrada" };
-    return { fase: "aberta" as const, aberta: true, texto: "Votação aberta até às 15h" };
+    return { fase: "aberta" as const, aberta: true, texto: "Votação aberta até às 20h" };
   })() : null;
 
   // Tabs de datas da Personagem da Semana: últimas 3 rodadas (asc → última = ativa)

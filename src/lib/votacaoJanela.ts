@@ -1,5 +1,5 @@
 // Janela da votação, ancorada em BRT (UTC-3), a partir da data do baba.
-// Baba no dia X → votação abre X 22:30 BRT, fecha (X+1) 15:00 BRT.
+// Baba no dia X → votação abre X 22:30 BRT, fecha (X+1) 20:00 BRT.
 // Robusto a timezone: Vercel roda em UTC, então derivamos a data BRT e
 // construímos os instantes com Date.UTC (que normaliza horas > 24).
 
@@ -15,8 +15,8 @@ export function janelaVotacao(data: Date): { abre: Date; fecha: Date } {
   const d = data.getUTCDate();
   // 22:30 BRT = 01:30 UTC do dia seguinte (Date.UTC normaliza a hora 25:30)
   const abre = new Date(Date.UTC(y, m, d, 25, 30, 0, 0));
-  // (X+1) 15:00 BRT = (X+1) 18:00 UTC
-  const fecha = new Date(Date.UTC(y, m, d + 1, 18, 0, 0, 0));
+  // (X+1) 20:00 BRT = (X+1) 23:00 UTC
+  const fecha = new Date(Date.UTC(y, m, d + 1, 23, 0, 0, 0));
   return { abre, fecha };
 }
 

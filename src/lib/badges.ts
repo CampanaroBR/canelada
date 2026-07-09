@@ -37,7 +37,7 @@ type Ctx = {
   partPorRodada: Map<string, Set<string>>;
 };
 
-// Uma rodada "conta" para badges quando a votação já encerrou (encerrada OU 15h do dia seguinte já passou)
+// Uma rodada "conta" para badges quando a votação já encerrou (encerrada OU 20h do dia seguinte já passou)
 function votacaoFinalizada(data: Date, encerrada: boolean): boolean {
   if (encerrada) return true;
   const fim = new Date(data);
