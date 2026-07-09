@@ -7,6 +7,9 @@ import { criarRodada } from "./actions";
 import Link from "next/link";
 import Image from "next/image";
 import { EmptyState } from "@/ds/components/EmptyState";
+import { Card } from "@/ds/components/Card";
+import { Content } from "@/ds/components/Content";
+import { Separator } from "@/ds/components/Separator";
 import { SoccerBall, CaretLeft, Bell, UsersThree, PencilSimpleLine } from "@phosphor-icons/react/dist/ssr";
 import { votacaoAtiva, MIN_JOGADORES_VOTACAO } from "@/lib/votacaoJanela";
 
@@ -195,17 +198,15 @@ type VotoComVotado = {
   trait: { nome: string; emoji: string | null } | null;
 };
 
-const CATEGORIA_CONFIG: Record<string, { label: string; color: string }> = {
-  MVP:     { label: "MVP",     color: "#B5FF4D" },
-  BAGRE:   { label: "Bagre",   color: "#EF4444" },
-  RACUDO:  { label: "Raçudo",  color: "#F59E0B" },
-  RESENHA: { label: "Resenha", color: "#60A5FA" },
-  TRAIT:   { label: "Trait",   color: "#A78BFA" },
+// Categorias legadas (MVP/BAGRE/RAÇUDO/RESENHA) não existem mais na votação
+// real (só TRAIT), mas ficam aqui como fallback pra qualquer voto antigo.
+const CATEGORIA_LABEL: Record<string, string> = {
+  MVP: "MVP", BAGRE: "Bagre", RACUDO: "Raçudo", RESENHA: "Resenha", TRAIT: "Trait",
 };
 
 function JaVotouScreen({ votos, isAdmin, isSuperAdmin }: { votos: VotoComVotado[]; isAdmin: boolean; isSuperAdmin: boolean }) {
   return (
-    <div style={{ minHeight: "100dvh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
+    <div style={{ minHeight: "100dvh", background: "#090909", display: "flex", flexDirection: "column" }}>
       <VotacaoTopBar isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} />
 
       <main style={{
@@ -213,83 +214,53 @@ function JaVotouScreen({ votos, isAdmin, isSuperAdmin }: { votos: VotoComVotado[
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
         padding: "calc(env(safe-area-inset-top, 0px) + 88px) 24px calc(88px + env(safe-area-inset-bottom, 0px))",
         textAlign: "center",
-        gap: "24px",
+        gap: 24,
       }}>
-        <div style={{ fontSize: "64px", opacity: 0.9 }}>✅</div>
+        <div style={{
+          width: 88, height: 88, borderRadius: "50%", background: "#9fe870",
+          display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+        }}>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <path d="M4 12.5L9.5 18L20 6" stroke="#090909" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+
         <div>
           <h2 style={{
             fontFamily: "var(--font-display)",
-            fontWeight: 900,
-            fontSize: "clamp(42px, 11vw, 56px)",
-            lineHeight: 0.88,
+            fontWeight: 800,
+            fontSize: "clamp(36px, 10vw, 48px)",
+            lineHeight: 1,
             letterSpacing: "-0.02em",
-            textTransform: "uppercase",
-            color: "var(--color-text-primary)",
-            marginBottom: "10px",
+            color: "#fff",
+            margin: "0 0 10px",
           }}>
-            JÁ VOTOU<br />
-            <span style={{ color: "var(--color-accent)" }}>HOJE.</span>
+            Já votou <span style={{ color: "#9fe870" }}>hoje.</span>
           </h2>
-          <p style={{
-            fontSize: "14px",
-            color: "var(--color-text-muted)",
-            fontFamily: "var(--font-body)",
-            opacity: 0.7,
-          }}>
+          <p style={{ margin: 0, fontSize: 15, color: "#7a7a7a", fontFamily: "var(--font-body)" }}>
             Seus votos foram registrados.
           </p>
         </div>
 
         {votos.length > 0 && (
-          <div style={{
-            width: "100%",
-            maxWidth: "320px",
-            background: "var(--color-surface-1)",
-            borderRadius: "var(--radius-lg)",
-            boxShadow: "var(--shadow-border)",
-            overflow: "hidden",
-          }}>
-            {votos.map((v, i) => {
-              const cfg = v.trait
-                ? { label: `${v.trait.emoji ?? ""} ${v.trait.nome}`.trim(), color: "#A78BFA" }
-                : CATEGORIA_CONFIG[v.categoria] ?? { label: v.categoria, color: "var(--color-text-muted)" };
-              return (
-                <div
-                  key={v.id}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "12px 16px",
-                    boxShadow: i < votos.length - 1 ? "inset 0 -1px 0 rgba(255,255,255,0.05)" : "none",
-                  }}
-                >
-                  <span style={{
-                    fontFamily: "var(--font-display)",
-                    fontWeight: 900,
-                    fontSize: "11px",
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                    color: cfg.color,
-                    minWidth: "64px",
-                  }}>
-                    {cfg.label}
-                  </span>
-                  <span style={{
-                    fontSize: "13px",
-                    fontWeight: 600,
-                    fontFamily: "var(--font-body)",
-                    color: "var(--color-text-primary)",
-                  }}>
-                    {v.votado.apelido}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+          <Card padding={16} style={{ width: "100%", maxWidth: 340, textAlign: "left" }}>
+            {votos.map((v, i) => (
+              <div key={v.id}>
+                {i > 0 && <Separator spacing={12} />}
+                <Content
+                  leading={<span style={{ fontSize: 20 }}>{v.trait?.emoji ?? "⚽"}</span>}
+                  label={v.trait?.nome ?? CATEGORIA_LABEL[v.categoria] ?? v.categoria}
+                  trailing={
+                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#9fe870" }}>
+                      {v.votado.apelido}
+                    </span>
+                  }
+                />
+              </div>
+            ))}
+          </Card>
         )}
       </main>
 
