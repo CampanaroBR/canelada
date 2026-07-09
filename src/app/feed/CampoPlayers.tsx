@@ -5,8 +5,13 @@ import type { PersonagemSemana } from "@/components/ShareCardModal";
 
 export const TSHIRT_OUTLINE = "/tshirt-outline.svg";
 export const TSHIRT_GK_OUT = "/tshirt-gk-outline.svg";
+// Melhores da rodada: linha azul, goleiro vermelho.
 export const TSHIRT_FILLED = "/tshirt-filled.svg";
 export const TSHIRT_GK_FILL = "/tshirt-gk-filled.svg";
+// Piores da rodada: linha vermelho-claro, goleiro vinho — cores diferentes
+// dos melhores pra não confundir os dois times na mesma tela.
+export const TSHIRT_FILLED_PIORES = "/tshirt-filled-piores.svg";
+export const TSHIRT_GK_FILL_PIORES = "/tshirt-gk-filled-piores.svg";
 
 /* Slot vazio: camisa + "VOTE" */
 export function PlayerSlot({ tshirt, href }: { tshirt: string; href?: string }) {

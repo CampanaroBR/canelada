@@ -35,7 +35,7 @@ const SelecaoShareModal = dynamic(
 );
 
 import { TRAIT_BADGE } from "@/lib/badgeAssets";
-import { PlayerSlot, PlayerNamed, TSHIRT_OUTLINE, TSHIRT_GK_OUT, TSHIRT_FILLED, TSHIRT_GK_FILL } from "./CampoPlayers";
+import { PlayerSlot, PlayerNamed, TSHIRT_OUTLINE, TSHIRT_GK_OUT, TSHIRT_FILLED, TSHIRT_GK_FILL, TSHIRT_FILLED_PIORES, TSHIRT_GK_FILL_PIORES } from "./CampoPlayers";
 
 const CAMPO   = "/campo.jpg";
 const ESTADIO = "/estadio.jpg";
@@ -252,11 +252,17 @@ export function HomeClient({
             </div>
 
             {/* Players formation */}
+            {(() => {
+              // Melhores: linha azul + GK vermelho. Piores: linha vermelho-claro
+              // + GK vinho — paleta própria pra não confundir os dois times.
+              const tshirtLinha = campoTab === "melhores" ? TSHIRT_FILLED : TSHIRT_FILLED_PIORES;
+              const tshirtGk = campoTab === "melhores" ? TSHIRT_GK_FILL : TSHIRT_GK_FILL_PIORES;
+              return (
             <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 16, alignItems: "center", width: "100%" }}>
               {/* CF row */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 8, paddingBottom: 8 }}>
                 {mostrarResultados
-                  ? <PlayerNamed p={campoSel[0]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
+                  ? <PlayerNamed p={campoSel[0]} tshirt={tshirtLinha} onShare={setShareCard} />
                   : <PlayerSlot tshirt={TSHIRT_OUTLINE} href={podeVotar ? "/votacao" : undefined} />}
               </div>
 
@@ -264,9 +270,9 @@ export function HomeClient({
               <div style={{ display: "flex", gap: 62, alignItems: "center", justifyContent: "center", width: "100%" }}>
                 {mostrarResultados ? (
                   <>
-                    <PlayerNamed p={campoSel[1]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
-                    <PlayerNamed p={campoSel[2]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
-                    <PlayerNamed p={campoSel[3]} tshirt={TSHIRT_FILLED} onShare={setShareCard} />
+                    <PlayerNamed p={campoSel[1]} tshirt={tshirtLinha} onShare={setShareCard} />
+                    <PlayerNamed p={campoSel[2]} tshirt={tshirtLinha} onShare={setShareCard} />
+                    <PlayerNamed p={campoSel[3]} tshirt={tshirtLinha} onShare={setShareCard} />
                   </>
                 ) : (
                   <>
@@ -277,13 +283,15 @@ export function HomeClient({
                 )}
               </div>
 
-              {/* GK row (só faz sentido GK nos "melhores" = Paredão) */}
+              {/* GK row — Paredão nos melhores, Frangueiro nos piores */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 8, paddingBottom: 8 }}>
                 {mostrarResultados
-                  ? <PlayerNamed p={campoSel[4]} tshirt={campoTab === "melhores" ? TSHIRT_GK_FILL : TSHIRT_FILLED} onShare={setShareCard} />
+                  ? <PlayerNamed p={campoSel[4]} tshirt={tshirtGk} onShare={setShareCard} />
                   : <PlayerSlot tshirt={TSHIRT_GK_OUT} href={podeVotar ? "/votacao" : undefined} />}
               </div>
             </div>
+              );
+            })()}
 
             {/* CTA */}
             <div style={{ position: "relative", width: "100%" }}>
