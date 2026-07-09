@@ -103,7 +103,7 @@ export function AdminVotosClient({ rodadaId }: { rodadaId: string }) {
               placeholder="Buscar jogador ou personagem…"
               style={{
                 flex: 1, background: "transparent", border: "none", outline: "none",
-                fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 14,
+                fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 16,
                 color: "#fff", caretColor: "#9fe870",
               }}
             />

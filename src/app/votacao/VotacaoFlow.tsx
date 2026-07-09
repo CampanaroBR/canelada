@@ -408,7 +408,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
                 name="buscar-jogador-hero"
                 style={{
                   flex: 1, background: "transparent", border: "none", outline: "none",
-                  fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 14,
+                  fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 16,
                   color: "#fff", caretColor: "#9fe870",
                 }}
               />
@@ -782,7 +782,7 @@ function PersonagensList({
               name="buscar-jogador-picker"
               style={{
                 flex: 1, background: "transparent", border: "none", outline: "none",
-                fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 14,
+                fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 16,
                 color: "#fff", caretColor: "#9fe870",
               }}
             />
