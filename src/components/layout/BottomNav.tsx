@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
 import { House, SoccerBall, Medal, ChartBar } from "@phosphor-icons/react";
+import { useIsAdmin } from "@/lib/useIsAdmin";
 
 const NAV_ITEMS: Array<{
   href: string;
@@ -22,13 +22,7 @@ export function BottomNav() {
   // Aba "Baba" é só de administração de rodada (criar/gerenciar) — usuário
   // comum não faz nada útil ali (vê só "Aguardando rodada"). Some pra ele,
   // deixando só os 3 ícones que ele realmente usa.
-  const [isAdmin, setIsAdmin] = useState(false);
-  useEffect(() => {
-    fetch("/api/me")
-      .then((r) => r.json())
-      .then((d) => setIsAdmin(d.role === "ADMIN" || d.role === "SUPER_ADMIN"))
-      .catch(() => {});
-  }, []);
+  const isAdmin = useIsAdmin();
   const items = isAdmin ? NAV_ITEMS : NAV_ITEMS.filter((i) => i.href !== "/pelada");
 
   return (

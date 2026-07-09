@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
 import { User, UsersThree, UserCheck, SignOut } from "@phosphor-icons/react";
+import { useIsAdmin } from "@/lib/useIsAdmin";
 
 interface Props {
   open: boolean;
@@ -29,16 +30,12 @@ const EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
 export function MenuSheet({ open, onClose }: Props) {
   const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const isAdmin = useIsAdmin();
 
   useEffect(() => {
     if (open) {
       setMounted(true);
       const raf = requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)));
-      fetch("/api/me")
-        .then((r) => r.json())
-        .then((d) => setIsAdmin(d.role === "ADMIN" || d.role === "SUPER_ADMIN"))
-        .catch(() => {});
       return () => cancelAnimationFrame(raf);
     }
     setVisible(false);
