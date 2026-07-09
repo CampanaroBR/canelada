@@ -119,33 +119,58 @@ export default async function FeedPage() {
     }
     raw.sort((a, b) => b.votos - a.votos);
 
-    // Seleção da Rodada: 1 vencedor por posição (CF, mid, mid, mid, GK).
-    // Sem filtro estrito (basta ≥1 voto) — é a escalação da rodada. Um jogador
-    // não pode ocupar 2 posições na mesma escalação — se já foi escalado numa
-    // posição anterior, some do pool das seguintes (pega o próximo mais votado).
-    const POSITION_TRAITS = ["matador", "categoria", "racudo", "garcom", "paredao"];
-    // NEG_TRAITS alimenta a formação fixa de 5 posições da Seleção — não pode
-    // crescer sem quebrar o layout. Ranking "Pior da rodada" usa a lista mais
-    // ampla NEG_TRAITS_RANKING (abaixo), que inclui frangueiro/bragueiro.
-    const NEG_TRAITS = ["bagre", "cone", "chorao", "reclamao", "paneleiro"];
-    const NEG_TRAITS_RANKING = [...NEG_TRAITS, "frangueiro", "bragueiro"];
-    const topPorTraitSemRepetir = (slugs: string[], usados: Set<string>) => {
-      return slugs.map((slug) => {
+    // Seleção da Rodada: 5 jogadores por placar ponderado (peso do trait × nº
+    // de votos, somado entre TODOS os traits do mesmo lado que receberam),
+    // não mais "1 vencedor por trait fixo". Pesos definidos junto com o
+    // usuário — 3 = decide o jogo sozinho, 2 = impacto real, 1 = mais
+    // estilo/comportamento que resultado. Um jogador não pode ocupar 2 vagas
+    // na mesma escalação nem aparecer nos dois lados (melhores E piores) —
+    // quem já foi escalado some do pool das seguintes.
+    const POSITIVO_ATIVOS = ["categoria", "matador", "paredao", "racudo", "xerife", "garcom", "driblador", "resenha-forte"];
+    const NEGATIVO_ATIVOS = ["bagre", "frangueiro", "bragueiro", "reclamao", "pregueiro", "paneleiro", "firuleiro"];
+    const pesoRows = await prisma.trait.findMany({
+      where: { slug: { in: [...POSITIVO_ATIVOS, ...NEGATIVO_ATIVOS] } },
+      select: { slug: true, peso: true },
+    });
+    const pesoMap = Object.fromEntries(pesoRows.map(t => [t.slug, t.peso]));
+
+    type ScoreEntry = { score: number; totalVotos: number; bestSlug: string; bestVotos: number };
+    const buildScores = (slugs: string[]) => {
+      const scores = new Map<string, ScoreEntry>();
+      for (const slug of slugs) {
         const e = perTrait.get(slug);
-        if (!e || e.total === 0) return null;
-        const disponiveis = new Map([...e.players].filter(([pid]) => !usados.has(pid)));
-        const winner = pickWinner(disponiveis, `${rodadaAtiva.id}:${slug}`);
-        if (!winner) return null;
-        usados.add(winner.id);
-        return { slug, vencedorId: winner.id, votos: winner.count };
+        if (!e) continue;
+        const peso = pesoMap[slug] ?? 1;
+        for (const [pid, count] of e.players) {
+          const cur = scores.get(pid) ?? { score: 0, totalVotos: 0, bestSlug: slug, bestVotos: 0 };
+          cur.score += peso * count;
+          cur.totalVotos += count;
+          if (count > cur.bestVotos) { cur.bestVotos = count; cur.bestSlug = slug; }
+          scores.set(pid, cur);
+        }
+      }
+      return scores;
+    };
+    const topJogadoresSemRepetir = (scores: Map<string, ScoreEntry>, n: number, usados: Set<string>) => {
+      const ranked = [...scores.entries()]
+        .filter(([pid]) => !usados.has(pid))
+        .sort((a, b) => b[1].score - a[1].score || b[1].totalVotos - a[1].totalVotos || a[0].localeCompare(b[0]))
+        .slice(0, n);
+      const out: ({ slug: string; vencedorId: string; votos: number } | null)[] = ranked.map(([pid, e]) => {
+        usados.add(pid);
+        return { slug: e.bestSlug, vencedorId: pid, votos: e.totalVotos };
       });
+      while (out.length < n) out.push(null);
+      return out;
     };
     // Melhores e piores também não compartilham jogador — quem já ficou numa
     // escalação some do pool da outra (senão a mesma pessoa vira "melhor" e
     // "pior" ao mesmo tempo, o que não faz sentido pro usuário).
     const usadosGeral = new Set<string>();
-    const selRaw = topPorTraitSemRepetir(POSITION_TRAITS, usadosGeral);
-    const selRawPiores = topPorTraitSemRepetir(NEG_TRAITS, usadosGeral);
+    const scoresPositivo = buildScores(POSITIVO_ATIVOS);
+    const scoresNegativo = buildScores(NEGATIVO_ATIVOS);
+    const selRaw = topJogadoresSemRepetir(scoresPositivo, 5, usadosGeral);
+    const selRawPiores = topJogadoresSemRepetir(scoresNegativo, 5, usadosGeral);
 
     // Resolve nomes + meta de TODOS (personagens + seleção + piores) numa tacada
     const vIds = [...new Set([
@@ -153,7 +178,7 @@ export default async function FeedPage() {
       ...selRaw.filter(Boolean).map(s => s!.vencedorId),
       ...selRawPiores.filter(Boolean).map(s => s!.vencedorId),
     ])];
-    const tSlugs = [...new Set([...raw.map(r => r.slug), ...POSITION_TRAITS, ...NEG_TRAITS])];
+    const tSlugs = [...new Set([...raw.map(r => r.slug), ...POSITIVO_ATIVOS, ...NEGATIVO_ATIVOS])];
     // duas buscas independentes → paralelas
     const [nmeRows, tRows] = await Promise.all([
       vIds.length ? prisma.jogador.findMany({ where: { id: { in: vIds } }, select: { id: true, apelido: true } }) : Promise.resolve([]),
@@ -186,17 +211,15 @@ export default async function FeedPage() {
     // Rankings da Home ("Parcial da rodada" / "Pior da rodada"): 1 vencedor
     // por trait, sem exclusão cruzada entre traits (aqui não é formação de
     // time, é lista de conquistas — a mesma pessoa pode liderar mais de um
-    // trait). Usa `raw` (todos os traits com arte, já calculado acima) em vez
-    // de só os 5 traits da Seleção — senão faltava driblador/xerife, que são
-    // positivos mas não têm posição no campo.
-    const POSITIVOS_TODOS = ["categoria", "matador", "paredao", "racudo", "xerife", "garcom", "driblador"];
+    // trait). Mesmo conjunto de traits ativos usado no placar da Seleção
+    // (POSITIVO_ATIVOS/NEGATIVO_ATIVOS), pra não faltar nenhum trait votável.
     const toRankingEntry = (r: { slug: string; vencedorId: string; votos: number }): MaisVotado => ({
       apelido: nmeMap[r.vencedorId] ?? "?",
       qtd: r.votos,
       categoria: r.slug === "categoria" ? "MVP" : (tMeta[r.slug]?.nome ?? r.slug).toUpperCase(),
     });
-    maisVotados = raw.filter(r => POSITIVOS_TODOS.includes(r.slug)).map(toRankingEntry).sort((a, b) => b.qtd - a.qtd);
-    maisVotadosPiores = raw.filter(r => NEG_TRAITS_RANKING.includes(r.slug)).map(toRankingEntry).sort((a, b) => b.qtd - a.qtd);
+    maisVotados = raw.filter(r => POSITIVO_ATIVOS.includes(r.slug)).map(toRankingEntry).sort((a, b) => b.qtd - a.qtd);
+    maisVotadosPiores = raw.filter(r => NEGATIVO_ATIVOS.includes(r.slug)).map(toRankingEntry).sort((a, b) => b.qtd - a.qtd);
   }
 
   // ── Personagem da semana por rodada (tabs de data) ──

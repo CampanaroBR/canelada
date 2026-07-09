@@ -8,28 +8,28 @@ const prisma = new PrismaClient({ adapter });
 // ── Traits de personalidade ────────────────────────────────────────────────────
 // Ordem e textos seguem o PRD oficial — "Sistema de Traits do Canelada".
 // Etapa 1 (Futebol) → Etapa 2 (Personalidade) → Etapa 3 (Resenha).
-const TRAITS = [
+const TRAITS: { slug: string; nome: string; categoria: TraitCategoria; emoji: string; descricao?: string; peso?: number }[] = [
   // Grupo 1 — Futebol (obrigatório)
-  { slug: "categoria",     nome: "Categoria",       categoria: TraitCategoria.FUTEBOL,       emoji: "👑", descricao: "O dono da bola e do campo. Humilha todo mundo com categoria." },
-  { slug: "matador",       nome: "Matador",         categoria: TraitCategoria.FUTEBOL,       emoji: "⚽", descricao: "Especialista em finalizar jogadas e balançar as redes." },
-  { slug: "paredao",       nome: "Paredão",         categoria: TraitCategoria.FUTEBOL,       emoji: "🧤", descricao: "Intransponível na defesa. Fechou o gol e salvou o time nos momentos decisivos." },
-  { slug: "racudo",        nome: "Raçudo",          categoria: TraitCategoria.FUTEBOL,       emoji: "💪", descricao: "Se destaca pela entrega, intensidade e vontade de vencer." },
-  { slug: "xerife",        nome: "Xerife",          categoria: TraitCategoria.FUTEBOL,       emoji: "👊", descricao: "Lidera dentro de campo, organiza o time e assume a responsabilidade." },
-  { slug: "garcom",        nome: "Garçom",          categoria: TraitCategoria.FUTEBOL,       emoji: "🥂", descricao: "Enxerga o jogo como poucos. Cria oportunidades e distribui assistências." },
-  { slug: "driblador",     nome: "Driblador",       categoria: TraitCategoria.FUTEBOL,       emoji: "⚽💨", descricao: "Desmonta a marcação com dribles, velocidade e muita habilidade." },
+  { slug: "categoria",     nome: "Categoria",       categoria: TraitCategoria.FUTEBOL,       emoji: "👑", descricao: "O dono da bola e do campo. Humilha todo mundo com categoria.", peso: 3 },
+  { slug: "matador",       nome: "Matador",         categoria: TraitCategoria.FUTEBOL,       emoji: "⚽", descricao: "Especialista em finalizar jogadas e balançar as redes.", peso: 3 },
+  { slug: "paredao",       nome: "Paredão",         categoria: TraitCategoria.FUTEBOL,       emoji: "🧤", descricao: "Intransponível na defesa. Fechou o gol e salvou o time nos momentos decisivos.", peso: 3 },
+  { slug: "racudo",        nome: "Raçudo",          categoria: TraitCategoria.FUTEBOL,       emoji: "💪", descricao: "Se destaca pela entrega, intensidade e vontade de vencer.", peso: 2 },
+  { slug: "xerife",        nome: "Xerife",          categoria: TraitCategoria.FUTEBOL,       emoji: "👊", descricao: "Lidera dentro de campo, organiza o time e assume a responsabilidade.", peso: 2 },
+  { slug: "garcom",        nome: "Garçom",          categoria: TraitCategoria.FUTEBOL,       emoji: "🥂", descricao: "Enxerga o jogo como poucos. Cria oportunidades e distribui assistências.", peso: 2 },
+  { slug: "driblador",     nome: "Driblador",       categoria: TraitCategoria.FUTEBOL,       emoji: "⚽💨", descricao: "Desmonta a marcação com dribles, velocidade e muita habilidade.", peso: 2 },
   // Grupo 2 — Resenha (opcional)
-  { slug: "resenha-forte", nome: "Só Resenha",      categoria: TraitCategoria.PERSONALIDADE, emoji: "🎤", descricao: "Responsável pela animação, brincadeiras e energia do grupo. E não joga nada! 😂" },
-  { slug: "delegado",      nome: "Delegado",        categoria: TraitCategoria.PERSONALIDADE, emoji: "🔒⚽", descricao: "A bola é dele. O resto do time só acompanha a jogada." },
-  { slug: "chorao",        nome: "Chorão",          categoria: TraitCategoria.PERSONALIDADE, emoji: "😭", descricao: "Sempre encontra um motivo para lamentar uma derrota, lance perdido ou situação adversa." },
-  { slug: "reclamao",      nome: "Reclamão",        categoria: TraitCategoria.PERSONALIDADE, emoji: "😡", descricao: "Questiona decisões, marcações e jogadas com frequência." },
-  { slug: "paneleiro",     nome: "Paneleiro",       categoria: TraitCategoria.PERSONALIDADE, emoji: "🍳", descricao: "Prefere jogar sempre com os mesmos parceiros e amigos." },
+  { slug: "resenha-forte", nome: "Só Resenha",      categoria: TraitCategoria.PERSONALIDADE, emoji: "🎤", descricao: "Responsável pela animação, brincadeiras e energia do grupo. E não joga nada! 😂", peso: 1 },
+  { slug: "delegado",      nome: "Delegado",        categoria: TraitCategoria.PERSONALIDADE, emoji: "🔒⚽", descricao: "A bola é dele. O resto do time só acompanha a jogada.", peso: 1 },
+  { slug: "chorao",        nome: "Chorão",          categoria: TraitCategoria.PERSONALIDADE, emoji: "😭", descricao: "Sempre encontra um motivo para lamentar uma derrota, lance perdido ou situação adversa.", peso: 1 },
+  { slug: "reclamao",      nome: "Reclamão",        categoria: TraitCategoria.PERSONALIDADE, emoji: "😡", descricao: "Questiona decisões, marcações e jogadas com frequência.", peso: 2 },
+  { slug: "paneleiro",     nome: "Paneleiro",       categoria: TraitCategoria.PERSONALIDADE, emoji: "🍳", descricao: "Prefere jogar sempre com os mesmos parceiros e amigos.", peso: 1 },
   // Grupo 3 — Destaques Negativos (opcional)
-  { slug: "firuleiro",     nome: "Firuleiro",       categoria: TraitCategoria.RESENHA,       emoji: "🎭", descricao: "Tenta o drible mais difícil quando o passe simples resolveria." },
-  { slug: "pregueiro",     nome: "Pregueiro",       categoria: TraitCategoria.RESENHA,       emoji: "🦥", descricao: "Corre pouco, não se dedica e parece estar sempre economizando energia." },
-  { slug: "cone",          nome: "Cone",            categoria: TraitCategoria.RESENHA,       emoji: "🚧", descricao: "Teve pouca participação na partida. A bola bateu e voltou." },
-  { slug: "bagre",         nome: "Bagre da Noite",  categoria: TraitCategoria.RESENHA,       emoji: "🐟", descricao: "Representa a pior atuação da rodada. Errou passes, perdeu gols e teve dificuldades durante a partida." },
-  { slug: "frangueiro",    nome: "Frangueiro",      categoria: TraitCategoria.RESENHA,       emoji: "🐔", descricao: "O goleiro que toma um gol bobo, com bola fácil que escapa da mão ou do pé." },
-  { slug: "bragueiro",     nome: "Bragueiro",       categoria: TraitCategoria.RESENHA,       emoji: "🐴", descricao: "O jogador que entrega a bola pro adversário com um passe errado ou saída desastrosa." },
+  { slug: "firuleiro",     nome: "Firuleiro",       categoria: TraitCategoria.RESENHA,       emoji: "🎭", descricao: "Tenta o drible mais difícil quando o passe simples resolveria.", peso: 1 },
+  { slug: "pregueiro",     nome: "Pregueiro",       categoria: TraitCategoria.RESENHA,       emoji: "🦥", descricao: "Corre pouco, não se dedica e parece estar sempre economizando energia.", peso: 2 },
+  { slug: "cone",          nome: "Cone",            categoria: TraitCategoria.RESENHA,       emoji: "🚧", descricao: "Teve pouca participação na partida. A bola bateu e voltou.", peso: 1 },
+  { slug: "bagre",         nome: "Bagre da Noite",  categoria: TraitCategoria.RESENHA,       emoji: "🐟", descricao: "Representa a pior atuação da rodada. Errou passes, perdeu gols e teve dificuldades durante a partida.", peso: 3 },
+  { slug: "frangueiro",    nome: "Frangueiro",      categoria: TraitCategoria.RESENHA,       emoji: "🐔", descricao: "O goleiro que toma um gol bobo, com bola fácil que escapa da mão ou do pé.", peso: 3 },
+  { slug: "bragueiro",     nome: "Bragueiro",       categoria: TraitCategoria.RESENHA,       emoji: "🐴", descricao: "O jogador que entrega a bola pro adversário com um passe errado ou saída desastrosa.", peso: 2 },
   // Traits extras / legadas (fora do fluxo ordenado, mantidas para badges/perfis já existentes)
   { slug: "corpo-mole",    nome: "Corpo Mole",      categoria: TraitCategoria.RESENHA,       emoji: "🛋️", descricao: "Corre pouco e parece estar sempre economizando energia." },
   { slug: "catimbeiro",    nome: "Catimbeiro",      categoria: TraitCategoria.PERSONALIDADE, emoji: "🐢" },
@@ -238,7 +238,7 @@ async function main() {
   for (const t of TRAITS) {
     await prisma.trait.upsert({
       where: { slug: t.slug },
-      update: { nome: t.nome, categoria: t.categoria, emoji: t.emoji, descricao: t.descricao ?? null },
+      update: { nome: t.nome, categoria: t.categoria, emoji: t.emoji, descricao: t.descricao ?? null, peso: t.peso },
       create: t,
     });
   }

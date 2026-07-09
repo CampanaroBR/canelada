@@ -176,6 +176,14 @@ model Trait {
   descricao   String?
   categoria   TraitCategoria
   emoji       String?
+  // Peso pro placar ponderado da Seleção da Rodada (score = peso × nº de
+  // votos, somado por jogador entre todos os traits do mesmo lado). 3 =
+  // decide o jogo sozinho (Matador, Categoria, Paredão, Bagre da Noite,
+  // Frangueiro), 2 = impacto real (Raçudo, Xerife, Driblador, Garçom,
+  // Bragueiro, Reclamão, Pregueiro), 1 = mais estilo/comportamento que
+  // resultado (Resenha Forte, Paneleiro, Firuleiro). Default 1 pra traits
+  // fora da votação ativa.
+  peso        Int            @default(1)
 
   jogadores   JogadorTrait[]
   votos       Voto[]
