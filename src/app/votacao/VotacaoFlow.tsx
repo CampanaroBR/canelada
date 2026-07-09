@@ -23,7 +23,7 @@ interface Props {
 // dividida em Positivo/Negativo, opcional/pulável. Antes eram 7 telas cheias
 // obrigatórias seguidas — gente reclamou de cansaço; isso corta pra 4.
 //
-// De 18 pra 15 traits votáveis: cortados Reclamão (redundante com Chorão —
+// De 18 pra 15 traits votáveis: cortados Chorão (redundante com Reclamão —
 // mesma ideia de "lamenta/reclama"), Cone (redundante com Pregueiro — mesma
 // ideia de "baixo impacto/correu pouco") e Delegado (redundante com
 // Categoria — "a bola é dele" já é o que Categoria cobre). Frangueiro
@@ -32,7 +32,7 @@ interface Props {
 // não aparecem mais pra votar.
 const HERO_SLUGS = ["categoria", "matador", "paredao", "bagre"];
 const POSITIVO_SLUGS = ["racudo", "xerife", "garcom", "driblador", "resenha-forte"];
-const NEGATIVO_SLUGS = ["chorao", "paneleiro", "firuleiro", "pregueiro", "frangueiro", "bragueiro"];
+const NEGATIVO_SLUGS = ["reclamao", "paneleiro", "firuleiro", "pregueiro", "frangueiro", "bragueiro"];
 const LISTA_SLUGS = [...POSITIVO_SLUGS, ...NEGATIVO_SLUGS];
 const ALL_SLUGS = [...HERO_SLUGS, ...LISTA_SLUGS];
 
