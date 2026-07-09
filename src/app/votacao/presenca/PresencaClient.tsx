@@ -68,7 +68,7 @@ export function PresencaClient({ rodadaId, jogadores, presentesIniciais, pendent
           Quem jogou hoje?
         </span>
         {isSuperAdmin && (
-          <Link href="/votacao/admin" aria-label="Editar votos" style={{ width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", color: "#c5973a" }}>
+          <Link href="/votacao/admin" aria-label="Editar votos" style={{ width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", color: "#9fe870" }}>
             <PencilSimpleLine size={20} weight="bold" />
           </Link>
         )}
@@ -84,10 +84,10 @@ export function PresencaClient({ rodadaId, jogadores, presentesIniciais, pendent
       <main style={{ flex: 1, padding: "16px 8px 0", display: "flex", flexDirection: "column", gap: 16 }}>
         {pendentes.length > 0 && (
           <div>
-            <p style={{ margin: "0 0 8px 6px", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, letterSpacing: "0.08em", color: "#c5973a", textTransform: "uppercase" }}>
+            <p style={{ margin: "0 0 8px 6px", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11, letterSpacing: "0.08em", color: "#7a7a7a", textTransform: "uppercase" }}>
               Sem conta ainda · vincular
             </p>
-            <div style={{ background: "#141414", border: "1px solid rgba(197,151,58,0.35)", borderRadius: 16, overflow: "hidden" }}>
+            <div style={{ background: "#141414", border: "1px solid #2c2c2c", borderRadius: 16, overflow: "hidden" }}>
               {pendentes.map((nome, i) => (
                 <div key={nome} style={{ padding: "12px 14px", borderTop: i === 0 ? "none" : "1px solid #1f1f1f", display: "flex", flexDirection: "column", gap: 8 }}>
                   <Content leading={<Avatar name={nome} />} label={nome} description="não tinha conta na criação da rodada" />

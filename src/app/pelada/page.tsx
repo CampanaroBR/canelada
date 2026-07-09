@@ -78,7 +78,7 @@ export default async function PeladaPage() {
             </Card>
           </div>
         ) : isAdmin ? (
-          <NovaRodadaForm />
+          <NovaRodadaForm isSuperAdmin={jogador?.role === "SUPER_ADMIN"} />
         ) : (
           <div style={{ padding: "calc(env(safe-area-inset-top, 0px) + 80px) 16px 80px", display: "flex", flexDirection: "column", justifyContent: "center", minHeight: "80dvh" }}>
             <EmptyState

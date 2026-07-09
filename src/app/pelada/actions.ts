@@ -12,20 +12,38 @@ export type ParticipanteImportado = {
   apelido?: string;
 };
 
-export async function parseLista(lista: string): Promise<ParticipanteImportado[]> {
+export type JogadorDoGrupo = { id: string; apelido: string };
+
+export async function parseLista(lista: string): Promise<{
+  participantes: ParticipanteImportado[];
+  jogadoresGrupo: JogadorDoGrupo[];
+}> {
+  const session = await auth();
+  if (!session?.user?.id) redirect("/login");
+
+  const admin = await prisma.jogador.findUnique({
+    where: { userId: session.user.id },
+    select: { grupoId: true },
+  });
+  if (!admin) redirect("/onboarding");
+
   const linhas = lista
     .split("\n")
     .map((l) => l.replace(/^\d+[\.\)]\s*/, "").trim()) // remove "1. " ou "1) "
     .filter((l) => l.length > 1);
 
+  // Escopado ao grupo do admin — antes buscava TODOS os jogadores de TODOS os
+  // grupos, então em tese um nome podia "casar" com alguém de outro baba.
   const jogadores = await prisma.jogador.findMany({
+    where: { grupoId: admin.grupoId },
     select: { id: true, apelido: true, nomeNoBaba: true },
+    orderBy: { apelido: "asc" },
   });
 
-  return linhas.map((nome) => {
-    const normalizar = (s: string) =>
-      s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+  const normalizar = (s: string) =>
+    s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
 
+  const participantes: ParticipanteImportado[] = linhas.map((nome) => {
     const nomeNorm = normalizar(nome);
     const encontrado = jogadores.find(
       (j) =>
@@ -37,6 +55,11 @@ export async function parseLista(lista: string): Promise<ParticipanteImportado[]
       ? { nome, status: "encontrado", jogadorId: encontrado.id, apelido: encontrado.apelido }
       : { nome, status: "nao_encontrado" };
   });
+
+  return {
+    participantes,
+    jogadoresGrupo: jogadores.map((j) => ({ id: j.id, apelido: j.apelido })),
+  };
 }
 
 export async function criarRodada(data: string, participantesIds: string[], pendentesNomes: string[] = []) {

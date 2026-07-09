@@ -3,11 +3,11 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Bell, SoccerBall, Clock, CaretLeft } from "@phosphor-icons/react";
+import { Bell, SoccerBall, Clock, CaretLeft, LinkSimple, X, UserPlus } from "@phosphor-icons/react";
 import { MenuSheet } from "@/components/MenuSheet";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
-import { Button, Card, Content, Avatar, Toggle, Tag, Stat } from "@/ds";
-import { parseLista, criarRodada, type ParticipanteImportado } from "./actions";
+import { Button, Card, Content, Avatar, Toggle, Tag, Stat, Select } from "@/ds";
+import { parseLista, criarRodada, type ParticipanteImportado, type JogadorDoGrupo } from "./actions";
 
 type Step = "lista" | "confirmacao" | "sucesso";
 
@@ -26,29 +26,39 @@ function toISO(d: Date) {
 const WEEKDAYS_ABBR = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
 const MONTHS_ABBR = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 
-export function NovaRodadaForm() {
+export function NovaRodadaForm({ isSuperAdmin = false }: { isSuperAdmin?: boolean }) {
   const [step, setStep] = useState<Step>("lista");
   const [lista, setLista] = useState("");
   const [data, setData] = useState(() => new Date().toISOString().slice(0, 10));
   const [participantes, setParticipantes] = useState<ParticipanteImportado[]>([]);
+  const [jogadoresGrupo, setJogadoresGrupo] = useState<JogadorDoGrupo[]>([]);
   const [excluidos, setExcluidos] = useState<Set<string>>(new Set());
   const [totalCriados, setTotalCriados] = useState(0);
   const [isParsing, startParse] = useTransition();
   const [isSaving, startSave] = useTransition();
   const [error, setError] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  // Escolha de conta por linha pendente (nome digitado → jogadorId escolhido no Select)
+  const [escolhaPendente, setEscolhaPendente] = useState<Record<string, string>>({});
+  // Super admin: escolha no seletor de "adicionar jogador esquecido"
+  const [escolhaAdicionar, setEscolhaAdicionar] = useState("");
 
   const encontrados = participantes.filter((p) => p.status === "encontrado");
   const pendentes = participantes.filter((p) => p.status === "nao_encontrado");
   const incluidos = encontrados.filter((p) => !excluidos.has(p.jogadorId!));
+  // Jogadores já usados (vinculados ou adicionados) não podem ser escolhidos de novo
+  const jogadoresUsadosIds = new Set(encontrados.map((p) => p.jogadorId!));
+  const jogadoresDisponiveis = jogadoresGrupo.filter((j) => !jogadoresUsadosIds.has(j.id));
 
   function handleImportar() {
     if (!lista.trim()) return;
     setError("");
     startParse(async () => {
       const result = await parseLista(lista);
-      setParticipantes(result);
+      setParticipantes(result.participantes);
+      setJogadoresGrupo(result.jogadoresGrupo);
       setExcluidos(new Set());
+      setEscolhaPendente({});
       setStep("confirmacao");
     });
   }
@@ -73,6 +83,35 @@ export function NovaRodadaForm() {
       next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
+  }
+
+  // Vincula uma conta a um nome pendente antes mesmo de criar a rodada — a
+  // pessoa passa a entrar como "encontrado" de verdade, e não sobra pendente
+  // nenhum na rodada criada (antes só dava pra vincular numa tela separada,
+  // depois de já ter criado).
+  function vincularLocal(nome: string) {
+    const jogadorId = escolhaPendente[nome];
+    const jogador = jogadoresGrupo.find((j) => j.id === jogadorId);
+    if (!jogador) return;
+    setParticipantes((prev) => prev.map((p) =>
+      p.nome === nome ? { nome, status: "encontrado", jogadorId: jogador.id, apelido: jogador.apelido } : p
+    ));
+    setEscolhaPendente((prev) => { const next = { ...prev }; delete next[nome]; return next; });
+  }
+
+  // Só super admin: remove uma linha inteira (nome duplicado, escrito errado,
+  // brincadeira etc.) antes de criar a rodada.
+  function removerPendente(nome: string) {
+    setParticipantes((prev) => prev.filter((p) => p.nome !== nome));
+  }
+
+  // Só super admin: alguém jogou mas esqueceram de colocar o nome na lista —
+  // adiciona direto pelo cadastro do app, sem precisar reeditar a lista colada.
+  function adicionarJogador() {
+    const jogador = jogadoresGrupo.find((j) => j.id === escolhaAdicionar);
+    if (!jogador) return;
+    setParticipantes((prev) => [...prev, { nome: jogador.apelido, status: "encontrado", jogadorId: jogador.id, apelido: jogador.apelido }]);
+    setEscolhaAdicionar("");
   }
 
   /* ─── STEP: SUCESSO ─── */
@@ -285,8 +324,8 @@ export function NovaRodadaForm() {
             <Card tone="surface" padding={12} bordered={false} style={{ flex: 1, border: "1px solid rgba(159,232,112,0.3)", background: "rgba(159,232,112,0.08)" }}>
               <Stat value={encontrados.length} label="VINCULADOS" color="#9fe870" />
             </Card>
-            <Card tone="surface" padding={12} bordered={false} style={{ flex: 1, border: "1px solid rgba(197,151,58,0.35)", background: "rgba(197,151,58,0.08)" }}>
-              <Stat value={pendentes.length} label="PENDENTES" color="#c5973a" />
+            <Card tone="surface" padding={12} style={{ flex: 1 }}>
+              <Stat value={pendentes.length} label="PENDENTES" />
             </Card>
           </div>
 
@@ -308,23 +347,74 @@ export function NovaRodadaForm() {
               })}
 
               {pendentes.map((p, i) => (
-                <div key={i} style={{ padding: "12px 14px", borderTop: encontrados.length + i === 0 ? "none" : "1px solid #1c1c1c" }}>
+                <div key={p.nome} style={{ padding: "12px 14px", borderTop: encontrados.length + i === 0 ? "none" : "1px solid #1c1c1c", display: "flex", flexDirection: "column", gap: 8 }}>
                   <Content
                     leading={<Avatar name={p.nome} />}
                     label={p.nome}
-                    description="não encontrado"
-                    trailing={<Tag tone="gold">PENDENTE</Tag>}
+                    description="sem conta no app ainda"
+                    trailing={
+                      isSuperAdmin ? (
+                        <button
+                          onClick={() => removerPendente(p.nome)}
+                          aria-label={`Remover ${p.nome} da lista`}
+                          style={{ width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: "#7a7a7a", WebkitTapHighlightColor: "transparent" }}
+                        >
+                          <X size={18} weight="bold" />
+                        </button>
+                      ) : undefined
+                    }
                   />
+                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    <div style={{ flex: 1 }}>
+                      <Select
+                        options={jogadoresDisponiveis.map((j) => ({ value: j.id, label: j.apelido }))}
+                        value={escolhaPendente[p.nome] ?? ""}
+                        onChange={(v) => setEscolhaPendente((prev) => ({ ...prev, [p.nome]: v }))}
+                        placeholder="Escolher conta…"
+                      />
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={() => vincularLocal(p.nome)}
+                      disabled={!escolhaPendente[p.nome]}
+                      leftIcon={<LinkSimple size={16} weight="bold" />}
+                    >
+                      Vincular
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
           </Card>
 
+          {/* Só super admin: alguém jogou mas esqueceu de mandar o nome — adiciona
+              direto do cadastro do app em vez de precisar reeditar a lista colada. */}
+          {isSuperAdmin && jogadoresDisponiveis.length > 0 && (
+            <Card tone="surface" padding={12} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 13, color: "#f5f5f5" }}>
+                Esqueceram de colocar alguém na lista?
+              </span>
+              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                <div style={{ flex: 1 }}>
+                  <Select
+                    options={jogadoresDisponiveis.map((j) => ({ value: j.id, label: j.apelido }))}
+                    value={escolhaAdicionar}
+                    onChange={setEscolhaAdicionar}
+                    placeholder="Escolher jogador…"
+                  />
+                </div>
+                <Button size="sm" onClick={adicionarJogador} disabled={!escolhaAdicionar} leftIcon={<UserPlus size={16} weight="bold" />}>
+                  Adicionar
+                </Button>
+              </div>
+            </Card>
+          )}
+
           {pendentes.length > 0 && (
             <div style={{ display: "flex", gap: 8, alignItems: "flex-start", background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 14, padding: "12px 14px" }}>
               <span style={{ fontSize: 15, lineHeight: 1.2, flexShrink: 0 }}>💡</span>
               <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, lineHeight: 1.4, color: "#8b8b93" }}>
-                Pendentes ficam de fora da votação por enquanto. Quando criarem conta, o app vincula sozinho.
+                Pendentes ficam de fora da votação por enquanto. Vincula uma conta acima ou espera a pessoa criar conta — o app vincula sozinho.
               </span>
             </div>
           )}
