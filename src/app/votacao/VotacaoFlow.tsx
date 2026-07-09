@@ -3,8 +3,9 @@
 import { useState, useTransition, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { submitVotos } from "./actions";
-import { CaretLeft, CaretRight, CaretDown, MagnifyingGlass, CheckCircle, Check, UsersThree, Trophy, Skull, X } from "@phosphor-icons/react";
+import { CaretLeft, CaretRight, MagnifyingGlass, CheckCircle, Check, UsersThree, Trophy, Skull, SoccerBall, X } from "@phosphor-icons/react";
 import { BottomSheet, Avatar } from "@/ds";
 
 type Jogador = { id: string; apelido: string };
@@ -607,31 +608,40 @@ function ListaCompacta({
             const votadoId = selections[t.slug];
             const votado = votadoId ? jogadores.find((j) => j.id === votadoId) : null;
             return (
-              <button
+              <div
                 key={t.slug}
-                onClick={() => openPicker(t.slug)}
                 style={{
-                  width: "100%", display: "flex", alignItems: "center", gap: 12,
-                  padding: "14px 16px", background: votado ? bg : "none",
-                  border: "none", borderTop: i === 0 ? "none" : "1px solid #1f1f1f",
-                  cursor: "pointer", textAlign: "left",
-                  WebkitTapHighlightColor: "transparent",
+                  display: "flex", alignItems: "center", gap: 12,
+                  padding: "12px 14px", background: votado ? bg : "none",
+                  borderTop: i === 0 ? "none" : "1px solid #1f1f1f",
                 }}
               >
-                <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#fff" }}>
+                <div style={{ width: 44, height: 44, position: "relative", flexShrink: 0 }}>
+                  <Image alt={t.nome} src={MASCOTE[t.slug] ?? "/ilustracoes/gato.png"} fill sizes="44px" style={{ objectFit: "contain" }} />
+                </div>
+                <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 14, letterSpacing: "0.04em", color: "#fff", textTransform: "uppercase" }}>
                   {t.nome}
                 </span>
-                {votado ? (
-                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, color: tone, flexShrink: 0, maxWidth: 110, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {votado.apelido}
+                <button
+                  onClick={() => openPicker(t.slug)}
+                  style={{
+                    flexShrink: 0, display: "flex", alignItems: "center", gap: 6,
+                    height: 32, padding: "0 14px", borderRadius: 9999, cursor: "pointer",
+                    WebkitTapHighlightColor: "transparent",
+                    background: votado ? "#9fe870" : "#2c2c2c",
+                    border: votado ? "none" : "1px solid #3a3a3a",
+                  }}
+                >
+                  <span style={{
+                    fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13,
+                    color: votado ? "#0a1a06" : "#e7e7ea",
+                    maxWidth: 90, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                  }}>
+                    {votado ? votado.apelido : "Selecione"}
                   </span>
-                ) : (
-                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 13, color: "#6f6f6f", flexShrink: 0 }}>
-                    escolher
-                  </span>
-                )}
-                <CaretDown size={14} color="#7a7a7a" weight="bold" style={{ flexShrink: 0, transform: "rotate(-90deg)" }} />
-              </button>
+                  {votado && <CheckCircle size={16} color="#0a1a06" weight="fill" />}
+                </button>
+              </div>
             );
           })}
         </div>
@@ -707,10 +717,19 @@ function ListaCompacta({
       {/* Bottom sheet: buscar + escolher jogador pro trait selecionado */}
       <BottomSheet open={!!pickerSlug} onClose={() => setPickerSlug(null)} maxHeight="80dvh">
         <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "0 16px 16px" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#fff" }}>
-              {pickerTrait ? `Quem foi o ${pickerTrait.nome}?` : ""}
-            </span>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+              <div style={{
+                width: 36, height: 36, borderRadius: 18, flexShrink: 0,
+                background: "#141414", border: "1px solid #2c2c2c",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <SoccerBall size={18} color="#9fe870" weight="fill" />
+              </div>
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {pickerTrait ? `Selecione o jogador` : ""}
+              </span>
+            </div>
             <button
               onClick={() => setPickerSlug(null)}
               aria-label="Fechar"
