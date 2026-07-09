@@ -627,9 +627,9 @@ function PersonagensList({
         flexShrink: 0, padding: "calc(env(safe-area-inset-top, 0px) + 20px) 16px 16px",
         borderBottom: "1px solid #1c1c1c",
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <button onClick={onBack} aria-label="Voltar" style={{
-            width: 44, height: 44, borderRadius: 22, flexShrink: 0,
+            width: 40, height: 40, borderRadius: 20, flexShrink: 0,
             background: "rgba(255,255,255,0.06)", border: "1px solid #2c2c2c",
             display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
           }}>
@@ -643,7 +643,10 @@ function PersonagensList({
             {icon}
           </div>
           <div style={{ minWidth: 0, flex: 1 }}>
-            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 18, color: "#fff", textTransform: "uppercase" }}>
+            <p style={{
+              margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 15, color: "#fff",
+              textTransform: "uppercase", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+            }}>
               {title}
             </p>
             <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, color: tone }}>
@@ -653,7 +656,7 @@ function PersonagensList({
         </div>
       </div>
 
-      <div style={{ flex: 1, overflowY: "auto", padding: "16px 8px 96px", WebkitOverflowScrolling: "touch" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: "16px 8px 8px", WebkitOverflowScrolling: "touch", display: "flex", flexDirection: "column" }}>
         <div style={{ background: "#141414", border: `1px solid ${border}`, borderRadius: 20, overflow: "hidden" }}>
           {traitsIn.map((t, i) => {
             const votadoId = selections[t.slug];
@@ -696,20 +699,16 @@ function PersonagensList({
             );
           })}
         </div>
-      </div>
 
-      <div style={{
-        position: "absolute", left: 0, right: 0, bottom: 0,
-        padding: "12px 16px calc(env(safe-area-inset-bottom, 0px) + 12px)",
-        background: "linear-gradient(180deg, rgba(9,9,9,0) 0%, #090909 40%)",
-      }}>
         <button
           onClick={onFinish}
           style={{
             width: "100%", height: 54, borderRadius: 9999, border: "none",
-            background: "#9fe870", cursor: "pointer",
+            background: "#9fe870", cursor: "pointer", flexShrink: 0,
             fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#0a1a06",
             WebkitTapHighlightColor: "transparent",
+            marginTop: 24,
+            marginBottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)",
           }}
         >
           {finishLabel}
