@@ -37,11 +37,16 @@ function useDataUrl(src: string): string {
 }
 
 // Mesmo padrão do ShareCardModal (personagem da semana): arte "assada" (fundo +
-// mascote + título + emoji, canvas fixo 393x852 @2x) full-bleed via
-// position:fixed+cover, com o resto (descrição, frase do vencedor, botão,
-// rodapé) como overlay absoluto na zona inferior — não flui depois da imagem,
-// fica por cima dela, então a área em branco da arte é exatamente o espaço
-// reservado pro overlay, sem vão nem corte em nenhum aparelho.
+// mascote + título + emoji, canvas fixo 393x852 @2x). A arte fica num container
+// com aspect-ratio travado na proporção do canvas (393:852) — nunca esticada
+// nem cortada — e o resto (descrição, frase do vencedor, botão, rodapé) flui
+// normalmente LOGO ABAIXO dela, em vez de ficar em overlay absoluto ancorado no
+// fundo real da tela. Overlay absoluto + object-fit:cover full-bleed foi
+// abandonado porque em telas com proporção diferente da arte (ex.: barra de
+// endereço visível reduzindo a altura útil), o corte do cover empurrava o
+// título/emoji da arte pra mais perto do fundo real da tela, onde o overlay
+// já estava fixo — resultado: título ou emoji cortados por trás do texto ao
+// vivo. Com fluxo normal isso é estruturalmente impossível de acontecer.
 export function PremioScreen({
   slug, title, bakedImg, nameColor, footerBorder, descricao,
   vencedorNome, vencedorQtd, categoriaLabel, grupoNome, data,
@@ -86,26 +91,31 @@ export function PremioScreen({
   }
 
   return (
-    <div ref={cardRef} style={{ position: "fixed", inset: 0, zIndex: 80, background: "#0a0e0e", overflow: "hidden" }}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img alt={title} src={artData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+    <div ref={cardRef} style={{
+      position: "fixed", inset: 0, zIndex: 80, background: "#0a0e0e",
+      overflowY: "auto", WebkitOverflowScrolling: "touch",
+      display: "flex", flexDirection: "column",
+    }}>
+      <div style={{ position: "relative", width: "100%", aspectRatio: "786 / 1704", flexShrink: 0 }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img alt={title} src={artData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
 
-      <button
-        ref={closeBtnRef}
-        onClick={() => router.back()}
-        aria-label="Fechar"
-        style={{
-          position: "absolute", top: "calc(env(safe-area-inset-top, 0px) + 16px)", right: 16, zIndex: 2,
-          width: 48, height: 48, background: "#000", border: "1px solid #424242", borderRadius: 24,
-          display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
-        }}
-      >
-        <X size={16} color="#fff" weight="bold" />
-      </button>
+        <button
+          ref={closeBtnRef}
+          onClick={() => router.back()}
+          aria-label="Fechar"
+          style={{
+            position: "absolute", top: "calc(env(safe-area-inset-top, 0px) + 16px)", right: 16, zIndex: 2,
+            width: 48, height: 48, background: "#000", border: "1px solid #424242", borderRadius: 24,
+            display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+          }}
+        >
+          <X size={16} color="#fff" weight="bold" />
+        </button>
+      </div>
 
       <div style={{
-        position: "absolute", left: 0, right: 0, bottom: 0,
-        display: "flex", flexDirection: "column", alignItems: "center", gap: 24, padding: "0 24px 0",
+        flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 24, padding: "24px 24px 0",
       }}>
         {descricao && (
           <p style={{ margin: 0, maxWidth: 340, fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 20, lineHeight: "24px", color: "#fff", textAlign: "center" }}>
