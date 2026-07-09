@@ -25,6 +25,10 @@ const MenuSheet = dynamic(
   () => import("@/components/MenuSheet").then(m => m.MenuSheet),
   { ssr: false }
 );
+const NotificationsSheet = dynamic(
+  () => import("@/components/NotificationsSheet").then(m => m.NotificationsSheet),
+  { ssr: false }
+);
 const ShareCardModal = dynamic(
   () => import("@/components/ShareCardModal").then(m => m.ShareCardModal),
   { ssr: false }
@@ -105,6 +109,7 @@ export function HomeClient({
     return () => clearInterval(id);
   }, [votacao?.fase, router]);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
 
 
   const lbEntries: LeaderboardEntry[] = maisVotados.slice(0, 6).map((v, i) => ({
@@ -743,7 +748,7 @@ export function HomeClient({
           <div style={{ padding: 4, display: "flex", overflow: "clip" }}>
             <Image alt="Canelada" src={LOGO} width={48} height={48} priority style={{ objectFit: "cover", borderRadius: "50%" }} />
           </div>
-          <button aria-label="Notificações" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 4px", background: "none", border: "none", cursor: "pointer", overflow: "clip" }}>
+          <button aria-label="Notificações" onClick={() => setNotifOpen(true)} style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 4px", background: "none", border: "none", cursor: "pointer", overflow: "clip" }}>
             <Bell size={24} color="#fff" weight="bold" />
           </button>
         </div>
@@ -793,6 +798,11 @@ export function HomeClient({
 
       {/* ── Menu Hambúrguer (bottom sheet compartilhado) ── */}
       {menuOpen && <MenuSheet open onClose={() => setMenuOpen(false)} />}
+
+      {/* ── Notificações (status da votação) ── */}
+      {notifOpen && (
+        <NotificationsSheet open onClose={() => setNotifOpen(false)} votacao={votacao} dataRodada={dataRodada} />
+      )}
     </div>
   );
 }
