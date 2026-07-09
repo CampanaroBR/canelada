@@ -4,7 +4,8 @@ import { useState, useTransition, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { submitVotos } from "./actions";
-import { CaretLeft, CaretRight, CaretDown, MagnifyingGlass, CheckCircle, Check, UsersThree, Trophy, Skull } from "@phosphor-icons/react";
+import { CaretLeft, CaretRight, CaretDown, MagnifyingGlass, CheckCircle, Check, UsersThree, Trophy, Skull, X } from "@phosphor-icons/react";
+import { BottomSheet, Avatar } from "@/ds";
 
 type Jogador = { id: string; apelido: string };
 type Trait = { slug: string; nome: string; categoria: string; emoji: string | null; descricao: string | null };
@@ -541,9 +542,10 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
 }
 
 /* ─── Tela de lista compacta: os 14 traits opcionais, 1 toque por linha ───
-   Cada linha expande inline num carrossel de avatares (accordion) em vez de
-   virar uma tela cheia nova — é o que corta a fadiga: continua sendo UMA
-   rolagem só, não uma sequência de "eventos" de tela cheia. */
+   Header de seção no mesmo padrão do resto do app (ícone em caixinha +
+   título — igual "PARCIAL DA RODADA"/"PIORES DA RODADA" no feed). Sem emoji
+   nas linhas (poluía). Escolher jogador abre um bottom sheet com busca em
+   vez de carrossel — mais rápido de usar com listas de 20-30+ jogadores. */
 function ListaCompacta({
   listaTraits, jogadores, meuId, selections, onSelect, onBack, onFinish,
 }: {
@@ -555,15 +557,24 @@ function ListaCompacta({
   onBack: () => void;
   onFinish: () => void;
 }) {
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const [pickerSlug, setPickerSlug] = useState<string | null>(null);
+  const [pickerSearch, setPickerSearch] = useState("");
   const outros = jogadores.filter((j) => j.id !== meuId);
   const positivos = listaTraits.filter((t) => POSITIVO_SLUGS.includes(t.slug));
   const negativos = listaTraits.filter((t) => NEGATIVO_SLUGS.includes(t.slug));
   const votados = listaTraits.filter((t) => selections[t.slug]).length;
+  const pickerTrait = pickerSlug ? listaTraits.find((t) => t.slug === pickerSlug) ?? null : null;
+  const pickerFiltered = outros.filter((j) => j.apelido.toLowerCase().includes(pickerSearch.toLowerCase()));
 
-  function pickFor(slug: string, jogadorId: string) {
-    onSelect(slug, selections[slug] === jogadorId ? null : jogadorId);
-    setExpanded(null);
+  function openPicker(slug: string) {
+    setPickerSlug(slug);
+    setPickerSearch("");
+  }
+
+  function pickFor(jogadorId: string) {
+    if (!pickerSlug) return;
+    onSelect(pickerSlug, selections[pickerSlug] === jogadorId ? null : jogadorId);
+    setPickerSlug(null);
   }
 
   function Section({ label, tone, bg, border, traitsIn, icon }: {
@@ -572,86 +583,47 @@ function ListaCompacta({
     return (
       <div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "0 8px 10px" }}>
-          {icon}
-          <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 13, letterSpacing: "0.08em", color: tone, textTransform: "uppercase" }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: 12, flexShrink: 0,
+            background: "#171717", border: `1px solid ${border}`,
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            {icon}
+          </div>
+          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff" }}>
             {label}
-          </span>
+          </h2>
         </div>
         <div style={{ background: "#141414", border: `1px solid ${border}`, borderRadius: 20, overflow: "hidden" }}>
           {traitsIn.map((t, i) => {
             const votadoId = selections[t.slug];
             const votado = votadoId ? jogadores.find((j) => j.id === votadoId) : null;
-            const isExpanded = expanded === t.slug;
             return (
-              <div key={t.slug} style={{ borderTop: i === 0 ? "none" : "1px solid #1f1f1f" }}>
-                <button
-                  onClick={() => setExpanded((e) => (e === t.slug ? null : t.slug))}
-                  style={{
-                    width: "100%", display: "flex", alignItems: "center", gap: 12,
-                    padding: "14px 16px", background: votado ? bg : "none",
-                    border: "none", cursor: "pointer", textAlign: "left",
-                    WebkitTapHighlightColor: "transparent",
-                  }}
-                >
-                  <span style={{ fontSize: 20, width: 24, textAlign: "center", flexShrink: 0 }}>{t.emoji}</span>
-                  <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#fff" }}>
-                    {t.nome}
+              <button
+                key={t.slug}
+                onClick={() => openPicker(t.slug)}
+                style={{
+                  width: "100%", display: "flex", alignItems: "center", gap: 12,
+                  padding: "14px 16px", background: votado ? bg : "none",
+                  border: "none", borderTop: i === 0 ? "none" : "1px solid #1f1f1f",
+                  cursor: "pointer", textAlign: "left",
+                  WebkitTapHighlightColor: "transparent",
+                }}
+              >
+                <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#fff" }}>
+                  {t.nome}
+                </span>
+                {votado ? (
+                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, color: tone, flexShrink: 0, maxWidth: 110, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {votado.apelido}
                   </span>
-                  {votado ? (
-                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, color: tone, flexShrink: 0, maxWidth: 110, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {votado.apelido}
-                    </span>
-                  ) : (
-                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 13, color: "#6f6f6f", flexShrink: 0 }}>
-                      escolher
-                    </span>
-                  )}
-                  <CaretDown size={14} color="#7a7a7a" weight="bold" style={{
-                    flexShrink: 0, transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
-                    transition: "transform 200ms cubic-bezier(0.32,0.72,0,1)",
-                  }} />
-                </button>
-
-                <div style={{
-                  maxHeight: isExpanded ? 96 : 0, opacity: isExpanded ? 1 : 0,
-                  overflow: "hidden", transition: "max-height 240ms cubic-bezier(0.32,0.72,0,1), opacity 200ms ease",
-                }}>
-                  <div style={{ display: "flex", gap: 8, overflowX: "auto", padding: "4px 16px 16px", WebkitOverflowScrolling: "touch" }}>
-                    {outros.map((j) => {
-                      const active = votadoId === j.id;
-                      const color = getAvatarColor(j.apelido);
-                      return (
-                        <button
-                          key={j.id}
-                          onClick={() => pickFor(t.slug, j.id)}
-                          style={{
-                            flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
-                            background: "none", border: "none", cursor: "pointer", width: 52,
-                            WebkitTapHighlightColor: "transparent",
-                          }}
-                        >
-                          <div style={{
-                            width: 44, height: 44, borderRadius: "50%",
-                            background: active ? color + "33" : "#232323",
-                            border: active ? `2px solid ${color}` : "1px solid #333",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                          }}>
-                            <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: active ? color : "#ccc" }}>
-                              {getInitial(j.apelido)}
-                            </span>
-                          </div>
-                          <span style={{
-                            fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 10, color: "#9a9a9a",
-                            maxWidth: 52, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                          }}>
-                            {j.apelido}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
+                ) : (
+                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 13, color: "#6f6f6f", flexShrink: 0 }}>
+                    escolher
+                  </span>
+                )}
+                <CaretDown size={14} color="#7a7a7a" weight="bold" style={{ flexShrink: 0, transform: "rotate(-90deg)" }} />
+              </button>
             );
           })}
         </div>
@@ -694,7 +666,7 @@ function ListaCompacta({
           bg="rgba(159,232,112,0.08)"
           border="#2c2c2c"
           traitsIn={positivos}
-          icon={<Trophy size={16} color="#9fe870" weight="fill" />}
+          icon={<Trophy size={20} color="#9fe870" weight="fill" />}
         />
         <Section
           label="Negativo"
@@ -702,7 +674,7 @@ function ListaCompacta({
           bg="rgba(229,103,103,0.08)"
           border="#3a2424"
           traitsIn={negativos}
-          icon={<Skull size={16} color="#e56767" weight="fill" />}
+          icon={<Skull size={20} color="#e56767" weight="fill" />}
         />
       </div>
 
@@ -723,6 +695,75 @@ function ListaCompacta({
           Revisar e enviar
         </button>
       </div>
+
+      {/* Bottom sheet: buscar + escolher jogador pro trait selecionado */}
+      <BottomSheet open={!!pickerSlug} onClose={() => setPickerSlug(null)} maxHeight="80dvh">
+        <div style={{ display: "flex", flexDirection: "column", gap: 16, padding: "0 16px 16px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#fff" }}>
+              {pickerTrait ? `Quem foi o ${pickerTrait.nome}?` : ""}
+            </span>
+            <button
+              onClick={() => setPickerSlug(null)}
+              aria-label="Fechar"
+              style={{
+                width: 36, height: 36, borderRadius: 18, flexShrink: 0,
+                background: "#000", border: "1px solid #424242",
+                display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+              }}
+            >
+              <X size={16} color="#fff" weight="bold" />
+            </button>
+          </div>
+
+          <div style={{
+            display: "flex", alignItems: "center", gap: 8,
+            background: "#141414", border: "1px solid #2a2a2d", borderRadius: 14, padding: "12px 15px",
+          }}>
+            <MagnifyingGlass size={18} color="#fff" weight="regular" />
+            <input
+              value={pickerSearch}
+              onChange={(e) => setPickerSearch(e.target.value)}
+              placeholder="Buscar jogador…"
+              autoFocus
+              style={{
+                flex: 1, background: "transparent", border: "none", outline: "none",
+                fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 14,
+                color: "#fff", caretColor: "#9fe870",
+              }}
+            />
+          </div>
+
+          <div style={{ maxHeight: "50dvh", overflowY: "auto", display: "flex", flexDirection: "column", gap: 4, WebkitOverflowScrolling: "touch" }}>
+            {pickerFiltered.length === 0 ? (
+              <p style={{ color: "#555", fontFamily: "var(--font-body)", fontSize: 13, textAlign: "center", padding: "20px 0" }}>
+                Nenhum jogador encontrado
+              </p>
+            ) : pickerFiltered.map((j) => {
+              const active = pickerSlug ? selections[pickerSlug] === j.id : false;
+              return (
+                <button
+                  key={j.id}
+                  onClick={() => pickFor(j.id)}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 12, width: "100%",
+                    padding: "10px 8px", borderRadius: 14,
+                    background: active ? "rgba(159,232,112,0.1)" : "none",
+                    border: "none", cursor: "pointer", textAlign: "left",
+                    WebkitTapHighlightColor: "transparent",
+                  }}
+                >
+                  <Avatar name={j.apelido} />
+                  <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {j.apelido}
+                  </span>
+                  {active && <Check size={18} color="#9fe870" weight="bold" />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </BottomSheet>
     </div>
   );
 }
