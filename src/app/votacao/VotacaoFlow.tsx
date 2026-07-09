@@ -117,7 +117,7 @@ function getAvatarColor(apelido: string) {
   return colors[h % colors.length];
 }
 
-type Phase = "hero" | "bem" | "abaixo" | "review" | "done";
+type Phase = "hero" | "lista" | "review" | "done";
 
 export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Props) {
   const traitBySlug = new Map(traits.map((t) => [t.slug, t]));
@@ -169,14 +169,13 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
     setPending(null);
     setSearch("");
     if (heroStep < heroTraits.length - 1) setHeroStep((s) => s + 1);
-    else setPhase("bem");
+    else setPhase("lista");
   }
 
   function handleBack() {
     if (phase === "hero" && heroStep === 0) router.push("/feed");
     else if (phase === "hero") setHeroStep((s) => s - 1);
-    else if (phase === "bem") { setPhase("hero"); setHeroStep(heroTraits.length - 1); }
-    else if (phase === "abaixo") setPhase("bem");
+    else if (phase === "lista") { setPhase("hero"); setHeroStep(heroTraits.length - 1); }
   }
 
   // Editar um voto a partir da revisão: volta pro passo/tela correspondente.
@@ -186,10 +185,8 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
     if (heroIdx >= 0) {
       setPhase("hero");
       setHeroStep(heroIdx);
-    } else if (POSITIVO_SLUGS.includes(slug)) {
-      setPhase("bem");
     } else {
-      setPhase("abaixo");
+      setPhase("lista");
     }
   }
 
@@ -220,46 +217,22 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
       error={error}
       onEdit={editSlug}
       onSubmit={() => submitAllWith(selections)}
-      onBack={() => setPhase("abaixo")}
+      onBack={() => setPhase("lista")}
     />
   );
-  const selectHandler = (slug: string, jogadorId: string | null) => setSelections((prev) => {
-    const next = { ...prev };
-    if (jogadorId) next[slug] = jogadorId; else delete next[slug];
-    return next;
-  });
-  if (phase === "bem") return (
+  if (phase === "lista") return (
     <PersonagensList
-      title="Personagens que foram bem"
-      icon={<Trophy size={22} color="#9fe870" weight="fill" />}
-      tone="#9fe870"
-      bg="rgba(159,232,112,0.08)"
-      border="#2c2c2c"
-      traitsIn={listaTraits.filter((t) => POSITIVO_SLUGS.includes(t.slug))}
+      listaTraits={listaTraits}
       jogadores={jogadores}
       meuId={meuId}
       selections={selections}
-      onSelect={selectHandler}
-      onBack={handleBack}
-      onFinish={() => setPhase("abaixo")}
-      finishLabel="Continuar"
-    />
-  );
-  if (phase === "abaixo") return (
-    <PersonagensList
-      title="Personagens que foram abaixo"
-      icon={<Skull size={22} color="#e56767" weight="fill" />}
-      tone="#e56767"
-      bg="rgba(229,103,103,0.08)"
-      border="#3a2424"
-      traitsIn={listaTraits.filter((t) => NEGATIVO_SLUGS.includes(t.slug))}
-      jogadores={jogadores}
-      meuId={meuId}
-      selections={selections}
-      onSelect={selectHandler}
+      onSelect={(slug, jogadorId) => setSelections((prev) => {
+        const next = { ...prev };
+        if (jogadorId) next[slug] = jogadorId; else delete next[slug];
+        return next;
+      })}
       onBack={handleBack}
       onFinish={() => setPhase("review")}
-      finishLabel="Revisar e enviar"
     />
   );
   if (!trait) return null;
@@ -579,32 +552,31 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
 
 /* ─── Tela de lista de personagens: uma seção por tela (bem / abaixo),
    igual ao Figma (764:355 e 764:682) — telas separadas, não uma única
-   página com duas seções. Header de seção (ícone em caixinha + título +
-   subtítulo "Os votos aqui são opcionais") + lista de linhas 72px de
-   altura (avatar 56px, nome, pill de seleção). Escolher jogador abre um
-   bottom sheet com busca em vez de carrossel — mais rápido de usar com
-   listas de 20-30+ jogadores. */
+   página só, exatamente como o Figma 769:417 ("Outros personagens"):
+   topbar com "VOTAÇÃO" (eyebrow) + "Outros personagens" (título) e seta
+   de voltar, seguida das duas seções empilhadas (Bem/Abaixo), cada uma
+   com seu próprio header (ícone em caixinha + título + subtítulo "Os
+   votos aqui são opcionais") + lista de linhas 72px de altura (avatar
+   56px, nome, pill de seleção). Escolher jogador abre um bottom sheet
+   com busca em vez de carrossel — mais rápido de usar com listas de
+   20-30+ jogadores. */
 function PersonagensList({
-  title, icon, tone, bg, border, traitsIn, jogadores, meuId, selections, onSelect, onBack, onFinish, finishLabel,
+  listaTraits, jogadores, meuId, selections, onSelect, onBack, onFinish,
 }: {
-  title: string;
-  icon: React.ReactNode;
-  tone: string;
-  bg: string;
-  border: string;
-  traitsIn: Trait[];
+  listaTraits: Trait[];
   jogadores: Jogador[];
   meuId: string;
   selections: Record<string, string>;
   onSelect: (slug: string, jogadorId: string | null) => void;
   onBack: () => void;
   onFinish: () => void;
-  finishLabel: string;
 }) {
   const [pickerSlug, setPickerSlug] = useState<string | null>(null);
   const [pickerSearch, setPickerSearch] = useState("");
   const outros = jogadores.filter((j) => j.id !== meuId);
-  const pickerTrait = pickerSlug ? traitsIn.find((t) => t.slug === pickerSlug) ?? null : null;
+  const positivos = listaTraits.filter((t) => POSITIVO_SLUGS.includes(t.slug));
+  const negativos = listaTraits.filter((t) => NEGATIVO_SLUGS.includes(t.slug));
+  const pickerTrait = pickerSlug ? listaTraits.find((t) => t.slug === pickerSlug) ?? null : null;
   const pickerFiltered = outros.filter((j) => j.apelido.toLowerCase().includes(pickerSearch.toLowerCase()));
 
   function openPicker(slug: string) {
@@ -618,23 +590,12 @@ function PersonagensList({
     setPickerSlug(null);
   }
 
-  return (
-    <div style={{
-      position: "fixed", top: 0, bottom: 0, left: "50%", transform: "translateX(-50%)",
-      width: "min(100%, 430px)", background: "#090909", display: "flex", flexDirection: "column", overflow: "hidden",
-    }}>
-      <div style={{
-        flexShrink: 0, padding: "calc(env(safe-area-inset-top, 0px) + 20px) 16px 16px",
-        borderBottom: "1px solid #1c1c1c",
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <button onClick={onBack} aria-label="Voltar" style={{
-            width: 40, height: 40, borderRadius: 20, flexShrink: 0,
-            background: "rgba(255,255,255,0.06)", border: "1px solid #2c2c2c",
-            display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
-          }}>
-            <CaretLeft size={16} color="#fff" weight="bold" />
-          </button>
+  function Section({ title, icon, tone, bg, border, traitsIn }: {
+    title: string; icon: React.ReactNode; tone: string; bg: string; border: string; traitsIn: Trait[];
+  }) {
+    return (
+      <div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 8px 10px" }}>
           <div style={{
             width: 40, height: 40, borderRadius: 12, flexShrink: 0,
             background: "#171717", border: `1px solid ${border}`,
@@ -642,11 +603,8 @@ function PersonagensList({
           }}>
             {icon}
           </div>
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <p style={{
-              margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 15, color: "#fff",
-              textTransform: "uppercase", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-            }}>
+          <div style={{ minWidth: 0 }}>
+            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 15, color: "#fff", textTransform: "uppercase" }}>
               {title}
             </p>
             <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, color: tone }}>
@@ -654,9 +612,6 @@ function PersonagensList({
             </p>
           </div>
         </div>
-      </div>
-
-      <div style={{ flex: 1, overflowY: "auto", padding: "16px 8px 8px", WebkitOverflowScrolling: "touch", display: "flex", flexDirection: "column" }}>
         <div style={{ background: "#141414", border: `1px solid ${border}`, borderRadius: 20, overflow: "hidden" }}>
           {traitsIn.map((t, i) => {
             const votadoId = selections[t.slug];
@@ -699,6 +654,58 @@ function PersonagensList({
             );
           })}
         </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{
+      position: "fixed", top: 0, bottom: 0, left: "50%", transform: "translateX(-50%)",
+      width: "min(100%, 430px)", background: "#090909", display: "flex", flexDirection: "column", overflow: "hidden",
+    }}>
+      <div style={{
+        flexShrink: 0, padding: "calc(env(safe-area-inset-top, 0px) + 20px) 16px 16px",
+        borderBottom: "1px solid #1c1c1c",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <button onClick={onBack} aria-label="Voltar" style={{
+            width: 44, height: 44, borderRadius: 22, flexShrink: 0,
+            background: "rgba(255,255,255,0.06)", border: "1px solid #2c2c2c",
+            display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+          }}>
+            <CaretLeft size={16} color="#fff" weight="bold" />
+          </button>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <p style={{
+              margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11,
+              letterSpacing: "0.08em", color: "#8a8a8a", textTransform: "uppercase",
+            }}>
+              Votação
+            </p>
+            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, color: "#fff" }}>
+              Outros personagens
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ flex: 1, overflowY: "auto", padding: "16px 8px 8px", display: "flex", flexDirection: "column", gap: 24, WebkitOverflowScrolling: "touch" }}>
+        <Section
+          title="Personagens que foram bem"
+          icon={<Trophy size={22} color="#9fe870" weight="fill" />}
+          tone="#9fe870"
+          bg="rgba(159,232,112,0.08)"
+          border="#2c2c2c"
+          traitsIn={positivos}
+        />
+        <Section
+          title="Personagens que foram abaixo"
+          icon={<Skull size={22} color="#e56767" weight="fill" />}
+          tone="#e56767"
+          bg="rgba(229,103,103,0.08)"
+          border="#3a2424"
+          traitsIn={negativos}
+        />
 
         <button
           onClick={onFinish}
@@ -707,11 +714,11 @@ function PersonagensList({
             background: "#9fe870", cursor: "pointer", flexShrink: 0,
             fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#0a1a06",
             WebkitTapHighlightColor: "transparent",
-            marginTop: 24,
+            marginTop: 8,
             marginBottom: "calc(env(safe-area-inset-bottom, 0px) + 12px)",
           }}
         >
-          {finishLabel}
+          Revisar e enviar
         </button>
       </div>
 
