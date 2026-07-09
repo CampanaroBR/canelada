@@ -4,8 +4,7 @@ import { useState, useTransition, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { submitVotos } from "./actions";
-// TRAIT_SVG removido — usamos ilustrações de personagens PNG no hero
-import { CaretLeft, CaretRight, MagnifyingGlass, CheckCircle, Check, Confetti, UsersThree } from "@phosphor-icons/react";
+import { CaretLeft, CaretRight, CaretDown, MagnifyingGlass, CheckCircle, Check, UsersThree, Trophy, Skull } from "@phosphor-icons/react";
 
 type Jogador = { id: string; apelido: string };
 type Trait = { slug: string; nome: string; categoria: string; emoji: string | null; descricao: string | null };
@@ -18,19 +17,15 @@ interface Props {
   isAdmin?: boolean;
 }
 
-// Ordem oficial do PRD "Sistema de Traits do Canelada" — 16 personagens em 3 grupos.
-// Grupo Futebol é obrigatório; Resenha e Destaques Negativos são opcionais (dá pra pular).
-const GROUPS = [
-  { label: "Futebol", required: true, slugs: ["categoria", "matador", "paredao", "racudo", "xerife", "garcom", "driblador"] },
-  { label: "Resenha", required: false, slugs: ["resenha-forte", "delegado", "chorao", "reclamao", "paneleiro"] },
-  { label: "Destaques", required: false, slugs: ["firuleiro", "pregueiro", "cone", "bagre", "frangueiro", "bragueiro"] },
-];
-const ORDERED_SLUGS = GROUPS.flatMap((g) => g.slugs);
-const REQUIRED_COUNT = GROUPS.filter((g) => g.required).reduce((n, g) => n + g.slugs.length, 0);
-// grupo de um dado slug (para rótulo/estado opcional)
-function groupOf(slug: string) {
-  return GROUPS.find((g) => g.slugs.includes(slug)) ?? GROUPS[0];
-}
+// Estrutura híbrida: 4 personagens "hero" (tela cheia, obrigatórios — os que
+// viram assunto no grupo depois do jogo) e os outros 14 numa lista compacta
+// só, dividida em Positivo/Negativo, opcional/pulável. Antes eram 7 telas
+// cheias obrigatórias seguidas — gente reclamou de cansaço; isso corta pra 4.
+const HERO_SLUGS = ["categoria", "matador", "paredao", "bagre"];
+const POSITIVO_SLUGS = ["racudo", "xerife", "garcom", "driblador", "resenha-forte", "delegado"];
+const NEGATIVO_SLUGS = ["chorao", "reclamao", "paneleiro", "firuleiro", "pregueiro", "cone", "frangueiro", "bragueiro"];
+const LISTA_SLUGS = [...POSITIVO_SLUGS, ...NEGATIVO_SLUGS];
+const ALL_SLUGS = [...HERO_SLUGS, ...LISTA_SLUGS];
 
 // Backgrounds reais do Figma — PNGs baixados de localhost:3845/assets/
 const BG_IMAGES: Record<string, string> = {
@@ -101,7 +96,6 @@ const MASCOTE: Record<string, string> = {
   bragueiro:       "/votacao-mascot/bragueiro.png",
 };
 
-
 function getInitial(apelido: string) {
   return apelido.trim()[0]?.toUpperCase() ?? "?";
 }
@@ -113,18 +107,19 @@ function getAvatarColor(apelido: string) {
   return colors[h % colors.length];
 }
 
-export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Props) {
-  const steps = ORDERED_SLUGS
-    .map((slug) => traits.find((t) => t.slug === slug))
-    .filter((t): t is Trait => !!t);
+type Phase = "hero" | "lista" | "review" | "done";
 
-  const [step, setStep] = useState(0);
-  const [selections, setSelections] = useState<Record<number, string>>({});
+export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Props) {
+  const traitBySlug = new Map(traits.map((t) => [t.slug, t]));
+  const heroTraits = HERO_SLUGS.map((s) => traitBySlug.get(s)).filter((t): t is Trait => !!t);
+  const listaTraits = LISTA_SLUGS.map((s) => traitBySlug.get(s)).filter((t): t is Trait => !!t);
+
+  const [phase, setPhase] = useState<Phase>("hero");
+  const [heroStep, setHeroStep] = useState(0);
+  const [selections, setSelections] = useState<Record<string, string>>({});
   const [pending, setPending] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
-  const [done, setDone] = useState(false);
-  const [review, setReview] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -132,104 +127,102 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
   const searchRef = useRef<HTMLInputElement>(null);
 
   const outros = jogadores.filter((j) => j.id !== meuId);
-  const trait = steps[step];
+  const trait = heroTraits[heroStep];
   const bgImage = BG_IMAGES[trait?.slug ?? ""] ?? "";
   const glowColor = GLOW_COLORS[trait?.slug ?? ""] ?? "#333";
   const mascot = MASCOTE[trait?.slug ?? ""] ?? "/ilustracoes/gato.png";
   const filtered = outros.filter((j) => j.apelido.toLowerCase().includes(search.toLowerCase()));
   const pendingPlayer = pending ? jogadores.find((j) => j.id === pending) ?? null : null;
-  const total = steps.length;
-  const currentGroup = groupOf(trait?.slug ?? "");
-  const isOptional = step >= REQUIRED_COUNT;
 
   useEffect(() => {
-    if (done) {
+    if (phase === "done") {
       const t = setTimeout(() => router.push("/feed"), 3000);
       return () => clearTimeout(t);
     }
-  }, [done, router]);
+  }, [phase, router]);
 
-  // Ao trocar de personagem (voltar/editar), recupera o voto já feito para o passo,
-  // fazendo a barra de "Confirmar" reaparecer em vez de sumir.
+  // Ao trocar de personagem hero (voltar/editar), recupera o voto já feito.
   useEffect(() => {
-    setPending(selections[step] ?? null);
+    if (phase !== "hero" || !trait) return;
+    setPending(selections[trait.slug] ?? null);
     setSearch("");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [step]);
+  }, [phase, heroStep]);
 
   function handleSelect(id: string) {
     setPending((prev) => (prev === id ? null : id));
   }
 
   function handleConfirm() {
-    if (!pending) return;
-    const newSelections = { ...selections, [step]: pending };
-    setSelections(newSelections);
+    if (!pending || !trait) return;
+    setSelections((prev) => ({ ...prev, [trait.slug]: pending }));
     setPending(null);
     setSearch("");
-    if (step < total - 1) {
-      setStep((s) => s + 1);
-    } else {
-      setReview(true);
-    }
+    if (heroStep < heroTraits.length - 1) setHeroStep((s) => s + 1);
+    else setPhase("lista");
   }
 
   function handleBack() {
-    if (step === 0) router.push("/feed");
-    else setStep((s) => s - 1);
+    if (phase === "hero" && heroStep === 0) router.push("/feed");
+    else if (phase === "hero") setHeroStep((s) => s - 1);
+    else if (phase === "lista") { setPhase("hero"); setHeroStep(heroTraits.length - 1); }
   }
 
-  // Pular: só nos personagens opcionais. Remove qualquer voto do passo e avança (ou revisa).
-  function handleSkip() {
-    const next = { ...selections };
-    delete next[step];
-    setSelections(next);
-    setPending(null);
-    setSearch("");
-    if (step < total - 1) setStep((s) => s + 1);
-    else setReview(true);
+  // Editar um voto a partir da revisão: volta pro passo/tela correspondente.
+  function editSlug(slug: string) {
+    setError(null);
+    const heroIdx = HERO_SLUGS.indexOf(slug);
+    if (heroIdx >= 0) {
+      setPhase("hero");
+      setHeroStep(heroIdx);
+    } else {
+      setPhase("lista");
+    }
   }
 
-  // Finalizar (nos opcionais): vai pra revisão em vez de enviar direto.
-  function handleFinish() {
-    setReview(true);
-  }
-
-  // Editar um voto a partir da revisão: volta ao passo correspondente.
-  function editStep(i: number) {
-    setReview(false);
-    setPending(null);
-    setSearch("");
-    setStep(i);
-  }
-
-  function submitAllWith(sels: Record<number, string>) {
-    const votos = steps
-      .map((t, i) => ({ categoria: "TRAIT" as const, traitSlug: t.slug, votadoId: sels[i] as string | undefined }))
+  function submitAllWith(sels: Record<string, string>) {
+    const votos = ALL_SLUGS
+      .map((slug) => ({ categoria: "TRAIT" as const, traitSlug: slug, votadoId: sels[slug] }))
       .filter((v): v is { categoria: "TRAIT"; traitSlug: string; votadoId: string } => v.votadoId !== undefined);
 
-    if (votos.length === 0) { setDone(true); return; }
+    if (votos.length === 0) { setPhase("done"); return; }
 
     setSubmitting(true);
     startTransition(async () => {
       const result = await submitVotos(rodadaId, votos);
       setSubmitting(false);
       if ("error" in result) setError(result.error ?? "Erro desconhecido.");
-      else setDone(true);
+      else setPhase("done");
     });
   }
 
-  if (done) return <DoneScreen router={router} />;
-  if (review) return (
+  if (phase === "done") return <DoneScreen router={router} />;
+  if (phase === "review") return (
     <ReviewScreen
-      steps={steps}
+      heroTraits={heroTraits}
+      listaTraits={listaTraits}
       selections={selections}
       jogadores={jogadores}
       submitting={submitting}
       error={error}
-      onEdit={editStep}
+      onEdit={editSlug}
       onSubmit={() => submitAllWith(selections)}
-      onBack={() => setReview(false)}
+      onBack={() => setPhase("lista")}
+    />
+  );
+  if (phase === "lista") return (
+    <ListaCompacta
+      listaTraits={listaTraits}
+      jogadores={jogadores}
+      meuId={meuId}
+      selections={selections}
+      onSelect={(slug, jogadorId) => setSelections((prev) => {
+        const next = { ...prev };
+        if (jogadorId) next[slug] = jogadorId; else delete next[slug];
+        return next;
+      })}
+      onBack={handleBack}
+      onFinish={() => setPhase("review")}
     />
   );
   if (!trait) return null;
@@ -241,12 +234,9 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
       background: "#090909", display: "flex", flexDirection: "column", overflow: "hidden",
     }}>
       {/* ── Status Bar (glass, fixo) ── */}
-      {/* pointerEvents:none no wrapper + auto só no botão: permite que o swipe-scroll
-          atravesse a área do topbar sem ficar "travando" o gesto (mobile UX) */}
       <div className="glass-bar" style={{
         position: "absolute", top: 0, left: 0, right: 0, zIndex: 20,
         pointerEvents: "none",
-        paddingTop: "calc(env(safe-area-inset-top, 0px) + 26px)",
         padding: "calc(env(safe-area-inset-top, 0px) + 26px) 16px 16px",
         willChange: "transform",
       }}>
@@ -266,39 +256,19 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
           <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 4 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12, letterSpacing: "0.06em", color: "#fff", textShadow: "0 1px 3px rgba(0,0,0,0.55)" }}>
-                {currentGroup.label.toUpperCase()}
+                OS 4 DA NOITE
               </span>
-              {isOptional ? (
-                <span style={{
-                  fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 10, letterSpacing: "0.06em",
-                  color: "#3a2a06", background: "#f0b84a",
-                  borderRadius: 9999, padding: "3px 9px", boxShadow: "0 1px 3px rgba(0,0,0,0.35)",
-                }}>OPCIONAL</span>
-              ) : (
-                <span style={{
-                  fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 10, letterSpacing: "0.06em",
-                  color: "#0a1a06", background: "#9fe870",
-                  borderRadius: 9999, padding: "3px 9px", boxShadow: "0 1px 3px rgba(0,0,0,0.35)",
-                }}>OBRIGATÓRIO</span>
-              )}
+              <span style={{
+                fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 10, letterSpacing: "0.06em",
+                color: "#0a1a06", background: "#9fe870",
+                borderRadius: 9999, padding: "3px 9px", boxShadow: "0 1px 3px rgba(0,0,0,0.35)",
+              }}>OBRIGATÓRIO</span>
             </div>
             <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#fff", textShadow: "0 1px 3px rgba(0,0,0,0.45)" }}>
-              {step + 1} de {total} personagens
+              {heroStep + 1} de {heroTraits.length} personagens
             </p>
           </div>
-          {isOptional ? (
-            <button
-              onClick={handleSkip}
-              style={{
-                height: 48, minWidth: 48, borderRadius: 24, flexShrink: 0, padding: "0 16px",
-                background: "rgba(0,0,0,0.4)", border: "1px solid #424242",
-                fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#cfcfcf",
-                cursor: "pointer", pointerEvents: "auto",
-              }}
-            >
-              Pular
-            </button>
-          ) : isAdmin ? (
+          {isAdmin ? (
             <Link
               href="/votacao/presenca"
               aria-label="Editar quem jogou"
@@ -316,16 +286,11 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
           )}
         </div>
         <div style={{ paddingTop: 12, display: "flex", gap: 4 }}>
-          {GROUPS.map((g) => {
-            const start = ORDERED_SLUGS.indexOf(g.slugs[0]);
-            const filled = Math.min(Math.max(step - start, 0), g.slugs.length) / g.slugs.length;
-            const tone = g.required ? "#9fe870" : "#e0a83a";
-            return (
-              <div key={g.label} style={{ flex: g.slugs.length, height: 6, borderRadius: 9999, background: "rgba(255,255,255,0.18)", overflow: "hidden" }}>
-                <div style={{ height: 6, borderRadius: 9999, background: tone, width: `${filled * 100}%`, transition: "width 280ms ease" }} />
-              </div>
-            );
-          })}
+          {heroTraits.map((t, i) => (
+            <div key={t.slug} style={{ flex: 1, height: 6, borderRadius: 9999, background: "rgba(255,255,255,0.18)", overflow: "hidden" }}>
+              <div style={{ height: 6, borderRadius: 9999, background: "#9fe870", width: i <= heroStep ? "100%" : "0%", transition: "width 280ms ease" }} />
+            </div>
+          ))}
         </div>
       </div>
 
@@ -347,7 +312,6 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
             background: "#090909",
           }}
         >
-          {/* Background PNG real do Figma — object-cover full-bleed (quando existir) */}
           {bgImage && (
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
@@ -359,10 +323,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
           )}
 
           <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
-            {/* Character container — 289×296, mb -20 (overlap com título) */}
             <div style={{ position: "relative", width: 289, height: 296, marginBottom: -20, flexShrink: 0 }}>
-
-              {/* Glow: 301×308, blur(104px), top:calc(50%+6px) — igual ao Figma */}
               <div aria-hidden style={{
                 position: "absolute",
                 left: "50%", top: "calc(50% + 6px)",
@@ -370,8 +331,6 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
                 width: 301, height: 308, borderRadius: "50%",
                 background: glowColor, filter: "blur(104px)",
               }} />
-
-              {/* Mascote: 264×264, top:18px, overflow:hidden */}
               <div style={{
                 position: "absolute", left: "50%", top: 18,
                 transform: "translateX(-50%)",
@@ -386,7 +345,6 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
               </div>
             </div>
 
-            {/* Título + descrição */}
             <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "center", width: "100%", maxWidth: 361 }}>
               <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 32, lineHeight: "36px", color: "#fff", textAlign: "center", textShadow: "0 2px 12px rgba(0,0,0,0.6), 0 0 2px rgba(0,0,0,0.5)" }}>
                 {trait.nome.toUpperCase()} {trait.emoji}
@@ -410,31 +368,6 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
           padding: "24px 8px 96px", display: "flex", flexDirection: "column", gap: 16,
           flex: 1,
         }}>
-          {/* Aviso de transição: primeira etapa opcional */}
-          {step === REQUIRED_COUNT && (
-            <div style={{
-              margin: "0 8px", padding: 14, borderRadius: 16,
-              background: "rgba(159,232,112,0.08)", border: "1px solid rgba(159,232,112,0.28)",
-              display: "flex", gap: 12, alignItems: "center",
-            }}>
-              <div style={{
-                width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-                background: "rgba(159,232,112,0.14)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
-                <Confetti size={22} color="#9fe870" weight="regular" />
-              </div>
-              <div style={{ minWidth: 0 }}>
-                <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 14, color: "#fff" }}>
-                  Agora é opcional
-                </p>
-                <p style={{ margin: "2px 0 0", fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, lineHeight: "18px", color: "#a9c99a" }}>
-                  Vote em quem quiser, ou toque em Pular / Finalizar quando terminar.
-                </p>
-              </div>
-            </div>
-          )}
-
           <p style={{
             margin: 0, paddingLeft: 8,
             fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18,
@@ -475,8 +408,6 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
             ) : (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
                 {filtered.map((j) => {
-                  // Só a escolha atual (pending) fica destacada. Ao voltar, o pending já
-                  // vem sincronizado com o voto salvo, então trocar não acende dois.
                   const highlight = pending === j.id;
                   const initial = getInitial(j.apelido);
                   const color = getAvatarColor(j.apelido);
@@ -506,7 +437,6 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
                             color: highlight ? color : "#fff",
                           }}>{initial}</span>
                         </div>
-                        {/* Check verde ao escolher — micro-feedback */}
                         <div style={{
                           position: "absolute", right: -2, bottom: -2,
                           width: 20, height: 20, borderRadius: "50%",
@@ -533,32 +463,10 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
               </div>
             )}
           </div>
-
-          {/* Finalizar votação — só nos opcionais, encerra sem pular um a um */}
-          {isOptional && (
-            <div style={{ padding: "8px 8px 0", display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-              <button
-                onClick={handleFinish}
-                style={{
-                  width: "100%", height: 50, borderRadius: 14,
-                  background: "transparent", border: "1px solid #2e2e2e",
-                  fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#9fe870",
-                  cursor: "pointer", WebkitTapHighlightColor: "transparent",
-                }}
-              >
-                Finalizar votação
-              </button>
-              <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, color: "#7a7a7a" }}>
-                envia o que você já votou
-              </span>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* ── Confirm pill flutuante (estilo navbar) ──
-          Escondida enquanto a busca está focada: com o teclado aberto no iOS ela
-          flutua sobre o grid e briga com a barra de acessórios do teclado. */}
+      {/* ── Confirm pill flutuante (estilo navbar) ── */}
       {pending && pendingPlayer && !searchFocused && (
         <div style={{
           position: "absolute", left: 8, right: 8,
@@ -632,31 +540,225 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
   );
 }
 
-/* ─── Tela de revisão: confere/edita os votos antes de enviar ─── */
-function ReviewScreen({
-  steps, selections, jogadores, submitting, error, onEdit, onSubmit, onBack,
+/* ─── Tela de lista compacta: os 14 traits opcionais, 1 toque por linha ───
+   Cada linha expande inline num carrossel de avatares (accordion) em vez de
+   virar uma tela cheia nova — é o que corta a fadiga: continua sendo UMA
+   rolagem só, não uma sequência de "eventos" de tela cheia. */
+function ListaCompacta({
+  listaTraits, jogadores, meuId, selections, onSelect, onBack, onFinish,
 }: {
-  steps: Trait[];
-  selections: Record<number, string>;
+  listaTraits: Trait[];
   jogadores: Jogador[];
-  submitting: boolean;
-  error: string | null;
-  onEdit: (i: number) => void;
-  onSubmit: () => void;
+  meuId: string;
+  selections: Record<string, string>;
+  onSelect: (slug: string, jogadorId: string | null) => void;
   onBack: () => void;
+  onFinish: () => void;
 }) {
-  const nomePorId = new Map(jogadores.map((j) => [j.id, j.apelido]));
-  const totalVotos = Object.values(selections).filter(Boolean).length;
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const outros = jogadores.filter((j) => j.id !== meuId);
+  const positivos = listaTraits.filter((t) => POSITIVO_SLUGS.includes(t.slug));
+  const negativos = listaTraits.filter((t) => NEGATIVO_SLUGS.includes(t.slug));
+  const votados = listaTraits.filter((t) => selections[t.slug]).length;
+
+  function pickFor(slug: string, jogadorId: string) {
+    onSelect(slug, selections[slug] === jogadorId ? null : jogadorId);
+    setExpanded(null);
+  }
+
+  function Section({ label, tone, bg, border, traitsIn, icon }: {
+    label: string; tone: string; bg: string; border: string; traitsIn: Trait[]; icon: React.ReactNode;
+  }) {
+    return (
+      <div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "0 8px 10px" }}>
+          {icon}
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 13, letterSpacing: "0.08em", color: tone, textTransform: "uppercase" }}>
+            {label}
+          </span>
+        </div>
+        <div style={{ background: "#141414", border: `1px solid ${border}`, borderRadius: 20, overflow: "hidden" }}>
+          {traitsIn.map((t, i) => {
+            const votadoId = selections[t.slug];
+            const votado = votadoId ? jogadores.find((j) => j.id === votadoId) : null;
+            const isExpanded = expanded === t.slug;
+            return (
+              <div key={t.slug} style={{ borderTop: i === 0 ? "none" : "1px solid #1f1f1f" }}>
+                <button
+                  onClick={() => setExpanded((e) => (e === t.slug ? null : t.slug))}
+                  style={{
+                    width: "100%", display: "flex", alignItems: "center", gap: 12,
+                    padding: "14px 16px", background: votado ? bg : "none",
+                    border: "none", cursor: "pointer", textAlign: "left",
+                    WebkitTapHighlightColor: "transparent",
+                  }}
+                >
+                  <span style={{ fontSize: 20, width: 24, textAlign: "center", flexShrink: 0 }}>{t.emoji}</span>
+                  <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#fff" }}>
+                    {t.nome}
+                  </span>
+                  {votado ? (
+                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 13, color: tone, flexShrink: 0, maxWidth: 110, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {votado.apelido}
+                    </span>
+                  ) : (
+                    <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 13, color: "#6f6f6f", flexShrink: 0 }}>
+                      escolher
+                    </span>
+                  )}
+                  <CaretDown size={14} color="#7a7a7a" weight="bold" style={{
+                    flexShrink: 0, transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+                    transition: "transform 200ms cubic-bezier(0.32,0.72,0,1)",
+                  }} />
+                </button>
+
+                <div style={{
+                  maxHeight: isExpanded ? 96 : 0, opacity: isExpanded ? 1 : 0,
+                  overflow: "hidden", transition: "max-height 240ms cubic-bezier(0.32,0.72,0,1), opacity 200ms ease",
+                }}>
+                  <div style={{ display: "flex", gap: 8, overflowX: "auto", padding: "4px 16px 16px", WebkitOverflowScrolling: "touch" }}>
+                    {outros.map((j) => {
+                      const active = votadoId === j.id;
+                      const color = getAvatarColor(j.apelido);
+                      return (
+                        <button
+                          key={j.id}
+                          onClick={() => pickFor(t.slug, j.id)}
+                          style={{
+                            flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                            background: "none", border: "none", cursor: "pointer", width: 52,
+                            WebkitTapHighlightColor: "transparent",
+                          }}
+                        >
+                          <div style={{
+                            width: 44, height: 44, borderRadius: "50%",
+                            background: active ? color + "33" : "#232323",
+                            border: active ? `2px solid ${color}` : "1px solid #333",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                          }}>
+                            <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: active ? color : "#ccc" }}>
+                              {getInitial(j.apelido)}
+                            </span>
+                          </div>
+                          <span style={{
+                            fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 10, color: "#9a9a9a",
+                            maxWidth: 52, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                          }}>
+                            {j.apelido}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{
       position: "fixed", top: 0, bottom: 0, left: "50%", transform: "translateX(-50%)",
       width: "min(100%, 430px)", background: "#090909", display: "flex", flexDirection: "column", overflow: "hidden",
     }}>
-      {/* Topbar */}
       <div style={{
-        flexShrink: 0, paddingTop: "calc(env(safe-area-inset-top, 0px) + 20px)",
-        padding: "calc(env(safe-area-inset-top, 0px) + 20px) 16px 12px",
+        flexShrink: 0, padding: "calc(env(safe-area-inset-top, 0px) + 20px) 16px 16px",
+        borderBottom: "1px solid #1c1c1c",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <button onClick={onBack} aria-label="Voltar" style={{
+            width: 44, height: 44, borderRadius: 22, flexShrink: 0,
+            background: "rgba(255,255,255,0.06)", border: "1px solid #2c2c2c",
+            display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
+          }}>
+            <CaretLeft size={16} color="#fff" weight="bold" />
+          </button>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, color: "#fff" }}>
+              O resto da galera
+            </p>
+            <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, color: "#8a8a8a" }}>
+              Opcional · {votados} de {listaTraits.length} votados
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ flex: 1, overflowY: "auto", padding: "16px 8px 96px", display: "flex", flexDirection: "column", gap: 20, WebkitOverflowScrolling: "touch" }}>
+        <Section
+          label="Positivo"
+          tone="#9fe870"
+          bg="rgba(159,232,112,0.08)"
+          border="#2c2c2c"
+          traitsIn={positivos}
+          icon={<Trophy size={16} color="#9fe870" weight="fill" />}
+        />
+        <Section
+          label="Negativo"
+          tone="#e56767"
+          bg="rgba(229,103,103,0.08)"
+          border="#3a2424"
+          traitsIn={negativos}
+          icon={<Skull size={16} color="#e56767" weight="fill" />}
+        />
+      </div>
+
+      <div style={{
+        position: "absolute", left: 0, right: 0, bottom: 0,
+        padding: "12px 16px calc(env(safe-area-inset-bottom, 0px) + 12px)",
+        background: "linear-gradient(180deg, rgba(9,9,9,0) 0%, #090909 40%)",
+      }}>
+        <button
+          onClick={onFinish}
+          style={{
+            width: "100%", height: 54, borderRadius: 9999, border: "none",
+            background: "#9fe870", cursor: "pointer",
+            fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#0a1a06",
+            WebkitTapHighlightColor: "transparent",
+          }}
+        >
+          Revisar e enviar
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Tela de revisão: confere/edita os votos antes de enviar ─── */
+function ReviewScreen({
+  heroTraits, listaTraits, selections, jogadores, submitting, error, onEdit, onSubmit, onBack,
+}: {
+  heroTraits: Trait[];
+  listaTraits: Trait[];
+  selections: Record<string, string>;
+  jogadores: Jogador[];
+  submitting: boolean;
+  error: string | null;
+  onEdit: (slug: string) => void;
+  onSubmit: () => void;
+  onBack: () => void;
+}) {
+  const nomePorId = new Map(jogadores.map((j) => [j.id, j.apelido]));
+  const totalVotos = Object.values(selections).filter(Boolean).length;
+  const positivos = listaTraits.filter((t) => POSITIVO_SLUGS.includes(t.slug));
+  const negativos = listaTraits.filter((t) => NEGATIVO_SLUGS.includes(t.slug));
+
+  const GROUPS_REVIEW = [
+    { label: "Os 4 da noite", tone: "#9fe870", required: true, traitsIn: heroTraits },
+    { label: "Positivo", tone: "#9fe870", required: false, traitsIn: positivos },
+    { label: "Negativo", tone: "#e56767", required: false, traitsIn: negativos },
+  ];
+
+  return (
+    <div style={{
+      position: "fixed", top: 0, bottom: 0, left: "50%", transform: "translateX(-50%)",
+      width: "min(100%, 430px)", background: "#090909", display: "flex", flexDirection: "column", overflow: "hidden",
+    }}>
+      <div style={{
+        flexShrink: 0, padding: "calc(env(safe-area-inset-top, 0px) + 20px) 16px 12px",
         display: "flex", alignItems: "center", gap: 12,
         borderBottom: "1px solid #1c1c1c",
       }}>
@@ -672,67 +774,58 @@ function ReviewScreen({
             Revise seus votos
           </p>
           <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, color: "#8a8a8a" }}>
-            Toque em um voto pra ajustar · {totalVotos} de {steps.length}
+            Toque em um voto pra ajustar · {totalVotos} de {heroTraits.length + listaTraits.length}
           </p>
         </div>
       </div>
 
-      {/* Lista agrupada */}
       <div style={{ flex: 1, overflowY: "auto", padding: "12px 12px 96px", WebkitOverflowScrolling: "touch" }}>
-        {GROUPS.map((g) => {
-          const green = g.required;
-          const tone = green ? "#9fe870" : "#e0a83a";
-          return (
-            <div key={g.label} style={{ marginBottom: 18 }}>
-              <p style={{
-                margin: "0 0 8px 4px", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11,
-                letterSpacing: "0.08em", color: tone, textTransform: "uppercase",
-              }}>
-                {g.label} {green ? "· obrigatório" : "· opcional"}
-              </p>
-              <div style={{ background: "#141414", border: "1px solid #2c2c2c", borderRadius: 16, overflow: "hidden" }}>
-                {g.slugs.map((slug, k) => {
-                  const i = steps.findIndex((t) => t.slug === slug);
-                  if (i < 0) return null;
-                  const t = steps[i];
-                  const votadoId = selections[i];
-                  const apelido = votadoId ? nomePorId.get(votadoId) : null;
-                  return (
-                    <button
-                      key={slug}
-                      onClick={() => onEdit(i)}
-                      style={{
-                        width: "100%", display: "flex", alignItems: "center", gap: 12,
-                        padding: "12px 14px", background: "none", cursor: "pointer",
-                        border: "none", borderTop: k === 0 ? "none" : "1px solid #1f1f1f",
-                        WebkitTapHighlightColor: "transparent", textAlign: "left",
-                      }}
-                    >
-                      <span style={{ fontSize: 18, width: 22, textAlign: "center", flexShrink: 0 }}>{t.emoji}</span>
-                      <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "#8a8a8a", width: 96, flexShrink: 0 }}>
-                        {t.nome}
-                      </span>
-                      <span style={{
-                        flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15,
-                        color: apelido ? "#fff" : "#5a5a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                      }}>
-                        {apelido ?? "pulado"}
-                      </span>
-                      <span style={{ flexShrink: 0, color: apelido ? "#7a7a7a" : tone, display: "flex" }}>
-                        {apelido
-                          ? <PencilIcon />
-                          : <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, color: tone }}>votar</span>}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
+        {GROUPS_REVIEW.map((g) => (
+          <div key={g.label} style={{ marginBottom: 18 }}>
+            <p style={{
+              margin: "0 0 8px 4px", fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 11,
+              letterSpacing: "0.08em", color: g.tone, textTransform: "uppercase",
+            }}>
+              {g.label} {g.required ? "· obrigatório" : "· opcional"}
+            </p>
+            <div style={{ background: "#141414", border: "1px solid #2c2c2c", borderRadius: 16, overflow: "hidden" }}>
+              {g.traitsIn.map((t, k) => {
+                const votadoId = selections[t.slug];
+                const apelido = votadoId ? nomePorId.get(votadoId) : null;
+                return (
+                  <button
+                    key={t.slug}
+                    onClick={() => onEdit(t.slug)}
+                    style={{
+                      width: "100%", display: "flex", alignItems: "center", gap: 12,
+                      padding: "12px 14px", background: "none", cursor: "pointer",
+                      border: "none", borderTop: k === 0 ? "none" : "1px solid #1f1f1f",
+                      WebkitTapHighlightColor: "transparent", textAlign: "left",
+                    }}
+                  >
+                    <span style={{ fontSize: 18, width: 22, textAlign: "center", flexShrink: 0 }}>{t.emoji}</span>
+                    <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "#8a8a8a", width: 96, flexShrink: 0 }}>
+                      {t.nome}
+                    </span>
+                    <span style={{
+                      flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15,
+                      color: apelido ? "#fff" : "#5a5a5a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                    }}>
+                      {apelido ?? "pulado"}
+                    </span>
+                    <span style={{ flexShrink: 0, color: apelido ? "#7a7a7a" : g.tone, display: "flex" }}>
+                      {apelido
+                        ? <PencilIcon />
+                        : <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, color: g.tone }}>votar</span>}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
 
-      {/* Rodapé fixo — enviar */}
       <div style={{
         position: "absolute", left: 0, right: 0, bottom: 0,
         padding: "12px 16px calc(env(safe-area-inset-bottom, 0px) + 12px)",
@@ -807,14 +900,12 @@ function DoneScreen({ router }: { router: ReturnType<typeof useRouter> }) {
         @keyframes done-glow { 0%,100% { opacity: 0.5; } 50% { opacity: 0.85; } }
       `}</style>
 
-      {/* Glow radial verde pulsante */}
       <div aria-hidden style={{
         position: "absolute", inset: 0, pointerEvents: "none",
         background: "radial-gradient(460px 380px at 50% 38%, rgba(159,232,112,0.20), transparent 70%)",
         animation: "done-glow 3.4s ease-in-out infinite",
       }} />
 
-      {/* Confete */}
       <div aria-hidden style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
         {CONFETTI.map((c, i) => (
           <span key={i} style={{
@@ -826,7 +917,6 @@ function DoneScreen({ router }: { router: ReturnType<typeof useRouter> }) {
         ))}
       </div>
 
-      {/* Check com anéis de pulso */}
       <div style={{ position: "relative", width: 132, height: 132, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
         {show && [0, 0.5].map((d, i) => (
           <span key={i} aria-hidden style={{
@@ -852,7 +942,6 @@ function DoneScreen({ router }: { router: ReturnType<typeof useRouter> }) {
         </div>
       </div>
 
-      {/* Conteúdo — reveal escalonado */}
       <div style={{ position: "relative", width: "100%", maxWidth: 340, display: "flex", flexDirection: "column", alignItems: "center", marginTop: 48 }}>
         <div style={{
           display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 14px", borderRadius: 9999,
