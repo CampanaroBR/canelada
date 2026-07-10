@@ -1,0 +1,39 @@
+import { Meta, Canvas, Controls } from "@storybook/addon-docs/blocks";
+import * as ShareArtCardStories from "./components/ShareArtCard.stories";
+
+<Meta of={ShareArtCardStories} />
+
+# ShareArtCard
+
+Card full-screen compartilhável usado nos prêmios de trait (Matador, Gol Mais Bonito,
+Bagre da Noite...) e no "Personagem da Semana": arte assada (fundo + mascote + título
+já compostos num PNG/JPG único) full-bleed atrás, com descrição, frase do vencedor,
+botão Compartilhar e rodapé como overlay na zona inferior. Empacota a captura de tela
+(`html-to-image` → `navigator.share`) que se repetia idêntica em `PremioScreen` e
+`ShareCardModal` — os dois viviam fora do design system, cada um com sua própria cópia
+da mesma lógica.
+
+<Canvas of={ShareArtCardStories.PremioMatador} />
+
+## Quando usar
+
+- Telas de "prêmio"/resultado de rodada que precisam virar imagem compartilhável.
+- Quando já existe (ou dá pra gerar) uma arte de fundo assada — este componente não
+  desenha o fundo, só compõe o overlay e a captura em cima da imagem que você passar
+  em `artSrc`.
+
+<Canvas of={ShareArtCardStories.PersonagemDaSemana} />
+
+## Do & Don't
+
+- ✅ `sentence` é `ReactNode` — destaque nomes com `<span style={{ color: nameColor }}>`.
+- ✅ O **título** fica assado na própria arte (`artSrc`), não é prop deste componente —
+  se ele quebrar em 2 linhas e sobrepor o overlay, regenere a arte com fonte menor, não
+  mude o layout do card.
+- ✅ `footerBorder` normalmente segue a cor de destaque do trait/categoria.
+- 🚫 Não duplique esse componente pra um novo tipo de card de prêmio — estenda as props
+  ou componha por cima antes de copiar a lógica de captura de novo.
+
+## Props
+
+<Controls />

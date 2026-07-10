@@ -43,3 +43,5 @@ export { BottomSheet } from "./components/BottomSheet";
 export { ConfirmDialog } from "./components/ConfirmDialog";
 export { SectionHeader } from "./components/SectionHeader";
 export { Stat } from "./components/Stat";
+export { ShareArtCard } from "./components/ShareArtCard";
+export type { ShareArtCardProps } from "./components/ShareArtCard";
