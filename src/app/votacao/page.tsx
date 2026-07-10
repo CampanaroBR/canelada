@@ -8,7 +8,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { EmptyState } from "@/ds/components/EmptyState";
 import { SoccerBall, CaretLeft, Bell, UsersThree, PencilSimpleLine, Trophy, Skull, CheckCircle } from "@phosphor-icons/react/dist/ssr";
-import { votacaoAtiva, MIN_JOGADORES_VOTACAO } from "@/lib/votacaoJanela";
+import { votacaoAtiva, votacaoEncerrada, MIN_JOGADORES_VOTACAO } from "@/lib/votacaoJanela";
 
 /** Topbar padrão (voltar + logo + sino) pras telas estáticas da votação. */
 function VotacaoTopBar({ isAdmin, isSuperAdmin }: { isAdmin?: boolean; isSuperAdmin?: boolean }) {
@@ -69,6 +69,19 @@ export default async function VotacaoPage() {
 
   // Acesso por JANELA DE HORÁRIO (não depende do cron ter flipado votacaoAberta).
   // Pega a rodada aberta mais recente e valida se estamos dentro da janela de votação.
+  //
+  // Fallback de resiliência: o cron de encerrar-votacao pode falhar em silêncio
+  // (já aconteceu — zero invocações num dia inteiro); corrige o flag `encerrada`
+  // aqui também, não só no feed, pra quem abre /votacao direto ver estado fresco.
+  const abertasDoGrupo = await prisma.rodada.findMany({
+    where: { grupoId: jogador.grupoId, encerrada: false },
+    select: { id: true, data: true },
+  });
+  const idsParaFechar = abertasDoGrupo.filter((r) => votacaoEncerrada(r.data)).map((r) => r.id);
+  if (idsParaFechar.length > 0) {
+    await prisma.rodada.updateMany({ where: { id: { in: idsParaFechar } }, data: { encerrada: true } });
+  }
+
   const rodadaAtiva = await prisma.rodada.findFirst({
     where: { grupoId: jogador.grupoId, encerrada: false },
     orderBy: { createdAt: "desc" },

@@ -3,7 +3,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { criarRodada } from "@/app/votacao/actions";
 import { badgesHome } from "@/lib/badges";
-import { janelaVotacao } from "@/lib/votacaoJanela";
+import { janelaVotacao, votacaoEncerrada } from "@/lib/votacaoJanela";
 import { pickWinner } from "@/lib/tieBreak";
 import { HomeClient } from "./HomeClient";
 import { PushAutoEnroll } from "@/components/PushAutoEnroll";
@@ -28,6 +28,19 @@ export default async function FeedPage() {
 
   const grupoId = jogador.grupoId;
   const grupoNome = jogador.grupo?.nome ?? "";
+
+  // Fallback de resiliência: o cron de encerrar-votacao pode falhar em silêncio
+  // (já aconteceu — zero invocações num dia inteiro) e deixar uma rodada aberta
+  // muito depois da janela real ter fechado. Corrige o flag aqui, na carga do
+  // feed, sem depender só do cron pra fechar a rodada.
+  const abertasDoGrupo = await prisma.rodada.findMany({
+    where: { grupoId, encerrada: false },
+    select: { id: true, data: true },
+  });
+  const idsParaFechar = abertasDoGrupo.filter((r) => votacaoEncerrada(r.data)).map((r) => r.id);
+  if (idsParaFechar.length > 0) {
+    await prisma.rodada.updateMany({ where: { id: { in: idsParaFechar } }, data: { encerrada: true } });
+  }
 
   const rodadaAtiva = await prisma.rodada.findFirst({
     where: { grupoId, encerrada: false },
