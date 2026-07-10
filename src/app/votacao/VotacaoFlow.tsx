@@ -24,15 +24,20 @@ interface Props {
 // dividida em Positivo/Negativo, opcional/pulável. Antes eram 7 telas cheias
 // obrigatórias seguidas — gente reclamou de cansaço; isso corta pra 4.
 //
-// De 18 pra 15 traits votáveis: cortados Chorão (redundante com Reclamão —
+// De 18 pra 12 traits votáveis: cortados Chorão (redundante com Reclamão —
 // mesma ideia de "lamenta/reclama"), Cone (redundante com Pregueiro — mesma
-// ideia de "baixo impacto/correu pouco") e Delegado (redundante com
-// Categoria — "a bola é dele" já é o que Categoria cobre). Frangueiro
-// mantido de propósito: é o único trait negativo específico de goleiro.
+// ideia de "baixo impacto/correu pouco"), Delegado (redundante com
+// Categoria — "a bola é dele" já é o que Categoria cobre), Raçudo (sinal
+// fraco/subjetivo perto dos outros traits de futebol), Firuleiro (peso 1,
+// pouco usado) e Resenha-forte (trait de personalidade, não de futebol —
+// não fazia sentido competir por vaga de linha). Frangueiro mantido de
+// propósito: é o único trait negativo específico de goleiro. Gol Mais
+// Bonito adicionado como opcional/pulável — nem todo jogo tem um gol de
+// capa, forçar resposta toda rodada geraria voto aleatório.
 // Os traits continuam existindo no banco (histórico/badges intactos), só
 // não aparecem mais pra votar.
 const HERO_SLUGS = ["categoria", "matador", "paredao", "bagre"];
-const POSITIVO_SLUGS = ["xerife", "garcom", "driblador"];
+const POSITIVO_SLUGS = ["xerife", "garcom", "driblador", "gol-mais-bonito"];
 const NEGATIVO_SLUGS = ["reclamao", "paneleiro", "pregueiro", "frangueiro", "bragueiro"];
 const LISTA_SLUGS = [...POSITIVO_SLUGS, ...NEGATIVO_SLUGS];
 const ALL_SLUGS = [...HERO_SLUGS, ...LISTA_SLUGS];
@@ -91,6 +96,7 @@ const MASCOTE: Record<string, string> = {
   racudo:          "/votacao-mascot/racudo.png",
   xerife:          "/votacao-mascot/xerife.png",
   garcom:          "/votacao-mascot/garcom.png",
+  "gol-mais-bonito": "/votacao-mascot/gol-mais-bonito.png",
   "resenha-forte": "/votacao-mascot/resenha-forte.png",
   chorao:          "/votacao-mascot/chorao.png",
   reclamao:        "/votacao-mascot/reclamao.png",

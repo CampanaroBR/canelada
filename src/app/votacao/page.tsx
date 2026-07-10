@@ -252,7 +252,7 @@ const CATEGORIA_LABEL: Record<string, string> = {
 // mantém a tela "já votou" com a cara do resto do produto em vez de uma
 // lista genérica com emoji solto.
 const HERO_SLUGS = ["categoria", "matador", "paredao", "bagre"];
-const POSITIVO_SLUGS = ["racudo", "xerife", "garcom", "driblador", "resenha-forte"];
+const POSITIVO_SLUGS = ["racudo", "xerife", "garcom", "driblador", "resenha-forte", "gol-mais-bonito"];
 
 function JaVotouScreen({ votos, isAdmin, isSuperAdmin }: { votos: VotoComVotado[]; isAdmin: boolean; isSuperAdmin: boolean }) {
   const grupos = [

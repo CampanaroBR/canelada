@@ -17,6 +17,7 @@ const TRAITS: { slug: string; nome: string; categoria: TraitCategoria; emoji: st
   { slug: "xerife",        nome: "Xerife",          categoria: TraitCategoria.FUTEBOL,       emoji: "👊", descricao: "Lidera dentro de campo, organiza o time e assume a responsabilidade.", peso: 2 },
   { slug: "garcom",        nome: "Garçom",          categoria: TraitCategoria.FUTEBOL,       emoji: "🥂", descricao: "Enxerga o jogo como poucos. Cria oportunidades e distribui assistências.", peso: 2 },
   { slug: "driblador",     nome: "Driblador",       categoria: TraitCategoria.FUTEBOL,       emoji: "⚽💨", descricao: "Desmonta a marcação com dribles, velocidade e muita habilidade.", peso: 2 },
+  { slug: "gol-mais-bonito", nome: "Gol Mais Bonito", categoria: TraitCategoria.FUTEBOL,     emoji: "🎯", descricao: "A pintura da noite. Marcou o gol mais bonito da rodada.", peso: 2 },
   // Grupo 2 — Resenha (opcional)
   { slug: "resenha-forte", nome: "Só Resenha",      categoria: TraitCategoria.PERSONALIDADE, emoji: "🎤", descricao: "Responsável pela animação, brincadeiras e energia do grupo. E não joga nada! 😂", peso: 1 },
   { slug: "delegado",      nome: "Delegado",        categoria: TraitCategoria.PERSONALIDADE, emoji: "🔒⚽", descricao: "A bola é dele. O resto do time só acompanha a jogada.", peso: 1 },

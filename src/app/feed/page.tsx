@@ -85,7 +85,7 @@ export default async function FeedPage() {
   const ART_BY_SLUG: Record<string, string> = {
     matador: "/premio/matador.jpg", categoria: "/premio/categoria.jpg", paredao: "/premio/paredao.jpg",
     racudo: "/premio/racudo.jpg", xerife: "/premio/xerife.jpg", garcom: "/premio/garcom.jpg",
-    driblador: "/premio/driblador.jpg",
+    driblador: "/premio/driblador.jpg", "gol-mais-bonito": "/premio/gol-mais-bonito.jpg",
     "resenha-forte": "/premio/soresenha.jpg", delegado: "/premio/delegado.jpg", chorao: "/premio/chorao.jpg", reclamao: "/premio/reclamao.jpg",
     paneleiro: "/premio/paneleiro.jpg", firuleiro: "/premio/firuleiro.jpg",
     pregueiro: "/premio/pregueiro.jpg", "corpo-mole": "/premio/pregueiro.jpg",
@@ -124,7 +124,7 @@ export default async function FeedPage() {
     // não mais "1 vencedor por trait fixo". Pesos definidos junto com o
     // usuário — 3 = decide o jogo sozinho, 2 = impacto real, 1 = mais
     // estilo/comportamento que resultado.
-    const POSITIVO_ATIVOS = ["categoria", "matador", "paredao", "xerife", "garcom", "driblador"];
+    const POSITIVO_ATIVOS = ["categoria", "matador", "paredao", "xerife", "garcom", "driblador", "gol-mais-bonito"];
     const NEGATIVO_ATIVOS = ["bagre", "frangueiro", "bragueiro", "reclamao", "pregueiro", "paneleiro"];
     const pesoRows = await prisma.trait.findMany({
       where: { slug: { in: [...POSITIVO_ATIVOS, ...NEGATIVO_ATIVOS] } },
