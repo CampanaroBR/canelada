@@ -165,32 +165,34 @@ function NoRodadaScreen({ isAdmin, isSuperAdmin }: { isAdmin: boolean; isSuperAd
         <EmptyState
           icon={<SoccerBall size={26} weight="regular" />}
           title="Sem baba ativa"
-          description="Quando alguém marcar que o baba rolou, a votação dos personagens abre aqui."
+          description="Quando o dono do grupo marcar que o baba rolou, a votação dos personagens abre aqui."
           action={
-            <form action={criarRodada}>
-              <button
-                type="submit"
-                style={{
-                  height: 48,
-                  padding: "0 24px",
-                  background: "#9fe870",
-                  color: "#0a1a06",
-                  border: "none",
-                  borderRadius: 9999,
-                  fontFamily: "var(--font-display)",
-                  fontWeight: 700,
-                  fontSize: 15,
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 8,
-                  WebkitTapHighlightColor: "transparent",
-                }}
-              >
-                <SoccerBall size={18} weight="bold" color="#0a1a06" />
-                Baba rolou hoje
-              </button>
-            </form>
+            isSuperAdmin ? (
+              <form action={criarRodada}>
+                <button
+                  type="submit"
+                  style={{
+                    height: 48,
+                    padding: "0 24px",
+                    background: "#9fe870",
+                    color: "#0a1a06",
+                    border: "none",
+                    borderRadius: 9999,
+                    fontFamily: "var(--font-display)",
+                    fontWeight: 700,
+                    fontSize: 15,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    WebkitTapHighlightColor: "transparent",
+                  }}
+                >
+                  <SoccerBall size={18} weight="bold" color="#0a1a06" />
+                  Baba rolou hoje
+                </button>
+              </form>
+            ) : undefined
           }
         />
       </main>

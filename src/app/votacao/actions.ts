@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { gerarStories } from "@/lib/stories";
 import { rateLimit } from "@/lib/ratelimit";
+import { isDiaDeBaba } from "@/lib/votacaoJanela";
 
 export async function criarRodada() {
   const session = await auth();
@@ -12,9 +13,17 @@ export async function criarRodada() {
 
   const jogador = await prisma.jogador.findUnique({
     where: { userId: session.user.id },
-    select: { grupoId: true },
+    select: { grupoId: true, role: true },
   });
   if (!jogador) redirect("/onboarding");
+
+  // Só o dono do grupo cria rodada. Antes qualquer jogador logado conseguia —
+  // o botão "Baba rolou hoje" no feed/votação disparava esta action sem
+  // nenhuma checagem de role, e foi assim que rodadas nasceram por engano.
+  if (jogador.role !== "SUPER_ADMIN") redirect("/votacao");
+
+  // Baba só em segunda/quarta — bloqueia criação em dia fora do calendário.
+  if (!isDiaDeBaba(new Date())) redirect("/votacao");
 
   const existing = await prisma.rodada.findFirst({
     where: { grupoId: jogador.grupoId, encerrada: false },

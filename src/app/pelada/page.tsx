@@ -22,6 +22,7 @@ export default async function PeladaPage() {
   });
 
   const isAdmin = jogador?.role === "ADMIN" || jogador?.role === "SUPER_ADMIN";
+  const isSuperAdmin = jogador?.role === "SUPER_ADMIN";
 
   // Se já existe uma rodada aberta (encerrada:false) pro grupo, criar outra é
   // bloqueado no servidor (anti-spam em actions.ts) — mostrar o form de novo
@@ -77,8 +78,8 @@ export default async function PeladaPage() {
               )}
             </Card>
           </div>
-        ) : isAdmin ? (
-          <NovaRodadaForm isSuperAdmin={jogador?.role === "SUPER_ADMIN"} />
+        ) : isSuperAdmin ? (
+          <NovaRodadaForm isSuperAdmin={true} />
         ) : (
           <div style={{ padding: "calc(env(safe-area-inset-top, 0px) + 80px) 16px 80px", display: "flex", flexDirection: "column", justifyContent: "center", minHeight: "80dvh" }}>
             <EmptyState

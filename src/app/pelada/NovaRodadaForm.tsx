@@ -8,6 +8,7 @@ import { MenuSheet } from "@/components/MenuSheet";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
 import { Button, Card, Content, Avatar, Toggle, Tag, Stat, Select } from "@/ds";
 import { parseLista, criarRodada, type ParticipanteImportado, type JogadorDoGrupo } from "./actions";
+import { DIAS_BABA } from "@/lib/votacaoJanela";
 
 type Step = "lista" | "confirmacao" | "sucesso";
 
@@ -23,13 +24,28 @@ function toISO(d: Date) {
   return `${y}-${m}-${day}`;
 }
 
+// Só segunda/quarta são dias de baba. Gera os próximos N dias de baba a partir
+// de hoje (inclui hoje se hoje for dia de baba) — o seletor só mostra esses.
+function proximosDiasBaba(n: number): Date[] {
+  const dias: Date[] = [];
+  const d = new Date();
+  d.setHours(12, 0, 0, 0);
+  while (dias.length < n) {
+    if ((DIAS_BABA as readonly number[]).includes(d.getDay())) dias.push(new Date(d));
+    d.setDate(d.getDate() + 1);
+  }
+  return dias;
+}
+
 const WEEKDAYS_ABBR = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
 const MONTHS_ABBR = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 
 export function NovaRodadaForm({ isSuperAdmin = false }: { isSuperAdmin?: boolean }) {
   const [step, setStep] = useState<Step>("lista");
   const [lista, setLista] = useState("");
-  const [data, setData] = useState(() => new Date().toISOString().slice(0, 10));
+  // Default = próximo dia de baba (seg/qua), nunca "hoje" cru — se hoje for
+  // domingo, já cai na segunda, não deixa criar rodada em dia fora do calendário.
+  const [data, setData] = useState(() => toISO(proximosDiasBaba(1)[0]));
   const [participantes, setParticipantes] = useState<ParticipanteImportado[]>([]);
   const [jogadoresGrupo, setJogadoresGrupo] = useState<JogadorDoGrupo[]>([]);
   const [excluidos, setExcluidos] = useState<Set<string>>(new Set());
@@ -616,34 +632,20 @@ export function NovaRodadaForm({ isSuperAdmin = false }: { isSuperAdmin?: boolea
 function MiniCalendar({ value, onChange }: { value: string; onChange: (iso: string) => void }) {
   const VISIBLE = 5;
 
-  const today = new Date();
-  today.setHours(12, 0, 0, 0);
-  const todayISO = toISO(today);
+  const todayISO = toISO(new Date());
 
-  // Primeiro dia visível na tira
-  const [start, setStart] = useState<Date>(() => {
-    const sel = new Date(value + "T12:00:00");
-    const base = isNaN(sel.getTime()) ? today : sel;
-    // garante que o dia selecionado fique visível, sem mostrar passado
-    return base < today ? today : base;
-  });
+  // Só dias de baba (seg/qua) daqui pra frente — gera bastante (~10 semanas) e
+  // pagina de VISIBLE em VISIBLE. Não existe "dia inválido" na tira: todo botão
+  // é um dia de baba real.
+  const babaDays = proximosDiasBaba(VISIBLE * 4);
+  const [offset, setOffset] = useState(0);
+  const days = babaDays.slice(offset, offset + VISIBLE);
 
-  const days = Array.from({ length: VISIBLE }, (_, i) => {
-    const d = new Date(start);
-    d.setDate(start.getDate() + i);
-    return d;
-  });
-
-  const firstVisibleISO = toISO(days[0]);
-  const canGoBack = firstVisibleISO > todayISO;
+  const canGoBack = offset > 0;
+  const canGoForward = offset + VISIBLE < babaDays.length;
 
   function shift(n: number) {
-    setStart((prev) => {
-      const d = new Date(prev);
-      d.setDate(prev.getDate() + n);
-      // não deixa retroceder antes de hoje
-      return d < today ? today : d;
-    });
+    setOffset((prev) => Math.min(Math.max(prev + n, 0), babaDays.length - VISIBLE));
   }
 
   const mesLabel = `${MONTHS_ABBR[days[0].getMonth()]}${
@@ -721,11 +723,12 @@ function MiniCalendar({ value, onChange }: { value: string; onChange: (iso: stri
         <button
           type="button"
           onClick={() => shift(VISIBLE)}
+          disabled={!canGoForward}
           aria-label="Próximos dias"
           style={{
             appearance: "none", border: "1px solid #2c2c2c", background: "#0a0e0e",
-            borderRadius: 12, width: 36, flexShrink: 0, cursor: "pointer",
-            color: "#fff", fontSize: 18, lineHeight: 1,
+            borderRadius: 12, width: 36, flexShrink: 0, cursor: canGoForward ? "pointer" : "not-allowed",
+            color: canGoForward ? "#fff" : "#3a3a3f", fontSize: 18, lineHeight: 1,
             display: "flex", alignItems: "center", justifyContent: "center",
           }}
         >

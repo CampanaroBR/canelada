@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { janelaVotacao, votacaoAtiva, votacaoEncerrada } from "@/lib/votacaoJanela";
+import { janelaVotacao, votacaoAtiva, votacaoEncerrada, isDiaDeBaba } from "@/lib/votacaoJanela";
 
 // Baba em 2026-07-06 (segunda). Votação: 06/07 22:30 BRT → 07/07 20:00 BRT.
 const data = new Date("2026-07-06T00:00:00Z"); // meia-noite UTC da data do baba
@@ -30,5 +30,24 @@ describe("votacaoAtiva", () => {
     // 07/08 00:00 UTC = 07/07 21:00 BRT
     expect(votacaoAtiva(data, new Date("2026-07-08T00:00:00Z"))).toBe(false);
     expect(votacaoEncerrada(data, new Date("2026-07-08T00:00:00Z"))).toBe(true);
+  });
+});
+
+describe("isDiaDeBaba (só segunda e quarta, em BRT)", () => {
+  it("segunda-feira é dia de baba", () => {
+    // 2026-07-13 é segunda; 15:00 BRT = 18:00 UTC
+    expect(isDiaDeBaba(new Date("2026-07-13T18:00:00Z"))).toBe(true);
+  });
+  it("quarta-feira é dia de baba", () => {
+    // 2026-07-15 é quarta
+    expect(isDiaDeBaba(new Date("2026-07-15T18:00:00Z"))).toBe(true);
+  });
+  it("domingo e terça não são", () => {
+    expect(isDiaDeBaba(new Date("2026-07-12T18:00:00Z"))).toBe(false); // dom
+    expect(isDiaDeBaba(new Date("2026-07-14T18:00:00Z"))).toBe(false); // ter
+  });
+  it("respeita BRT perto da meia-noite: segunda 22h BRT ainda é segunda (não vira terça UTC)", () => {
+    // 2026-07-14 01:00 UTC = 2026-07-13 22:00 BRT (segunda)
+    expect(isDiaDeBaba(new Date("2026-07-14T01:00:00Z"))).toBe(true);
   });
 });

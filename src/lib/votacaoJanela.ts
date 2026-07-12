@@ -28,3 +28,15 @@ export function votacaoAtiva(data: Date, agora: Date = new Date()): boolean {
 export function votacaoEncerrada(data: Date, agora: Date = new Date()): boolean {
   return agora >= janelaVotacao(data).fecha;
 }
+
+// Dias em que o baba acontece: segunda (1) e quarta (3). Só nesses dias dá pra
+// criar rodada — evita rodada criada em dia errado (por engano ou por clique
+// acidental). Pra liberar mais dias depois é só adicionar aqui (0=dom … 6=sáb).
+export const DIAS_BABA = [1, 3] as const;
+
+// Checa o dia-da-semana em BRT (UTC-3), não em UTC — senão perto da meia-noite
+// um baba de segunda à noite cairia como terça em UTC.
+export function isDiaDeBaba(data: Date): boolean {
+  const brt = new Date(data.getTime() - 3 * 60 * 60 * 1000);
+  return (DIAS_BABA as readonly number[]).includes(brt.getUTCDay());
+}

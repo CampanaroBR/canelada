@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { rateLimit } from "@/lib/ratelimit";
+import { isDiaDeBaba } from "@/lib/votacaoJanela";
 
 export type ParticipanteImportado = {
   nome: string;
@@ -71,8 +72,13 @@ export async function criarRodada(data: string, participantesIds: string[], pend
     select: { role: true, grupoId: true },
   });
 
-  if (!jogador || (jogador.role !== "ADMIN" && jogador.role !== "SUPER_ADMIN")) {
-    return { error: "Apenas administradores podem criar rodadas." };
+  if (!jogador || jogador.role !== "SUPER_ADMIN") {
+    return { error: "Apenas o dono do grupo pode criar rodadas." };
+  }
+
+  // Baba só em segunda/quarta — valida a data escolhida no servidor.
+  if (!isDiaDeBaba(new Date(data))) {
+    return { error: "Rodada só pode ser criada para segunda ou quarta-feira." };
   }
 
   if (!(await rateLimit("criarRodada", session.user.id, 5, "10 m")).ok) {
