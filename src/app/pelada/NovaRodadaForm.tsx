@@ -598,9 +598,10 @@ export function NovaRodadaForm({ isSuperAdmin = false }: { isSuperAdmin?: boolea
           <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "#ff4a4a", margin: "0 16px" }}>{error}</p>
         )}
 
-        {/* Criar rodada button */}
+        {/* Analisa a lista e leva pra confirmação (onde os jogadores são associados) —
+            não cria a rodada ainda, por isso não chama de "Criar Rodada" aqui. */}
         <Button fullWidth size="lg" onClick={handleImportar} disabled={!canImport}>
-          {isParsing ? "Analisando..." : "Criar Rodada"}
+          {isParsing ? "Analisando..." : "Continuar"}
         </Button>
       </div>
 
