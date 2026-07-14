@@ -77,7 +77,9 @@ export async function criarRodada(data: string, participantesIds: string[], pend
   }
 
   // Baba só em segunda/quarta — valida a data escolhida no servidor.
-  if (!isDiaDeBaba(new Date(data))) {
+  // `data` é uma data-calendário ("2026-07-13"); ancoramos ao meio-dia BRT
+  // (15:00 UTC) pra o dia-da-semana não escorregar pro dia anterior no fuso.
+  if (!isDiaDeBaba(new Date(`${data}T15:00:00Z`))) {
     return { error: "Rodada só pode ser criada para segunda ou quarta-feira." };
   }
 

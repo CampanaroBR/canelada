@@ -50,4 +50,11 @@ describe("isDiaDeBaba (só segunda e quarta, em BRT)", () => {
     // 2026-07-14 01:00 UTC = 2026-07-13 22:00 BRT (segunda)
     expect(isDiaDeBaba(new Date("2026-07-14T01:00:00Z"))).toBe(true);
   });
+  it("data-calendário do seletor (segunda) ancorada ao meio-dia BRT não escorrega pro domingo", () => {
+    // Regressão: `new Date("2026-07-13")` = meia-noite UTC → -3h vira domingo.
+    // O caller ancora em T15:00:00Z (meio-dia BRT) pra segunda continuar segunda.
+    expect(isDiaDeBaba(new Date("2026-07-13T15:00:00Z"))).toBe(true);   // seg
+    expect(isDiaDeBaba(new Date("2026-07-15T15:00:00Z"))).toBe(true);   // qua
+    expect(isDiaDeBaba(new Date("2026-07-14T15:00:00Z"))).toBe(false);  // ter
+  });
 });
