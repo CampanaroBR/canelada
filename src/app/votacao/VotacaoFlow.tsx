@@ -19,10 +19,11 @@ interface Props {
   isAdmin?: boolean;
 }
 
-// Estrutura híbrida: 4 personagens "hero" (tela cheia, obrigatórios — os que
+// Estrutura híbrida: personagens "hero" (tela cheia, obrigatórios — os que
 // viram assunto no grupo depois do jogo) e os outros numa lista compacta só,
 // dividida em Positivo/Negativo, opcional/pulável. Antes eram 7 telas cheias
-// obrigatórias seguidas — gente reclamou de cansaço; isso corta pra 4.
+// obrigatórias seguidas — gente reclamou de cansaço; isso cortou pra 4, e
+// depois voltou a 5 com a entrada do Gol Mais Bonito (ver abaixo).
 //
 // De 18 pra 12 traits votáveis: cortados Chorão (redundante com Reclamão —
 // mesma ideia de "lamenta/reclama"), Cone (redundante com Pregueiro — mesma
@@ -32,12 +33,12 @@ interface Props {
 // pouco usado) e Resenha-forte (trait de personalidade, não de futebol —
 // não fazia sentido competir por vaga de linha). Frangueiro mantido de
 // propósito: é o único trait negativo específico de goleiro. Gol Mais
-// Bonito adicionado como opcional/pulável — nem todo jogo tem um gol de
-// capa, forçar resposta toda rodada geraria voto aleatório.
+// Bonito virou a 5ª pergunta obrigatória (tela cheia), fiel ao Figma
+// (node 787:292) — mesmo formato das outras 4 heroes.
 // Os traits continuam existindo no banco (histórico/badges intactos), só
 // não aparecem mais pra votar.
-const HERO_SLUGS = ["categoria", "matador", "paredao", "bagre"];
-const POSITIVO_SLUGS = ["xerife", "garcom", "driblador", "gol-mais-bonito"];
+const HERO_SLUGS = ["categoria", "matador", "paredao", "bagre", "gol-mais-bonito"];
+const POSITIVO_SLUGS = ["xerife", "garcom", "driblador"];
 const NEGATIVO_SLUGS = ["reclamao", "paneleiro", "pregueiro", "frangueiro", "bragueiro"];
 const LISTA_SLUGS = [...POSITIVO_SLUGS, ...NEGATIVO_SLUGS];
 const ALL_SLUGS = [...HERO_SLUGS, ...LISTA_SLUGS];
@@ -50,6 +51,7 @@ const BG_IMAGES: Record<string, string> = {
   racudo:          "/votacao-bg/racudo.png",
   xerife:          "/votacao-bg/xerife.png",
   garcom:          "/votacao-bg/garcom.png",
+  "gol-mais-bonito": "/votacao-bg/gol-mais-bonito.png",
   "resenha-forte": "/votacao-bg/resenha-forte.png",
   chorao:          "/votacao-bg/chorao.png",
   reclamao:        "/votacao-bg/reclamao.png",
@@ -73,6 +75,7 @@ const GLOW_COLORS: Record<string, string> = {
   racudo:          "#392f2f",
   xerife:          "#431406",
   garcom:          "#1f1132",
+  "gol-mais-bonito": "#6b4a0a",
   "resenha-forte": "#7c1c4d",
   chorao:          "#1a4259",
   reclamao:        "#0c2648",
@@ -272,7 +275,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
           <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 4 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12, letterSpacing: "0.06em", color: "#fff", textShadow: "0 1px 3px rgba(0,0,0,0.55)" }}>
-                OS 4 DA NOITE
+                OS {heroTraits.length} DA NOITE
               </span>
               <span style={{
                 fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 10, letterSpacing: "0.06em",
@@ -880,7 +883,7 @@ function ReviewScreen({
   const negativos = listaTraits.filter((t) => NEGATIVO_SLUGS.includes(t.slug));
 
   const GROUPS_REVIEW = [
-    { label: "Os 4 da noite", tone: "#9fe870", required: true, traitsIn: heroTraits },
+    { label: `Os ${heroTraits.length} da noite`, tone: "#9fe870", required: true, traitsIn: heroTraits },
     { label: "Positivo", tone: "#9fe870", required: false, traitsIn: positivos },
     { label: "Negativo", tone: "#e56767", required: false, traitsIn: negativos },
   ];

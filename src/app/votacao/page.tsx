@@ -266,12 +266,12 @@ const CATEGORIA_LABEL: Record<string, string> = {
 // Mesmo agrupamento usado no fluxo de voto (VotacaoFlow) e na revisão —
 // mantém a tela "já votou" com a cara do resto do produto em vez de uma
 // lista genérica com emoji solto.
-const HERO_SLUGS = ["categoria", "matador", "paredao", "bagre"];
-const POSITIVO_SLUGS = ["racudo", "xerife", "garcom", "driblador", "resenha-forte", "gol-mais-bonito"];
+const HERO_SLUGS = ["categoria", "matador", "paredao", "bagre", "gol-mais-bonito"];
+const POSITIVO_SLUGS = ["racudo", "xerife", "garcom", "driblador", "resenha-forte"];
 
 function JaVotouScreen({ votos, isAdmin, isSuperAdmin }: { votos: VotoComVotado[]; isAdmin: boolean; isSuperAdmin: boolean }) {
   const grupos = [
-    { label: "Os 4 da noite", tone: "#9fe870", border: "#2c2c2c", bg: "rgba(159,232,112,0.08)", icon: <Trophy size={20} color="#9fe870" weight="fill" />, votosIn: votos.filter(v => v.traitSlug && HERO_SLUGS.includes(v.traitSlug)) },
+    { label: `Os ${HERO_SLUGS.length} da noite`, tone: "#9fe870", border: "#2c2c2c", bg: "rgba(159,232,112,0.08)", icon: <Trophy size={20} color="#9fe870" weight="fill" />, votosIn: votos.filter(v => v.traitSlug && HERO_SLUGS.includes(v.traitSlug)) },
     { label: "Positivo", tone: "#9fe870", border: "#2c2c2c", bg: "rgba(159,232,112,0.08)", icon: <Trophy size={20} color="#9fe870" weight="fill" />, votosIn: votos.filter(v => v.traitSlug && POSITIVO_SLUGS.includes(v.traitSlug)) },
     { label: "Negativo", tone: "#e56767", border: "#3a2424", bg: "rgba(229,103,103,0.08)", icon: <Skull size={20} color="#e56767" weight="fill" />, votosIn: votos.filter(v => v.traitSlug && !HERO_SLUGS.includes(v.traitSlug) && !POSITIVO_SLUGS.includes(v.traitSlug)) },
   ].filter(g => g.votosIn.length > 0);
