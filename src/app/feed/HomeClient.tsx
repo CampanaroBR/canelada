@@ -73,6 +73,9 @@ interface Props {
   proximoBaba: ProximoBaba | null;
   criarRodadaAction: () => Promise<void>;
   isSuperAdmin: boolean;
+  isAdmin: boolean;
+  /** Presentes na rodada que ainda não votaram — cobrança no WhatsApp (só o número). */
+  faltamVotar: number;
 }
 
 const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
@@ -80,7 +83,7 @@ const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
 export function HomeClient({
   rodadaId, dataRodada, dataCurta, horarioJogo, votacao, jaVotou, top5Rodada,
   maisVotados, maisVotadosPiores, personagensPorRodada, personagensSemana, personagensSemanaPorData, selecao, selecaoPiores, conquistas, badgesGrupo, datePills, grupoNome,
-  proximoBaba, criarRodadaAction, isSuperAdmin,
+  proximoBaba, criarRodadaAction, isSuperAdmin, isAdmin, faltamVotar,
 }: Props) {
   const [bsOpen, setBsOpen] = useState(false);
   const [bsMounted, setBsMounted] = useState(false); // só monta o sheet após 1ª abertura
@@ -375,6 +378,29 @@ export function HomeClient({
                     </div>
                   </div>
                 </div>
+              )}
+
+              {/* Cobrar quem não votou (admins) — só com a votação aberta e gente
+                  faltando. Mensagem cita só o número, nunca os nomes. */}
+              {isAdmin && votacao?.fase === "aberta" && faltamVotar > 0 && (
+                <button
+                  onClick={() => {
+                    const url = typeof window !== "undefined" ? window.location.origin : "";
+                    const quem = faltamVotar === 1 ? "Falta 1 pessoa" : `Faltam ${faltamVotar} pessoas`;
+                    const texto = `🗳️ *VOTAÇÃO ABERTA* — ${quem} votar!\n\nBora escolher os personagens da rodada 👀\nA votação fecha às 20h.\n\n${url}`;
+                    window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, "_blank");
+                  }}
+                  style={{
+                    marginTop: 8, width: "100%", boxSizing: "border-box",
+                    background: "#25D366", border: "none", borderRadius: 14, padding: "13px 16px",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                    cursor: "pointer", WebkitTapHighlightColor: "transparent",
+                  }}
+                >
+                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 15, lineHeight: "20px", color: "#0a2e14", letterSpacing: "-0.3px" }}>
+                    Cobrar no WhatsApp · faltam {faltamVotar}
+                  </span>
+                </button>
               )}
             </div>
           </div>

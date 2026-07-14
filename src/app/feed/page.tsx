@@ -48,6 +48,24 @@ export default async function FeedPage() {
     orderBy: { createdAt: "desc" },
   });
 
+  // Quantos jogaram a rodada mas ainda não votaram — usado no botão de cobrança
+  // no WhatsApp (só o número, sem citar nomes). Só quem estava presente conta:
+  // quem não jogou nem consegue votar, então não é "atraso".
+  let faltamVotar = 0;
+  if (rodadaAtiva) {
+    const [totalPresentes, jaVotaram] = await Promise.all([
+      prisma.jogador.count({
+        where: { grupoId, rodadasPresente: { some: { id: rodadaAtiva.id } } },
+      }),
+      prisma.voto.findMany({
+        where: { rodadaId: rodadaAtiva.id },
+        select: { votanteId: true },
+        distinct: ["votanteId"],
+      }),
+    ]);
+    faltamVotar = Math.max(0, totalPresentes - jaVotaram.length);
+  }
+
   const [recentStories, recentTraits, rodadasRecentes] = await Promise.all([
     // Personagem da semana: stories MVP/BAGRE agrupados por rodada
     prisma.story.findMany({
@@ -481,6 +499,8 @@ export default async function FeedPage() {
     <EnableNotificationsPrompt />
     <HomeClient
       isSuperAdmin={jogador.role === "SUPER_ADMIN"}
+      isAdmin={jogador.role === "ADMIN" || jogador.role === "SUPER_ADMIN"}
+      faltamVotar={faltamVotar}
       rodadaId={rodadaAtiva?.id ?? null}
       dataRodada={dataRodada}
       horarioJogo={horarioJogo}
