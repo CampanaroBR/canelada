@@ -380,28 +380,6 @@ export function HomeClient({
                 </div>
               )}
 
-              {/* Cobrar quem não votou (admins) — só com a votação aberta e gente
-                  faltando. Mensagem cita só o número, nunca os nomes. */}
-              {isAdmin && votacao?.fase === "aberta" && faltamVotar > 0 && (
-                <button
-                  onClick={() => {
-                    const url = typeof window !== "undefined" ? window.location.origin : "";
-                    const quem = faltamVotar === 1 ? "Falta 1 pessoa" : `Faltam ${faltamVotar} pessoas`;
-                    const texto = `🗳️ *VOTAÇÃO ABERTA* — ${quem} votar!\n\nBora escolher os personagens da rodada 👀\nA votação fecha às 20h.\n\n${url}`;
-                    window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, "_blank");
-                  }}
-                  style={{
-                    marginTop: 8, width: "100%", boxSizing: "border-box",
-                    background: "#25D366", border: "none", borderRadius: 14, padding: "13px 16px",
-                    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                    cursor: "pointer", WebkitTapHighlightColor: "transparent",
-                  }}
-                >
-                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 15, lineHeight: "20px", color: "#0a2e14", letterSpacing: "-0.3px" }}>
-                    Cobrar no WhatsApp · faltam {faltamVotar}
-                  </span>
-                </button>
-              )}
             </div>
           </div>
         </div>
@@ -830,7 +808,14 @@ export function HomeClient({
 
       {/* ── Notificações (status da votação) ── */}
       {notifOpen && (
-        <NotificationsSheet open onClose={() => setNotifOpen(false)} votacao={votacao} dataRodada={dataRodada} />
+        <NotificationsSheet
+          open
+          onClose={() => setNotifOpen(false)}
+          votacao={votacao}
+          dataRodada={dataRodada}
+          isAdmin={isAdmin}
+          faltamVotar={faltamVotar}
+        />
       )}
     </div>
   );

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CalendarBlank, Alarm, BellSlash } from "@phosphor-icons/react";
+import { CalendarBlank, Alarm, BellSlash, HandWaving } from "@phosphor-icons/react";
 
 type Votacao = { fase: "antes" | "aberta" | "encerrada"; aberta: boolean; texto: string } | null;
 
@@ -11,6 +11,10 @@ interface Props {
   onClose: () => void;
   votacao: Votacao;
   dataRodada: string | null;
+  /** Admin vê a ação de cutucar quem ainda não votou. */
+  isAdmin: boolean;
+  /** Presentes na rodada que ainda não votaram. */
+  faltamVotar: number;
 }
 
 const EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
@@ -21,7 +25,7 @@ const EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
  * da janela de votação (abre/fecha), que é a única notificação "ativa" que o
  * app já rastreia (as demais só existem como push, sem histórico em tela).
  */
-export function NotificationsSheet({ open, onClose, votacao, dataRodada }: Props) {
+export function NotificationsSheet({ open, onClose, votacao, dataRodada, isAdmin, faltamVotar }: Props) {
   const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
 
@@ -100,6 +104,42 @@ export function NotificationsSheet({ open, onClose, votacao, dataRodada }: Props
               Nenhuma notificação por enquanto.
             </p>
           </div>
+        )}
+
+        {/* Cutucar quem ainda não votou (admins) — abre o WhatsApp com a mensagem
+            pronta. Cita só o número, nunca os nomes. */}
+        {isAdmin && votacao?.fase === "aberta" && faltamVotar > 0 && (
+          <button
+            onClick={() => {
+              const url = typeof window !== "undefined" ? window.location.origin : "";
+              const quem = faltamVotar === 1 ? "Falta 1 pessoa" : `Faltam ${faltamVotar} pessoas`;
+              const texto = `🗳️ *VOTAÇÃO ABERTA* — ${quem} votar!\n\nBora escolher os personagens da rodada 👀\nA votação fecha às 20h.\n\n${url}`;
+              window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, "_blank");
+              onClose();
+            }}
+            style={{
+              width: "100%", boxSizing: "border-box", textAlign: "left",
+              display: "flex", gap: 12, alignItems: "center", padding: "14px 16px",
+              background: "none", border: "none", borderTop: "1px solid #2c2c2c",
+              cursor: "pointer", WebkitTapHighlightColor: "transparent",
+            }}
+          >
+            <div style={{
+              width: 36, height: 36, borderRadius: 12, flexShrink: 0,
+              background: "rgba(37,211,102,0.14)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <HandWaving size={18} color="#25D366" weight="bold" />
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
+              <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#fff" }}>
+                Cutucar {faltamVotar === 1 ? "quem falta" : `os ${faltamVotar} que faltam`}
+              </p>
+              <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, color: "#8a8a8a" }}>
+                Manda a cobrança no WhatsApp
+              </p>
+            </div>
+          </button>
         )}
       </div>
     </div>
