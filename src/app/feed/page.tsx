@@ -51,9 +51,12 @@ export default async function FeedPage() {
   // Quantos jogaram a rodada mas ainda não votaram — usado no botão de cobrança
   // no WhatsApp (só o número, sem citar nomes). Só quem estava presente conta:
   // quem não jogou nem consegue votar, então não é "atraso".
+  // souPresente: mesmo gate de /votacao — quem não jogou não vê "Votar agora!"
+  // ativo na Home (clicava e caía na tela "Você não jogou essa rodada").
   let faltamVotar = 0;
+  let souPresente = false;
   if (rodadaAtiva) {
-    const [totalPresentes, jaVotaram] = await Promise.all([
+    const [totalPresentes, jaVotaram, presenteRow] = await Promise.all([
       prisma.jogador.count({
         where: { grupoId, rodadasPresente: { some: { id: rodadaAtiva.id } } },
       }),
@@ -62,8 +65,13 @@ export default async function FeedPage() {
         select: { votanteId: true },
         distinct: ["votanteId"],
       }),
+      prisma.rodada.findFirst({
+        where: { id: rodadaAtiva.id, presentes: { some: { id: jogador.id } } },
+        select: { id: true },
+      }),
     ]);
     faltamVotar = Math.max(0, totalPresentes - jaVotaram.length);
+    souPresente = !!presenteRow;
   }
 
   const [recentStories, recentTraits, rodadasRecentes] = await Promise.all([
@@ -501,6 +509,7 @@ export default async function FeedPage() {
       isSuperAdmin={jogador.role === "SUPER_ADMIN"}
       isAdmin={jogador.role === "ADMIN" || jogador.role === "SUPER_ADMIN"}
       faltamVotar={faltamVotar}
+      souPresente={souPresente}
       rodadaId={rodadaAtiva?.id ?? null}
       dataRodada={dataRodada}
       horarioJogo={horarioJogo}

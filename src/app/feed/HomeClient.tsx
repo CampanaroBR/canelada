@@ -76,6 +76,8 @@ interface Props {
   isAdmin: boolean;
   /** Presentes na rodada que ainda não votaram — cobrança no WhatsApp (só o número). */
   faltamVotar: number;
+  /** Se o usuário jogou a rodada ativa — quem não jogou não vota (mesmo gate de /votacao). */
+  souPresente: boolean;
 }
 
 const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
@@ -83,7 +85,7 @@ const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
 export function HomeClient({
   rodadaId, dataRodada, dataCurta, horarioJogo, votacao, jaVotou, top5Rodada,
   maisVotados, maisVotadosPiores, personagensPorRodada, personagensSemana, personagensSemanaPorData, selecao, selecaoPiores, conquistas, badgesGrupo, datePills, grupoNome,
-  proximoBaba, criarRodadaAction, isSuperAdmin, isAdmin, faltamVotar,
+  proximoBaba, criarRodadaAction, isSuperAdmin, isAdmin, faltamVotar, souPresente,
 }: Props) {
   const [bsOpen, setBsOpen] = useState(false);
   const [bsMounted, setBsMounted] = useState(false); // só monta o sheet após 1ª abertura
@@ -102,7 +104,15 @@ export function HomeClient({
   const campoSel = campoTab === "melhores" ? selecao : selecaoPiores;
   // Janela de votação: parcial ao vivo na fase aberta, oficial após encerrar (20h); botão só ativo na janela aberta
   const mostrarResultados = votacao ? votacao.fase !== "antes" : false;
-  const podeVotar = votacao?.fase === "aberta" && !jaVotou;
+  const podeVotar = votacao?.fase === "aberta" && !jaVotou && souPresente;
+
+  // Divulga a votação aberta no grupo do WhatsApp — mesmo padrão wa.me do
+  // "Cutucar" do sino, mas sem contagem: é convite, não cobrança.
+  function compartilharVotacao() {
+    const url = typeof window !== "undefined" ? window.location.origin : "";
+    const texto = `🗳️ *VOTAÇÃO ABERTA* — bora votar nos personagens da rodada! ⚽\n\nA votação fecha às 20h.\n\n${url}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, "_blank");
+  }
 
   // Auto-refresh da parcial enquanto a votação está aberta
   const router = useRouter();
@@ -340,25 +350,64 @@ export function HomeClient({
                   </Link>
                 </div>
               ) : podeVotar ? (
-                /* Votar agora (janela aberta) */
-                <Link href="/votacao" style={{
-                  display: "flex", textDecoration: "none",
-                  background: "#0d0d0d",
-                  border: "1px solid #090909",
-                  borderRadius: 14, padding: "8px 16px",
-                  boxShadow: "0px 4px 9.8px 2px rgba(0,0,0,0.25)",
-                  overflow: "clip",
-                }}>
-                  <div style={{ display: "flex", gap: 8, height: 52, alignItems: "center", paddingTop: 8, paddingBottom: 8, borderRadius: 12, width: "100%" }}>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1, minWidth: 0 }}>
-                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#9fe870", letterSpacing: "-0.4px" }}>Votar agora!</span>
-                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#fff" }}>Escolha o personagem de cada um</span>
+                /* Votar agora (janela aberta) — com atalho pra divulgar a votação no grupo */
+                <div style={{ display: "flex", gap: 8, alignItems: "stretch", width: "100%" }}>
+                  <button onClick={compartilharVotacao} aria-label="Compartilhar votação" style={{
+                    flexShrink: 0, width: 56, borderRadius: 16, cursor: "pointer",
+                    background: "#0d0d0d", border: "1px solid #090909",
+                    boxShadow: "0px 4px 9.8px 2px rgba(0,0,0,0.25)",
+                    display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent",
+                  }}>
+                    <Export size={22} color="#fff" weight="bold" />
+                  </button>
+                  <Link href="/votacao" style={{
+                    flex: 1, minWidth: 0, display: "flex", textDecoration: "none",
+                    background: "#0d0d0d",
+                    border: "1px solid #090909",
+                    borderRadius: 14, padding: "8px 16px",
+                    boxShadow: "0px 4px 9.8px 2px rgba(0,0,0,0.25)",
+                    overflow: "clip",
+                  }}>
+                    <div style={{ display: "flex", gap: 8, height: 52, alignItems: "center", paddingTop: 8, paddingBottom: 8, borderRadius: 12, width: "100%" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1, minWidth: 0 }}>
+                        <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#9fe870", letterSpacing: "-0.4px" }}>Votar agora!</span>
+                        <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#fff" }}>Escolha o personagem de cada um</span>
+                      </div>
+                      <div style={{ background: "#9fe870", borderRadius: 12, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 4, overflow: "clip" }}>
+                        <CaretRight size={20} weight="bold" color="#000" />
+                      </div>
                     </div>
-                    <div style={{ background: "#9fe870", borderRadius: 12, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 4, overflow: "clip" }}>
-                      <CaretRight size={20} weight="bold" color="#000" />
+                  </Link>
+                </div>
+              ) : votacao?.fase === "aberta" && !souPresente ? (
+                /* Votação rolando mas o usuário não jogou — não vota, só divulga/acompanha */
+                <div style={{ display: "flex", gap: 8, alignItems: "stretch", width: "100%" }}>
+                  <button onClick={compartilharVotacao} aria-label="Compartilhar votação" style={{
+                    flexShrink: 0, width: 56, borderRadius: 16, cursor: "pointer",
+                    background: "#0d0d0d", border: "1px solid #090909",
+                    boxShadow: "0px 4px 9.8px 2px rgba(0,0,0,0.25)",
+                    display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent",
+                  }}>
+                    <Export size={22} color="#fff" weight="bold" />
+                  </button>
+                  <div aria-disabled style={{
+                    flex: 1, minWidth: 0, display: "flex",
+                    background: "#0d0d0d",
+                    border: "1px solid #26262b",
+                    borderRadius: 14, padding: "8px 16px",
+                    overflow: "clip", opacity: 0.85, cursor: "not-allowed",
+                  }}>
+                    <div style={{ display: "flex", gap: 8, height: 52, alignItems: "center", paddingTop: 8, paddingBottom: 8, borderRadius: 12, width: "100%" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1, minWidth: 0 }}>
+                        <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#7a7a7a", letterSpacing: "-0.4px" }}>Você não jogou essa</span>
+                        <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#7a7a7a" }}>Só quem jogou vota — acompanhe a parcial</span>
+                      </div>
+                      <div style={{ background: "#26262b", borderRadius: 12, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 4, overflow: "clip" }}>
+                        <CaretRight size={20} weight="bold" color="#7a7a7a" />
+                      </div>
                     </div>
                   </div>
-                </Link>
+                </div>
               ) : (
                 /* Antes de abrir (22:30) — botão desativado */
                 <div aria-disabled style={{
