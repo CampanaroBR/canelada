@@ -399,11 +399,8 @@ export function HomeClient({
                   }}>
                     <div style={{ display: "flex", gap: 8, height: 52, alignItems: "center", paddingTop: 8, paddingBottom: 8, borderRadius: 12, width: "100%" }}>
                       <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1, minWidth: 0 }}>
-                        <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#7a7a7a", letterSpacing: "-0.4px" }}>Você não jogou essa</span>
-                        <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#7a7a7a" }}>Só quem jogou vota — acompanhe a parcial</span>
-                      </div>
-                      <div style={{ background: "#26262b", borderRadius: 12, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 4, overflow: "clip" }}>
-                        <CaretRight size={20} weight="bold" color="#7a7a7a" />
+                        <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#7a7a7a", letterSpacing: "-0.4px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Só quem jogou vota</span>
+                        <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#7a7a7a", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Acompanhe a parcial por aqui</span>
                       </div>
                     </div>
                   </div>
