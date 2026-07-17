@@ -15,7 +15,8 @@ export type LeaderboardEntry = {
 interface Props {
   open: boolean;
   onClose: () => void;
-  entries: LeaderboardEntry[];
+  /** Um ranking por data (mesma ordem de `datas`) — o filtro troca de verdade. */
+  entriesPorData: LeaderboardEntry[][];
   datas?: string[];
   dataAtiva?: number;
   /** "piores" troca título/ícone/cores pro tom vermelho do ranking negativo. */
@@ -25,7 +26,7 @@ interface Props {
 const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
 
 export function BottomsheetMaisVotados({
-  open, onClose, entries, datas = [], dataAtiva = 2, variant = "melhores",
+  open, onClose, entriesPorData, datas = [], dataAtiva = 2, variant = "melhores",
 }: Props) {
   const negativo = variant === "piores";
   const accent = negativo ? "#e56767" : "#9fe870";
@@ -37,6 +38,9 @@ export function BottomsheetMaisVotados({
   useEffect(() => {
     if (open) setActivePill(dataAtiva);
   }, [open, dataAtiva]);
+
+  // Ranking da data selecionada — trocar de pill agora troca a lista de verdade.
+  const entries = entriesPorData[activePill] ?? [];
 
   async function compartilhar() {
     const top = entries.slice(0, 5).map((e) => `${e.rank}. ${e.apelido} (${e.qtd}x ${e.categoria})`).join("\n");

@@ -36,3 +36,31 @@ export function useIsAdmin(): boolean {
 
   return isAdmin;
 }
+
+const SUPER_CACHE_KEY = "canelada:isSuperAdmin";
+
+// Mesmo padrão do useIsAdmin, mas só pro dono do grupo (SUPER_ADMIN) — usado
+// em itens exclusivos como "Editar votos".
+export function useIsSuperAdmin(): boolean {
+  const [isSuper, setIsSuper] = useState(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return localStorage.getItem(SUPER_CACHE_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    fetch("/api/me")
+      .then((r) => r.json())
+      .then((d) => {
+        const sup = d.role === "SUPER_ADMIN";
+        setIsSuper(sup);
+        try { localStorage.setItem(SUPER_CACHE_KEY, sup ? "1" : "0"); } catch { /* privado/sem storage */ }
+      })
+      .catch(() => {});
+  }, []);
+
+  return isSuper;
+}

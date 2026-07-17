@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { User, UsersThree, UserCheck, SignOut } from "@phosphor-icons/react";
-import { useIsAdmin } from "@/lib/useIsAdmin";
+import { User, UsersThree, UserCheck, PencilSimpleLine, SignOut } from "@phosphor-icons/react";
+import { useIsAdmin, useIsSuperAdmin } from "@/lib/useIsAdmin";
 
 interface Props {
   open: boolean;
@@ -20,6 +20,10 @@ const ITEMS = [
 // rodada aberta (redireciona pra /votacao se não houver nenhuma no momento).
 const ADMIN_ITEM = { icon: UserCheck, label: "Vincular presença", href: "/votacao/presenca" };
 
+// Só o dono do grupo (super admin) — editar/corrigir votos da rodada. Ficava
+// como lápis no card da Home; movido pra cá pra não poluir a tela principal.
+const SUPER_ITEM = { icon: PencilSimpleLine, label: "Editar votos", href: "/votacao/admin" };
+
 const EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
 
 /**
@@ -31,6 +35,7 @@ export function MenuSheet({ open, onClose }: Props) {
   const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
   const isAdmin = useIsAdmin();
+  const isSuperAdmin = useIsSuperAdmin();
 
   useEffect(() => {
     if (open) {
@@ -45,7 +50,11 @@ export function MenuSheet({ open, onClose }: Props) {
 
   if (!mounted) return null;
 
-  const items = isAdmin ? [...ITEMS, ADMIN_ITEM] : ITEMS;
+  const items = [
+    ...ITEMS,
+    ...(isAdmin ? [ADMIN_ITEM] : []),
+    ...(isSuperAdmin ? [SUPER_ITEM] : []),
+  ];
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 200, pointerEvents: "none" }}>

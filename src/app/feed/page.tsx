@@ -16,6 +16,11 @@ type MaisVotado = { apelido: string; qtd: number; categoria: string };
 type Personagem  = { tipo: string; apelido: string; texto: string; data: Date };
 type Conquista   = { apelido: string; traitSlug: string; traitNome: string; traitEmoji: string | null; traitDesc: string | null; data: Date };
 
+// Traits ativos por lado — usados tanto na rodada atual quanto no cálculo por
+// rodada do filtro de datas. No escopo do módulo pra valerem nos dois lugares.
+const POSITIVO_ATIVOS = ["categoria", "matador", "paredao", "xerife", "garcom", "driblador", "gol-mais-bonito"];
+const NEGATIVO_ATIVOS = ["bagre", "frangueiro", "bragueiro", "reclamao", "pregueiro", "paneleiro"];
+
 export default async function FeedPage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
@@ -163,8 +168,6 @@ export default async function FeedPage() {
     // não mais "1 vencedor por trait fixo". Pesos definidos junto com o
     // usuário — 3 = decide o jogo sozinho, 2 = impacto real, 1 = mais
     // estilo/comportamento que resultado.
-    const POSITIVO_ATIVOS = ["categoria", "matador", "paredao", "xerife", "garcom", "driblador", "gol-mais-bonito"];
-    const NEGATIVO_ATIVOS = ["bagre", "frangueiro", "bragueiro", "reclamao", "pregueiro", "paneleiro"];
     const pesoRows = await prisma.trait.findMany({
       where: { slug: { in: [...POSITIVO_ATIVOS, ...NEGATIVO_ATIVOS] } },
       select: { slug: true, peso: true },
@@ -317,6 +320,10 @@ export default async function FeedPage() {
   // dados de verdade da rodada que representa.
   const outrasRodadas = rodadasRecentes.filter(r => r.id !== rodadaAtiva?.id);
   const personagensSemanaOutras = new Map<string, PersonagemSemana[]>();
+  // Rankings "Parcial/Pior da rodada" por rodada — pra o filtro de datas do
+  // bottomsheet mostrar os dados certos de cada baba, não só o atual.
+  const maisVotadosOutras = new Map<string, MaisVotado[]>();
+  const maisVotadosPioresOutras = new Map<string, MaisVotado[]>();
   if (outrasRodadas.length > 0) {
     const votosOutras = await prisma.voto.findMany({
       where: { rodadaId: { in: outrasRodadas.map(r => r.id) }, categoria: "TRAIT", traitSlug: { not: null } },
@@ -355,6 +362,11 @@ export default async function FeedPage() {
     const nmeMap2 = Object.fromEntries(nmeRows2.map(j => [j.id, j.apelido]));
     const tMeta2 = Object.fromEntries(tRows2.map(t => [t.slug, t]));
 
+    const toRankingEntry2 = (r: { slug: string; vencedorId: string; votos: number }): MaisVotado => ({
+      apelido: nmeMap2[r.vencedorId] ?? "?",
+      qtd: r.votos,
+      categoria: r.slug === "categoria" ? "MVP" : (tMeta2[r.slug]?.nome ?? r.slug).toUpperCase(),
+    });
     for (const [rodadaId, rawR] of rawPorRodada) {
       personagensSemanaOutras.set(rodadaId, rawR.map(r => ({
         slug: r.slug,
@@ -365,6 +377,8 @@ export default async function FeedPage() {
         vencedor: nmeMap2[r.vencedorId] ?? "?",
         votos: r.votos,
       })));
+      maisVotadosOutras.set(rodadaId, rawR.filter(r => POSITIVO_ATIVOS.includes(r.slug)).map(toRankingEntry2).sort((a, b) => b.qtd - a.qtd));
+      maisVotadosPioresOutras.set(rodadaId, rawR.filter(r => NEGATIVO_ATIVOS.includes(r.slug)).map(toRankingEntry2).sort((a, b) => b.qtd - a.qtd));
     }
   }
 
@@ -373,6 +387,16 @@ export default async function FeedPage() {
     .slice()
     .reverse()
     .map(r => (r.id === rodadaAtiva?.id ? personagensSemana : (personagensSemanaOutras.get(r.id) ?? [])));
+
+  // Rankings por data (mesma ordem das datePills) — pro filtro do bottomsheet.
+  const maisVotadosPorData: MaisVotado[][] = rodadasRecentes
+    .slice()
+    .reverse()
+    .map(r => (r.id === rodadaAtiva?.id ? maisVotados : (maisVotadosOutras.get(r.id) ?? [])));
+  const maisVotadosPioresPorData: MaisVotado[][] = rodadasRecentes
+    .slice()
+    .reverse()
+    .map(r => (r.id === rodadaAtiva?.id ? maisVotadosPiores : (maisVotadosPioresOutras.get(r.id) ?? [])));
 
   const PERSONAGEM_TITLES: Record<string, string> = {
     MVP:    "MATADOR",
@@ -519,6 +543,8 @@ export default async function FeedPage() {
       top5Rodada={top5Rodada}
       maisVotados={maisVotados}
       maisVotadosPiores={maisVotadosPiores}
+      maisVotadosPorData={maisVotadosPorData}
+      maisVotadosPioresPorData={maisVotadosPioresPorData}
       personagensPorRodada={personagensPorRodada}
       personagensSemana={personagensSemana}
       personagensSemanaPorData={personagensSemanaPorData}

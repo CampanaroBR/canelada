@@ -8,7 +8,7 @@ import Link from "next/link";
 import {
   Lightning, Medal, CaretRight, Check, Skull,
   CalendarBlank, Alarm, CalendarStar,
-  Bell, MedalMilitary, Export, PencilSimpleLine,
+  Bell, MedalMilitary, Export,
 } from "@phosphor-icons/react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
@@ -61,6 +61,9 @@ interface Props {
   jaVotou: boolean;
   maisVotados: MaisVotado[];
   maisVotadosPiores: MaisVotado[];
+  /** Rankings por data (mesma ordem das datePills) — pro filtro do bottomsheet. */
+  maisVotadosPorData: MaisVotado[][];
+  maisVotadosPioresPorData: MaisVotado[][];
   personagensPorRodada: Personagem[][];
   personagensSemana: PersonagemSemana[];
   personagensSemanaPorData: PersonagemSemana[][];
@@ -84,7 +87,7 @@ const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
 
 export function HomeClient({
   rodadaId, dataRodada, dataCurta, horarioJogo, votacao, jaVotou, top5Rodada,
-  maisVotados, maisVotadosPiores, personagensPorRodada, personagensSemana, personagensSemanaPorData, selecao, selecaoPiores, conquistas, badgesGrupo, datePills, grupoNome,
+  maisVotados, maisVotadosPiores, maisVotadosPorData, maisVotadosPioresPorData, personagensPorRodada, personagensSemana, personagensSemanaPorData, selecao, selecaoPiores, conquistas, badgesGrupo, datePills, grupoNome,
   proximoBaba, criarRodadaAction, isSuperAdmin, isAdmin, faltamVotar, souPresente,
 }: Props) {
   const [bsOpen, setBsOpen] = useState(false);
@@ -125,18 +128,10 @@ export function HomeClient({
   const [notifOpen, setNotifOpen] = useState(false);
 
 
-  const lbEntries: LeaderboardEntry[] = maisVotados.slice(0, 6).map((v, i) => ({
-    rank: i + 1,
-    apelido: v.apelido,
-    qtd: v.qtd,
-    categoria: v.categoria,
-  }));
-  const lbEntriesPiores: LeaderboardEntry[] = maisVotadosPiores.map((v, i) => ({
-    rank: i + 1,
-    apelido: v.apelido,
-    qtd: v.qtd,
-    categoria: v.categoria,
-  }));
+  const toLbEntries = (lista: MaisVotado[]): LeaderboardEntry[] =>
+    lista.slice(0, 6).map((v, i) => ({ rank: i + 1, apelido: v.apelido, qtd: v.qtd, categoria: v.categoria }));
+  const lbEntriesPorData: LeaderboardEntry[][] = maisVotadosPorData.map(toLbEntries);
+  const lbEntriesPioresPorData: LeaderboardEntry[][] = maisVotadosPioresPorData.map(toLbEntries);
 
 
   return (
@@ -177,25 +172,12 @@ export function HomeClient({
         </div>
         <div aria-hidden style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)", borderBottomLeftRadius: 48, borderBottomRightRadius: 48, pointerEvents: "none" }} />
 
-        {/* Título — editar votos (só dono do grupo) alinhado no canto direito, em grid pra manter o título centralizado de verdade */}
-        <div style={{
-          position: "relative", width: "100%", marginBottom: 16,
-          display: "grid", gridTemplateColumns: "48px 1fr 48px", alignItems: "center", gap: 8,
-        }}>
-          <div />
+        {/* Título — editar votos foi pro menu hambúrguer (só dono do grupo),
+            pra não poluir o card. Título centralizado limpo. */}
+        <div style={{ position: "relative", width: "100%", marginBottom: 16 }}>
           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 18, lineHeight: "20px", color: "#fff", textAlign: "center" }}>
             Votação da rodada
           </p>
-          {rodadaId && isSuperAdmin ? (
-            <Link href="/votacao/admin" aria-label="Editar votos da rodada" style={{
-              justifySelf: "end",
-              width: 44, height: 44, borderRadius: 14, flexShrink: 0,
-              background: "#0d0d0d", border: "1px solid #090909",
-              display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent",
-            }}>
-              <PencilSimpleLine size={20} color="#fff" weight="bold" />
-            </Link>
-          ) : <div />}
         </div>
 
         {/* Tabs: Os melhores / Os piores — pill com indicador deslizante */}
@@ -814,7 +796,7 @@ export function HomeClient({
         <BottomsheetMaisVotados
           open={bsOpen}
           onClose={() => setBsOpen(false)}
-          entries={lbEntries}
+          entriesPorData={lbEntriesPorData}
           datas={datePills}
           dataAtiva={datePills.length - 1}
         />
@@ -824,7 +806,7 @@ export function HomeClient({
         <BottomsheetMaisVotados
           open={bsPioresOpen}
           onClose={() => setBsPioresOpen(false)}
-          entries={lbEntriesPiores}
+          entriesPorData={lbEntriesPioresPorData}
           datas={datePills}
           dataAtiva={datePills.length - 1}
           variant="piores"
