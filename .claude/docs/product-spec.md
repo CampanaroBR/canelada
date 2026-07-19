@@ -110,6 +110,18 @@ Somos:
 3. **Rivalidade** — mantém o interesse entre os babas
 4. **Compartilhamento** — WhatsApp é essencial
 
+### 8.1 Pilar de construção — Harness Design
+
+Os 4 pilares acima são sobre o que o produto entrega pra quem joga. Este é sobre como o produto é construído — e vale registrar porque molda toda decisão técnica do Canelada.
+
+O Canelada é mantido por um Product Designer só, com IA agêntica (Claude Code) como par constante de desenvolvimento. Isso só funciona sob uma disciplina: **gerar não é o mesmo que saber o que vale a pena gerar**. A IA opera sobre o que já foi dito, documentado, estruturado — o que o grupo sente mas não verbaliza, o que uma rodada real ensinou mas ninguém escreveu, o que é tecnicamente correto mas errado pro contexto específico do baba não entra sozinho. Por isso o trabalho antes de qualquer implementação é estruturar o contexto que a IA precisa pra chegar na forma certa: os critérios do produto (este spec), as decisões já tomadas que não podem ser reabertas a cada prompt, e o vínculo com dado real de produção como critério de validação — nunca dado sintético.
+
+Na prática, isso significa:
+
+- **Contexto antes de geração.** Nenhuma feature nova é implementada sem primeiro checar contra este documento — regras de negócio, personalidade de marca e pilares de produto são o "harness" que a IA precisa respeitar antes de propor qualquer solução.
+- **Validação contra produção real, não contra dado fictício.** Toda mudança relevante é comparada com o banco de dados real e com o que o grupo sabe que aconteceu na rodada — foi assim que bugs como a lógica invertida de "melhor/pior" vieram à tona: o grupo perguntou, a resposta virou correção.
+- **Julgamento permanece humano.** A IA acelera o ciclo entre decisão e produto no ar — de ideia a validado em produção, muitas vezes na mesma conversa — mas quem decide o que é certo pro Canelada, e quem responde quando algo dá errado, é sempre quem entende o contexto do baba: o Product Designer, não o modelo.
+
 ---
 
 ## 9. Como funciona o baba
