@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
-import { SoccerBall } from "@phosphor-icons/react";
+import { Football } from "reicon-react";
 import { Dropdown } from "./Dropdown";
 
 const meta: Meta<typeof Dropdown> = {
@@ -29,7 +29,7 @@ export const Default: Story = {
 export const ComIcone: Story = {
   render: () => {
     const [v, setV] = useState("");
-    return <Dropdown label="Posição" leftIcon={<SoccerBall size={18} weight="regular" />} options={posicoes} value={v} onChange={setV} placeholder="Escolha a posição" />;
+    return <Dropdown label="Posição" leftIcon={<Football size={18} weight="Outline" />} options={posicoes} value={v} onChange={setV} placeholder="Escolha a posição" />;
   },
 };
 

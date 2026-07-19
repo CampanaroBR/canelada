@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { X, ShareNetwork, CalendarBlank, Alarm } from "@phosphor-icons/react";
+import { X, Share, Calendar, Alarm } from "reicon-react";
 import { toBlob } from "html-to-image";
 import type { PersonagemSemana } from "./ShareCardModal";
 
@@ -113,7 +113,7 @@ export function SelecaoShareModal({ selecao, grupoNome, dataRodada, horarioJogo,
           display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
         }}
       >
-        <X size={16} color="#fff" weight="bold" />
+        <X size={16} color="#fff" weight="Outline" />
       </button>
 
       {/* Card capturável */}
@@ -135,11 +135,11 @@ export function SelecaoShareModal({ selecao, grupoNome, dataRodada, horarioJogo,
             {dataRodada && (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
                 <div style={{ background: "#1c1c1c", display: "flex", alignItems: "center", gap: 4, padding: "4px 8px", borderRadius: 48 }}>
-                  <CalendarBlank size={16} color="#9fe870" weight="bold" />
+                  <Calendar size={16} color="#9fe870" weight="Outline" />
                   <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#9fe870", whiteSpace: "nowrap" }}>{dataRodada}</span>
                 </div>
                 <div style={{ background: "#1c1c1c", display: "flex", alignItems: "center", gap: 4, padding: "4px 8px", borderRadius: 48 }}>
-                  <Alarm size={16} color="#fff" weight="bold" />
+                  <Alarm size={16} color="#fff" weight="Outline" />
                   <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#fff", whiteSpace: "nowrap" }}>{horarioJogo}</span>
                 </div>
               </div>
@@ -183,7 +183,7 @@ export function SelecaoShareModal({ selecao, grupoNome, dataRodada, horarioJogo,
           <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: !temVoto ? "#7a7a7a" : "#090909" }}>
             {sharing ? "Gerando imagem..." : !bgReady ? "Preparando…" : "Compartilhar"}
           </span>
-          <ShareNetwork size={20} color={!temVoto ? "#7a7a7a" : "#090909"} weight="bold" />
+          <Share size={20} color={!temVoto ? "#7a7a7a" : "#090909"} weight="Outline" />
         </button>
       </div>
     </div>

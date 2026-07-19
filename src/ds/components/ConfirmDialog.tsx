@@ -1,5 +1,5 @@
 import React from "react";
-import { Warning } from "@phosphor-icons/react";
+import { Warning } from "reicon-react";
 import { radius, token, font } from "../tokens";
 import { BottomSheet } from "./BottomSheet";
 import { Button, type ButtonVariant } from "./Button";
@@ -33,7 +33,7 @@ export function ConfirmDialog({
           background: token("bg-fill-danger-default"),
           display: "flex", alignItems: "center", justifyContent: "center",
         }}>
-          {icon ?? <Warning size={28} color={token("accent-red-default")} weight="fill" />}
+          {icon ?? <Warning size={28} color={token("accent-red-default")} weight="Filled" />}
         </div>
         <h2 style={{ margin: 0, fontFamily: font.display, fontWeight: 800, fontSize: 20, color: token("text-primary-default") }}>{title}</h2>
         {description && (

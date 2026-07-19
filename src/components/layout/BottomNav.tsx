@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
-import { House, SoccerBall, Medal, ChartBar } from "@phosphor-icons/react";
+import { House, Football, Medal, ChartBar } from "reicon-react";
 import { useIsAdmin } from "@/lib/useIsAdmin";
 
 const NAV_ITEMS: Array<{
@@ -12,7 +12,7 @@ const NAV_ITEMS: Array<{
   Icon: typeof Medal;
 }> = [
   { href: "/feed",     label: "Home",    Icon: House      },
-  { href: "/pelada",   label: "Baba",    Icon: SoccerBall },
+  { href: "/pelada",   label: "Baba",    Icon: Football },
   { href: "/medalhas", label: "Badges",  Icon: Medal      },
   { href: "/ranking",  label: "Ranking", Icon: ChartBar   },
 ];
@@ -89,7 +89,7 @@ export function BottomNav() {
                     animate={isActive ? { scale: [1, 1.25, 1] } : { scale: 1 }}
                     transition={{ duration: 0.35, ease: "easeOut" }}
                   >
-                    <item.Icon size={24} color={isActive ? "#000" : "#fff"} weight="regular" />
+                    <item.Icon size={24} color={isActive ? "#000" : "#fff"} weight="Outline" />
                   </motion.div>
                   <span style={{
                     fontFamily: "var(--font-display)",

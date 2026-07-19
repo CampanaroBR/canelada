@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X } from "@phosphor-icons/react";
+import { X } from "reicon-react";
 import { enablePush } from "@/lib/pushClient";
 import { AnimatedBell } from "@/components/icons/AnimatedBell";
 
@@ -96,7 +96,7 @@ export function EnableNotificationsPrompt() {
             WebkitTapHighlightColor: "transparent",
           }}
         >
-          <X size={14} color="#8a8a8a" weight="bold" />
+          <X size={14} color="#8a8a8a" weight="Outline" />
         </button>
       </div>
 

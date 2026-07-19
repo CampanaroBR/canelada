@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { signOut } from "next-auth/react";
-import { EnvelopeSimple, ArrowClockwise } from "@phosphor-icons/react";
+import { Envelope, Refresh } from "reicon-react";
 
 /**
  * Tela pra quem logou sem convite válido: explica cedo (antes de qualquer
@@ -24,7 +24,7 @@ export function ConviteNecessario() {
         background: "#1c1c1c", border: "1px solid #2c2c2c",
         display: "flex", alignItems: "center", justifyContent: "center",
       }}>
-        <EnvelopeSimple size={26} color="#9fe870" weight="regular" />
+        <Envelope size={26} color="#9fe870" weight="Outline" />
       </div>
 
       <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 24, lineHeight: "28px", color: "#fff" }}>
@@ -46,7 +46,7 @@ export function ConviteNecessario() {
             cursor: "pointer", WebkitTapHighlightColor: "transparent",
           }}
         >
-          <ArrowClockwise size={18} weight="bold" />
+          <Refresh size={18} weight="Outline" />
           Já abri o link — tentar de novo
         </button>
         <button

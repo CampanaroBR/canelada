@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import Link from "next/link";
 import { toPng } from "html-to-image";
-import { Export, ShieldStar } from "@phosphor-icons/react";
+import { Export, ShieldStar } from "reicon-react";
 import { ContaActions } from "./ContaActions";
 import { EditarPerfilSheet, type PerfilInitial } from "./EditarPerfilSheet";
 import { Stat } from "@/ds";
@@ -88,7 +88,7 @@ export function PerfilCliente(props: Props) {
           aria-label="Compartilhar card"
           style={{ position: "absolute", top: 16, right: 16, zIndex: 2, width: 48, height: 48, borderRadius: 16, background: "#090909", border: "1px solid #383838", display: "flex", alignItems: "center", justifyContent: "center", cursor: sharing ? "default" : "pointer", opacity: sharing ? 0.5 : 1, WebkitTapHighlightColor: "transparent" }}
         >
-          <Export size={24} color="#9fe870" weight="bold" />
+          <Export size={24} color="#9fe870" weight="Outline" />
         </button>
 
         {/* DESDE */}
@@ -110,7 +110,7 @@ export function PerfilCliente(props: Props) {
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, width: "100%", textAlign: "center" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 28, lineHeight: "32px", color: "#fff", textTransform: "uppercase" }}>{displayName}</span>
-              {isAdmin && <ShieldStar size={22} color={ACCENT} weight="fill" aria-label={roleLabel} />}
+              {isAdmin && <ShieldStar size={22} color={ACCENT} weight="Filled" aria-label={roleLabel} />}
             </div>
             {subtitle && <span style={{ fontFamily: "var(--font-body)", fontWeight: 400, fontSize: 14, lineHeight: "1.4", color: "#7a7a7a" }}>{subtitle}</span>}
           </div>

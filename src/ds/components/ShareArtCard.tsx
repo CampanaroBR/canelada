@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { toBlob } from "html-to-image";
-import { X, ShareNetwork } from "@phosphor-icons/react";
+import { X, Share } from "reicon-react";
 
 export interface ShareArtCardProps {
   /** Usado no nome do arquivo compartilhado/baixado. */
@@ -102,7 +102,7 @@ export function ShareArtCard({
           display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
         }}
       >
-        <X size={16} color="#fff" weight="bold" />
+        <X size={16} color="#fff" weight="Outline" />
       </button>
 
       <div style={{
@@ -137,7 +137,7 @@ export function ShareArtCard({
           <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#9fe870" }}>
             {sharing ? "Compartilhando..." : !artReady ? "Preparando…" : "Compartilhar"}
           </span>
-          <ShareNetwork size={20} color="#9fe870" weight="bold" />
+          <Share size={20} color="#9fe870" weight="Outline" />
         </button>
 
         <div style={{

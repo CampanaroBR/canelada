@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { UserCircle, Medal, Bell, ShieldCheck, FileText, SignOut, CaretRight } from "@phosphor-icons/react";
+import { UserCircle, Medal, Bell, ShieldCheck, FileText, Logout2, CaretRight } from "reicon-react";
 import { Toggle, IconBox, RowItem, Divider, toast, ConfirmDialog } from "@/ds";
 import { excluirConta } from "./actions";
 
@@ -88,7 +88,7 @@ export function ContaActions({ email, grupoNome, roleLabel, onEditar }: Props) {
 
       {/* CONTA */}
       <Group title="CONTA">
-        <RowButton onClick={onEditar} icon={<UserCircle size={20} color="#9fe870" weight="regular" />} label="Dados pessoais" sub="Nome, apelido, posição, foto" />
+        <RowButton onClick={onEditar} icon={<UserCircle size={20} color="#9fe870" weight="Outline" />} label="Dados pessoais" sub="Nome, apelido, posição, foto" />
         <Divider />
         <InfoRow label="E-mail" value={email || "—"} />
         <Divider />
@@ -99,22 +99,22 @@ export function ContaActions({ email, grupoNome, roleLabel, onEditar }: Props) {
 
       {/* GERAL */}
       <Group title="GERAL">
-        <RowLink href="/medalhas" icon={<Medal size={20} color="#9fe870" weight="regular" />} label="Minhas Badges" sub="Personagens e conquistas" />
+        <RowLink href="/medalhas" icon={<Medal size={20} color="#9fe870" weight="Outline" />} label="Minhas Badges" sub="Personagens e conquistas" />
         <Divider />
-        <RowToggle onClick={togglePush} on={pushOn} icon={<Bell size={20} color="#9fe870" weight="regular" />} label="Notificações" sub="Avisos de votação e badges" />
+        <RowToggle onClick={togglePush} on={pushOn} icon={<Bell size={20} color="#9fe870" weight="Outline" />} label="Notificações" sub="Avisos de votação e badges" />
       </Group>
 
       {/* AJUDA & LEGAL */}
       <Group title="AJUDA & LEGAL">
-        <RowLink href="/termos" icon={<FileText size={20} color="#9fe870" weight="regular" />} label="Termos de Uso" />
+        <RowLink href="/termos" icon={<FileText size={20} color="#9fe870" weight="Outline" />} label="Termos de Uso" />
         <Divider />
-        <RowLink href="/privacidade" icon={<ShieldCheck size={20} color="#9fe870" weight="regular" />} label="Política de Privacidade" />
+        <RowLink href="/privacidade" icon={<ShieldCheck size={20} color="#9fe870" weight="Outline" />} label="Política de Privacidade" />
       </Group>
 
       {/* SAIR */}
       <button onClick={() => signOut({ callbackUrl: "/login" })} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", background: "#0a0e0e", border: "1px solid #383838", borderRadius: 16, padding: "14px 16px", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
         <div style={{ width: 36, height: 36, borderRadius: 10, background: "#e56767", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-          <SignOut size={20} color="#1a0606" weight="bold" />
+          <Logout2 size={20} color="#1a0606" weight="Outline" />
         </div>
         <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 15, color: "#e56767" }}>Sair</span>
       </button>
@@ -160,7 +160,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 function RowLink({ href, icon, label, sub }: { href: string; icon: React.ReactNode; label: string; sub?: string }) {
   return (
     <Link href={href} style={{ display: "block", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
-      <RowItem icon={<IconBox>{icon}</IconBox>} label={label} sub={sub} trailing={<CaretRight size={20} color="#555" weight="bold" />} />
+      <RowItem icon={<IconBox>{icon}</IconBox>} label={label} sub={sub} trailing={<CaretRight size={20} color="#555" weight="Outline" />} />
     </Link>
   );
 }

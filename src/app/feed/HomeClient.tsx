@@ -5,11 +5,7 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Lightning, Medal, CaretRight, Check, Skull,
-  CalendarBlank, Alarm, CalendarStar,
-  Bell, MedalMilitary, Export,
-} from "@phosphor-icons/react";
+import { Lightning, Medal, CaretRight, Check, Ghost, Calendar, Alarm, CalendarMark, Bell, Medal2, Export } from "reicon-react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
 import { SegmentedControl, SectionHeader, Stat } from "@/ds";
@@ -225,11 +221,11 @@ export function HomeClient({
                 <div style={{ display: "flex", width: "100%" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-start", flexShrink: 0 }}>
                     <div style={{ background: "#1c1c1c", display: "flex", alignItems: "center", gap: 4, padding: "4px 8px", borderRadius: 48, overflow: "clip" }}>
-                      <CalendarBlank size={16} color="#9fe870" weight="bold" />
+                      <Calendar size={16} color="#9fe870" weight="Outline" />
                       <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#9fe870", whiteSpace: "nowrap" }}>{dataRodada}</span>
                     </div>
                     <div style={{ background: "#1c1c1c", display: "flex", alignItems: "center", gap: 4, padding: "4px 8px", borderRadius: 48, overflow: "clip" }}>
-                      <Alarm size={16} color="#fff" weight="bold" />
+                      <Alarm size={16} color="#fff" weight="Outline" />
                       <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "16px", color: "#fff", whiteSpace: "nowrap" }}>{horarioJogo}</span>
                     </div>
                   </div>
@@ -317,7 +313,7 @@ export function HomeClient({
                     boxShadow: "0px 4px 9.8px 2px rgba(0,0,0,0.25)",
                     display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent",
                   }}>
-                    <Export size={22} color="#fff" weight="bold" />
+                    <Export size={22} color="#fff" weight="Outline" />
                   </button>
                   <Link href="/votacao" style={{
                     flex: 1, minWidth: 0, textDecoration: "none",
@@ -340,7 +336,7 @@ export function HomeClient({
                     boxShadow: "0px 4px 9.8px 2px rgba(0,0,0,0.25)",
                     display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent",
                   }}>
-                    <Export size={22} color="#fff" weight="bold" />
+                    <Export size={22} color="#fff" weight="Outline" />
                   </button>
                   <Link href="/votacao" style={{
                     flex: 1, minWidth: 0, display: "flex", textDecoration: "none",
@@ -356,7 +352,7 @@ export function HomeClient({
                         <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#fff" }}>Escolha o personagem de cada um</span>
                       </div>
                       <div style={{ background: "#9fe870", borderRadius: 12, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 4, overflow: "clip" }}>
-                        <CaretRight size={20} weight="bold" color="#000" />
+                        <CaretRight size={20} weight="Outline" color="#000" />
                       </div>
                     </div>
                   </Link>
@@ -370,7 +366,7 @@ export function HomeClient({
                     boxShadow: "0px 4px 9.8px 2px rgba(0,0,0,0.25)",
                     display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent",
                   }}>
-                    <Export size={22} color="#fff" weight="bold" />
+                    <Export size={22} color="#fff" weight="Outline" />
                   </button>
                   <div aria-disabled style={{
                     flex: 1, minWidth: 0, display: "flex",
@@ -402,7 +398,7 @@ export function HomeClient({
                       <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#7a7a7a" }}>{votacao?.texto ?? "Votação abre às 22:30"}</span>
                     </div>
                     <div style={{ background: "#26262b", borderRadius: 12, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 4, overflow: "clip" }}>
-                      <CaretRight size={20} weight="bold" color="#7a7a7a" />
+                      <CaretRight size={20} weight="Outline" color="#7a7a7a" />
                     </div>
                   </div>
                 </div>
@@ -498,7 +494,7 @@ export function HomeClient({
             <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
               <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 8 }}>
                 <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <Lightning size={24} color="#9fe870" weight="regular" />
+                  <Lightning size={24} color="#9fe870" weight="Outline" />
                 </div>
                 <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>PARCIAL DA RODADA</h2>
               </div>
@@ -508,7 +504,7 @@ export function HomeClient({
                 borderRadius: 9999, padding: "7px 13px", cursor: "pointer",
               }}>
                 <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "18px", color: "#fff", whiteSpace: "nowrap" }}>Ver mais</span>
-                <CaretRight size={12} color="#fff" weight="bold" />
+                <CaretRight size={12} color="#fff" weight="Outline" />
               </button>
             </div>
 
@@ -532,7 +528,7 @@ export function HomeClient({
                       </div>
                       {/* Medal icon */}
                       <div style={{ background: "#090909", border: "1px solid #353535", borderRadius: 12, width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 4, overflow: "clip" }}>
-                        <MedalMilitary size={28} weight="fill" color={MEDAL_COLORS[i] ?? "#555"} />
+                        <Medal2 size={28} weight="Filled" color={MEDAL_COLORS[i] ?? "#555"} />
                       </div>
                     </div>
                   </div>
@@ -549,7 +545,7 @@ export function HomeClient({
             <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
               <div style={{ display: "flex", flex: 1, alignItems: "center", gap: 8 }}>
                 <div style={{ background: "#171717", border: "1px solid #3a2424", borderRadius: 12, padding: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <Skull size={24} color="#e56767" weight="regular" />
+                  <Ghost size={24} color="#e56767" weight="Outline" />
                 </div>
                 <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>PIORES DA RODADA</h2>
               </div>
@@ -559,7 +555,7 @@ export function HomeClient({
                 borderRadius: 9999, padding: "7px 13px", cursor: "pointer",
               }}>
                 <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "18px", color: "#fff", whiteSpace: "nowrap" }}>Ver mais</span>
-                <CaretRight size={12} color="#fff" weight="bold" />
+                <CaretRight size={12} color="#fff" weight="Outline" />
               </button>
             </div>
 
@@ -581,9 +577,9 @@ export function HomeClient({
                           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 14, color: "#a97d7d" }}>{v.categoria}</p>
                         </div>
                       </div>
-                      {/* Skull icon */}
+                      {/* Ghost icon */}
                       <div style={{ background: "#090909", border: "1px solid #3a2424", borderRadius: 12, width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 4, overflow: "clip" }}>
-                        <Skull size={24} weight="fill" color="#e56767" />
+                        <Ghost size={24} weight="Filled" color="#e56767" />
                       </div>
                     </div>
                   </div>
@@ -597,7 +593,7 @@ export function HomeClient({
         {personagensSemanaPorData.some((arr) => arr.length > 0) && (
           <div style={{ background: "#171717", border: "1px solid #2c2c2c", borderRadius: 20, padding: "17px 9px", display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Header */}
-            <SectionHeader icon={<CalendarStar size={24} color="#9fe870" weight="regular" />} title="PERSONAGEM DA SEMANA" />
+            <SectionHeader icon={<CalendarMark size={24} color="#9fe870" weight="Outline" />} title="PERSONAGEM DA SEMANA" />
 
             {/* Date pills — clicáveis, trocam qual rodada os cards abaixo mostram */}
             {datePills.length > 0 && (
@@ -648,7 +644,7 @@ export function HomeClient({
                         display: "flex", alignItems: "center", gap: 4,
                       }}>
                         <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: "#fff" }}>Ver mais</span>
-                        <CaretRight size={12} color="#fff" weight="bold" />
+                        <CaretRight size={12} color="#fff" weight="Outline" />
                       </button>
                     </div>
                     {/* Mascote */}
@@ -673,7 +669,7 @@ export function HomeClient({
                 }}
               >
                 {mostrarTodosPersonagens ? "Ver menos" : `Ver mais (${personagensSemanaAtual.length - 3})`}
-                <CaretRight size={12} weight="bold" style={{ transform: mostrarTodosPersonagens ? "rotate(-90deg)" : "rotate(90deg)", transition: "transform 150ms ease" }} />
+                <CaretRight size={12} weight="Outline" style={{ transform: mostrarTodosPersonagens ? "rotate(-90deg)" : "rotate(90deg)", transition: "transform 150ms ease" }} />
               </button>
             )}
           </div>
@@ -684,7 +680,7 @@ export function HomeClient({
           <div style={{ background: "#171717", border: "1px solid #2e2e2e", borderRadius: 20, padding: "17px 9px", display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Header */}
             <SectionHeader
-              icon={<Medal size={24} color="#9fe870" weight="regular" />}
+              icon={<Medal size={24} color="#9fe870" weight="Outline" />}
               title="BADGES"
               trailing={
                 <Link href="/medalhas" style={{
@@ -693,7 +689,7 @@ export function HomeClient({
                   borderRadius: 9999, padding: "9px 13px",
                 }}>
                   <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: "#fff", whiteSpace: "nowrap" }}>Ver mais</span>
-                  <CaretRight size={12} color="#fff" weight="bold" />
+                  <CaretRight size={12} color="#fff" weight="Outline" />
                 </Link>
               }
             />
@@ -784,7 +780,7 @@ export function HomeClient({
             <Image alt="Canelada" src={LOGO} width={48} height={48} priority style={{ objectFit: "cover", borderRadius: "50%" }} />
           </div>
           <button aria-label="Notificações" onClick={() => setNotifOpen(true)} style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 4px", background: "none", border: "none", cursor: "pointer", overflow: "clip" }}>
-            <Bell size={24} color="#fff" weight="bold" />
+            <Bell size={24} color="#fff" weight="Outline" />
           </button>
         </div>
       </div>

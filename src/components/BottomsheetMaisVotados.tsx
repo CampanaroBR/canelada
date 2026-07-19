@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Lightning, Skull, X, ShareNetwork, MedalMilitary } from "@phosphor-icons/react";
+import { Lightning, Ghost, X, Share, Medal2 } from "reicon-react";
 import { BottomSheet } from "@/ds";
 
 export type LeaderboardEntry = {
@@ -63,7 +63,7 @@ export function BottomsheetMaisVotados({
         <div style={{ width: 40, height: 40 }} />
 
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          {negativo ? <Skull size={16} color={accent} weight="regular" /> : <Lightning size={16} color={accent} weight="regular" />}
+          {negativo ? <Ghost size={16} color={accent} weight="Outline" /> : <Lightning size={16} color={accent} weight="Outline" />}
           <span style={{
             fontFamily: "var(--font-display)", fontWeight: 800,
             fontSize: 18, lineHeight: "20px", color: "#fff",
@@ -82,7 +82,7 @@ export function BottomsheetMaisVotados({
             cursor: "pointer", flexShrink: 0,
           }}
         >
-          <X size={16} color="#fff" weight="bold" />
+          <X size={16} color="#fff" weight="Outline" />
         </button>
       </div>
 
@@ -175,7 +175,7 @@ export function BottomsheetMaisVotados({
                       border: `1px solid ${borderTone}`, borderRadius: 12,
                       display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
                     }}>
-                      <Skull size={24} weight="fill" color={accent} />
+                      <Ghost size={24} weight="Filled" color={accent} />
                     </div>
                   ) : entry.rank <= 3 && (
                     <div style={{
@@ -183,9 +183,9 @@ export function BottomsheetMaisVotados({
                       border: "1px solid #353535", borderRadius: 12,
                       display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
                     }}>
-                      <MedalMilitary
+                      <Medal2
                         size={28}
-                        weight="fill"
+                        weight="Filled"
                         color={MEDAL_COLORS[entry.rank - 1]}
                       />
                     </div>
@@ -203,7 +203,7 @@ export function BottomsheetMaisVotados({
 
         {/* Compartilhar (full-width) */}
         <button onClick={compartilhar} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, width: "100%", height: 54, borderRadius: 16, background: "#0a0e0e", border: "1px solid #2c2c2c", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-          <ShareNetwork size={18} color={accent} weight="bold" />
+          <Share size={18} color={accent} weight="Outline" />
           <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#fff" }}>Compartilhar</span>
         </button>
       </div>

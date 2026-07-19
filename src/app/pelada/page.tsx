@@ -6,7 +6,7 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { NovaRodadaForm } from "./NovaRodadaForm";
 import { EmptyState } from "@/ds/components/EmptyState";
 import { Card } from "@/ds/components/Card";
-import { Clock, ClockCounterClockwise, SoccerBall } from "@phosphor-icons/react/dist/ssr";
+import { Clock, History, Football } from "reicon-react";
 
 function formatDataLonga(d: Date) {
   return d.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
@@ -48,14 +48,14 @@ export default async function PeladaPage() {
           display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(8px)",
         }}
       >
-        <ClockCounterClockwise size={20} color="#9fe870" weight="regular" />
+        <History size={20} color="#9fe870" weight="Outline" />
       </Link>
       <div>
         {isAdmin && rodadaAberta ? (
           <div style={{ padding: "calc(env(safe-area-inset-top, 0px) + 80px) 16px 80px", display: "flex", flexDirection: "column", gap: 16 }}>
             <Card style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <SoccerBall size={22} color="#9fe870" weight="fill" />
+                <Football size={22} color="#9fe870" weight="Filled" />
                 <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#fff" }}>
                   Rodada já criada
                 </span>
@@ -83,7 +83,7 @@ export default async function PeladaPage() {
         ) : (
           <div style={{ padding: "calc(env(safe-area-inset-top, 0px) + 80px) 16px 80px", display: "flex", flexDirection: "column", justifyContent: "center", minHeight: "80dvh" }}>
             <EmptyState
-              icon={<Clock size={26} weight="regular" />}
+              icon={<Clock size={26} weight="Outline" />}
               title="Aguardando rodada"
               description="Nenhuma rodada aberta no momento. O admin cria quando o baba acabar — aí a votação libera pra galera."
             />

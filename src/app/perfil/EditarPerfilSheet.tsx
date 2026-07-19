@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, UserCircle } from "@phosphor-icons/react";
+import { Camera, UserCircle } from "reicon-react";
 import { atualizarPerfil, uploadFoto } from "./actions";
 import { toast } from "@/ds/toast";
 import { Button, Input, Select, FormRow, BottomSheet } from "@/ds";
@@ -86,7 +86,7 @@ export function EditarPerfilSheet({ open, onClose, initial }: Props) {
         {/* Header */}
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ width: 40, height: 40, borderRadius: 12, background: "#171717", border: "1px solid #2c2c2c", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <UserCircle size={24} color="#9fe870" weight="regular" />
+            <UserCircle size={24} color="#9fe870" weight="Outline" />
           </div>
           <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", textTransform: "uppercase", color: "#fff" }}>Editar perfil</span>
         </div>
@@ -103,7 +103,7 @@ export function EditarPerfilSheet({ open, onClose, initial }: Props) {
               )}
             </span>
             <span style={{ position: "absolute", right: 0, bottom: 0, width: 24, height: 24, borderRadius: "50%", background: "#9fe870", border: "2px solid #090909", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Camera size={12} color="#0a1a06" weight="fill" />
+              <Camera size={12} color="#0a1a06" weight="Filled" />
             </span>
           </button>
           <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, color: "#7a7a7a" }}>{uploading ? "Enviando…" : "Toque pra trocar a foto"}</span>

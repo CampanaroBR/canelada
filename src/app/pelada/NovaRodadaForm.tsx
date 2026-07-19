@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Bell, SoccerBall, Clock, CaretLeft, LinkSimple, X, UserPlus } from "@phosphor-icons/react";
+import { Bell, Football, Clock, CaretLeft, Link as LinkIcon, X, UserAdd } from "reicon-react";
 import { MenuSheet } from "@/components/MenuSheet";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
 import { Button, Card, Content, Avatar, Toggle, Tag, Stat, Select } from "@/ds";
@@ -321,7 +321,7 @@ export function NovaRodadaForm({ isSuperAdmin = false }: { isSuperAdmin?: boolea
               aria-label="Voltar"
               style={{ width: 40, height: 40, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: "#fff", WebkitTapHighlightColor: "transparent" }}
             >
-              <CaretLeft size={22} weight="bold" />
+              <CaretLeft size={22} weight="Outline" />
             </button>
             <div style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
               <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#fff", textTransform: "uppercase" }}>Confira a galera</span>
@@ -375,7 +375,7 @@ export function NovaRodadaForm({ isSuperAdmin = false }: { isSuperAdmin?: boolea
                           aria-label={`Remover ${p.nome} da lista`}
                           style={{ width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: "#7a7a7a", WebkitTapHighlightColor: "transparent" }}
                         >
-                          <X size={18} weight="bold" />
+                          <X size={18} weight="Outline" />
                         </button>
                       ) : undefined
                     }
@@ -393,7 +393,7 @@ export function NovaRodadaForm({ isSuperAdmin = false }: { isSuperAdmin?: boolea
                       size="sm"
                       onClick={() => vincularLocal(p.nome)}
                       disabled={!escolhaPendente[p.nome]}
-                      leftIcon={<LinkSimple size={16} weight="bold" />}
+                      leftIcon={<LinkIcon size={16} weight="Outline" />}
                     >
                       Vincular
                     </Button>
@@ -419,7 +419,7 @@ export function NovaRodadaForm({ isSuperAdmin = false }: { isSuperAdmin?: boolea
                     placeholder="Escolher jogador…"
                   />
                 </div>
-                <Button size="sm" onClick={adicionarJogador} disabled={!escolhaAdicionar} leftIcon={<UserPlus size={16} weight="bold" />}>
+                <Button size="sm" onClick={adicionarJogador} disabled={!escolhaAdicionar} leftIcon={<UserAdd size={16} weight="Outline" />}>
                   Adicionar
                 </Button>
               </div>
@@ -473,7 +473,7 @@ export function NovaRodadaForm({ isSuperAdmin = false }: { isSuperAdmin?: boolea
             <Image alt="Canelada" src="/logo.png" width={48} height={48} priority style={{ objectFit: "cover", borderRadius: "50%" }} />
           </div>
           <button aria-label="Notificações" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
-            <Bell size={24} color="#fff" weight="bold" />
+            <Bell size={24} color="#fff" weight="Outline" />
           </button>
         </div>
       </div>
@@ -487,7 +487,7 @@ export function NovaRodadaForm({ isSuperAdmin = false }: { isSuperAdmin?: boolea
       }}>
         <div style={{ display: "flex", flexDirection: "column", gap: 4, paddingLeft: 8 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <SoccerBall size={24} color="#9fe870" weight="fill" />
+            <Football size={24} color="#9fe870" weight="Filled" />
             <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#fff" }}>
               CRIE SUA RODADA
             </h1>
@@ -522,7 +522,7 @@ export function NovaRodadaForm({ isSuperAdmin = false }: { isSuperAdmin?: boolea
           justifyContent: "center",
         }}>
           <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-            <Clock size={18} color="#9fe870" weight="bold" />
+            <Clock size={18} color="#9fe870" weight="Outline" />
             <span style={{
               fontFamily: "var(--font-display)",
               fontWeight: 600,

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CalendarBlank, Alarm, BellSlash, HandWaving } from "@phosphor-icons/react";
+import { Calendar, Alarm, BellOff, Hand } from "reicon-react";
 
 type Votacao = { fase: "antes" | "aberta" | "encerrada"; aberta: boolean; texto: string } | null;
 
@@ -84,7 +84,7 @@ export function NotificationsSheet({ open, onClose, votacao, dataRodada, isAdmin
               background: votacao.aberta ? "rgba(159,232,112,0.12)" : "rgba(255,255,255,0.06)",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              {votacao.aberta ? <Alarm size={18} color="#9fe870" weight="bold" /> : <CalendarBlank size={18} color="#8a8a8a" weight="bold" />}
+              {votacao.aberta ? <Alarm size={18} color="#9fe870" weight="Outline" /> : <Calendar size={18} color="#8a8a8a" weight="Outline" />}
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
               <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#fff" }}>
@@ -99,7 +99,7 @@ export function NotificationsSheet({ open, onClose, votacao, dataRodada, isAdmin
           </Link>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "24px 16px" }}>
-            <BellSlash size={22} color="#5a5a5a" weight="bold" />
+            <BellOff size={22} color="#5a5a5a" weight="Outline" />
             <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 13, color: "#8a8a8a", textAlign: "center" }}>
               Nenhuma notificação por enquanto.
             </p>
@@ -129,7 +129,7 @@ export function NotificationsSheet({ open, onClose, votacao, dataRodada, isAdmin
               background: "rgba(37,211,102,0.14)",
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              <HandWaving size={18} color="#25D366" weight="bold" />
+              <Hand size={18} color="#25D366" weight="Outline" />
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
               <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#fff" }}>

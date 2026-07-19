@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { User, UsersThree, UserCheck, PencilSimpleLine, SignOut } from "@phosphor-icons/react";
+import { User, Users3, UserCheck, Edit2, Logout2 } from "reicon-react";
 import { useIsAdmin, useIsSuperAdmin } from "@/lib/useIsAdmin";
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
 
 const ITEMS = [
   { icon: User, label: "Meu Perfil", href: "/perfil" },
-  { icon: UsersThree, label: "Meu Grupo", href: "/grupo" },
+  { icon: Users3, label: "Meu Grupo", href: "/grupo" },
 ];
 
 // Item só pra admin/super_admin — leva pra tela de vincular pendentes da
@@ -22,7 +22,7 @@ const ADMIN_ITEM = { icon: UserCheck, label: "Vincular presença", href: "/votac
 
 // Só o dono do grupo (super admin) — editar/corrigir votos da rodada. Ficava
 // como lápis no card da Home; movido pra cá pra não poluir a tela principal.
-const SUPER_ITEM = { icon: PencilSimpleLine, label: "Editar votos", href: "/votacao/admin" };
+const SUPER_ITEM = { icon: Edit2, label: "Editar votos", href: "/votacao/admin" };
 
 const EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
 
@@ -96,7 +96,7 @@ export function MenuSheet({ open, onClose }: Props) {
                 padding: "16px",
               }}
             >
-              <Icon size={22} color="#9fe870" weight="regular" />
+              <Icon size={22} color="#9fe870" weight="Outline" />
               <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 16, color: "#fff" }}>
                 {item.label}
               </span>
@@ -116,7 +116,7 @@ export function MenuSheet({ open, onClose }: Props) {
             WebkitTapHighlightColor: "transparent",
           }}
         >
-          <SignOut size={22} color="#e56767" weight="regular" />
+          <Logout2 size={22} color="#e56767" weight="Outline" />
           <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 16, color: "#e56767" }}>Sair</span>
         </button>
       </div>

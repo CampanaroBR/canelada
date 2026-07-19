@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { CaretLeft, LinkSimple, PencilSimpleLine } from "@phosphor-icons/react";
+import { CaretLeft, Link as LinkIcon, Edit2 } from "reicon-react";
 import { Content, Avatar, Toggle, Button, Select } from "@/ds";
 import { toast } from "@/ds/toast";
 import { salvarPresenca, vincularPendente } from "../actions";
@@ -62,14 +62,14 @@ export function PresencaClient({ rodadaId, jogadores, presentesIniciais, pendent
     <div style={{ minHeight: "100dvh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
       <header className="glass-bar" style={{ position: "sticky", top: 0, zIndex: 30, height: 56, display: "flex", alignItems: "center", padding: "0 8px", gap: 8 }}>
         <Link href="/votacao" aria-label="Voltar" style={{ width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
-          <CaretLeft size={20} weight="bold" />
+          <CaretLeft size={20} weight="Outline" />
         </Link>
         <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#fff", flex: 1 }}>
           Quem jogou hoje?
         </span>
         {isSuperAdmin && (
           <Link href="/votacao/admin" aria-label="Editar votos" style={{ width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", color: "#9fe870" }}>
-            <PencilSimpleLine size={20} weight="bold" />
+            <Edit2 size={20} weight="Outline" />
           </Link>
         )}
       </header>
@@ -105,7 +105,7 @@ export function PresencaClient({ rodadaId, jogadores, presentesIniciais, pendent
                       onClick={() => vincular(nome)}
                       loading={vinculando === nome}
                       disabled={!escolha[nome]}
-                      leftIcon={<LinkSimple size={16} weight="bold" />}
+                      leftIcon={<LinkIcon size={16} weight="Outline" />}
                     >
                       Vincular
                     </Button>

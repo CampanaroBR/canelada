@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Bell, Trophy, ChartBar, Export, CaretDown } from "@phosphor-icons/react";
+import { Bell, Trophy, ChartBar, Export, ChevronDown } from "reicon-react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { MenuSheet } from "@/components/MenuSheet";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
@@ -66,7 +66,7 @@ export function RankingClient({ ranking, grupoNome, meuId }: Props) {
             <Image alt="Canelada" src="/logo.png" width={48} height={48} priority style={{ objectFit: "cover", borderRadius: "50%" }} />
           </div>
           <button aria-label="Notificações" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
-            <Bell size={24} color="#fff" weight="bold" />
+            <Bell size={24} color="#fff" weight="Outline" />
           </button>
         </div>
       </div>
@@ -81,7 +81,7 @@ export function RankingClient({ ranking, grupoNome, meuId }: Props) {
         {/* Section header */}
         <div style={{ height: 42, paddingLeft: 8, display: "flex", alignItems: "center" }}>
           <SectionHeader
-            icon={<ChartBar size={24} color="#9fe870" weight="fill" />}
+            icon={<ChartBar size={24} color="#9fe870" weight="Filled" />}
             title="CLASSIFICAÇÃO"
             subtitle="Pontuação da galera"
             trailing={
@@ -90,7 +90,7 @@ export function RankingClient({ ranking, grupoNome, meuId }: Props) {
                 width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center",
                 cursor: "pointer", flexShrink: 0, WebkitTapHighlightColor: "transparent",
               }}>
-                <Export size={24} color="#9fe870" weight="bold" />
+                <Export size={24} color="#9fe870" weight="Outline" />
               </button>
             }
           />
@@ -112,7 +112,7 @@ export function RankingClient({ ranking, grupoNome, meuId }: Props) {
         {!temDados ? (
           <div style={{ margin: "16px 8px 0" }}>
             <EmptyState
-              icon={<Trophy size={26} weight="regular" />}
+              icon={<Trophy size={26} weight="Outline" />}
               title="Sem classificação ainda"
               description={periodo === "semana" ? "Nenhuma rodada encerrada nesta semana." : "Nenhuma rodada encerrada neste mês."}
             />
@@ -150,7 +150,7 @@ export function RankingClient({ ranking, grupoNome, meuId }: Props) {
                     WebkitTapHighlightColor: "transparent",
                   }}>
                     {verTudo ? "Ver menos" : `Ver mais (${resto.length - VISIVEL_INICIAL})`}
-                    <CaretDown size={14} color="#9fe870" weight="bold" style={{ transform: verTudo ? "rotate(180deg)" : "none" }} />
+                    <ChevronDown size={14} color="#9fe870" weight="Outline" style={{ transform: verTudo ? "rotate(180deg)" : "none" }} />
                   </button>
                 )}
               </div>

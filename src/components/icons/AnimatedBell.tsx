@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, type Variants } from "motion/react";
-import { Bell } from "@phosphor-icons/react";
+import { Bell } from "reicon-react";
 
 const wiggle: Variants = {
   idle: { rotate: 0 },
@@ -21,7 +21,7 @@ export function AnimatedBell({ size = 24, color = "#9fe870", trigger }: { size?:
       animate="ring"
       key={String(trigger)}
     >
-      <Bell size={size} color={color} weight="regular" />
+      <Bell size={size} color={color} weight="Outline" />
     </motion.span>
   );
 }

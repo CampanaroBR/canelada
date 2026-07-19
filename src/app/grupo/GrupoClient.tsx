@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bell, UsersThree, UserPlus, Export, CaretRight, PencilSimple, ShieldStar, ShieldPlus, UserMinus } from "@phosphor-icons/react";
+import { Bell, Users3, UserAdd, Export, CaretRight, Edit, ShieldStar, ShieldPlus, UserMinus } from "reicon-react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { MenuSheet } from "@/components/MenuSheet";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
@@ -121,7 +121,7 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
             <Image alt="Canelada" src="/logo.png" width={48} height={48} priority style={{ objectFit: "cover", borderRadius: "50%" }} />
           </div>
           <button aria-label="Notificações" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
-            <Bell size={24} color="#fff" weight="bold" />
+            <Bell size={24} color="#fff" weight="Outline" />
           </button>
         </div>
       </div>
@@ -135,7 +135,7 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, paddingLeft: 4 }}>
           <div style={{ background: "#171717", border: "1px solid #2c2c2c", borderRadius: 14, width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <UsersThree size={26} color="#9fe870" weight="regular" />
+            <Users3 size={26} color="#9fe870" weight="Outline" />
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
             <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", textTransform: "uppercase" }}>{nome}</span>
@@ -156,13 +156,13 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
           cursor: "pointer", WebkitTapHighlightColor: "transparent",
         }}>
           <div style={{ width: 36, height: 36, borderRadius: 10, background: "#9fe870", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <UserPlus size={20} color="#0a1a06" weight="bold" />
+            <UserAdd size={20} color="#0a1a06" weight="Outline" />
           </div>
           <div style={{ flex: 1, minWidth: 0, textAlign: "left" }}>
             <div style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 15, color: "#fff" }}>Convidar galera</div>
             <div style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, color: "#7a7a7a" }}>Compartilhe o link do baba</div>
           </div>
-          <Export size={20} color="#9fe870" weight="bold" />
+          <Export size={20} color="#9fe870" weight="Outline" />
         </button>
 
         {/* Gerar novo link (admin) — invalida o link antigo na hora */}
@@ -194,7 +194,7 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{m.apelido}</span>
-                      {m.isAdmin && <ShieldStar size={15} color="#9fe870" weight="fill" style={{ flexShrink: 0 }} />}
+                      {m.isAdmin && <ShieldStar size={15} color="#9fe870" weight="Filled" style={{ flexShrink: 0 }} />}
                     </div>
                     <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12, color: "#7a7a7a" }}>
                       {[m.posAbbr, m.roleLabel].filter(Boolean).join(" · ")}
@@ -208,16 +208,16 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
                     aria-label={m.isAdmin ? `Remover admin de ${m.apelido}` : `Tornar ${m.apelido} admin`}
                     style={{ flexShrink: 0, width: 40, height: 40, margin: "0 2px", borderRadius: 12, background: "transparent", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", WebkitTapHighlightColor: "transparent", opacity: alterandoAdmin === m.apelido ? 0.5 : 1 }}
                   >
-                    <ShieldPlus size={18} color={m.isAdmin ? "#7a7a7a" : "#9fe870"} weight={m.isAdmin ? "regular" : "bold"} />
+                    <ShieldPlus size={18} color={m.isAdmin ? "#7a7a7a" : "#9fe870"} weight="Outline" />
                   </button>
                 )}
                 {m.removivel ? (
                   <button onClick={() => { setRemoveErro(null); setRemoveAlvo(m); }} aria-label={`Remover ${m.apelido}`} style={{ flexShrink: 0, width: 44, height: 44, margin: "0 6px", borderRadius: 12, background: "transparent", border: "none", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
-                    <UserMinus size={18} color="#e56767" weight="bold" />
+                    <UserMinus size={18} color="#e56767" weight="Outline" />
                   </button>
                 ) : !m.podeAlterarAdmin ? (
                   <div style={{ flexShrink: 0, width: 30, display: "flex", justifyContent: "center" }}>
-                    <CaretRight size={16} color="#555" weight="bold" />
+                    <CaretRight size={16} color="#555" weight="Outline" />
                   </div>
                 ) : null}
               </div>
@@ -231,10 +231,10 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
             <p style={{ margin: "0 0 0 2px", fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, letterSpacing: "0.04em", color: "#999" }}>ADMIN</p>
             <button onClick={() => { setNovoNome(nome); setError(null); setEditOpen(true); }} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", background: "#0a0e0e", border: "1px solid #2c2c2c", borderRadius: 16, padding: "14px 16px", cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
               <div style={{ width: 36, height: 36, borderRadius: 10, background: "#1c1c1c", border: "1px solid #2c2c2c", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                <PencilSimple size={20} color="#9fe870" weight="regular" />
+                <Edit size={20} color="#9fe870" weight="Outline" />
               </div>
               <span style={{ flex: 1, textAlign: "left", fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 15, color: "#fff" }}>Editar nome do grupo</span>
-              <CaretRight size={16} color="#555" weight="bold" />
+              <CaretRight size={16} color="#555" weight="Outline" />
             </button>
           </div>
         )}

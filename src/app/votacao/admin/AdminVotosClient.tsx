@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CaretLeft, Trash, Warning, PencilSimple, MagnifyingGlass } from "@phosphor-icons/react";
+import { CaretLeft, Trash, Warning, Edit, Magnifier } from "reicon-react";
 import { Select, Button, EmptyState, Avatar } from "@/ds";
 import { toast } from "@/ds/toast";
 import { listarVotos, editarVoto, excluirVoto } from "../actions";
@@ -74,7 +74,7 @@ export function AdminVotosClient({ rodadaId }: { rodadaId: string }) {
     <div style={{ minHeight: "100dvh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
       <header className="glass-bar" style={{ position: "sticky", top: 0, zIndex: 30, height: 56, display: "flex", alignItems: "center", padding: "0 8px", gap: 12 }}>
         <Link href="/votacao" aria-label="Voltar" style={{ width: 44, height: 44, borderRadius: 22, background: "rgba(255,255,255,0.06)", border: "1px solid #2c2c2c", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", flexShrink: 0 }}>
-          <CaretLeft size={16} weight="bold" />
+          <CaretLeft size={16} weight="Outline" />
         </Link>
         <div style={{ minWidth: 0 }}>
           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 18, color: "#fff" }}>
@@ -94,7 +94,7 @@ export function AdminVotosClient({ rodadaId }: { rodadaId: string }) {
             border: buscaFocada ? "2px solid #9fe870" : "1px solid #2a2a2d",
             borderRadius: 14, padding: buscaFocada ? "11px 15px" : "12px 16px",
           }}>
-            <MagnifyingGlass size={18} color="#8a8a8a" weight="regular" />
+            <Magnifier size={18} color="#8a8a8a" weight="Outline" />
             <input
               value={busca}
               onChange={(e) => setBusca(e.target.value)}
@@ -113,7 +113,7 @@ export function AdminVotosClient({ rodadaId }: { rodadaId: string }) {
         {votos === null ? (
           <p style={{ textAlign: "center", color: "#8a8a8a", fontFamily: "var(--font-body)", fontSize: 13, padding: 24 }}>Carregando…</p>
         ) : votos.length === 0 ? (
-          <EmptyState icon={<Warning size={26} weight="regular" />} title="Sem votos ainda" description="Ninguém votou nessa rodada até agora." />
+          <EmptyState icon={<Warning size={26} weight="Outline" />} title="Sem votos ainda" description="Ninguém votou nessa rodada até agora." />
         ) : filtrados.length === 0 ? (
           <p style={{ textAlign: "center", color: "#555", fontFamily: "var(--font-body)", fontSize: 13, padding: 24 }}>Nenhum voto encontrado.</p>
         ) : (
@@ -184,7 +184,7 @@ function VotoRow({ voto, jogadores, isFirst, editing, onToggleEdit, valor, onEsc
         }}>
           {voto.votadoApelido}
         </span>
-        <PencilSimple size={16} color="#7a7a7a" weight="bold" style={{ flexShrink: 0 }} />
+        <Edit size={16} color="#7a7a7a" weight="Outline" style={{ flexShrink: 0 }} />
       </button>
 
       {editing && (
@@ -196,7 +196,7 @@ function VotoRow({ voto, jogadores, isFirst, editing, onToggleEdit, valor, onEsc
             Trocar
           </Button>
           <Button size="sm" variant="danger" onClick={onExcluir} loading={busy}>
-            <Trash size={16} weight="bold" />
+            <Trash size={16} weight="Outline" />
           </Button>
         </div>
       )}

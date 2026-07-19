@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { submitVotos } from "./actions";
-import { CaretLeft, CaretRight, MagnifyingGlass, CheckCircle, Check, UsersThree, Trophy, Skull, SoccerBall, X } from "@phosphor-icons/react";
+import { CaretLeft, CaretRight, Magnifier, CheckCircle, Check, Users3, Trophy, Ghost, Football, X } from "reicon-react";
 import { BottomSheet } from "@/ds";
 
 type Jogador = { id: string; apelido: string };
@@ -270,7 +270,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
               pointerEvents: "auto",
             }}
           >
-            <CaretLeft size={16} color="#fff" weight="bold" />
+            <CaretLeft size={16} color="#fff" weight="Outline" />
           </button>
           <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 4 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -298,7 +298,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
                 pointerEvents: "auto",
               }}
             >
-              <UsersThree size={20} color="#fff" weight="bold" />
+              <Users3 size={20} color="#fff" weight="Outline" />
             </Link>
           ) : (
             <div style={{ width: 48, flexShrink: 0 }} />
@@ -402,7 +402,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
               border: searchFocused ? "2px solid #9fe870" : "1px solid #2a2a2d",
               borderRadius: 14, padding: searchFocused ? "12px 15px" : "13px 16px",
             }}>
-              <MagnifyingGlass size={20} color="#fff" weight="regular" />
+              <Magnifier size={20} color="#fff" weight="Outline" />
               <input
                 ref={searchRef}
                 value={search}
@@ -470,7 +470,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
                           opacity: highlight ? 1 : 0,
                           transition: "transform 200ms cubic-bezier(0.32,0.72,0,1), opacity 160ms ease",
                         }}>
-                          <Check size={12} color="#0a1a06" weight="bold" />
+                          <Check size={12} color="#0a1a06" weight="Outline" />
                         </div>
                       </div>
                       <span style={{
@@ -513,7 +513,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
                 </span>
               </div>
               <div style={{ position: "absolute", left: 35, top: 32, width: 24, height: 24, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <CheckCircle size={24} color="#9fe870" weight="fill" />
+                <CheckCircle size={24} color="#9fe870" weight="Filled" />
               </div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1, minWidth: 0 }}>
@@ -544,7 +544,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
             <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#090909" }}>
               Confirmar
             </span>
-            <CaretRight size={16} color="#090909" weight="bold" />
+            <CaretRight size={16} color="#090909" weight="Outline" />
           </button>
         </div>
       )}
@@ -663,7 +663,7 @@ function PersonagensList({
                   }}>
                     {votado ? votado.apelido : "Selecione"}
                   </span>
-                  {votado && <CheckCircle size={16} color="#0a1a06" weight="fill" />}
+                  {votado && <CheckCircle size={16} color="#0a1a06" weight="Filled" />}
                 </button>
               </div>
             );
@@ -688,7 +688,7 @@ function PersonagensList({
             background: "rgba(255,255,255,0.06)", border: "1px solid #2c2c2c",
             display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
           }}>
-            <CaretLeft size={16} color="#fff" weight="bold" />
+            <CaretLeft size={16} color="#fff" weight="Outline" />
           </button>
           <div style={{ minWidth: 0, flex: 1 }}>
             <p style={{
@@ -707,7 +707,7 @@ function PersonagensList({
       <div style={{ flex: 1, overflowY: "auto", padding: "16px 8px 96px", display: "flex", flexDirection: "column", gap: 24, WebkitOverflowScrolling: "touch" }}>
         <Section
           title="Personagens que foram bem"
-          icon={<Trophy size={22} color="#9fe870" weight="fill" />}
+          icon={<Trophy size={22} color="#9fe870" weight="Filled" />}
           tone="#9fe870"
           bg="rgba(159,232,112,0.08)"
           border="#2c2c2c"
@@ -715,7 +715,7 @@ function PersonagensList({
         />
         <Section
           title="Personagens que foram abaixo"
-          icon={<Skull size={22} color="#e56767" weight="fill" />}
+          icon={<Ghost size={22} color="#e56767" weight="Filled" />}
           tone="#e56767"
           bg="rgba(229,103,103,0.08)"
           border="#3a2424"
@@ -752,7 +752,7 @@ function PersonagensList({
                 background: "#141414", border: "1px solid #2c2c2c",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}>
-                <SoccerBall size={18} color="#9fe870" weight="fill" />
+                <Football size={18} color="#9fe870" weight="Filled" />
               </div>
               <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                 {pickerTrait ? `Selecione o jogador` : ""}
@@ -767,7 +767,7 @@ function PersonagensList({
                 display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
               }}
             >
-              <X size={16} color="#fff" weight="bold" />
+              <X size={16} color="#fff" weight="Outline" />
             </button>
           </div>
 
@@ -777,7 +777,7 @@ function PersonagensList({
             border: pickerSearchFocused ? "2px solid #9fe870" : "1px solid #2a2a2d",
             borderRadius: 14, padding: pickerSearchFocused ? "11px 14px" : "12px 15px",
           }}>
-            <MagnifyingGlass size={18} color="#fff" weight="regular" />
+            <Magnifier size={18} color="#fff" weight="Outline" />
             <input
               value={pickerSearch}
               onChange={(e) => setPickerSearch(e.target.value)}
@@ -840,7 +840,7 @@ function PersonagensList({
                           opacity: active ? 1 : 0,
                           transition: "transform 200ms cubic-bezier(0.32,0.72,0,1), opacity 160ms ease",
                         }}>
-                          <Check size={12} color="#0a1a06" weight="bold" />
+                          <Check size={12} color="#0a1a06" weight="Outline" />
                         </div>
                       </div>
                       <span style={{
@@ -903,7 +903,7 @@ function ReviewScreen({
           background: "rgba(255,255,255,0.06)", border: "1px solid #2c2c2c",
           display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
         }}>
-          <CaretLeft size={16} color="#fff" weight="bold" />
+          <CaretLeft size={16} color="#fff" weight="Outline" />
         </button>
         <div style={{ minWidth: 0 }}>
           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, color: "#fff" }}>
@@ -1130,7 +1130,7 @@ function DoneScreen({ router }: { router: ReturnType<typeof useRouter> }) {
             width: 40, height: 40, borderRadius: "50%", background: "rgba(10,26,6,0.14)",
             display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
           }}>
-            <CaretRight size={18} color="#0a1a06" weight="bold" />
+            <CaretRight size={18} color="#0a1a06" weight="Outline" />
           </span>
         </button>
       </div>

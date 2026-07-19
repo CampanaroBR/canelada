@@ -5,7 +5,7 @@ import Image from "next/image";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { MenuSheet } from "@/components/MenuSheet";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
-import { LockSimple, CheckCircle, MedalMilitary, Bell, Export } from "@phosphor-icons/react";
+import { Lock, CheckCircle, Medal2, Bell, Export } from "reicon-react";
 import { SegmentedControl, BottomSheet } from "@/ds";
 
 function loadImg(src: string): Promise<HTMLImageElement> {
@@ -236,7 +236,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
             <Image alt="Canelada" src="/logo.png" width={48} height={48} priority style={{ objectFit: "cover", borderRadius: "50%" }} />
           </div>
           <button style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer" }}>
-            <Bell size={24} color="#fff" weight="bold" />
+            <Bell size={24} color="#fff" weight="Outline" />
           </button>
         </div>
       </div>
@@ -260,7 +260,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
         }}>
           <div style={{ flex: "1 0 0", minWidth: 1, display: "flex", flexDirection: "column", gap: 6 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <MedalMilitary size={20} color="#9fe870" weight="fill" />
+              <Medal2 size={20} color="#9fe870" weight="Filled" />
               <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#fff", whiteSpace: "nowrap" }}>SUAS BADGES</span>
             </div>
             <p style={{ margin: 0, whiteSpace: "nowrap" }}>
@@ -418,7 +418,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                                 ))
                               : (
                                 <div style={{ position: "absolute", top: 7, right: 7, zIndex: 2 }}>
-                                  <LockSimple size={13} color={epica ? "#e2c485" : "#fff"} weight="fill" />
+                                  <Lock size={13} color={epica ? "#e2c485" : "#fff"} weight="Filled" />
                                 </div>
                               )}
 
@@ -503,8 +503,8 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                     flexShrink: 0,
                   }}>
                     {unlocked
-                      ? <CheckCircle size={18} color="#9fe870" weight="fill" />
-                      : <LockSimple size={18} color="#fff" weight="fill" />
+                      ? <CheckCircle size={18} color="#9fe870" weight="Filled" />
+                      : <Lock size={18} color="#fff" weight="Filled" />
                     }
                     <span style={{
                       fontFamily: "var(--font-display)", fontWeight: 700,
@@ -633,7 +633,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
                         WebkitTapHighlightColor: "transparent",
                       }}
                     >
-                      <Export size={24} color="#090909" weight="bold" />
+                      <Export size={24} color="#090909" weight="Outline" />
                     </button>
                   )}
                   <button

@@ -7,7 +7,7 @@ import { criarRodada } from "./actions";
 import Link from "next/link";
 import Image from "next/image";
 import { EmptyState } from "@/ds/components/EmptyState";
-import { SoccerBall, CaretLeft, Bell, UsersThree, PencilSimpleLine, Trophy, Skull, CheckCircle } from "@phosphor-icons/react/dist/ssr";
+import { Football, CaretLeft, Bell, Users3, Edit2, Trophy, Ghost, CheckCircle } from "reicon-react";
 import { votacaoAtiva, votacaoEncerrada, MIN_JOGADORES_VOTACAO } from "@/lib/votacaoJanela";
 
 /** Topbar padrão (voltar + logo + sino) pras telas estáticas da votação. */
@@ -19,7 +19,7 @@ function VotacaoTopBar({ isAdmin, isSuperAdmin }: { isAdmin?: boolean; isSuperAd
     }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 8px" }}>
         <Link href="/feed" aria-label="Voltar" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent" }}>
-          <CaretLeft size={22} color="#fff" weight="bold" />
+          <CaretLeft size={22} color="#fff" weight="Outline" />
         </Link>
         <div style={{ padding: 4, display: "flex", overflow: "clip" }}>
           <Image alt="Canelada" src="/logo.png" width={48} height={48} priority style={{ objectFit: "cover", borderRadius: "50%" }} />
@@ -32,7 +32,7 @@ function VotacaoTopBar({ isAdmin, isSuperAdmin }: { isAdmin?: boolean; isSuperAd
                 background: "#0d0d0d", border: "1px solid #090909",
                 display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent",
               }}>
-                <PencilSimpleLine size={19} color="#fff" weight="bold" />
+                <Edit2 size={19} color="#fff" weight="Outline" />
               </Link>
             )}
             <Link href="/votacao/presenca" aria-label="Editar quem jogou" style={{
@@ -40,12 +40,12 @@ function VotacaoTopBar({ isAdmin, isSuperAdmin }: { isAdmin?: boolean; isSuperAd
               background: "#0d0d0d", border: "1px solid #090909",
               display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent",
             }}>
-              <UsersThree size={19} color="#fff" weight="bold" />
+              <Users3 size={19} color="#fff" weight="Outline" />
             </Link>
           </div>
         ) : (
           <div aria-hidden style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Bell size={24} color="#fff" weight="bold" />
+            <Bell size={24} color="#fff" weight="Outline" />
           </div>
         )}
       </div>
@@ -163,7 +163,7 @@ function NoRodadaScreen({ isAdmin, isSuperAdmin }: { isAdmin: boolean; isSuperAd
         padding: "calc(env(safe-area-inset-top, 0px) + 88px) 16px calc(88px + env(safe-area-inset-bottom, 0px))",
       }}>
         <EmptyState
-          icon={<SoccerBall size={26} weight="regular" />}
+          icon={<Football size={26} weight="Outline" />}
           title="Sem baba ativa"
           description="Quando o dono do grupo marcar que o baba rolou, a votação dos personagens abre aqui."
           action={
@@ -188,7 +188,7 @@ function NoRodadaScreen({ isAdmin, isSuperAdmin }: { isAdmin: boolean; isSuperAd
                     WebkitTapHighlightColor: "transparent",
                   }}
                 >
-                  <SoccerBall size={18} weight="bold" color="#0a1a06" />
+                  <Football size={18} weight="Outline" color="#0a1a06" />
                   Baba rolou hoje
                 </button>
               </form>
@@ -215,7 +215,7 @@ function SemPresencaScreen({ isAdmin, isSuperAdmin }: { isAdmin: boolean; isSupe
         padding: "calc(env(safe-area-inset-top, 0px) + 88px) 16px calc(88px + env(safe-area-inset-bottom, 0px))",
       }}>
         <EmptyState
-          icon={<UsersThree size={26} weight="regular" />}
+          icon={<Users3 size={26} weight="Outline" />}
           title="Você não jogou essa rodada"
           description="Só quem foi marcado como presente pode votar (e ser votado). Se você jogou e não foi marcado, peça pra um admin te adicionar."
           action={isAdmin ? (
@@ -237,7 +237,7 @@ function SemPresencaScreen({ isAdmin, isSuperAdmin }: { isAdmin: boolean; isSupe
                 WebkitTapHighlightColor: "transparent",
               }}
             >
-              <UsersThree size={18} weight="bold" color="#0a1a06" />
+              <Users3 size={18} weight="Outline" color="#0a1a06" />
               Marcar presença
             </Link>
           ) : undefined}
@@ -271,9 +271,9 @@ const POSITIVO_SLUGS = ["racudo", "xerife", "garcom", "driblador", "resenha-fort
 
 function JaVotouScreen({ votos, isAdmin, isSuperAdmin }: { votos: VotoComVotado[]; isAdmin: boolean; isSuperAdmin: boolean }) {
   const grupos = [
-    { label: `Os ${HERO_SLUGS.length} da noite`, tone: "#9fe870", border: "#2c2c2c", bg: "rgba(159,232,112,0.08)", icon: <Trophy size={20} color="#9fe870" weight="fill" />, votosIn: votos.filter(v => v.traitSlug && HERO_SLUGS.includes(v.traitSlug)) },
-    { label: "Positivo", tone: "#9fe870", border: "#2c2c2c", bg: "rgba(159,232,112,0.08)", icon: <Trophy size={20} color="#9fe870" weight="fill" />, votosIn: votos.filter(v => v.traitSlug && POSITIVO_SLUGS.includes(v.traitSlug)) },
-    { label: "Negativo", tone: "#e56767", border: "#3a2424", bg: "rgba(229,103,103,0.08)", icon: <Skull size={20} color="#e56767" weight="fill" />, votosIn: votos.filter(v => v.traitSlug && !HERO_SLUGS.includes(v.traitSlug) && !POSITIVO_SLUGS.includes(v.traitSlug)) },
+    { label: `Os ${HERO_SLUGS.length} da noite`, tone: "#9fe870", border: "#2c2c2c", bg: "rgba(159,232,112,0.08)", icon: <Trophy size={20} color="#9fe870" weight="Filled" />, votosIn: votos.filter(v => v.traitSlug && HERO_SLUGS.includes(v.traitSlug)) },
+    { label: "Positivo", tone: "#9fe870", border: "#2c2c2c", bg: "rgba(159,232,112,0.08)", icon: <Trophy size={20} color="#9fe870" weight="Filled" />, votosIn: votos.filter(v => v.traitSlug && POSITIVO_SLUGS.includes(v.traitSlug)) },
+    { label: "Negativo", tone: "#e56767", border: "#3a2424", bg: "rgba(229,103,103,0.08)", icon: <Ghost size={20} color="#e56767" weight="Filled" />, votosIn: votos.filter(v => v.traitSlug && !HERO_SLUGS.includes(v.traitSlug) && !POSITIVO_SLUGS.includes(v.traitSlug)) },
   ].filter(g => g.votosIn.length > 0);
 
   return (
@@ -360,7 +360,7 @@ function JaVotouScreen({ votos, isAdmin, isSuperAdmin }: { votos: VotoComVotado[
                         }}>
                           {v.votado.apelido}
                         </span>
-                        <CheckCircle size={16} color="#0a1a06" weight="fill" />
+                        <CheckCircle size={16} color="#0a1a06" weight="Filled" />
                       </div>
                     </div>
                   ))}

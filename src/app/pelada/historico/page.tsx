@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { EmptyState } from "@/ds/components/EmptyState";
-import { CaretLeft, ClockCounterClockwise } from "@phosphor-icons/react/dist/ssr";
+import { CaretLeft, History } from "reicon-react";
 
 export const dynamic = "force-dynamic";
 
@@ -42,7 +42,7 @@ export default async function HistoricoPage() {
         padding: "calc(env(safe-area-inset-top, 0px) + 20px) 12px 8px",
       }}>
         <Link href="/pelada" aria-label="Voltar" style={{ width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
-          <CaretLeft size={22} weight="bold" />
+          <CaretLeft size={22} weight="Outline" />
         </Link>
         <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#fff", textTransform: "uppercase" }}>
           Histórico de babas
@@ -52,7 +52,7 @@ export default async function HistoricoPage() {
       {rodadas.length === 0 ? (
         <div style={{ padding: "40px 16px 80px", display: "flex", flexDirection: "column", justifyContent: "center", minHeight: "70dvh" }}>
           <EmptyState
-            icon={<ClockCounterClockwise size={26} weight="regular" />}
+            icon={<History size={26} weight="Outline" />}
             title="Nenhum baba encerrado ainda"
             description="Assim que a primeira votação fechar, o resultado aparece aqui."
           />

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Trophy, SoccerBall, UsersThree, BellSlash, MedalMilitary } from "@phosphor-icons/react";
+import { Trophy, Football, Users3, BellOff, Medal2 } from "reicon-react";
 import { EmptyState } from "./EmptyState";
 import { Button } from "./Button";
 
@@ -12,7 +12,7 @@ const meta: Meta<typeof EmptyState> = {
 export default meta;
 type Story = StoryObj<typeof EmptyState>;
 
-const ic = (I: typeof Trophy) => <I size={26} weight="regular" />;
+const ic = (I: typeof Trophy) => <I size={26} weight="Outline" />;
 
 export const Anatomia: Story = {
   args: {
@@ -34,7 +34,7 @@ export const SemClassificacao: Story = {
 
 export const ComAcao: Story = {
   args: {
-    icon: ic(SoccerBall),
+    icon: ic(Football),
     title: "Nenhuma rodada criada",
     description: "Crie a primeira rodada pra começar a votação do baba.",
     action: <Button size="sm">Criar Rodada</Button>,
@@ -44,7 +44,7 @@ export const ComAcao: Story = {
 
 export const SemMembros: Story = {
   args: {
-    icon: ic(UsersThree),
+    icon: ic(Users3),
     title: "Grupo vazio",
     description: "Convide a galera pra entrar no baba.",
     action: (
@@ -58,7 +58,7 @@ export const SemMembros: Story = {
 
 export const SemBadges: Story = {
   args: {
-    icon: ic(MedalMilitary),
+    icon: ic(Medal2),
     title: "Nenhuma badge ainda",
     description: "Jogue e vote pra desbloquear suas primeiras conquistas.",
     action: <Button size="sm" variant="secondary">Ver badges</Button>,
@@ -67,7 +67,7 @@ export const SemBadges: Story = {
 
 export const SemNotificacoes: Story = {
   args: {
-    icon: ic(BellSlash),
+    icon: ic(BellOff),
     title: "Sem notificações",
     description: "Tudo em dia! Novos avisos aparecem aqui.",
   },

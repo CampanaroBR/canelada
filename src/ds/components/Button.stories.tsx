@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Plus, CaretRight, SoccerBall, ShareNetwork, Trash, Export } from "@phosphor-icons/react";
+import { Plus, CaretRight, Football, Share, Trash, Export } from "reicon-react";
 import { Button, IconButton } from "./Button";
 
 const meta: Meta<typeof Button> = {
@@ -43,9 +43,9 @@ export const Tamanhos: Story = {
 export const ComIcones: Story = {
   render: () => (
     <div style={{ display: "flex", flexDirection: "column", gap: 12, width: 280 }}>
-      <Button leftIcon={<SoccerBall size={18} weight="regular" />}>Criar Rodada</Button>
-      <Button variant="secondary" rightIcon={<CaretRight size={16} weight="bold" />}>Ver mais</Button>
-      <Button variant="ghost" leftIcon={<ShareNetwork size={18} weight="regular" />} rightIcon={<CaretRight size={16} weight="bold" />}>Compartilhar</Button>
+      <Button leftIcon={<Football size={18} weight="Outline" />}>Criar Rodada</Button>
+      <Button variant="secondary" rightIcon={<CaretRight size={16} weight="Outline" />}>Ver mais</Button>
+      <Button variant="ghost" leftIcon={<Share size={18} weight="Outline" />} rightIcon={<CaretRight size={16} weight="Outline" />}>Compartilhar</Button>
     </div>
   ),
 };
@@ -53,7 +53,7 @@ export const ComIcones: Story = {
 export const Loading: Story = { args: { loading: true, children: "Salvando" } };
 
 export const FullWidth: Story = {
-  args: { fullWidth: true, leftIcon: <Plus size={18} weight="bold" />, children: "Criar Rodada" },
+  args: { fullWidth: true, leftIcon: <Plus size={18} weight="Outline" />, children: "Criar Rodada" },
   parameters: { layout: "padded" },
   decorators: [(S) => <div style={{ width: 360 }}><S /></div>],
 };
@@ -61,10 +61,10 @@ export const FullWidth: Story = {
 export const IconButtons: Story = {
   render: () => (
     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-      <IconButton aria-label="Compartilhar" variant="ghost"><Export size={20} weight="regular" /></IconButton>
-      <IconButton aria-label="Adicionar" variant="primary"><Plus size={20} weight="bold" /></IconButton>
-      <IconButton aria-label="Remover" variant="danger"><Trash size={20} weight="regular" /></IconButton>
-      <IconButton aria-label="Compartilhar grande" variant="ghost" size="lg"><Export size={22} weight="regular" /></IconButton>
+      <IconButton aria-label="Compartilhar" variant="ghost"><Export size={20} weight="Outline" /></IconButton>
+      <IconButton aria-label="Adicionar" variant="primary"><Plus size={20} weight="Outline" /></IconButton>
+      <IconButton aria-label="Remover" variant="danger"><Trash size={20} weight="Outline" /></IconButton>
+      <IconButton aria-label="Compartilhar grande" variant="ghost" size="lg"><Export size={22} weight="Outline" /></IconButton>
     </div>
   ),
 };

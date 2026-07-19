@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X, PlusSquare, Export, DeviceMobile } from "@phosphor-icons/react";
+import { X, PlusSquare, Export, Devices } from "reicon-react";
 
 const DISMISS_KEY = "canelada-install-dismissed";
 const EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
@@ -118,7 +118,7 @@ export function InstallPrompt() {
           background: "rgba(159,232,112,0.14)",
           display: "flex", alignItems: "center", justifyContent: "center",
         }}>
-          <DeviceMobile size={24} color="#9fe870" weight="regular" />
+          <Devices size={24} color="#9fe870" weight="Outline" />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 17, lineHeight: "22px", color: "#fff" }}>
@@ -142,7 +142,7 @@ export function InstallPrompt() {
             WebkitTapHighlightColor: "transparent",
           }}
         >
-          <X size={14} color="#8a8a8a" weight="bold" />
+          <X size={14} color="#8a8a8a" weight="Outline" />
         </button>
       </div>
 
@@ -152,7 +152,7 @@ export function InstallPrompt() {
           <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
             <span style={stepBadge}>1</span>
             <span style={stepText}>
-              Toca no botão <Export size={17} color="#9fe870" weight="bold" style={{ verticalAlign: "-3px" }} /> <strong style={{ color: "#fff" }}>Compartilhar</strong> do Safari
+              Toca no botão <Export size={17} color="#9fe870" weight="Outline" style={{ verticalAlign: "-3px" }} /> <strong style={{ color: "#fff" }}>Compartilhar</strong> do Safari
               <span style={{ display: "block", color: "#7a7a7a", fontSize: 12.5, lineHeight: "17px", marginTop: 3 }}>
                 fica na barra de baixo — se não aparecer, toca no <strong style={{ color: "#ccc" }}>≡</strong> ao lado do endereço
               </span>
@@ -161,7 +161,7 @@ export function InstallPrompt() {
           <div style={stepDivider} />
           <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
             <span style={stepBadge}>2</span>
-            <span style={stepText}>Rola a lista e escolhe <PlusSquare size={17} color="#9fe870" weight="bold" style={{ verticalAlign: "-3px" }} /> <strong style={{ color: "#fff" }}>Adicionar à Tela de Início</strong></span>
+            <span style={stepText}>Rola a lista e escolhe <PlusSquare size={17} color="#9fe870" weight="Outline" style={{ verticalAlign: "-3px" }} /> <strong style={{ color: "#fff" }}>Adicionar à Tela de Início</strong></span>
           </div>
           <div style={stepDivider} />
           <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
@@ -178,7 +178,7 @@ export function InstallPrompt() {
           <div style={stepDivider} />
           <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
             <span style={stepBadge}>2</span>
-            <span style={stepText}>Toca em <PlusSquare size={17} color="#9fe870" weight="bold" style={{ verticalAlign: "-3px" }} /> <strong style={{ color: "#fff" }}>Adicionar à tela inicial</strong> (ou "Instalar")</span>
+            <span style={stepText}>Toca em <PlusSquare size={17} color="#9fe870" weight="Outline" style={{ verticalAlign: "-3px" }} /> <strong style={{ color: "#fff" }}>Adicionar à tela inicial</strong> (ou "Instalar")</span>
           </div>
         </div>
       ) : (

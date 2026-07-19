@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, ShareNetwork, Spinner } from "@phosphor-icons/react";
+import { X, Share, Loader } from "reicon-react";
 
 interface Props {
   open: boolean;
@@ -298,7 +298,7 @@ export function PersonagemShareModal({
                 cursor: "pointer",
               }}
             >
-              <X size={16} color="#fff" weight="bold" />
+              <X size={16} color="#fff" weight="Outline" />
             </button>
           </div>
 
@@ -378,8 +378,8 @@ export function PersonagemShareModal({
               }}
             >
               {sharing
-                ? <Spinner size={20} color="#9fe870" />
-                : <ShareNetwork size={20} color="#9fe870" weight="bold" />
+                ? <Loader size={20} color="#9fe870" />
+                : <Share size={20} color="#9fe870" weight="Outline" />
               }
               <span style={{
                 fontFamily: "var(--font-display)", fontWeight: 600,
