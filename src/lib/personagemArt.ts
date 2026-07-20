@@ -9,6 +9,8 @@
 const TITLE_COLOR: Record<string, string> = {
   frangueiro: "#111111",
   bragueiro: "#111111",
+  categoria: "#111111",
+  driblador: "#111111",
   // todos os outros fundos são escuros o suficiente → título branco
 };
 
