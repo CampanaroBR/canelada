@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { X, Export3, Calendar, Alarm } from "reicon-react";
+import { X, Export, Calendar, Alarm } from "reicon-react";
 import { toBlob } from "html-to-image";
 import type { PersonagemSemana } from "./ShareCardModal";
 
@@ -183,7 +183,7 @@ export function SelecaoShareModal({ selecao, grupoNome, dataRodada, horarioJogo,
           <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: !temVoto ? "#7a7a7a" : "#090909" }}>
             {sharing ? "Gerando imagem..." : !bgReady ? "Preparando…" : "Compartilhar"}
           </span>
-          <Export3 size={20} color={!temVoto ? "#7a7a7a" : "#090909"} weight="Outline" />
+          <Export size={20} color={!temVoto ? "#7a7a7a" : "#090909"} weight="Outline" />
         </button>
       </div>
     </div>

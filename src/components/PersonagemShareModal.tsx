@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X, Export3, Loader } from "reicon-react";
+import { X, Export, Loader } from "reicon-react";
 
 interface Props {
   open: boolean;
@@ -379,7 +379,7 @@ export function PersonagemShareModal({
             >
               {sharing
                 ? <Loader size={20} color="#9fe870" />
-                : <Export3 size={20} color="#9fe870" weight="Outline" />
+                : <Export size={20} color="#9fe870" weight="Outline" />
               }
               <span style={{
                 fontFamily: "var(--font-display)", fontWeight: 600,
