@@ -1,13 +1,15 @@
 "use client";
 
 import { ShareArtCard } from "@/ds";
+import { personagemBgSrc, personagemMascotSrc, personagemTitleColor } from "@/lib/personagemArt";
 
 export type PersonagemSemana = {
   slug: string;
   nome: string;
   emoji: string | null;
   descricao: string | null;
-  art: string;
+  /** @deprecated arte assada antiga — o card agora compõe fundo+mascote+título ao vivo. */
+  art?: string;
   vencedor: string;
   votos: number;
 };
@@ -20,11 +22,14 @@ interface Props {
 
 /** Card premium full-screen do personagem da semana — arte bakeada + compartilhar. */
 export function ShareCardModal({ personagem, grupoNome, onClose }: Props) {
-  const { slug, nome, descricao, art, vencedor, votos } = personagem;
+  const { slug, nome, descricao, vencedor, votos } = personagem;
   return (
     <ShareArtCard
       slug={slug}
-      artSrc={art}
+      bgSrc={personagemBgSrc(slug)}
+      mascotSrc={personagemMascotSrc(slug)}
+      title={nome.toUpperCase()}
+      titleColor={personagemTitleColor(slug)}
       altText={nome}
       onClose={onClose}
       descricao={descricao}

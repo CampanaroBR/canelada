@@ -16,40 +16,14 @@ export const dynamic = "force-dynamic";
 // vem ao vivo do Trait.descricao, igual ao card de "personagem da semana".
 const CONFIGS: Record<string, {
   title: string;
-  bakedImg: string;
   nameColor: string;
   footerBorder: string;
 }> = {
-  matador: {
-    title: "MATADOR",
-    bakedImg:  "/premio/matador.jpg",
-    nameColor: "#9fe870",
-    footerBorder: "#42bace",
-  },
-  categoria: {
-    title: "CATEGORIA",
-    bakedImg:  "/premio/categoria.jpg",
-    nameColor: "#d6ffbc",
-    footerBorder: "#c5c5c5",
-  },
-  paredao: {
-    title: "PAREDÃO",
-    bakedImg:  "/premio/paredao.jpg",
-    nameColor: "#d6ffbc",
-    footerBorder: "#c5c5c5",
-  },
-  frangueiro: {
-    title: "FRANGUEIRO",
-    bakedImg:  "/premio/frangueiro.jpg",
-    nameColor: "#d6ffbc",
-    footerBorder: "#c5c5c5",
-  },
-  bragueiro: {
-    title: "BRAGUEIRO",
-    bakedImg:  "/premio/bragueiro.jpg",
-    nameColor: "#d6ffbc",
-    footerBorder: "#c5c5c5",
-  },
+  matador:    { title: "MATADOR",    nameColor: "#9fe870", footerBorder: "#42bace" },
+  categoria:  { title: "CATEGORIA",  nameColor: "#d6ffbc", footerBorder: "#c5c5c5" },
+  paredao:    { title: "PAREDÃO",    nameColor: "#d6ffbc", footerBorder: "#c5c5c5" },
+  frangueiro: { title: "FRANGUEIRO", nameColor: "#d6ffbc", footerBorder: "#c5c5c5" },
+  bragueiro:  { title: "BRAGUEIRO",  nameColor: "#d6ffbc", footerBorder: "#c5c5c5" },
 };
 
 export default async function PremioPage({ params }: { params: Promise<{ categoria: string }> }) {
@@ -105,7 +79,6 @@ export default async function PremioPage({ params }: { params: Promise<{ categor
     <PremioScreen
       slug={categoria}
       title={config.title}
-      bakedImg={config.bakedImg}
       nameColor={config.nameColor}
       footerBorder={config.footerBorder}
       descricao={trait?.descricao ?? null}

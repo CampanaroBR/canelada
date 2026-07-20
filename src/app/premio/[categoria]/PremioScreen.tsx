@@ -2,11 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { ShareArtCard } from "@/ds";
+import { personagemBgSrc, personagemMascotSrc, personagemTitleColor } from "@/lib/personagemArt";
 
 interface Props {
   slug: string;
   title: string;
-  bakedImg: string;
   nameColor: string;
   footerBorder: string;
   descricao: string | null;
@@ -18,14 +18,17 @@ interface Props {
 }
 
 export function PremioScreen({
-  slug, title, bakedImg, nameColor, footerBorder, descricao,
+  slug, title, nameColor, footerBorder, descricao,
   vencedorNome, vencedorQtd, categoriaLabel, grupoNome, data,
 }: Props) {
   const router = useRouter();
   return (
     <ShareArtCard
       slug={slug}
-      artSrc={bakedImg}
+      bgSrc={personagemBgSrc(slug)}
+      mascotSrc={personagemMascotSrc(slug)}
+      title={title.toUpperCase()}
+      titleColor={personagemTitleColor(slug)}
       altText={title}
       onClose={() => router.back()}
       descricao={descricao}

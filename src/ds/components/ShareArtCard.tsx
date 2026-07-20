@@ -7,8 +7,14 @@ import { X, Share } from "reicon-react";
 export interface ShareArtCardProps {
   /** Usado no nome do arquivo compartilhado/baixado. */
   slug: string;
-  /** Arte "assada" full-bleed (fundo + mascote + título já compostos). */
-  artSrc: string;
+  /** Fundo sem título (arte única do card, ex.: /votacao-bg/frangueiro.png). */
+  bgSrc: string;
+  /** Mascote transparente completo (ex.: /votacao-mascot/frangueiro.png). */
+  mascotSrc: string;
+  /** Título renderizado como texto de verdade (ex.: "FRANGUEIRO"). */
+  title: string;
+  /** Cor do título — preto pra fundo claro, branco pra escuro. */
+  titleColor: string;
   altText: string;
   onClose: () => void;
   /** Texto passado pro navigator.share / usado como legenda. */
@@ -38,24 +44,27 @@ function useDataUrl(src: string): string {
 }
 
 /**
- * Card full-screen padrão pra "prêmio"/"personagem da semana": arte assada
- * (fundo + mascote + título, canvas fixo 393x852 @2x) full-bleed via
- * position:fixed+cover, com descrição/frase do vencedor/botão/rodapé como
- * overlay absoluto na zona inferior — a área em branco da arte já é o espaço
- * reservado pro overlay, sem vão nem corte em nenhum aparelho. O que pode
- * quebrar em 2 linhas e sobrepor o overlay é o TÍTULO ASSADO NA IMAGEM — isso
- * se corrige regerando a arte com fonte menor pra caber numa linha só, não
- * trocando o layout inteiro.
+ * Card full-screen padrão pra "prêmio"/"personagem da semana". Compõe a arte AO
+ * VIVO — fundo sem título (cover) + mascote transparente (contain) + título como
+ * texto de verdade — em vez de uma arte JPG achatada com o título assado. Isso
+ * elimina o título pixelado/serrilhado que dependia da qualidade do export, e
+ * deixa a cor do título ajustável por card (preto/branco conforme o fundo).
+ * Descrição/frase do vencedor/botão/rodapé ficam como overlay na zona inferior.
  */
 export function ShareArtCard({
-  slug, artSrc, altText, onClose, shareText, descricao, sentence, footerText, footerBorder,
+  slug, bgSrc, mascotSrc, title, titleColor, altText, onClose, shareText, descricao, sentence, footerText, footerBorder,
 }: ShareArtCardProps) {
   const [sharing, setSharing] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const shareBtnRef = useRef<HTMLButtonElement>(null);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
-  const artData = useDataUrl(artSrc);
-  const artReady = artData.startsWith("data:");
+  const bgData = useDataUrl(bgSrc);
+  const mascotData = useDataUrl(mascotSrc);
+  const artReady = bgData.startsWith("data:") && mascotData.startsWith("data:");
+  // Sem sombra no título — a cor (preto/branco) já garante o contraste. Sombra
+  // pesada deixava o texto "sujo"/borrado. O texto do corpo/rodapé segue a mesma
+  // cor do título pra manter contraste em fundo claro ou escuro.
+  const bodyColor = titleColor;
 
   async function handleShare() {
     if (sharing || !cardRef.current || !artReady) return;
@@ -89,8 +98,28 @@ export function ShareArtCard({
 
   return (
     <div ref={cardRef} style={{ position: "fixed", inset: 0, zIndex: 80, background: "#0a0e0e", overflow: "hidden" }}>
+      {/* Fundo sem título (cover) */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img alt={altText} src={artData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+      <img aria-hidden alt="" src={bgData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+
+      {/* Mascote + título ao vivo, na metade superior */}
+      <div style={{
+        position: "absolute", top: "calc(env(safe-area-inset-top, 0px) + 6%)", left: 0, right: 0,
+        display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+      }}>
+        <div style={{ width: "72%", maxWidth: 320, aspectRatio: "1 / 1", position: "relative" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img alt={altText} src={mascotData} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }} />
+        </div>
+        <p style={{
+          margin: 0, padding: "0 24px",
+          fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 44, lineHeight: "46px",
+          letterSpacing: "-0.5px", color: titleColor, textAlign: "center",
+          textTransform: "uppercase",
+        }}>
+          {title}
+        </p>
+      </div>
 
       <button
         ref={closeBtnRef}
@@ -110,12 +139,12 @@ export function ShareArtCard({
         display: "flex", flexDirection: "column", alignItems: "center", gap: 24, padding: "0 24px 0",
       }}>
         {descricao && (
-          <p style={{ margin: 0, maxWidth: 340, fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 20, lineHeight: "24px", color: "#fff", textAlign: "center" }}>
+          <p style={{ margin: 0, maxWidth: 340, fontFamily: "var(--font-body)", fontWeight: 700, fontSize: 20, lineHeight: "24px", color: bodyColor, textAlign: "center" }}>
             {descricao}
           </p>
         )}
 
-        <p style={{ margin: 0, maxWidth: 320, fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 20, lineHeight: "24px", color: "#fff", letterSpacing: "-1px", textAlign: "center" }}>
+        <p style={{ margin: 0, maxWidth: 320, fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 20, lineHeight: "24px", color: bodyColor, letterSpacing: "-1px", textAlign: "center" }}>
           {sentence}
         </p>
 
@@ -145,7 +174,7 @@ export function ShareArtCard({
           display: "flex", alignItems: "center", justifyContent: "center",
           padding: "16px 14px calc(env(safe-area-inset-bottom, 0px) + 20px)", marginTop: 8,
         }}>
-          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "15px", color: "#fff", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>
+          <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12, lineHeight: "15px", color: bodyColor, letterSpacing: "0.5px", whiteSpace: "nowrap" }}>
             {footerText}
           </p>
         </div>
