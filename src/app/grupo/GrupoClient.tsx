@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Bell, Users3, UserAdd, Export, CaretRight, Edit, ShieldStar, ShieldPlus, UserMinus } from "reicon-react";
+import { Bell, Users3, UserAdd, Export, ChevronRight, Edit, ShieldStar, ShieldPlus, UserMinus } from "reicon-react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { MenuSheet } from "@/components/MenuSheet";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
@@ -217,7 +217,7 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
                   </button>
                 ) : !m.podeAlterarAdmin ? (
                   <div style={{ flexShrink: 0, width: 30, display: "flex", justifyContent: "center" }}>
-                    <CaretRight size={16} color="#555" weight="Outline" />
+                    <ChevronRight size={16} color="#555" weight="Outline" />
                   </div>
                 ) : null}
               </div>
@@ -234,7 +234,7 @@ export function GrupoClient({ nome, totalMembros, totalRodadas, membros, isAdmin
                 <Edit size={20} color="#9fe870" weight="Outline" />
               </div>
               <span style={{ flex: 1, textAlign: "left", fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 15, color: "#fff" }}>Editar nome do grupo</span>
-              <CaretRight size={16} color="#555" weight="Outline" />
+              <ChevronRight size={16} color="#555" weight="Outline" />
             </button>
           </div>
         )}

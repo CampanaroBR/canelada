@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { CaretLeft, Link as LinkIcon, Edit2 } from "reicon-react";
+import { ChevronLeft, Link as LinkIcon, Edit2 } from "reicon-react";
 import { Content, Avatar, Toggle, Button, Select } from "@/ds";
 import { toast } from "@/ds/toast";
 import { salvarPresenca, vincularPendente } from "../actions";
@@ -62,7 +62,7 @@ export function PresencaClient({ rodadaId, jogadores, presentesIniciais, pendent
     <div style={{ minHeight: "100dvh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
       <header className="glass-bar" style={{ position: "sticky", top: 0, zIndex: 30, height: 56, display: "flex", alignItems: "center", padding: "0 8px", gap: 8 }}>
         <Link href="/votacao" aria-label="Voltar" style={{ width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
-          <CaretLeft size={20} weight="Outline" />
+          <ChevronLeft size={20} weight="Outline" />
         </Link>
         <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, color: "#fff", flex: 1 }}>
           Quem jogou hoje?

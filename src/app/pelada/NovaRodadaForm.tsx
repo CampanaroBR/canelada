@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Bell, Football, Clock, CaretLeft, Link as LinkIcon, X, UserAdd } from "reicon-react";
+import { Bell, Football, Clock, ChevronLeft, Link as LinkIcon, X, UserAdd } from "reicon-react";
 import { MenuSheet } from "@/components/MenuSheet";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
 import { Button, Card, Content, Avatar, Toggle, Tag, Stat, Select } from "@/ds";
@@ -321,7 +321,7 @@ export function NovaRodadaForm({ isSuperAdmin = false }: { isSuperAdmin?: boolea
               aria-label="Voltar"
               style={{ width: 40, height: 40, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "none", border: "none", cursor: "pointer", color: "#fff", WebkitTapHighlightColor: "transparent" }}
             >
-              <CaretLeft size={22} weight="Outline" />
+              <ChevronLeft size={22} weight="Outline" />
             </button>
             <div style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
               <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, lineHeight: "22px", color: "#fff", textTransform: "uppercase" }}>Confira a galera</span>

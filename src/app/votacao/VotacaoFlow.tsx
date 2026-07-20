@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { submitVotos } from "./actions";
-import { CaretLeft, CaretRight, Magnifier, CheckCircle, Check, Users3, Trophy, Ghost, Football, X } from "reicon-react";
+import { ChevronLeft, ChevronRight, Magnifier, CheckCircle, Check, Users3, Trophy, Ghost, Football, X } from "reicon-react";
 import { BottomSheet } from "@/ds";
 
 type Jogador = { id: string; apelido: string };
@@ -270,7 +270,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
               pointerEvents: "auto",
             }}
           >
-            <CaretLeft size={16} color="#fff" weight="Outline" />
+            <ChevronLeft size={16} color="#fff" weight="Outline" />
           </button>
           <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 4 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -544,7 +544,7 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
             <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, color: "#090909" }}>
               Confirmar
             </span>
-            <CaretRight size={16} color="#090909" weight="Outline" />
+            <ChevronRight size={16} color="#090909" weight="Outline" />
           </button>
         </div>
       )}
@@ -688,7 +688,7 @@ function PersonagensList({
             background: "rgba(255,255,255,0.06)", border: "1px solid #2c2c2c",
             display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
           }}>
-            <CaretLeft size={16} color="#fff" weight="Outline" />
+            <ChevronLeft size={16} color="#fff" weight="Outline" />
           </button>
           <div style={{ minWidth: 0, flex: 1 }}>
             <p style={{
@@ -903,7 +903,7 @@ function ReviewScreen({
           background: "rgba(255,255,255,0.06)", border: "1px solid #2c2c2c",
           display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer",
         }}>
-          <CaretLeft size={16} color="#fff" weight="Outline" />
+          <ChevronLeft size={16} color="#fff" weight="Outline" />
         </button>
         <div style={{ minWidth: 0 }}>
           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 20, color: "#fff" }}>
@@ -1130,7 +1130,7 @@ function DoneScreen({ router }: { router: ReturnType<typeof useRouter> }) {
             width: 40, height: 40, borderRadius: "50%", background: "rgba(10,26,6,0.14)",
             display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
           }}>
-            <CaretRight size={18} color="#0a1a06" weight="Outline" />
+            <ChevronRight size={18} color="#0a1a06" weight="Outline" />
           </span>
         </button>
       </div>

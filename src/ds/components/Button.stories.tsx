@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Plus, CaretRight, Football, Share, Trash, Export } from "reicon-react";
+import { Plus, ChevronRight, Football, Share, Trash, Export } from "reicon-react";
 import { Button, IconButton } from "./Button";
 
 const meta: Meta<typeof Button> = {
@@ -44,8 +44,8 @@ export const ComIcones: Story = {
   render: () => (
     <div style={{ display: "flex", flexDirection: "column", gap: 12, width: 280 }}>
       <Button leftIcon={<Football size={18} weight="Outline" />}>Criar Rodada</Button>
-      <Button variant="secondary" rightIcon={<CaretRight size={16} weight="Outline" />}>Ver mais</Button>
-      <Button variant="ghost" leftIcon={<Share size={18} weight="Outline" />} rightIcon={<CaretRight size={16} weight="Outline" />}>Compartilhar</Button>
+      <Button variant="secondary" rightIcon={<ChevronRight size={16} weight="Outline" />}>Ver mais</Button>
+      <Button variant="ghost" leftIcon={<Share size={18} weight="Outline" />} rightIcon={<ChevronRight size={16} weight="Outline" />}>Compartilhar</Button>
     </div>
   ),
 };

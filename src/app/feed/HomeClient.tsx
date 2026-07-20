@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { Lightning, Medal, CaretRight, Check, Ghost, Calendar, Alarm, CalendarMark, Bell, Medal2, Export, Clock } from "reicon-react";
+import { Lightning, Medal, ChevronRight, Check, Ghost, Calendar, Alarm, CalendarMark, Bell, Medal2, Export, Clock } from "reicon-react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
 import { SegmentedControl, SectionHeader, Stat } from "@/ds";
@@ -352,7 +352,7 @@ export function HomeClient({
                         <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#fff" }}>Escolha o personagem de cada um</span>
                       </div>
                       <div style={{ background: "#9fe870", borderRadius: 12, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 4, overflow: "clip" }}>
-                        <CaretRight size={20} weight="Outline" color="#000" />
+                        <ChevronRight size={20} weight="Outline" color="#000" />
                       </div>
                     </div>
                   </Link>
@@ -398,7 +398,7 @@ export function HomeClient({
                       <span style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 12, lineHeight: "16px", color: "#7a7a7a" }}>{votacao?.texto ?? "Votação abre às 22:30"}</span>
                     </div>
                     <div style={{ background: "#26262b", borderRadius: 12, width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, padding: 4, overflow: "clip" }}>
-                      <CaretRight size={20} weight="Outline" color="#7a7a7a" />
+                      <ChevronRight size={20} weight="Outline" color="#7a7a7a" />
                     </div>
                   </div>
                 </div>
@@ -502,7 +502,7 @@ export function HomeClient({
                 borderRadius: 9999, padding: "7px 13px", cursor: "pointer",
               }}>
                 <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "18px", color: "#fff", whiteSpace: "nowrap" }}>Ver mais</span>
-                <CaretRight size={12} color="#fff" weight="Outline" />
+                <ChevronRight size={12} color="#fff" weight="Outline" />
               </button>
             </div>
 
@@ -553,7 +553,7 @@ export function HomeClient({
                 borderRadius: 9999, padding: "7px 13px", cursor: "pointer",
               }}>
                 <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "18px", color: "#fff", whiteSpace: "nowrap" }}>Ver mais</span>
-                <CaretRight size={12} color="#fff" weight="Outline" />
+                <ChevronRight size={12} color="#fff" weight="Outline" />
               </button>
             </div>
 
@@ -642,7 +642,7 @@ export function HomeClient({
                         display: "flex", alignItems: "center", gap: 4,
                       }}>
                         <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: "#fff" }}>Ver mais</span>
-                        <CaretRight size={12} color="#fff" weight="Outline" />
+                        <ChevronRight size={12} color="#fff" weight="Outline" />
                       </button>
                     </div>
                     {/* Mascote */}
@@ -667,7 +667,7 @@ export function HomeClient({
                 }}
               >
                 {mostrarTodosPersonagens ? "Ver menos" : `Ver mais (${personagensSemanaAtual.length - 3})`}
-                <CaretRight size={12} weight="Outline" style={{ transform: mostrarTodosPersonagens ? "rotate(-90deg)" : "rotate(90deg)", transition: "transform 150ms ease" }} />
+                <ChevronRight size={12} weight="Outline" style={{ transform: mostrarTodosPersonagens ? "rotate(-90deg)" : "rotate(90deg)", transition: "transform 150ms ease" }} />
               </button>
             )}
           </div>
@@ -687,7 +687,7 @@ export function HomeClient({
                   borderRadius: 9999, padding: "9px 13px",
                 }}>
                   <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: "#fff", whiteSpace: "nowrap" }}>Ver mais</span>
-                  <CaretRight size={12} color="#fff" weight="Outline" />
+                  <ChevronRight size={12} color="#fff" weight="Outline" />
                 </Link>
               }
             />

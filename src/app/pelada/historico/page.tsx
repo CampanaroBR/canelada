@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { EmptyState } from "@/ds/components/EmptyState";
-import { CaretLeft, History } from "reicon-react";
+import { ChevronLeft, History } from "reicon-react";
 
 export const dynamic = "force-dynamic";
 
@@ -42,7 +42,7 @@ export default async function HistoricoPage() {
         padding: "calc(env(safe-area-inset-top, 0px) + 20px) 12px 8px",
       }}>
         <Link href="/pelada" aria-label="Voltar" style={{ width: 40, height: 40, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
-          <CaretLeft size={22} weight="Outline" />
+          <ChevronLeft size={22} weight="Outline" />
         </Link>
         <h1 style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#fff", textTransform: "uppercase" }}>
           Histórico de babas

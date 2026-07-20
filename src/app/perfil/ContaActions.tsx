@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { UserCircle, Medal, Bell, ShieldCheck, FileText, Logout2, CaretRight } from "reicon-react";
+import { UserCircle, Medal, Bell, ShieldCheck, FileText, Logout2, ChevronRight } from "reicon-react";
 import { Toggle, IconBox, RowItem, Divider, toast, ConfirmDialog } from "@/ds";
 import { excluirConta } from "./actions";
 
@@ -160,7 +160,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 function RowLink({ href, icon, label, sub }: { href: string; icon: React.ReactNode; label: string; sub?: string }) {
   return (
     <Link href={href} style={{ display: "block", textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
-      <RowItem icon={<IconBox>{icon}</IconBox>} label={label} sub={sub} trailing={<CaretRight size={20} color="#555" weight="Outline" />} />
+      <RowItem icon={<IconBox>{icon}</IconBox>} label={label} sub={sub} trailing={<ChevronRight size={20} color="#555" weight="Outline" />} />
     </Link>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CaretLeft, Trash, Warning, Edit, Magnifier } from "reicon-react";
+import { ChevronLeft, Trash, Warning, Edit, Magnifier } from "reicon-react";
 import { Select, Button, EmptyState, Avatar } from "@/ds";
 import { toast } from "@/ds/toast";
 import { listarVotos, editarVoto, excluirVoto } from "../actions";
@@ -74,7 +74,7 @@ export function AdminVotosClient({ rodadaId }: { rodadaId: string }) {
     <div style={{ minHeight: "100dvh", background: "var(--color-bg)", display: "flex", flexDirection: "column" }}>
       <header className="glass-bar" style={{ position: "sticky", top: 0, zIndex: 30, height: 56, display: "flex", alignItems: "center", padding: "0 8px", gap: 12 }}>
         <Link href="/votacao" aria-label="Voltar" style={{ width: 44, height: 44, borderRadius: 22, background: "rgba(255,255,255,0.06)", border: "1px solid #2c2c2c", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", flexShrink: 0 }}>
-          <CaretLeft size={16} weight="Outline" />
+          <ChevronLeft size={16} weight="Outline" />
         </Link>
         <div style={{ minWidth: 0 }}>
           <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 18, color: "#fff" }}>

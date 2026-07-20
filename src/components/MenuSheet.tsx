@@ -22,7 +22,7 @@ const ADMIN_ITEM = { icon: UserCheck, label: "Vincular presença", href: "/votac
 
 // Só o dono do grupo (super admin) — editar/corrigir votos da rodada. Ficava
 // como lápis no card da Home; movido pra cá pra não poluir a tela principal.
-const SUPER_ITEM = { icon: Edit2, label: "Editar votos", href: "/votacao/admin" };
+const SUPER_ITEM = { icon: Edit2, label: "Corrigir votação", href: "/votacao/admin" };
 
 const EASE = "cubic-bezier(0.32, 0.72, 0, 1)";
 

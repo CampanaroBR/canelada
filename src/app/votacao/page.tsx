@@ -7,7 +7,7 @@ import { criarRodada } from "./actions";
 import Link from "next/link";
 import Image from "next/image";
 import { EmptyState } from "@/ds/components/EmptyState";
-import { Football, CaretLeft, Bell, Users3, Edit2, Trophy, Ghost, CheckCircle } from "reicon-react";
+import { Football, ChevronLeft, Bell, Users3, Edit2, Trophy, Ghost, CheckCircle } from "reicon-react";
 import { votacaoAtiva, votacaoEncerrada, MIN_JOGADORES_VOTACAO } from "@/lib/votacaoJanela";
 
 /** Topbar padrão (voltar + logo + sino) pras telas estáticas da votação. */
@@ -19,7 +19,7 @@ function VotacaoTopBar({ isAdmin, isSuperAdmin }: { isAdmin?: boolean; isSuperAd
     }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "4px 8px" }}>
         <Link href="/feed" aria-label="Voltar" style={{ width: 56, height: 56, display: "flex", alignItems: "center", justifyContent: "center", WebkitTapHighlightColor: "transparent" }}>
-          <CaretLeft size={22} color="#fff" weight="Outline" />
+          <ChevronLeft size={22} color="#fff" weight="Outline" />
         </Link>
         <div style={{ padding: 4, display: "flex", overflow: "clip" }}>
           <Image alt="Canelada" src="/logo.png" width={48} height={48} priority style={{ objectFit: "cover", borderRadius: "50%" }} />
