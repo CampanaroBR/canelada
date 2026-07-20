@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { toBlob } from "html-to-image";
-import { X, Share } from "reicon-react";
+import { X, Export3 } from "reicon-react";
 
 export interface ShareArtCardProps {
   /** Usado no nome do arquivo compartilhado/baixado. */
@@ -169,7 +169,7 @@ export function ShareArtCard({
           <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 16, lineHeight: "20px", color: "#9fe870" }}>
             {sharing ? "Compartilhando..." : !artReady ? "Preparando…" : "Compartilhar"}
           </span>
-          <Share size={20} color="#9fe870" weight="Outline" />
+          <Export3 size={20} color="#9fe870" weight="Outline" />
         </button>
 
         <div style={{
