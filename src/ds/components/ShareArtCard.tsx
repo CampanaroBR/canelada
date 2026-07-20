@@ -65,6 +65,9 @@ export function ShareArtCard({
   // pesada deixava o texto "sujo"/borrado. O texto do corpo/rodapé segue a mesma
   // cor do título pra manter contraste em fundo claro ou escuro.
   const bodyColor = titleColor;
+  // O título fica na faixa entre os triângulos e no design é sempre uma linha
+  // só — nomes longos ("GOL MAIS BONITO") quebravam em duas e invadiam a arte.
+  const titleSize = title.length > 14 ? 32 : title.length > 10 ? 38 : 44;
 
   async function handleShare() {
     if (sharing || !cardRef.current || !artReady) return;
@@ -113,9 +116,9 @@ export function ShareArtCard({
         </div>
         <p style={{
           margin: 0, padding: "0 24px",
-          fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 44, lineHeight: "46px",
+          fontFamily: "var(--font-display)", fontWeight: 900, fontSize: titleSize, lineHeight: 1.05,
           letterSpacing: "-0.5px", color: titleColor, textAlign: "center",
-          textTransform: "uppercase",
+          textTransform: "uppercase", whiteSpace: "nowrap",
         }}>
           {title}
         </p>
