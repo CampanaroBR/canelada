@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { Lightning, Medal, CaretRight, Check, Ghost, Calendar, Alarm, CalendarMark, Bell, Medal2, Export } from "reicon-react";
+import { Lightning, Medal, CaretRight, Check, Ghost, Calendar, Alarm, CalendarMark, Bell, Medal2, Export, Clock } from "reicon-react";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { HamburgerIcon } from "@/components/HamburgerIcon";
 import { SegmentedControl, SectionHeader, Stat } from "@/ds";
@@ -436,8 +436,7 @@ export function HomeClient({
                 justifyContent: "center",
                 flexShrink: 0,
               }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img alt="" src="/icon-calendar.svg" width={28} height={28} />
+                <Calendar size={28} color="#9fe870" weight="Outline" />
               </div>
 
               {/* Text */}
@@ -454,8 +453,7 @@ export function HomeClient({
                   {proximoBaba.dataFormatada}
                 </span>
                 <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img alt="" src="/icon-clock.svg" width={16} height={16} />
+                  <Clock size={16} color="#fff" weight="Outline" />
                   <span style={{
                     fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 12,
                     lineHeight: "16px", color: "#fff", letterSpacing: "-0.48px",

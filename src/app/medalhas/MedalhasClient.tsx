@@ -325,8 +325,7 @@ export function MedalhasClient({ unlockedSlugs, novos = [], progress = {} }: Pro
             justifyContent: "center",
             flexShrink: 0,
           }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img alt="" src="/icon-medal-badge.svg" style={{ width: 24, height: 24, display: "block" }} />
+            <Medal2 size={24} color="#9fe870" weight="Outline" />
           </div>
           <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: "#fff", whiteSpace: "nowrap" }}>
             BADGES
