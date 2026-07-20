@@ -47,6 +47,19 @@ type Conquista   = { apelido: string; traitSlug: string; traitNome: string; trai
 
 type ProximoBaba = { dataFormatada: string; hora: string; diasRestantes: number };
 
+// "HOJE" / "ONTEM" / "12 DE JUL" com base na data real da conquista (compara
+// por dia no fuso local do dispositivo). Aceita Date ou string serializada.
+function labelQuando(data: Date | string): string {
+  const d = new Date(data);
+  const hoje = new Date();
+  const dDia = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const hojeDia = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+  const diffDias = Math.round((hojeDia.getTime() - dDia.getTime()) / 86_400_000);
+  if (diffDias <= 0) return "HOJE";
+  if (diffDias === 1) return "ONTEM";
+  return d.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", "").toUpperCase();
+}
+
 interface Props {
   rodadaId: string | null;
   top5Rodada: string[];
@@ -705,6 +718,7 @@ export function HomeClient({
             {/* Achievement cards */}
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {conquistas.map((c, i) => {
+                const quando = labelQuando(c.data);
                 return (
                   <div key={i} style={{ background: "#090909", border: "1px solid #2e2e2e", borderRadius: 16, padding: "9px 17px", display: "flex", alignItems: "flex-start" }}>
                     {/* flex-[1_0_0] min-w-px wrapper */}
@@ -717,7 +731,7 @@ export function HomeClient({
                           {/* Label: h-24, text absolute top-5 */}
                           <div style={{ height: 24, position: "relative", width: "100%", flexShrink: 0 }}>
                             <p style={{ margin: 0, position: "absolute", top: 5, left: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 10, lineHeight: "15px", color: "#a1a1a1", letterSpacing: "0.5px", whiteSpace: "nowrap" }}>
-                              HOJE · NOVA MEDALHA
+                              {quando} · NOVA MEDALHA
                             </p>
                           </div>
 

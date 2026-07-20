@@ -196,7 +196,7 @@ export function PersonagemShareModal({
   const title   = TITLES[tipo] ?? tipo;
   const label   = LABELS[tipo] ?? tipo;
   const dateStr = new Date(data).toLocaleDateString("pt-BR", {
-    day: "2-digit", month: "2-digit", year: "numeric",
+    day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC",
   });
 
   async function handleShare() {

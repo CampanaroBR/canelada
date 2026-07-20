@@ -98,7 +98,7 @@ export default async function PremioPage({ params }: { params: Promise<{ categor
   }
 
   const dataStr = ultimaRodada
-    ? new Date(ultimaRodada.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })
+    ? new Date(ultimaRodada.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" })
     : "—";
 
   return (

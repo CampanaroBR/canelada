@@ -62,7 +62,7 @@ function timeAgo(date: Date): string {
 }
 
 function rodadaLabel(date: Date): string {
-  return date.toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short" });
+  return date.toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
 }
 
 export function StoryCard({ story }: { story: StoryWithRodada }) {

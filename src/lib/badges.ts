@@ -358,7 +358,7 @@ export async function badgesDoJogador(grupoId: string, jogadorId: string): Promi
   };
 }
 
-export type BadgeNova = { apelido: string; slug: string; nome: string };
+export type BadgeNova = { apelido: string; slug: string; nome: string; data: Date };
 export type BadgesGrupo = { jogadoresComBadge: number; totalJogadores: number; novas: BadgeNova[] };
 
 /** Home: nº de jogadores com badge + últimos desbloqueios do grupo (por data). */
@@ -371,12 +371,12 @@ export async function badgesHome(grupoId: string): Promise<BadgesGrupo> {
       where: { jogador: { grupoId } },
       orderBy: { createdAt: "desc" },
       take: 3,
-      select: { slug: true, jogador: { select: { apelido: true } } },
+      select: { slug: true, createdAt: true, jogador: { select: { apelido: true } } },
     }),
   ]);
   return {
     jogadoresComBadge: comBadgeRows.length,
     totalJogadores: total,
-    novas: recentes.map(r => ({ apelido: r.jogador.apelido, slug: r.slug, nome: NOME[r.slug] ?? r.slug })),
+    novas: recentes.map(r => ({ apelido: r.jogador.apelido, slug: r.slug, nome: NOME[r.slug] ?? r.slug, data: r.createdAt })),
   };
 }

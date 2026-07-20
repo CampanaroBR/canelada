@@ -111,7 +111,7 @@ export default async function FeedPage() {
     prisma.rodada.findMany({
       where: { grupoId },
       orderBy: { data: "desc" },
-      take: 3,
+      take: 8,
       select: { id: true, data: true },
     }),
   ]);
@@ -418,7 +418,7 @@ export default async function FeedPage() {
     });
   }
 
-  // Ordena por data asc (rodada mais recente fica por último = pill ativa) e pega as últimas 3
+  // Ordena por data asc (rodada mais recente fica por último = pill ativa)
   let grupos = [...gruposMap.values()]
     .sort((a, b) => a.data.getTime() - b.data.getTime())
     .slice(-3);
@@ -440,7 +440,7 @@ export default async function FeedPage() {
 
   // Badges reais do grupo (mesma engine da página de medalhas) — quem desbloqueou na última rodada.
   // Resiliente: se falhar, a home carrega sem o card em vez de quebrar a página toda.
-  const badgesFallback: { jogadoresComBadge: number; totalJogadores: number; novas: { apelido: string; slug: string; nome: string }[] } =
+  const badgesFallback: { jogadoresComBadge: number; totalJogadores: number; novas: { apelido: string; slug: string; nome: string; data: Date }[] } =
     { jogadoresComBadge: 0, totalJogadores: 0, novas: [] };
 
   // 3 consultas independentes em paralelo (badges do grupo, meu voto, top5)
@@ -469,7 +469,7 @@ export default async function FeedPage() {
     traitNome: n.nome,
     traitEmoji: null,
     traitDesc: "Nova conquista desbloqueada!",
-    data: new Date(),
+    data: n.data,
   }));
 
   // Resolve nomes dos top5 da rodada
@@ -484,12 +484,12 @@ export default async function FeedPage() {
   const top5Rodada = top5Ids.map((id: string) => (top5Map[id] ?? "?").toUpperCase());
 
   const dataRodada = rodadaAtiva ? (() => {
-    const s = new Date(rodadaAtiva.data).toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+    const s = new Date(rodadaAtiva.data).toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
     return s.charAt(0).toUpperCase() + s.slice(1);
   })() : null;
 
   const dataCurta = rodadaAtiva
-    ? new Date(rodadaAtiva.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" })
+    ? new Date(rodadaAtiva.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" })
     : null;
 
   // Regras de horário (derivadas da data do jogo):
@@ -506,11 +506,11 @@ export default async function FeedPage() {
     return { fase: "aberta" as const, aberta: true, texto: "Votação aberta até às 20h" };
   })() : null;
 
-  // Tabs de datas da Personagem da Semana: últimas 3 rodadas (asc → última = ativa)
+  // Tabs de datas da Personagem da Semana: últimas rodadas (asc → última = ativa)
   const datePills = rodadasRecentes
     .slice()
     .reverse()
-    .map(r => new Date(r.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" }).replace(".", ""));
+    .map(r => new Date(r.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", timeZone: "UTC" }).replace(".", ""));
 
   // Próximo baba card
   const proximoBaba = rodadaAtiva ? (() => {
@@ -519,7 +519,7 @@ export default async function FeedPage() {
     hoje.setHours(0, 0, 0, 0);
     d.setHours(0, 0, 0, 0);
     const diasRestantes = Math.ceil((d.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24));
-    const dataFormatada = new Date(rodadaAtiva.data).toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "short" });
+    const dataFormatada = new Date(rodadaAtiva.data).toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "short", timeZone: "UTC" });
     const hora = "20:00";
     return { dataFormatada, hora, diasRestantes };
   })() : null;

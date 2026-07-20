@@ -15,7 +15,7 @@ function avatarColor(name: string) {
 }
 
 function rodadaLabel(date: Date) {
-  return date.toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short" });
+  return date.toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
 }
 
 function timeAgo(date: Date) {

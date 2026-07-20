@@ -9,7 +9,7 @@ import { Card } from "@/ds/components/Card";
 import { Clock, History, Football } from "reicon-react";
 
 function formatDataLonga(d: Date) {
-  return d.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+  return d.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
 }
 
 export default async function PeladaPage() {
