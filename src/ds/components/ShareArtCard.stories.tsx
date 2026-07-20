@@ -8,7 +8,7 @@ const meta: Meta<typeof ShareArtCard> = { title: "Overlays/ShareArtCard", compon
 export default meta;
 type Story = StoryObj<typeof ShareArtCard>;
 
-function Demo({ slug, nome, footerText, footerBorder }: { slug: string; nome: string; footerText: string; footerBorder: string }) {
+function Demo({ slug, nome, descricao, footerText, footerBorder }: { slug: string; nome: string; descricao: string; footerText: string; footerBorder: string }) {
   const [open, setOpen] = useState(true);
   if (!open) return <div style={{ padding: 24 }}><Button onClick={() => setOpen(true)}>Abrir card</Button></div>;
   return (
@@ -20,7 +20,7 @@ function Demo({ slug, nome, footerText, footerBorder }: { slug: string; nome: st
       titleColor={personagemTitleColor(slug)}
       altText={nome}
       onClose={() => setOpen(false)}
-      descricao={`${nome}: a definição da noite.`}
+      descricao={descricao}
       shareText={`Arthur foi eleito o ${nome} do jogo por 5 jogadores do Os Crias FC! ⚽`}
       sentence={
         <>
@@ -36,16 +36,17 @@ function Demo({ slug, nome, footerText, footerBorder }: { slug: string; nome: st
   );
 }
 
+// A descrição é a resenha própria de cada trait (vem de Trait.descricao no app).
 // Fundo claro → título preto automático.
 export const FundoClaro: Story = {
-  render: () => <Demo slug="frangueiro" nome="Frangueiro" footerText="5 VOTOS · PERSONAGEM DA SEMANA" footerBorder="rgba(255,255,255,0.25)" />,
+  render: () => <Demo slug="frangueiro" nome="Frangueiro" descricao="O goleiro que toma um gol bobo, com bola fácil que escapa da mão ou do pé." footerText="5 VOTOS · PERSONAGEM DA SEMANA" footerBorder="rgba(255,255,255,0.25)" />,
 };
 
 // Fundo escuro → título branco automático.
 export const FundoEscuro: Story = {
-  render: () => <Demo slug="paredao" nome="Paredão" footerText="5 VOTOS · PERSONAGEM DA SEMANA" footerBorder="rgba(255,255,255,0.25)" />,
+  render: () => <Demo slug="paredao" nome="Paredão" descricao="Intransponível na defesa. Fechou o gol e salvou o time nos momentos decisivos." footerText="5 VOTOS · PERSONAGEM DA SEMANA" footerBorder="rgba(255,255,255,0.25)" />,
 };
 
 export const GolMaisBonito: Story = {
-  render: () => <Demo slug="gol-mais-bonito" nome="Gol Mais Bonito" footerText="5 VOTOS · PERSONAGEM DA SEMANA" footerBorder="rgba(255,255,255,0.25)" />,
+  render: () => <Demo slug="gol-mais-bonito" nome="Gol Mais Bonito" descricao="A pintura da noite. Marcou o gol mais bonito da rodada." footerText="5 VOTOS · PERSONAGEM DA SEMANA" footerBorder="rgba(255,255,255,0.25)" />,
 };
