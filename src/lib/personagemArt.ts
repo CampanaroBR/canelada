@@ -4,14 +4,12 @@
 // (/votacao-mascot) + título renderizado como texto de verdade. Isso evita o
 // título pixelado/serrilhado que aparecia quando a arte era exportada mal.
 
-// Cor do título por card, escolhida pela luminância do fundo (preto pra fundo
-// claro, branco pra escuro) pra garantir contraste em todos os ~19 cards.
+// Cor do título por card. Não é calculada por luminância — é a cor que a arte
+// original de cada prêmio já usava (extraída dos JPGs antigos, onde o título
+// era assado). Só frangueiro e gol-mais-bonito são pretos; o resto é branco.
 const TITLE_COLOR: Record<string, string> = {
   frangueiro: "#111111",
-  bragueiro: "#111111",
-  categoria: "#111111",
-  driblador: "#111111",
-  // todos os outros fundos são escuros o suficiente → título branco
+  "gol-mais-bonito": "#111111",
 };
 
 export function personagemBgSrc(slug: string): string {
