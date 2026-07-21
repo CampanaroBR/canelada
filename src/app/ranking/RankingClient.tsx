@@ -9,9 +9,13 @@ import { HamburgerIcon } from "@/components/HamburgerIcon";
 import type { RankingGrupo, RankRow } from "@/lib/badges";
 import { EmptyState, SegmentedControl, SectionHeader } from "@/ds";
 
-// ouro / prata / bronze (Figma)
-const PODIUM = ["#c5973a", "#999999", "#734524"];
-const PT_COLOR = ["#c5973a", "#c0c0c0", "#cd7f32"];
+// ouro / prata / bronze — cor sólida (borda, texto) + par de gradiente (fundo da medalha)
+const PODIUM = ["#f0c257", "#d4d8dd", "#d98a4f"];
+const PODIUM_GRADIENT = [
+  "linear-gradient(160deg, #f7d88a 0%, #c8912e 100%)",
+  "linear-gradient(160deg, #eef1f4 0%, #9aa1a8 100%)",
+  "linear-gradient(160deg, #e8ac7a 0%, #a85c2e 100%)",
+];
 
 const VISIVEL_INICIAL = 5; // linhas (4º em diante) antes do "Ver mais"
 
@@ -119,14 +123,15 @@ export function RankingClient({ ranking, grupoNome, meuId }: Props) {
           </div>
         ) : (
           <div style={{
-            background: "#171717", border: "1px solid #2c2c2c",
-            borderRadius: "48px 48px 16px 16px",
-            boxShadow: "0px 4px 4px rgba(0,0,0,0.25)",
-            padding: "24px 8px 16px", display: "flex", flexDirection: "column", gap: 24,
+            background: "linear-gradient(180deg, #161816 0%, #131513 100%)",
+            border: "1px solid #262926",
+            borderRadius: 32,
+            boxShadow: "0 24px 48px -20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.03)",
+            padding: "28px 12px 16px", display: "flex", flexDirection: "column", gap: 28,
           }}>
             {/* Pódio */}
             {top3.length > 0 && (
-              <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "center", gap: 16, position: "relative" }}>
+              <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "center", gap: 10, position: "relative" }}>
                 {orderPodium(top3).map(({ row, pos }) => (
                   <PodiumCol key={row.jogadorId} row={row} pos={pos} eu={row.jogadorId === meuId} />
                 ))}
@@ -135,7 +140,7 @@ export function RankingClient({ ranking, grupoNome, meuId }: Props) {
 
             {/* Lista 4º+ */}
             {resto.length > 0 && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                 {restoVisivel.map((row, i) => (
                   <ListRow key={row.jogadorId} row={row} pos={i + 4} eu={row.jogadorId === meuId} />
                 ))}
@@ -143,14 +148,15 @@ export function RankingClient({ ranking, grupoNome, meuId }: Props) {
                 {/* Ver mais / Ver menos */}
                 {resto.length > VISIVEL_INICIAL && (
                   <button onClick={() => setVerTudo(v => !v)} style={{
-                    marginTop: 4, height: 46, borderRadius: 16, cursor: "pointer",
-                    background: "#0a0e0e", border: "1px solid #2c2c2c",
+                    marginTop: 6, height: 48, borderRadius: 16, cursor: "pointer",
+                    background: "#0d0f0d", border: "1px solid #262926",
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                    fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#fff",
+                    fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#e8e6de",
                     WebkitTapHighlightColor: "transparent",
+                    transition: "border-color 180ms cubic-bezier(0.32,0.72,0,1), color 180ms cubic-bezier(0.32,0.72,0,1)",
                   }}>
                     {verTudo ? "Ver menos" : `Ver mais (${resto.length - VISIVEL_INICIAL})`}
-                    <ChevronDown size={14} color="#9fe870" weight="Outline" style={{ transform: verTudo ? "rotate(180deg)" : "none" }} />
+                    <ChevronDown size={14} color="#9fe870" weight="Outline" style={{ transform: verTudo ? "rotate(180deg)" : "none", transition: "transform 220ms cubic-bezier(0.32,0.72,0,1)" }} />
                   </button>
                 )}
               </div>
@@ -178,39 +184,57 @@ function orderPodium(top3: RankRow[]): { row: RankRow; pos: number }[] {
 function PodiumCol({ row, pos, eu }: { row: RankRow; pos: number; eu: boolean }) {
   const first = pos === 1;
   const cor = PODIUM[pos - 1];
-  const ptCor = PT_COLOR[pos - 1];
+  const gradiente = PODIUM_GRADIENT[pos - 1];
+  const medalha = first ? 60 : 50;
   return (
-    <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 12, position: "relative" }}>
+    <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 10, position: "relative" }}>
       {/* Coroa no 1º */}
       {first && (
-        <div style={{ position: "absolute", top: -22, left: "50%", transform: "translateX(-50%) rotate(-16deg)", width: 34, height: 34, zIndex: 2 }}>
-          <Image src="/coroa-ranking.png" alt="" fill sizes="34px" style={{ objectFit: "contain" }} />
+        <div style={{ position: "absolute", top: -26, left: "50%", transform: "translateX(-50%) rotate(-14deg)", width: 32, height: 32, zIndex: 2, filter: "drop-shadow(0 4px 8px rgba(240,194,87,0.35))" }}>
+          <Image src="/coroa-ranking.png" alt="" fill sizes="32px" style={{ objectFit: "contain" }} />
         </div>
       )}
 
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+        {/* Medalha: double-bezel — anel escuro (outer shell) + disco de gradiente (inner core) */}
         <div style={{
-          width: first ? 54 : 46, height: first ? 54 : 46, borderRadius: 40,
-          background: "#090909", border: `2px solid ${cor}`,
+          width: medalha + 6, height: medalha + 6, borderRadius: "50%",
+          background: "#0d0f0d", border: "1px solid rgba(255,255,255,0.06)",
           display: "flex", alignItems: "center", justifyContent: "center",
-          fontFamily: "var(--font-numeric)", fontWeight: 600, fontSize: 20, color: "#fff",
-        }}>{pos}</div>
+          boxShadow: eu ? `0 0 0 2px rgba(159,232,112,0.9), 0 0 20px rgba(159,232,112,0.25)` : "none",
+        }}>
+          <div style={{
+            width: medalha, height: medalha, borderRadius: "50%",
+            background: gradiente,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: `inset 0 2px 3px rgba(255,255,255,0.5), inset 0 -3px 6px rgba(0,0,0,0.28), 0 6px 14px -4px ${cor}55`,
+          }}>
+            <span style={{ fontFamily: "var(--font-numeric)", fontWeight: 800, fontSize: first ? 24 : 20, color: "rgba(20,16,8,0.82)", textShadow: "0 1px 0 rgba(255,255,255,0.3)" }}>{pos}</span>
+          </div>
+        </div>
         <p style={{
-          margin: 0, maxWidth: "100%", fontFamily: "var(--font-display)", fontWeight: 600,
-          fontSize: 18, lineHeight: "20px", color: eu ? "#9fe870" : "#fff",
+          margin: 0, maxWidth: "100%", fontFamily: "var(--font-display)", fontWeight: 700,
+          fontSize: 15, lineHeight: "18px", color: eu ? "#9fe870" : "#e8e6de",
           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
         }}>{row.apelido}</p>
       </div>
 
-      {/* Caixa de pontos */}
+      {/* Placar — outer shell + inner core (double-bezel), mesma linguagem dos cards do app */}
       <div style={{
-        width: "100%", height: first ? 72 : 56,
-        background: "#090909", border: `1px solid ${cor}`,
-        borderRadius: "20px 0 20px 20px",
-        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+        width: "100%", padding: 3,
+        background: "#0d0f0d", border: "1px solid rgba(255,255,255,0.05)",
+        borderRadius: 20,
       }}>
-        <span style={{ fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: first ? 24 : 20, lineHeight: "1.1", color: ptCor, fontVariantNumeric: "tabular-nums" }}>{row.pontos}</span>
-        <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 10, lineHeight: "14px", color: "#fff" }}>pnts</span>
+        <div style={{
+          height: first ? 66 : 52,
+          background: `linear-gradient(180deg, ${cor}14 0%, transparent 60%), #050605`,
+          border: `1px solid ${cor}40`,
+          borderRadius: 17,
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 1,
+        }}>
+          <span style={{ fontFamily: "var(--font-numeric)", fontWeight: 800, fontSize: first ? 22 : 18, lineHeight: "1.1", color: cor, fontVariantNumeric: "tabular-nums" }}>{row.pontos}</span>
+          <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 9, letterSpacing: "0.06em", lineHeight: "12px", color: "#8a8880", textTransform: "uppercase" }}>pontos</span>
+        </div>
       </div>
     </div>
   );
@@ -218,41 +242,38 @@ function PodiumCol({ row, pos, eu }: { row: RankRow; pos: number; eu: boolean })
 
 function ListRow({ row, pos, eu }: { row: RankRow; pos: number; eu: boolean }) {
   return (
-    <div style={{ display: "flex", gap: 8, alignItems: "stretch" }}>
+    <div style={{
+      display: "flex", alignItems: "center", gap: 12,
+      background: eu ? "linear-gradient(180deg, rgba(159,232,112,0.08) 0%, rgba(159,232,112,0.02) 100%)" : "#0d0f0d",
+      border: `1px solid ${eu ? "rgba(159,232,112,0.45)" : "rgba(255,255,255,0.06)"}`,
+      borderRadius: 18, padding: "10px 12px",
+      transition: "background 200ms cubic-bezier(0.32,0.72,0,1)",
+    }}>
       {/* Posição */}
       <div style={{
-        width: 44, flexShrink: 0, background: "#090909",
-        border: `1px solid ${eu ? "#9fe870" : "#383838"}`, borderRadius: "20px 0 20px 20px",
+        width: 32, height: 32, flexShrink: 0, borderRadius: "50%",
+        background: "#050605", border: `1px solid ${eu ? "#9fe870" : "rgba(255,255,255,0.1)"}`,
         display: "flex", alignItems: "center", justifyContent: "center",
-        fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 20, color: "#fff",
+        fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 14, color: eu ? "#9fe870" : "#9a9890",
       }}>{pos}</div>
 
-      {/* Linha */}
+      {/* Nome + meta */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 15, lineHeight: "19px", color: eu ? "#9fe870" : "#e8e6de", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+          {row.apelido.toUpperCase()}
+        </p>
+        <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 400, fontSize: 13, lineHeight: "1.4", color: "#767469" }}>
+          {row.rodadas} {row.rodadas === 1 ? "rodada" : "rodadas"} · {row.mvps} MVP{row.mvps === 1 ? "" : "s"}
+        </p>
+      </div>
+
+      {/* Pontos */}
       <div style={{
-        flex: 1, minWidth: 0, background: "#000",
-        border: `1px solid ${eu ? "#9fe870" : "#383838"}`, borderRadius: "0 20px 20px 20px",
-        padding: 8,
+        flexShrink: 0, height: 34, background: "#050605", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 11,
+        padding: "0 10px", display: "flex", alignItems: "center", gap: 3,
       }}>
-        <div style={{
-          background: "#090909", borderRadius: 12,
-          padding: "4px 8px 4px 16px", display: "flex", alignItems: "center", gap: 8,
-        }}>
-          <div style={{ flex: 1, minWidth: 0, padding: "4px 0" }}>
-            <p style={{ margin: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 16, lineHeight: "20px", color: eu ? "#9fe870" : "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-              {row.apelido.toUpperCase()}
-            </p>
-            <p style={{ margin: 0, fontFamily: "var(--font-body)", fontWeight: 400, fontSize: 14, lineHeight: "1.4", color: "#7a7a7a" }}>
-              {row.rodadas} {row.rodadas === 1 ? "rodada" : "rodadas"} · {row.mvps} MVP{row.mvps === 1 ? "" : "s"}
-            </p>
-          </div>
-          <div style={{
-            height: 40, background: "#000", border: "1px solid #353535", borderRadius: 12,
-            padding: "4px 8px", display: "flex", alignItems: "center", gap: 2, flexShrink: 0,
-          }}>
-            <span style={{ fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 16, color: "#9fe870", fontVariantNumeric: "tabular-nums" }}>{row.pontos}</span>
-            <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 10, color: "#fff" }}>pnts</span>
-          </div>
-        </div>
+        <span style={{ fontFamily: "var(--font-numeric)", fontWeight: 800, fontSize: 15, color: "#9fe870", fontVariantNumeric: "tabular-nums" }}>{row.pontos}</span>
+        <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 9, letterSpacing: "0.04em", color: "#8a8880", textTransform: "uppercase" }}>pts</span>
       </div>
     </div>
   );
