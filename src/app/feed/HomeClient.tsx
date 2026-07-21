@@ -105,6 +105,7 @@ export function HomeClient({
   const [bsPioresMounted, setBsPioresMounted] = useState(false);
   const [shareCard, setShareCard] = useState<PersonagemSemana | null>(null);
   const [mostrarTodosPersonagens, setMostrarTodosPersonagens] = useState(false);
+  const [mostrarTodasDatas, setMostrarTodasDatas] = useState(false);
   const [shareSelecao, setShareSelecao] = useState(false);
   const [campoTab, setCampoTab] = useState<"melhores" | "piores">("melhores");
   // Tabs de data do "Personagem da semana" — última pill (rodada mais recente)
@@ -606,28 +607,47 @@ export function HomeClient({
             {/* Header */}
             <SectionHeader icon={<CalendarMark size={24} color="#9fe870" weight="Outline" />} title="PERSONAGEM DA SEMANA" />
 
-            {/* Date pills — clicáveis, trocam qual rodada os cards abaixo mostram */}
-            {datePills.length > 0 && (
-              <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 2 }}>
-                {datePills.map((d, i) => {
-                  const ativo = i === dataAtivaIdx;
-                  return (
+            {/* Date pills — por padrão mostra só as datas mais recentes; "ver
+                todas" revela o histórico (evita fileira gigante de datas com o
+                tempo). datePills é asc (última = mais recente = ativa). */}
+            {datePills.length > 0 && (() => {
+              const LIMITE = 4;
+              const temMais = datePills.length > LIMITE;
+              const inicio = mostrarTodasDatas ? 0 : Math.max(0, datePills.length - LIMITE);
+              return (
+                <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 2 }}>
+                  {temMais && !mostrarTodasDatas && (
                     <button
-                      key={i}
-                      onClick={() => { setDataAtivaIdx(i); setMostrarTodosPersonagens(false); }}
+                      onClick={() => setMostrarTodasDatas(true)}
                       style={{
                         flexShrink: 0, borderRadius: 9999, padding: "9px 13px", cursor: "pointer",
-                        WebkitTapHighlightColor: "transparent",
-                        background: ativo ? "#9fe870" : "#0a0e0e",
-                        border: ativo ? "1px solid #9fe870" : "1px solid #2c2c2c",
+                        WebkitTapHighlightColor: "transparent", background: "#0a0e0e", border: "1px solid #2c2c2c",
                       }}
                     >
-                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: ativo ? "#090909" : "#666", whiteSpace: "nowrap", textTransform: "capitalize" }}>{d}</span>
+                      <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: "#9fe870", whiteSpace: "nowrap" }}>Ver todas</span>
                     </button>
-                  );
-                })}
-              </div>
-            )}
+                  )}
+                  {datePills.map((d, i) => {
+                    if (i < inicio) return null;
+                    const ativo = i === dataAtivaIdx;
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => { setDataAtivaIdx(i); setMostrarTodosPersonagens(false); }}
+                        style={{
+                          flexShrink: 0, borderRadius: 9999, padding: "9px 13px", cursor: "pointer",
+                          WebkitTapHighlightColor: "transparent",
+                          background: ativo ? "#9fe870" : "#0a0e0e",
+                          border: ativo ? "1px solid #9fe870" : "1px solid #2c2c2c",
+                        }}
+                      >
+                        <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 12, lineHeight: "16px", color: ativo ? "#090909" : "#666", whiteSpace: "nowrap", textTransform: "capitalize" }}>{d}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              );
+            })()}
 
             {/* Cards */}
             {personagensSemanaAtual.length === 0 ? (
