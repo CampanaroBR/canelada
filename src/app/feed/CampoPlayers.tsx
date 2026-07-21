@@ -62,7 +62,14 @@ export function PlayerNamed({ p, tshirt, onShare }: { p: PersonagemSemana | null
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img alt="" src={tshirt} style={{ width: 24, height: 24 }} />
       </div>
-      <p style={{ margin: 0, marginTop: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12, lineHeight: "normal", color: "#fff", textAlign: "center", whiteSpace: "nowrap", maxWidth: 72, overflow: "hidden", textOverflow: "ellipsis" }}>{name}</p>
+      <p style={{
+        margin: 0, marginTop: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12,
+        lineHeight: 1.1, color: "#fff", textAlign: "center", maxWidth: 88,
+        // Apelidos longos ("Santiago, o Craque") quebram em até 2 linhas em vez de
+        // cortar no meio numa linha só; só reticencia se passar de 2 linhas.
+        display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
+        overflow: "hidden", overflowWrap: "anywhere",
+      }}>{name}</p>
     </button>
   );
 }
