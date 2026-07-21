@@ -5,6 +5,7 @@ import { criarRodada } from "@/app/votacao/actions";
 import { badgesHome } from "@/lib/badges";
 import { janelaVotacao, votacaoEncerrada } from "@/lib/votacaoJanela";
 import { pickWinner } from "@/lib/tieBreak";
+import { montarSelecao } from "@/lib/selecaoRodada";
 import { HomeClient } from "./HomeClient";
 import { PushAutoEnroll } from "@/components/PushAutoEnroll";
 import { InstallPrompt } from "@/components/InstallPrompt";
@@ -164,103 +165,28 @@ export default async function FeedPage() {
     raw.sort((a, b) => b.votos - a.votos);
 
     // Seleção da Rodada: 5 jogadores por placar ponderado (peso do trait × nº
-    // de votos, somado entre TODOS os traits do mesmo lado que receberam),
-    // não mais "1 vencedor por trait fixo". Pesos definidos junto com o
-    // usuário — 3 = decide o jogo sozinho, 2 = impacto real, 1 = mais
-    // estilo/comportamento que resultado.
+    // de votos). Lógica pura e TESTADA em src/lib/selecaoRodada.ts — esse
+    // cálculo (lado certo + goleiro coerente) já quebrou várias vezes; agora
+    // vive num só lugar, coberto por tests/selecaoRodada.test.ts.
     const pesoRows = await prisma.trait.findMany({
       where: { slug: { in: [...POSITIVO_ATIVOS, ...NEGATIVO_ATIVOS] } },
       select: { slug: true, peso: true },
     });
     const pesoMap = Object.fromEntries(pesoRows.map(t => [t.slug, t.peso]));
 
-    type ScoreEntry = { score: number; totalVotos: number; bestSlug: string; bestVotos: number };
-    const buildScores = (slugs: string[]) => {
-      const scores = new Map<string, ScoreEntry>();
-      for (const slug of slugs) {
-        const e = perTrait.get(slug);
-        if (!e) continue;
-        const peso = pesoMap[slug] ?? 1;
-        for (const [pid, count] of e.players) {
-          const cur = scores.get(pid) ?? { score: 0, totalVotos: 0, bestSlug: slug, bestVotos: 0 };
-          cur.score += peso * count;
-          cur.totalVotos += count;
-          if (count > cur.bestVotos) { cur.bestVotos = count; cur.bestSlug = slug; }
-          scores.set(pid, cur);
-        }
-      }
-      return scores;
-    };
-    const scoresPositivo = buildScores(POSITIVO_ATIVOS);
-    const scoresNegativo = buildScores(NEGATIVO_ATIVOS);
-
-    // Um jogador só pode estar de um lado: se o score positivo dele é maior
-    // que o negativo, vai pros melhores — senão vai pros piores. Sem essa
-    // regra, alguém com 1 voto pequeno de trait positivo entrava nos
-    // melhores e "sumia" do pool dos piores mesmo tendo um score negativo
-    // MUITO maior (ex.: 8 votos de Frangueiro/Bagre) — resultado contrário
-    // ao que a pontuação deveria mostrar.
-    const ladoPositivo = new Set<string>();
-    const ladoNegativo = new Set<string>();
-    for (const [pid, e] of scoresPositivo) {
-      const neg = scoresNegativo.get(pid);
-      if (!neg || e.score >= neg.score) ladoPositivo.add(pid);
-    }
-    for (const [pid, e] of scoresNegativo) {
-      if (!ladoPositivo.has(pid)) ladoNegativo.add(pid);
-      else {
-        const pos = scoresPositivo.get(pid)!;
-        if (e.score > pos.score) { ladoPositivo.delete(pid); ladoNegativo.add(pid); }
-      }
-    }
-
-    // GK: vaga fixa pro trait específico de goleiro (Paredão pros melhores,
-    // Frangueiro pros piores) — não pode ser "o 5º com mais pontos" genérico,
-    // senão a camisa vermelha de goleiro aparece em quem nem foi votado como
-    // tal. Sem ninguém com voto nesse trait, a vaga fica vazia (sem GK).
-    const pickGK = (traitSlug: string, lado: Set<string>) => {
-      const e = perTrait.get(traitSlug);
-      if (!e) return null;
-      const peso = pesoMap[traitSlug] ?? 1;
-      let best: { pid: string; score: number; votos: number } | null = null;
-      for (const [pid, count] of e.players) {
-        if (!lado.has(pid)) continue;
-        const score = peso * count;
-        if (!best || score > best.score || (score === best.score && pid.localeCompare(best.pid) < 0)) {
-          best = { pid, score, votos: count };
-        }
-      }
-      return best;
-    };
-    const topJogadores = (scores: Map<string, ScoreEntry>, lado: Set<string>, n: number, excluir: Set<string>) => {
-      const ranked = [...scores.entries()]
-        .filter(([pid]) => lado.has(pid) && !excluir.has(pid))
-        .sort((a, b) => b[1].score - a[1].score || b[1].totalVotos - a[1].totalVotos || a[0].localeCompare(b[0]))
-        .slice(0, n);
-      const out: ({ slug: string; vencedorId: string; votos: number } | null)[] = ranked.map(([pid, e]) => (
-        { slug: e.bestSlug, vencedorId: pid, votos: e.totalVotos }
-      ));
-      while (out.length < n) out.push(null);
-      return out;
-    };
-
-    const usadosMelhores = new Set<string>();
-    const gkMelhores = pickGK("paredao", ladoPositivo);
-    if (gkMelhores) usadosMelhores.add(gkMelhores.pid);
-    const linhaMelhores = topJogadores(scoresPositivo, ladoPositivo, 4, usadosMelhores);
-    const selRaw = [
-      ...linhaMelhores,
-      gkMelhores ? { slug: "paredao", vencedorId: gkMelhores.pid, votos: gkMelhores.votos } : null,
-    ];
-
-    const usadosPiores = new Set<string>();
-    const gkPiores = pickGK("frangueiro", ladoNegativo);
-    if (gkPiores) usadosPiores.add(gkPiores.pid);
-    const linhaPiores = topJogadores(scoresNegativo, ladoNegativo, 4, usadosPiores);
-    const selRawPiores = [
-      ...linhaPiores,
-      gkPiores ? { slug: "frangueiro", vencedorId: gkPiores.pid, votos: gkPiores.votos } : null,
-    ];
+    const votosPorTrait = new Map([...perTrait].map(([slug, e]) => [slug, e.players] as const));
+    const { melhores, piores } = montarSelecao(votosPorTrait, {
+      positivos: POSITIVO_ATIVOS,
+      negativos: NEGATIVO_ATIVOS,
+      gkPositivo: "paredao",
+      gkNegativo: "frangueiro",
+      pesos: pesoMap,
+      comArte: new Set(Object.keys(ART_BY_SLUG)),
+    });
+    const toRaw = (s: { jogadorId: string; slug: string; votos: number } | null) =>
+      s ? { slug: s.slug, vencedorId: s.jogadorId, votos: s.votos } : null;
+    const selRaw = melhores.map(toRaw);
+    const selRawPiores = piores.map(toRaw);
 
     // Resolve nomes + meta de TODOS (personagens + seleção + piores) numa tacada
     const vIds = [...new Set([
