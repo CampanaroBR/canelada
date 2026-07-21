@@ -182,6 +182,7 @@ export default async function FeedPage() {
       gkNegativo: "frangueiro",
       pesos: pesoMap,
       comArte: new Set(Object.keys(ART_BY_SLUG)),
+      gkMinVotos: 2, // 1 voto de goleiro não elege pior/melhor goleiro — gol fica vazio
     });
     const toRaw = (s: { jogadorId: string; slug: string; votos: number } | null) =>
       s ? { slug: s.slug, vencedorId: s.jogadorId, votos: s.votos } : null;

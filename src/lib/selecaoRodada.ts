@@ -14,6 +14,8 @@ export interface SelecaoConfig {
   pesos: Record<string, number>; // slug -> peso (default 1)
   /** slugs que têm arte (só esses podem preencher vaga). Se undefined, todos valem. */
   comArte?: Set<string>;
+  /** mínimo de votos no trait de goleiro pra escalar goleiro (abaixo, gol vazio). Default 1. */
+  gkMinVotos?: number;
 }
 
 export interface Slot {
@@ -83,6 +85,7 @@ export function montarSelecao(perTrait: TraitVotos, cfg: SelecaoConfig): Selecao
       const sc = scores.get(pid);
       if (!sc || sc.bestSlug !== gkTrait) continue; // trait dominante precisa ser o de goleiro
       const gkVotos = players?.get(pid) ?? 0;
+      if (gkVotos < (cfg.gkMinVotos ?? 1)) continue; // piso: goleiro fraco (1 voto) deixa o gol vazio
       const counterVotos = counter?.get(pid) ?? 0;
       if (counterWinsTie ? counterVotos >= gkVotos : counterVotos > gkVotos) continue;
       if (!best || sc.score > (scores.get(best.jogadorId)!.score) ||

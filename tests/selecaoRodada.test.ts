@@ -78,6 +78,17 @@ describe("montarSelecao — goleiro", () => {
     const { piores } = montarSelecao(v, cfg());
     expect(piores[4]).toBeNull();
   });
+
+  it("com piso de 2 votos, goleiro com 1 voto deixa o gol vazio", () => {
+    const v = votos({ frangueiro: { joao: 1 }, bagre: { santiago: 5 } });
+    expect(montarSelecao(v, cfg({ gkMinVotos: 2 })).piores[4]).toBeNull(); // 1 voto → vazio
+    expect(montarSelecao(v, cfg()).piores[4]?.jogadorId).toBe("joao");      // sem piso → escala
+  });
+
+  it("com piso de 2 votos, goleiro com 2+ votos ainda escala", () => {
+    const v = votos({ frangueiro: { joao: 2 }, bagre: { santiago: 5 } });
+    expect(montarSelecao(v, cfg({ gkMinVotos: 2 })).piores[4]?.jogadorId).toBe("joao");
+  });
 });
 
 describe("montarSelecao — lado (melhores vs piores)", () => {
