@@ -434,10 +434,24 @@ export default async function FeedPage() {
   })() : null;
 
   // Tabs de datas da Personagem da Semana: últimas rodadas (asc → última = ativa)
-  const datePills = rodadasRecentes
+  const datePillsAll = rodadasRecentes
     .slice()
     .reverse()
     .map(r => new Date(r.data).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", timeZone: "UTC" }).replace(".", ""));
+
+  // Só mostra datas que tiveram JOGO de verdade (com votos/resultado). Rodadas
+  // vazias — criadas sem querer, sem partida — não viram pill. Filtra todas as
+  // listas alinhadas (mesma ordem) pra não sobrar data fantasma.
+  const teveJogo = datePillsAll.map((_, i) =>
+    (personagensSemanaPorData[i]?.length ?? 0) > 0 ||
+    (maisVotadosPorData[i]?.length ?? 0) > 0 ||
+    (maisVotadosPioresPorData[i]?.length ?? 0) > 0
+  );
+  const soComJogo = <T,>(arr: T[]) => arr.filter((_, i) => teveJogo[i]);
+  const datePills = soComJogo(datePillsAll);
+  const personagensSemanaPorDataView = soComJogo(personagensSemanaPorData);
+  const maisVotadosPorDataView = soComJogo(maisVotadosPorData);
+  const maisVotadosPioresPorDataView = soComJogo(maisVotadosPioresPorData);
 
   // Próximo baba card
   const proximoBaba = rodadaAtiva ? (() => {
@@ -470,11 +484,11 @@ export default async function FeedPage() {
       top5Rodada={top5Rodada}
       maisVotados={maisVotados}
       maisVotadosPiores={maisVotadosPiores}
-      maisVotadosPorData={maisVotadosPorData}
-      maisVotadosPioresPorData={maisVotadosPioresPorData}
+      maisVotadosPorData={maisVotadosPorDataView}
+      maisVotadosPioresPorData={maisVotadosPioresPorDataView}
       personagensPorRodada={personagensPorRodada}
       personagensSemana={personagensSemana}
-      personagensSemanaPorData={personagensSemanaPorData}
+      personagensSemanaPorData={personagensSemanaPorDataView}
       selecao={selecao}
       selecaoPiores={selecaoPiores}
       conquistas={conquistas}
