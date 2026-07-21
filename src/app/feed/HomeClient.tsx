@@ -271,7 +271,7 @@ export function HomeClient({
               {/* CF row */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 8, paddingBottom: 8 }}>
                 {mostrarResultados
-                  ? <PlayerNamed p={campoSel[0]} tshirt={tshirtLinha} onShare={setShareCard} />
+                  ? <PlayerNamed p={campoSel[0]} tshirt={tshirtLinha} emptyTshirt={TSHIRT_OUTLINE} onShare={setShareCard} />
                   : <PlayerSlot tshirt={TSHIRT_OUTLINE} href={podeVotar ? "/votacao" : undefined} />}
               </div>
 
@@ -279,9 +279,9 @@ export function HomeClient({
               <div style={{ display: "flex", gap: 62, alignItems: "center", justifyContent: "center", width: "100%" }}>
                 {mostrarResultados ? (
                   <>
-                    <PlayerNamed p={campoSel[1]} tshirt={tshirtLinha} onShare={setShareCard} />
-                    <PlayerNamed p={campoSel[2]} tshirt={tshirtLinha} onShare={setShareCard} />
-                    <PlayerNamed p={campoSel[3]} tshirt={tshirtLinha} onShare={setShareCard} />
+                    <PlayerNamed p={campoSel[1]} tshirt={tshirtLinha} emptyTshirt={TSHIRT_OUTLINE} onShare={setShareCard} />
+                    <PlayerNamed p={campoSel[2]} tshirt={tshirtLinha} emptyTshirt={TSHIRT_OUTLINE} onShare={setShareCard} />
+                    <PlayerNamed p={campoSel[3]} tshirt={tshirtLinha} emptyTshirt={TSHIRT_OUTLINE} onShare={setShareCard} />
                   </>
                 ) : (
                   <>
@@ -295,7 +295,7 @@ export function HomeClient({
               {/* GK row — Paredão nos melhores, Frangueiro nos piores */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 8, paddingBottom: 8 }}>
                 {mostrarResultados
-                  ? <PlayerNamed p={campoSel[4]} tshirt={tshirtGk} onShare={setShareCard} />
+                  ? <PlayerNamed p={campoSel[4]} tshirt={tshirtGk} emptyTshirt={TSHIRT_GK_OUT} onShare={setShareCard} />
                   : <PlayerSlot tshirt={TSHIRT_GK_OUT} href={podeVotar ? "/votacao" : undefined} />}
               </div>
             </div>

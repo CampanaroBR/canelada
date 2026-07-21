@@ -28,7 +28,7 @@ export function PlayerSlot({ tshirt, href }: { tshirt: string; href?: string }) 
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img alt="" src={tshirt} style={{ width: 24, height: 24 }} />
       </div>
-      <p style={{ margin: 0, marginTop: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12, lineHeight: "normal", color: "#fff", textAlign: "center", whiteSpace: "nowrap" }}>VOTE</p>
+      <p style={{ margin: 0, height: 28, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12, lineHeight: 1.1, color: "#fff", textAlign: "center", whiteSpace: "nowrap" }}>VOTE</p>
     </>
   );
   const wrap: React.CSSProperties = { display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", flex: 1, WebkitTapHighlightColor: "transparent" };
@@ -37,9 +37,9 @@ export function PlayerSlot({ tshirt, href }: { tshirt: string; href?: string }) 
     : <div style={wrap}>{inner}</div>;
 }
 
-/* Slot com nome do jogador (estado pós-votação) */
-export function PlayerNamed({ p, tshirt, onShare }: { p: PersonagemSemana | null; tshirt: string; onShare: (p: PersonagemSemana) => void }) {
-  const name = p?.vencedor ?? "?";
+/* Slot com nome do jogador (estado pós-votação). Vazio (p=null) mostra a camisa
+   outline, sem "?" — a vaga fica discreta em vez de parecer erro. */
+export function PlayerNamed({ p, tshirt, emptyTshirt, onShare }: { p: PersonagemSemana | null; tshirt: string; emptyTshirt: string; onShare: (p: PersonagemSemana) => void }) {
   const clickable = !!p;
   return (
     <button
@@ -58,18 +58,20 @@ export function PlayerNamed({ p, tshirt, onShare }: { p: PersonagemSemana | null
         marginBottom: -8,
         boxShadow: "0px 5px 6.9px 4px rgba(0,0,0,0.3)",
         padding: 7, overflow: "clip", flexShrink: 0,
+        opacity: p ? 1 : 0.55,
       }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img alt="" src={tshirt} style={{ width: 24, height: 24 }} />
+        <img alt="" src={p ? tshirt : emptyTshirt} style={{ width: 24, height: 24 }} />
       </div>
+      {/* Altura fixa (2 linhas) — mantém todo slot do mesmo tamanho, então
+          "Os melhores" e "Os piores" têm exatamente a mesma dimensão, com nome
+          de 1 linha, 2 linhas, ou vazio. */}
       <p style={{
-        margin: 0, marginTop: 0, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12,
+        margin: 0, height: 28, fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12,
         lineHeight: 1.1, color: "#fff", textAlign: "center", maxWidth: 88,
-        // Apelidos longos ("Santiago, o Craque") quebram em até 2 linhas em vez de
-        // cortar no meio numa linha só; só reticencia se passar de 2 linhas.
         display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
         overflow: "hidden", overflowWrap: "anywhere",
-      }}>{name}</p>
+      }}>{p?.vencedor ?? ""}</p>
     </button>
   );
 }
