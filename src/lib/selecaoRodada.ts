@@ -22,6 +22,9 @@ export interface Slot {
   jogadorId: string;
   slug: string; // trait dominante do jogador naquele lado (define a arte)
   votos: number;
+  /** true só pro goleiro de verdade (camisa dourada). O 5º slot preenchido por
+   *  falta de goleiro real usa false → camisa normal, sem rotular como goleiro. */
+  isGoleiro?: boolean;
 }
 
 export interface SelecaoResult {
@@ -90,7 +93,7 @@ export function montarSelecao(perTrait: TraitVotos, cfg: SelecaoConfig): Selecao
       if (counterWinsTie ? counterVotos >= gkVotos : counterVotos > gkVotos) continue;
       if (!best || sc.score > (scores.get(best.jogadorId)!.score) ||
           (sc.score === scores.get(best.jogadorId)!.score && pid.localeCompare(best.jogadorId) < 0)) {
-        best = { jogadorId: pid, slug: gkTrait, votos: gkVotos };
+        best = { jogadorId: pid, slug: gkTrait, votos: gkVotos, isGoleiro: true };
       }
     }
     return best;
@@ -101,7 +104,7 @@ export function montarSelecao(perTrait: TraitVotos, cfg: SelecaoConfig): Selecao
       .filter(([pid, e]) => lado.has(pid) && !excluir.has(pid) && (!cfg.comArte || cfg.comArte.has(e.bestSlug)))
       .sort((a, b) => b[1].score - a[1].score || b[1].totalVotos - a[1].totalVotos || a[0].localeCompare(b[0]))
       .slice(0, n);
-    const out: (Slot | null)[] = ranked.map(([pid, e]) => ({ jogadorId: pid, slug: e.bestSlug, votos: e.totalVotos }));
+    const out: (Slot | null)[] = ranked.map(([pid, e]) => ({ jogadorId: pid, slug: e.bestSlug, votos: e.totalVotos, isGoleiro: false }));
     while (out.length < n) out.push(null);
     return out;
   };
@@ -113,15 +116,25 @@ export function montarSelecao(perTrait: TraitVotos, cfg: SelecaoConfig): Selecao
   const gkM = pickGK(cfg.gkPositivo, ladoPositivo, scoresPositivo, cfg.gkNegativo, true);
   const gkP = pickGK(cfg.gkNegativo, ladoNegativo, scoresNegativo, cfg.gkPositivo, false);
 
+  // Sem goleiro de verdade, o 5º slot é preenchido pelo próximo da fila (com
+  // camisa normal — isGoleiro:false — pra completar o time sem rotular como
+  // goleiro quem não é). Só o goleiro real (pickGK) leva isGoleiro:true.
+  const quinto = (scores: Map<string, ScoreEntry>, lado: Set<string>, usados: Set<string>, linha: (Slot | null)[]) => {
+    const ja = new Set([...usados, ...linha.filter(Boolean).map(s => s!.jogadorId)]);
+    return topLinha(scores, lado, 1, ja)[0];
+  };
+
   const usadosM = new Set<string>();
   if (gkM) usadosM.add(gkM.jogadorId);
   if (gkP) usadosM.add(gkP.jogadorId); // pior goleiro fora da linha dos melhores
-  const melhores = [...topLinha(scoresPositivo, ladoPositivo, 4, usadosM), gkM];
+  const linhaM = topLinha(scoresPositivo, ladoPositivo, 4, usadosM);
+  const melhores = [...linhaM, gkM ?? quinto(scoresPositivo, ladoPositivo, usadosM, linhaM)];
 
   const usadosP = new Set<string>();
   if (gkP) usadosP.add(gkP.jogadorId);
   if (gkM) usadosP.add(gkM.jogadorId); // melhor goleiro fora do lado dos piores
-  const piores = [...topLinha(scoresNegativo, ladoNegativo, 4, usadosP), gkP];
+  const linhaP = topLinha(scoresNegativo, ladoNegativo, 4, usadosP);
+  const piores = [...linhaP, gkP ?? quinto(scoresNegativo, ladoNegativo, usadosP, linhaP)];
 
   return { melhores, piores };
 }

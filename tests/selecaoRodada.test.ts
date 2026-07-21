@@ -89,6 +89,20 @@ describe("montarSelecao — goleiro", () => {
     const v = votos({ frangueiro: { joao: 2 }, bagre: { santiago: 5 } });
     expect(montarSelecao(v, cfg({ gkMinVotos: 2 })).piores[4]?.jogadorId).toBe("joao");
   });
+
+  it("sem goleiro real, o 5º slot é preenchido pelo próximo pior com camisa normal (isGoleiro=false)", () => {
+    // Ninguém dominante em Frangueiro. 5 jogadores no lado ruim → o 5º entra no
+    // slot do goleiro, mas marcado isGoleiro:false (camisa normal, não dourada).
+    const v = votos({
+      bagre: { a: 6, b: 5, c: 4, d: 3, e: 2 },
+    });
+    const { piores } = montarSelecao(v, cfg({ gkMinVotos: 2 }));
+    expect(piores[4]).not.toBeNull();      // 5º slot preenchido
+    expect(piores[4]?.isGoleiro).toBe(false); // mas não é goleiro de verdade
+    // o goleiro de verdade (quando existe) vem marcado true
+    const comGoleiro = montarSelecao(votos({ frangueiro: { g: 3 }, bagre: { x: 5 } }), cfg({ gkMinVotos: 2 }));
+    expect(comGoleiro.piores[4]?.isGoleiro).toBe(true);
+  });
 });
 
 describe("montarSelecao — lado (melhores vs piores)", () => {

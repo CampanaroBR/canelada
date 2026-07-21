@@ -12,6 +12,8 @@ export type PersonagemSemana = {
   art?: string;
   vencedor: string;
   votos: number;
+  /** true só no goleiro de verdade (camisa dourada); 5º slot de preenchimento = false. */
+  isGoleiro?: boolean;
 };
 
 interface Props {

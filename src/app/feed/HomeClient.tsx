@@ -296,7 +296,7 @@ export function HomeClient({
               {/* GK row — Paredão nos melhores, Frangueiro nos piores */}
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: 292, paddingTop: 8, paddingBottom: 8 }}>
                 {mostrarResultados
-                  ? <PlayerNamed p={campoSel[4]} tshirt={tshirtGk} emptyTshirt={TSHIRT_GK_OUT} onShare={setShareCard} />
+                  ? <PlayerNamed p={campoSel[4]} tshirt={campoSel[4]?.isGoleiro ? tshirtGk : tshirtLinha} emptyTshirt={TSHIRT_GK_OUT} onShare={setShareCard} />
                   : <PlayerSlot tshirt={TSHIRT_GK_OUT} href={podeVotar ? "/votacao" : undefined} />}
               </div>
             </div>

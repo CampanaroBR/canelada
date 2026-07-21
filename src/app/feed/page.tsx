@@ -184,8 +184,8 @@ export default async function FeedPage() {
       comArte: new Set(Object.keys(ART_BY_SLUG)),
       gkMinVotos: 2, // 1 voto de goleiro não elege pior/melhor goleiro — gol fica vazio
     });
-    const toRaw = (s: { jogadorId: string; slug: string; votos: number } | null) =>
-      s ? { slug: s.slug, vencedorId: s.jogadorId, votos: s.votos } : null;
+    const toRaw = (s: { jogadorId: string; slug: string; votos: number; isGoleiro?: boolean } | null) =>
+      s ? { slug: s.slug, vencedorId: s.jogadorId, votos: s.votos, isGoleiro: s.isGoleiro ?? false } : null;
     const selRaw = melhores.map(toRaw);
     const selRawPiores = piores.map(toRaw);
 
@@ -212,7 +212,7 @@ export default async function FeedPage() {
       vencedor: nmeMap[r.vencedorId] ?? "?",
       votos: r.votos,
     }));
-    const toSlot = (s: { slug: string; vencedorId: string; votos: number } | null) =>
+    const toSlot = (s: { slug: string; vencedorId: string; votos: number; isGoleiro?: boolean } | null) =>
       s && ART_BY_SLUG[s.slug] ? {
         slug: s.slug,
         nome: tMeta[s.slug]?.nome ?? s.slug,
@@ -221,6 +221,7 @@ export default async function FeedPage() {
         art: ART_BY_SLUG[s.slug],
         vencedor: nmeMap[s.vencedorId] ?? "?",
         votos: s.votos,
+        isGoleiro: s.isGoleiro ?? false,
       } : null;
     selecao = selRaw.map(toSlot);
     selecaoPiores = selRawPiores.map(toSlot);
