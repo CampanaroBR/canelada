@@ -49,6 +49,27 @@ describe("montarSelecao — goleiro", () => {
     expect(piores[4]?.slug).toBe("frangueiro");
   });
 
+  it("goleiro votado em Paredão E Frangueiro: Frangueiro vale mais → vai pro gol dos PIORES, não dos melhores", () => {
+    // Zé: 3 Paredão + 3 Frangueiro. Empate → Frangueiro vence.
+    const v = votos({
+      paredao: { ze: 3 },
+      frangueiro: { ze: 3 },
+    });
+    const { melhores, piores } = montarSelecao(v, cfg());
+    expect(melhores[4]?.jogadorId).not.toBe("ze"); // não é o melhor goleiro
+    expect(piores[4]?.jogadorId).toBe("ze");        // é o pior goleiro
+  });
+
+  it("goleiro com muito mais Paredão que Frangueiro continua sendo o melhor goleiro", () => {
+    // Marcos: 6 Paredão + 1 Frangueiro → Paredão domina, segue melhor goleiro.
+    const v = votos({
+      paredao: { marcos: 6 },
+      frangueiro: { marcos: 1 },
+    });
+    const { melhores } = montarSelecao(v, cfg());
+    expect(melhores[4]?.jogadorId).toBe("marcos");
+  });
+
   it("deixa o gol VAZIO quando ninguém é dominante no trait de goleiro", () => {
     const v = votos({ bagre: { alaba: 8 }, reclamao: { santiago: 3 } });
     const { piores } = montarSelecao(v, cfg());
@@ -69,14 +90,16 @@ describe("montarSelecao — lado (melhores vs piores)", () => {
     expect(melhores.some((s) => s?.jogadorId === "emanuel")).toBe(false);
   });
 
-  it("um jogador não aparece nos dois lados ao mesmo tempo", () => {
+  it("quem recebeu voto negativo aparece nos PIORES mesmo tendo voto positivo", () => {
+    // Regra do usuário: "voto negativo cai no time dos piores, obviamente".
+    // Fulano: forte no positivo (5 Matador) mas levou 3 Bagre → tem que aparecer
+    // nos piores também (não pode sumir só porque é net-positivo).
     const v = votos({
-      matador: { a: 5 }, bagre: { a: 2, b: 6 }, categoria: { b: 1 },
+      matador: { fulano: 5 },
+      bagre: { fulano: 3 },
     });
-    const { melhores, piores } = montarSelecao(v, cfg());
-    const ids = (arr: typeof melhores) => arr.filter(Boolean).map((s) => s!.jogadorId);
-    const inter = ids(melhores).filter((id) => ids(piores).includes(id));
-    expect(inter).toEqual([]);
+    const { piores } = montarSelecao(v, cfg());
+    expect(piores.some((s) => s?.jogadorId === "fulano")).toBe(true);
   });
 });
 
