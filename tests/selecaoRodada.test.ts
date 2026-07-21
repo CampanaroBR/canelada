@@ -104,16 +104,26 @@ describe("montarSelecao — lado (melhores vs piores)", () => {
     expect(melhores.some((s) => s?.jogadorId === "emanuel")).toBe(false);
   });
 
-  it("quem recebeu voto negativo aparece nos PIORES mesmo tendo voto positivo", () => {
-    // Regra do usuário: "voto negativo cai no time dos piores, obviamente".
-    // Fulano: forte no positivo (5 Matador) mas levou 3 Bagre → tem que aparecer
-    // nos piores também (não pode sumir só porque é net-positivo).
+  it("jogador aparece em UM lado só — nunca nos dois times (caso Marivaldo)", () => {
+    // Marivaldo: net-positivo (mais Matador que Pregueiro) → só nos melhores,
+    // nunca nos dois. Bug real: aparecia nos dois times.
     const v = votos({
-      matador: { fulano: 5 },
-      bagre: { fulano: 3 },
+      matador: { marivaldo: 4, outro: 1 },
+      pregueiro: { marivaldo: 2, ruim: 5 },
+      bagre: { ruim: 4 },
     });
-    const { piores } = montarSelecao(v, cfg());
-    expect(piores.some((s) => s?.jogadorId === "fulano")).toBe(true);
+    const { melhores, piores } = montarSelecao(v, cfg());
+    const nas = (arr: typeof melhores) => arr.filter(Boolean).map((s) => s!.jogadorId);
+    expect(nas(melhores)).toContain("marivaldo");
+    expect(nas(piores)).not.toContain("marivaldo");
+  });
+
+  it("net-negativo cai nos piores (mais peso no negativo que no positivo)", () => {
+    // Zé: 2 Matador (pos 6) + 4 Bagre (neg 12) → net-negativo → piores, não melhores.
+    const v = votos({ matador: { ze: 2 }, bagre: { ze: 4 } });
+    const { melhores, piores } = montarSelecao(v, cfg());
+    expect(piores.some((s) => s?.jogadorId === "ze")).toBe(true);
+    expect(melhores.some((s) => s?.jogadorId === "ze")).toBe(false);
   });
 });
 

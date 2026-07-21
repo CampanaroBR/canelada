@@ -53,18 +53,18 @@ export function montarSelecao(perTrait: TraitVotos, cfg: SelecaoConfig): Selecao
   const scoresPositivo = buildScores(perTrait, cfg.positivos, cfg.pesos);
   const scoresNegativo = buildScores(perTrait, cfg.negativos, cfg.pesos);
 
-  // Regra: quem recebeu voto negativo cai nos PIORES — sempre, mesmo tendo voto
-  // positivo também. Antes havia uma "exclusividade" (o jogador ia só pro lado
-  // de maior score) que sumia com quem levou negativo mas tinha algum positivo
-  // — errado. Agora os dois lados são independentes; quem levou dos dois aparece
-  // nos dois. A única exclusão fica nos MELHORES: quem é claramente pior (saldo
-  // negativo > positivo) não entra nos melhores, pra não repetir o bug de
-  // jogador ruim escalado como bom (commit 7a7d98d).
-  const ladoNegativo = new Set<string>(scoresNegativo.keys());
+  // Cada jogador aparece em UM lado só — o do maior score. Empate vai pros
+  // PIORES (o negativo pesa mais: quem foi tão criticado quanto elogiado conta
+  // como pior; e cobre o goleiro empatado em Paredão×Frangueiro, onde Frangueiro
+  // vale mais). Assim ninguém aparece nos dois times.
   const ladoPositivo = new Set<string>();
-  for (const [pid, e] of scoresPositivo) {
-    const neg = scoresNegativo.get(pid);
-    if (!neg || e.score >= neg.score) ladoPositivo.add(pid);
+  const ladoNegativo = new Set<string>();
+  const todos = new Set<string>([...scoresPositivo.keys(), ...scoresNegativo.keys()]);
+  for (const pid of todos) {
+    const pos = scoresPositivo.get(pid)?.score ?? 0;
+    const neg = scoresNegativo.get(pid)?.score ?? 0;
+    if (neg >= pos) ladoNegativo.add(pid);
+    else ladoPositivo.add(pid);
   }
 
   // Goleiro: só quem tem o trait de goleiro como trait DOMINANTE do seu lado.
