@@ -60,14 +60,17 @@ describe("montarSelecao — goleiro", () => {
     expect(piores[4]?.jogadorId).toBe("ze");        // é o pior goleiro
   });
 
-  it("goleiro com muito mais Paredão que Frangueiro continua sendo o melhor goleiro", () => {
-    // Marcos: 6 Paredão + 1 Frangueiro → Paredão domina, segue melhor goleiro.
+  it("goleiro com muito mais Paredão que Frangueiro é melhor goleiro e NÃO aparece nos piores", () => {
+    // Vitor: 6 Paredão + 3 Frangueiro → melhor goleiro; não pode aparecer nos
+    // piores (nem no gol, nem na linha). Goleiro aparece só de um lado.
     const v = votos({
-      paredao: { marcos: 6 },
-      frangueiro: { marcos: 1 },
+      paredao: { vitor: 6 },
+      frangueiro: { vitor: 3 },
+      bagre: { santiago: 5 },
     });
-    const { melhores } = montarSelecao(v, cfg());
-    expect(melhores[4]?.jogadorId).toBe("marcos");
+    const { melhores, piores } = montarSelecao(v, cfg());
+    expect(melhores[4]?.jogadorId).toBe("vitor");
+    expect(piores.some((s) => s?.jogadorId === "vitor")).toBe(false);
   });
 
   it("deixa o gol VAZIO quando ninguém é dominante no trait de goleiro", () => {

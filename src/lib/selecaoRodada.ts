@@ -70,26 +70,24 @@ export function montarSelecao(perTrait: TraitVotos, cfg: SelecaoConfig): Selecao
   // no gol alguém cujo problema real era outro (ex.: ALABA, dominante em Bagre,
   // com 1 voto de Frangueiro, aparecia de goleiro). Sem ninguém dominante no
   // trait de goleiro, a vaga fica vazia.
-  // counterTrait: pro MELHOR goleiro (Paredão), o voto de Frangueiro VALE MAIS —
-  // um goleiro votado nos dois não pode ser eleito o melhor. Só é melhor goleiro
-  // quem teve mais Paredão do que Frangueiro (empate conta como pior, pró-Frangueiro).
-  const pickGK = (gkTrait: string, lado: Set<string>, scores: Map<string, ScoreEntry>, counterTrait?: string) => {
+  // Goleiro aparece em UM lado só — o de mais votos (Paredão vs Frangueiro).
+  // Empate vai pro Frangueiro (vale mais). counterWinsTie=true no lado dos
+  // melhores (Frangueiro ganha empate → não é o melhor goleiro); =false no lado
+  // dos piores (Paredão precisa ser estritamente maior pra tirar do pior gol).
+  const pickGK = (gkTrait: string, lado: Set<string>, scores: Map<string, ScoreEntry>, counterTrait: string, counterWinsTie: boolean) => {
     const players = perTrait.get(gkTrait);
-    const counter = counterTrait ? perTrait.get(counterTrait) : undefined;
+    const counter = perTrait.get(counterTrait);
+    if (cfg.comArte && !cfg.comArte.has(gkTrait)) return null;
     let best: Slot | null = null;
     for (const pid of lado) {
       const sc = scores.get(pid);
       if (!sc || sc.bestSlug !== gkTrait) continue; // trait dominante precisa ser o de goleiro
-      if (cfg.comArte && !cfg.comArte.has(gkTrait)) continue;
-      if (counter) {
-        const gkVotos = players?.get(pid) ?? 0;
-        const counterVotos = counter.get(pid) ?? 0;
-        if (counterVotos >= gkVotos) continue; // Frangueiro vale mais → não é o melhor goleiro
-      }
-      const votos = players?.get(pid) ?? sc.bestVotos;
+      const gkVotos = players?.get(pid) ?? 0;
+      const counterVotos = counter?.get(pid) ?? 0;
+      if (counterWinsTie ? counterVotos >= gkVotos : counterVotos > gkVotos) continue;
       if (!best || sc.score > (scores.get(best.jogadorId)!.score) ||
           (sc.score === scores.get(best.jogadorId)!.score && pid.localeCompare(best.jogadorId) < 0)) {
-        best = { jogadorId: pid, slug: gkTrait, votos };
+        best = { jogadorId: pid, slug: gkTrait, votos: gkVotos };
       }
     }
     return best;
@@ -105,14 +103,21 @@ export function montarSelecao(perTrait: TraitVotos, cfg: SelecaoConfig): Selecao
     return out;
   };
 
+  // Melhor goleiro: mais Paredão que Frangueiro. Pior goleiro: Frangueiro >=
+  // Paredão. Assim o mesmo jogador nunca é os dois. Além do próprio slot, cada
+  // goleiro é excluído do OUTRO lado inteiro (linha inclusa) — goleiro aparece
+  // só de um lado.
+  const gkM = pickGK(cfg.gkPositivo, ladoPositivo, scoresPositivo, cfg.gkNegativo, true);
+  const gkP = pickGK(cfg.gkNegativo, ladoNegativo, scoresNegativo, cfg.gkPositivo, false);
+
   const usadosM = new Set<string>();
-  const gkM = pickGK(cfg.gkPositivo, ladoPositivo, scoresPositivo, cfg.gkNegativo);
   if (gkM) usadosM.add(gkM.jogadorId);
+  if (gkP) usadosM.add(gkP.jogadorId); // pior goleiro fora da linha dos melhores
   const melhores = [...topLinha(scoresPositivo, ladoPositivo, 4, usadosM), gkM];
 
   const usadosP = new Set<string>();
-  const gkP = pickGK(cfg.gkNegativo, ladoNegativo, scoresNegativo);
   if (gkP) usadosP.add(gkP.jogadorId);
+  if (gkM) usadosP.add(gkM.jogadorId); // melhor goleiro fora do lado dos piores
   const piores = [...topLinha(scoresNegativo, ladoNegativo, 4, usadosP), gkP];
 
   return { melhores, piores };
