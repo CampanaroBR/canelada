@@ -15,7 +15,7 @@ const TRAITS: { slug: string; nome: string; categoria: TraitCategoria; emoji: st
   { slug: "paredao",       nome: "Paredão",         categoria: TraitCategoria.FUTEBOL,       emoji: "🧤", descricao: "Intransponível na defesa. Fechou o gol e salvou o time nos momentos decisivos.", peso: 2 },
   { slug: "racudo",        nome: "Raçudo",          categoria: TraitCategoria.FUTEBOL,       emoji: "💪", descricao: "Se destaca pela entrega, intensidade e vontade de vencer.", peso: 2 },
   { slug: "xerife",        nome: "Xerife",          categoria: TraitCategoria.FUTEBOL,       emoji: "👊", descricao: "Lidera dentro de campo, organiza o time e assume a responsabilidade.", peso: 2 },
-  { slug: "garcom",        nome: "Garçom",          categoria: TraitCategoria.FUTEBOL,       emoji: "🥂", descricao: "Enxerga o jogo como poucos. Cria oportunidades e distribui assistências.", peso: 2 },
+  { slug: "garcom",        nome: "Garçom",          categoria: TraitCategoria.FUTEBOL,       emoji: "🥂", descricao: "Enxerga o jogo como poucos. Cria oportunidades e distribui assistências.", peso: 3 },
   { slug: "driblador",     nome: "Driblador",       categoria: TraitCategoria.FUTEBOL,       emoji: "⚽💨", descricao: "Desmonta a marcação com dribles, velocidade e muita habilidade.", peso: 2 },
   { slug: "gol-mais-bonito", nome: "Gol Mais Bonito", categoria: TraitCategoria.FUTEBOL,     emoji: "🎯", descricao: "A pintura da noite. Marcou o gol mais bonito da rodada.", peso: 1 },
   // Grupo 2 — Resenha (opcional)
