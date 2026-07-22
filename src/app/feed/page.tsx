@@ -6,6 +6,7 @@ import { badgesHome } from "@/lib/badges";
 import { janelaVotacao, votacaoEncerrada } from "@/lib/votacaoJanela";
 import { pickWinner } from "@/lib/tieBreak";
 import { montarSelecao } from "@/lib/selecaoRodada";
+import { TRAITS_POSITIVOS, TRAITS_NEGATIVOS } from "@/lib/traits";
 import { HomeClient } from "./HomeClient";
 import { PushAutoEnroll } from "@/components/PushAutoEnroll";
 import { InstallPrompt } from "@/components/InstallPrompt";
@@ -19,8 +20,9 @@ type Conquista   = { apelido: string; traitSlug: string; traitNome: string; trai
 
 // Traits ativos por lado — usados tanto na rodada atual quanto no cálculo por
 // rodada do filtro de datas. No escopo do módulo pra valerem nos dois lugares.
-const POSITIVO_ATIVOS = ["categoria", "matador", "paredao", "xerife", "garcom", "driblador", "gol-mais-bonito"];
-const NEGATIVO_ATIVOS = ["bagre", "frangueiro", "bragueiro", "reclamao", "pregueiro", "paneleiro"];
+// Fonte única em src/lib/traits.ts (mesma lista usada pelo ranking/MVP/badges).
+const POSITIVO_ATIVOS: readonly string[] = TRAITS_POSITIVOS;
+const NEGATIVO_ATIVOS: readonly string[] = TRAITS_NEGATIVOS;
 
 export default async function FeedPage() {
   const session = await auth();
@@ -176,8 +178,8 @@ export default async function FeedPage() {
 
     const votosPorTrait = new Map([...perTrait].map(([slug, e]) => [slug, e.players] as const));
     const { melhores, piores } = montarSelecao(votosPorTrait, {
-      positivos: POSITIVO_ATIVOS,
-      negativos: NEGATIVO_ATIVOS,
+      positivos: [...POSITIVO_ATIVOS],
+      negativos: [...NEGATIVO_ATIVOS],
       gkPositivo: "paredao",
       gkNegativo: "frangueiro",
       pesos: pesoMap,

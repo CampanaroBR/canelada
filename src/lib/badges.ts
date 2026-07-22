@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { ehPositivo, ehNegativo, pontosTrait } from "@/lib/traits";
 
 /**
  * Cálculo oficial de desbloqueio das 24 badges.
@@ -7,13 +8,14 @@ import { prisma } from "@/lib/prisma";
  * - "Trait vencedora da rodada": jogador mais votado naquela trait na rodada.
  * - MVP da rodada (Opção B): maior soma de pontos de traits positivas vencidas.
  * - Participação: o jogador votou (votante) na rodada.
+ *
+ * Polaridade e pontuação vêm de src/lib/traits.ts (fonte única) + o `peso` da
+ * tabela Trait. Não há mais lista de pontos duplicada aqui.
  */
 
-const POINTS: Record<string, number> = {
-  categoria: 4, matador: 3, paredao: 3, racudo: 2, xerife: 2, garcom: 2, driblador: 2,
-};
-const POSITIVE = new Set(Object.keys(POINTS));
-const NEGATIVE = new Set(["bagre", "cone", "corpo-mole"]); // corpo-mole = Pregueiro
+// Flavor "resenha/social" — só pro badge Resenha Forte (eixo à parte da
+// polaridade positivo/negativo do ranking; um trait pode ser negativo no ranking
+// E social pro badge, ex.: Reclamão).
 const SOCIAL = new Set(["chorao", "reclamao", "paneleiro", "firuleiro", "so-resenha", "delegado"]);
 
 // Nomes das 24 (para o feed da home) — espelha docs/gamificacao.md
@@ -35,7 +37,10 @@ type Ctx = {
   rodadas: Rodada[];
   contagem: Map<string, Map<string, Map<string, number>>>; // rodada -> trait -> jogador -> n
   partPorRodada: Map<string, Set<string>>;
+  pesos: Map<string, number>; // trait slug -> peso (fonte da pontuação)
 };
+
+const peso = (ctx: Ctx, slug: string): number => ctx.pesos.get(slug) ?? 1;
 
 // Uma rodada "conta" para badges quando a votação já encerrou (encerrada OU 20h do dia seguinte já passou)
 function votacaoFinalizada(data: Date, encerrada: boolean): boolean {
@@ -56,9 +61,9 @@ async function carregar(grupoId: string): Promise<Ctx> {
   const rodadaIds = rodadas.map(r => r.id);
   const contagem = new Map<string, Map<string, Map<string, number>>>();
   const partPorRodada = new Map<string, Set<string>>();
-  if (rodadaIds.length === 0) return { rodadas, contagem, partPorRodada };
+  if (rodadaIds.length === 0) return { rodadas, contagem, partPorRodada, pesos: new Map() };
 
-  const [traitVotos, partRows] = await Promise.all([
+  const [traitVotos, partRows, traitPesos] = await Promise.all([
     prisma.voto.findMany({
       where: { rodadaId: { in: rodadaIds }, categoria: "TRAIT", traitSlug: { not: null } },
       select: { rodadaId: true, votadoId: true, traitSlug: true },
@@ -68,7 +73,9 @@ async function carregar(grupoId: string): Promise<Ctx> {
       select: { rodadaId: true, votanteId: true },
       distinct: ["rodadaId", "votanteId"],
     }),
+    prisma.trait.findMany({ select: { slug: true, peso: true } }),
   ]);
+  const pesos = new Map(traitPesos.map(t => [t.slug, t.peso]));
 
   for (const v of traitVotos) {
     const t = v.traitSlug as string;
@@ -83,7 +90,7 @@ async function carregar(grupoId: string): Promise<Ctx> {
     if (!s) { s = new Set(); partPorRodada.set(p.rodadaId, s); }
     s.add(p.votanteId);
   }
-  return { rodadas, contagem, partPorRodada };
+  return { rodadas, contagem, partPorRodada, pesos };
 }
 
 function vencedoresDe(ctx: Ctx, rodadaId: string): Map<string, string> {
@@ -101,7 +108,8 @@ function vencedoresDe(ctx: Ctx, rodadaId: string): Map<string, string> {
 function mvpsDe(ctx: Ctx, rodadaId: string): Set<string> {
   const venc = vencedoresDe(ctx, rodadaId);
   const pts = new Map<string, number>();
-  for (const [t, pid] of venc) if (POINTS[t]) pts.set(pid, (pts.get(pid) ?? 0) + POINTS[t]);
+  // MVP = maior soma de pontos POSITIVOS na rodada (peso das traits positivas).
+  for (const [t, pid] of venc) if (ehPositivo(t)) pts.set(pid, (pts.get(pid) ?? 0) + peso(ctx, t));
   let max = 0;
   for (const n of pts.values()) max = Math.max(max, n);
   const set = new Set<string>();
@@ -129,8 +137,8 @@ function agregar(ctx: Ctx, jogadorId: string, rodadas: Rodada[]): BadgeResult {
   for (const r of rodadas) {
     const venc = vencedoresDe(ctx, r.id);
     const minhas = [...venc.entries()].filter(([, pid]) => pid === jogadorId).map(([t]) => t);
-    const minhasPos = minhas.filter(t => POSITIVE.has(t));
-    const ganhouNeg = minhas.some(t => NEGATIVE.has(t));
+    const minhasPos = minhas.filter(t => ehPositivo(t));
+    const ganhouNeg = minhas.some(t => ehNegativo(t));
     const part = participou(r.id);
     const ehMvp = mvpsDe(ctx, r.id).has(jogadorId);
     const d = new Date(r.data);
@@ -234,13 +242,12 @@ export const nomeBadge = (slug: string): string => NOME[slug] ?? slug;
 /* ─────────────────────────────────────────────────────────────
  * RANKING (Classificação) — baseado em Personagem da Semana.
  * Mesma base do MVP/badges: vencedor de cada trait por rodada.
- * Pontos: positivas somam (POINTS), negativas descontam (NEG_POINTS).
+ * Pontos: peso do trait (positivo soma, negativo desconta) — fonte única em
+ * src/lib/traits.ts + tabela Trait. Sem lista de pontos duplicada.
  * ──────────────────────────────────────────────────────────── */
 
-const NEG_POINTS: Record<string, number> = { bagre: 3, cone: 2, "corpo-mole": 2 };
-
 // Traits em destaque nos cards de "Personagem" do ranking
-const RANK_TRAITS_DESTAQUE = ["categoria", "matador", "paredao", "garcom", "racudo", "bagre"];
+const RANK_TRAITS_DESTAQUE = ["categoria", "matador", "paredao", "garcom", "gol-mais-bonito", "bagre"];
 
 export type RankRow = {
   jogadorId: string;
@@ -265,8 +272,7 @@ function computarRanking(ctx: Ctx, nome: Map<string, string>, rodadas: Rodada[])
       let m = titulos.get(t);
       if (!m) { m = new Map(); titulos.set(t, m); }
       m.set(pid, (m.get(pid) ?? 0) + 1);
-      if (POINTS[t]) pts.set(pid, (pts.get(pid) ?? 0) + POINTS[t]);
-      else if (NEG_POINTS[t]) pts.set(pid, (pts.get(pid) ?? 0) - NEG_POINTS[t]);
+      pts.set(pid, (pts.get(pid) ?? 0) + pontosTrait(t, peso(ctx, t)));
     }
     for (const pid of mvpsDe(ctx, r.id)) mvpC.set(pid, (mvpC.get(pid) ?? 0) + 1);
     const part = ctx.partPorRodada.get(r.id);
