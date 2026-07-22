@@ -1,6 +1,7 @@
 "use client";
 
 import { Prisma } from "@prisma/client";
+import { Export } from "reicon-react";
 
 export type SelecaoStory = Prisma.StoryGetPayload<{
   include: { rodada: { select: { data: true } } };
@@ -200,11 +201,7 @@ export function SelecaoCard({ story }: { story: SelecaoStory }) {
             WebkitTapHighlightColor: "transparent",
           }}
         >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" />
-            <polyline points="16 6 12 2 8 6" />
-            <line x1="12" y1="2" x2="12" y2="15" />
-          </svg>
+          <Export size={13} color="#22C55E" weight="Outline" />
           COMPARTILHAR
         </button>
       </div>
