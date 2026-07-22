@@ -10,14 +10,14 @@ const prisma = new PrismaClient({ adapter });
 // Etapa 1 (Futebol) → Etapa 2 (Personalidade) → Etapa 3 (Resenha).
 const TRAITS: { slug: string; nome: string; categoria: TraitCategoria; emoji: string; descricao?: string; peso?: number }[] = [
   // Grupo 1 — Futebol (obrigatório)
-  { slug: "categoria",     nome: "Categoria",       categoria: TraitCategoria.FUTEBOL,       emoji: "👑", descricao: "O dono da bola e do campo. Humilha todo mundo com categoria.", peso: 3 },
+  { slug: "categoria",     nome: "Categoria",       categoria: TraitCategoria.FUTEBOL,       emoji: "👑", descricao: "O dono da bola e do campo. Humilha todo mundo com categoria.", peso: 4 },
   { slug: "matador",       nome: "Matador",         categoria: TraitCategoria.FUTEBOL,       emoji: "⚽", descricao: "Especialista em finalizar jogadas e balançar as redes.", peso: 3 },
-  { slug: "paredao",       nome: "Paredão",         categoria: TraitCategoria.FUTEBOL,       emoji: "🧤", descricao: "Intransponível na defesa. Fechou o gol e salvou o time nos momentos decisivos.", peso: 3 },
+  { slug: "paredao",       nome: "Paredão",         categoria: TraitCategoria.FUTEBOL,       emoji: "🧤", descricao: "Intransponível na defesa. Fechou o gol e salvou o time nos momentos decisivos.", peso: 2 },
   { slug: "racudo",        nome: "Raçudo",          categoria: TraitCategoria.FUTEBOL,       emoji: "💪", descricao: "Se destaca pela entrega, intensidade e vontade de vencer.", peso: 2 },
   { slug: "xerife",        nome: "Xerife",          categoria: TraitCategoria.FUTEBOL,       emoji: "👊", descricao: "Lidera dentro de campo, organiza o time e assume a responsabilidade.", peso: 2 },
   { slug: "garcom",        nome: "Garçom",          categoria: TraitCategoria.FUTEBOL,       emoji: "🥂", descricao: "Enxerga o jogo como poucos. Cria oportunidades e distribui assistências.", peso: 2 },
   { slug: "driblador",     nome: "Driblador",       categoria: TraitCategoria.FUTEBOL,       emoji: "⚽💨", descricao: "Desmonta a marcação com dribles, velocidade e muita habilidade.", peso: 2 },
-  { slug: "gol-mais-bonito", nome: "Gol Mais Bonito", categoria: TraitCategoria.FUTEBOL,     emoji: "🎯", descricao: "A pintura da noite. Marcou o gol mais bonito da rodada.", peso: 2 },
+  { slug: "gol-mais-bonito", nome: "Gol Mais Bonito", categoria: TraitCategoria.FUTEBOL,     emoji: "🎯", descricao: "A pintura da noite. Marcou o gol mais bonito da rodada.", peso: 1 },
   // Grupo 2 — Resenha (opcional)
   { slug: "resenha-forte", nome: "Só Resenha",      categoria: TraitCategoria.PERSONALIDADE, emoji: "🎤", descricao: "Responsável pela animação, brincadeiras e energia do grupo. E não joga nada! 😂", peso: 1 },
   { slug: "delegado",      nome: "Delegado",        categoria: TraitCategoria.PERSONALIDADE, emoji: "🔒⚽", descricao: "A bola é dele. O resto do time só acompanha a jogada.", peso: 1 },
