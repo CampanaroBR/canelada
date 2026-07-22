@@ -15,21 +15,21 @@ Mudanças já commitadas em `main`, ainda sem tag de versão.
   contavam à toa).
 - Redesign visual da tela de Ranking (pódio/lista com double-bezel).
 
-### ⚠️ PENDENTE — aplicar no banco de PRODUÇÃO (via neon, precisa restart do Claude Code)
-Os pesos foram recalibrados no `prisma/seed.ts`, mas o `db push`/seed local
-aponta pra uma branch Neon ≠ produção — então **precisa rodar estes UPDATEs
-direto no banco de produção**:
+### Pesos recalibrados em produção (aplicado 2026-07-22)
+Categoria 4 (GOAT), Garçom 3 (assistência), Paredão 2 (poucos goleiros),
+Gol Mais Bonito 1 (estilo). Aplicado direto no banco de produção via neon
+(o seed local aponta pra branch Neon ≠ produção), refletindo o `prisma/seed.ts`.
 
-```sql
-UPDATE "Trait" SET peso = 4 WHERE slug = 'categoria';       -- GOAT
-UPDATE "Trait" SET peso = 3 WHERE slug = 'garcom';          -- assistência
-UPDATE "Trait" SET peso = 2 WHERE slug = 'paredao';         -- poucos goleiros
-UPDATE "Trait" SET peso = 1 WHERE slug = 'gol-mais-bonito'; -- estilo
-```
+### Participação do ranking = presença, não voto
+O "rodadas" por jogador passou a usar a lista de presença (`Rodada.presentes`)
+em união com os votantes, em vez de só votos — quem jogou e não votou não fica
+mais com a contagem a menos. Rodadas antigas sem lista de presença caem no
+fallback por votantes (votar exige presença). Ver `src/lib/badges.ts`.
 
-Depois de aplicar: validar o ranking do grupo antes/depois com os votos reais.
-Enquanto os UPDATEs não rodarem, o ranking usa os pesos antigos do banco
-(Categoria 3, Paredão 3, Garçom 2, Gol Mais Bonito 2).
+### Limpeza de rodadas fantasma (produção, 2026-07-22)
+Removidas 3 rodadas encerradas sem nenhum voto/story (10/07 e duas duplicadas
+em 12/07). Backup em branch Neon `backup-pre-delete-rodadas-fantasma-2026-07-22`.
+Restam as 5 rodadas reais (06, 08, 13, 15, 20 de julho).
 
 ## [1.0.0] — 2026-07-21
 

@@ -55,9 +55,10 @@ async function carregar(grupoId: string): Promise<Ctx> {
   const todas = await prisma.rodada.findMany({
     where: { grupoId },
     orderBy: { data: "asc" },
-    select: { id: true, data: true, encerrada: true },
+    select: { id: true, data: true, encerrada: true, presentes: { select: { id: true } } },
   });
-  const rodadas = todas.filter(r => votacaoFinalizada(r.data, r.encerrada)).map(r => ({ id: r.id, data: r.data }));
+  const finalizadas = todas.filter(r => votacaoFinalizada(r.data, r.encerrada));
+  const rodadas = finalizadas.map(r => ({ id: r.id, data: r.data }));
   const rodadaIds = rodadas.map(r => r.id);
   const contagem = new Map<string, Map<string, Map<string, number>>>();
   const partPorRodada = new Map<string, Set<string>>();
@@ -76,6 +77,18 @@ async function carregar(grupoId: string): Promise<Ctx> {
     prisma.trait.findMany({ select: { slug: true, peso: true } }),
   ]);
   const pesos = new Map(traitPesos.map(t => [t.slug, t.peso]));
+
+  // Participação = quem REALMENTE esteve na rodada. Fonte primária é a lista de
+  // presença (`presentes`, editável no admin); votantes entram como fallback
+  // (rodadas antigas sem lista têm presentes vazio, mas votar exige presença) e
+  // como reforço (quem esteve mas não votou não fica de fora). Antes isto contava
+  // só votos, então quem jogou e não votou aparecia com menos rodadas.
+  for (const r of finalizadas) {
+    if (r.presentes.length === 0) continue;
+    let s = partPorRodada.get(r.id);
+    if (!s) { s = new Set(); partPorRodada.set(r.id, s); }
+    for (const p of r.presentes) s.add(p.id);
+  }
 
   for (const v of traitVotos) {
     const t = v.traitSlug as string;
