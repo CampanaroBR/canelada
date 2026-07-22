@@ -76,7 +76,7 @@ export function RankingClient({ ranking, grupoNome, meuId }: Props) {
         paddingBottom: 20, paddingLeft: 16, paddingRight: 16, boxSizing: "border-box",
       }}>
         {/* Section header */}
-        <div style={{ height: 42, paddingLeft: 8, display: "flex", alignItems: "center" }}>
+        <div style={{ paddingLeft: 8, paddingRight: 8 }}>
           <SectionHeader
             icon={<ChartBar size={24} color="#9fe870" weight="Filled" />}
             title="CLASSIFICAÇÃO"

@@ -30,7 +30,6 @@ export function PodiumCol({ row, pos, eu }: { row: RankRow; pos: number; eu: boo
           position: "absolute", top: -11, left: "calc(50% + 6px)",
           transform: "rotate(22deg)", transformOrigin: "bottom left",
           width: 30, height: 30, zIndex: 2,
-          filter: "drop-shadow(0 3px 5px rgba(0,0,0,0.45))",
         }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/coroa-ranking.png" alt="" width={30} height={30} style={{ objectFit: "contain" }} />
@@ -47,10 +46,8 @@ export function PodiumCol({ row, pos, eu }: { row: RankRow; pos: number; eu: boo
         }}>
           <div style={{
             width: medalha, height: medalha, borderRadius: "50%",
-            background: cor,
+            background: cor, // cor chapada, sem degradê nem inset (DS Bagre é flat)
             display: "flex", alignItems: "center", justifyContent: "center",
-            // profundidade via inset (não é degradê): brilho no topo, sombra embaixo.
-            boxShadow: "inset 0 2px 1.5px rgba(255,255,255,0.55), inset 0 -3px 5px rgba(0,0,0,0.22)",
           }}>
             <span style={{ fontFamily: "var(--font-numeric)", fontWeight: 800, fontSize: first ? 24 : 20, color: "rgba(20,16,8,0.82)" }}>{pos}</span>
           </div>
@@ -60,6 +57,10 @@ export function PodiumCol({ row, pos, eu }: { row: RankRow; pos: number; eu: boo
           fontSize: 15, lineHeight: "18px", color: eu ? "#9fe870" : "#e8e6de",
           whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
         }}>{row.apelido}</p>
+        <span style={{
+          fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 11, lineHeight: "14px",
+          color: "#767469", whiteSpace: "nowrap",
+        }}>{row.rodadas} {row.rodadas === 1 ? "rodada" : "rodadas"}</span>
       </div>
 
       {/* Placar — double-bezel flat: shell escuro + core preto com borda da cor. */}

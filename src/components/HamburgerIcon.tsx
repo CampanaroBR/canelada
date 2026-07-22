@@ -1,47 +1,33 @@
 "use client";
 
-/** Ícone de menu que faz o morph pras 3 linhas viraram um X quando `open`. */
-export function HamburgerIcon({ open, size = 22, color = "#fff" }: { open: boolean; size?: number; color?: string }) {
+import { Menu, X } from "reicon-react";
+
+/**
+ * Ícone de menu — usa os ícones do Reicon (Menu ↔ X), padrão do produto (todos
+ * os ícones são Reicon). Faz um crossfade suave entre os dois estados; o traço
+ * Outline casa com os demais ícones da topbar (ex.: sino).
+ */
+export function HamburgerIcon({ open, size = 24, color = "#fff" }: { open: boolean; size?: number; color?: string }) {
   const ease = "cubic-bezier(0.32, 0.72, 0, 1)";
-  const barStyle = (i: number): React.CSSProperties => {
-    const mid = size / 2 - 1;
-    if (i === 0) {
-      return {
-        top: open ? mid : 2,
-        transform: open ? "rotate(45deg)" : "rotate(0deg)",
-      };
-    }
-    if (i === 1) {
-      return {
-        top: mid,
-        opacity: open ? 0 : 1,
-        transform: open ? "scaleX(0)" : "scaleX(1)",
-      };
-    }
-    return {
-      top: open ? mid : size - 4,
-      transform: open ? "rotate(-45deg)" : "rotate(0deg)",
-    };
-  };
+  const layer = (visible: boolean): React.CSSProperties => ({
+    position: "absolute",
+    inset: 0,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    opacity: visible ? 1 : 0,
+    transform: visible ? "rotate(0deg) scale(1)" : "rotate(-90deg) scale(0.8)",
+    transition: `opacity 220ms ${ease}, transform 320ms ${ease}`,
+  });
 
   return (
     <span style={{ position: "relative", display: "inline-block", width: size, height: size }}>
-      {[0, 1, 2].map((i) => (
-        <span
-          key={i}
-          style={{
-            position: "absolute",
-            left: 0,
-            width: size,
-            height: 2,
-            borderRadius: 2,
-            background: color,
-            transition: `top 320ms ${ease}, transform 320ms ${ease}, opacity 200ms ${ease}`,
-            transformOrigin: "center",
-            ...barStyle(i),
-          }}
-        />
-      ))}
+      <span style={layer(!open)}>
+        <Menu size={size} color={color} weight="Outline" />
+      </span>
+      <span style={layer(open)}>
+        <X size={size} color={color} weight="Outline" />
+      </span>
     </span>
   );
 }
