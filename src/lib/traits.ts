@@ -13,7 +13,9 @@ export const TRAITS_POSITIVOS = [
   "categoria", "matador", "paredao", "xerife", "garcom", "driblador", "gol-mais-bonito",
 ] as const;
 
-/** Negativos: descontam o peso no ranking e escalam nos "piores". */
+/** Negativos: escalam nos "piores" (Seleção da Rodada) e contam pra badges, mas
+ *  NÃO descontam pontos no ranking — decisão do produto: o ranking nunca fica
+ *  negativo, só sobe por trait positiva. */
 export const TRAITS_NEGATIVOS = [
   "bagre", "frangueiro", "bragueiro", "reclamao", "pregueiro", "paneleiro",
 ] as const;
@@ -29,11 +31,10 @@ export const ehPositivo = (slug: string): boolean => POS.has(slug);
 export const ehNegativo = (slug: string): boolean => NEG.has(slug);
 
 /**
- * Pontos de um trait no ranking/MVP dado o peso do banco:
- * +peso se positivo, -peso se negativo, 0 se nenhum (social/resenha).
+ * Pontos de um trait no ranking/MVP dado o peso do banco: +peso se positivo,
+ * 0 caso contrário (negativo ou social). Trait negativa NÃO desconta — o
+ * ranking só sobe, nunca fica negativo.
  */
 export function pontosTrait(slug: string, peso: number): number {
-  if (POS.has(slug)) return peso;
-  if (NEG.has(slug)) return -peso;
-  return 0;
+  return POS.has(slug) ? peso : 0;
 }

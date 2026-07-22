@@ -12,10 +12,10 @@ describe("pontosTrait — pontuação por peso", () => {
     expect(pontosTrait("gol-mais-bonito", 2)).toBe(2); // trait novo agora conta
   });
 
-  it("negativo desconta o peso", () => {
-    expect(pontosTrait("bagre", 3)).toBe(-3);
-    expect(pontosTrait("frangueiro", 3)).toBe(-3); // trait novo agora conta (negativo)
-    expect(pontosTrait("reclamao", 2)).toBe(-2);
+  it("negativo NÃO desconta (ranking nunca fica negativo)", () => {
+    expect(pontosTrait("bagre", 3)).toBe(0);
+    expect(pontosTrait("frangueiro", 3)).toBe(0);
+    expect(pontosTrait("reclamao", 2)).toBe(0);
   });
 
   it("trait social/desconhecido não pontua", () => {
