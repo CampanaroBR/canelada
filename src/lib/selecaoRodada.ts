@@ -56,41 +56,30 @@ export function montarSelecao(perTrait: TraitVotos, cfg: SelecaoConfig): Selecao
   const scoresPositivo = buildScores(perTrait, cfg.positivos, cfg.pesos);
   const scoresNegativo = buildScores(perTrait, cfg.negativos, cfg.pesos);
 
-  // Cada jogador aparece em UM lado só — o do maior score. Empate vai pros
-  // PIORES (o negativo pesa mais: quem foi tão criticado quanto elogiado conta
-  // como pior; e cobre o goleiro empatado em Paredão×Frangueiro, onde Frangueiro
-  // vale mais). Assim ninguém aparece nos dois times.
-  const ladoPositivo = new Set<string>();
-  const ladoNegativo = new Set<string>();
-  const todos = new Set<string>([...scoresPositivo.keys(), ...scoresNegativo.keys()]);
-  for (const pid of todos) {
-    const pos = scoresPositivo.get(pid)?.score ?? 0;
-    const neg = scoresNegativo.get(pid)?.score ?? 0;
-    if (neg >= pos) ladoNegativo.add(pid);
-    else ladoPositivo.add(pid);
-  }
+  // Os dois times são INDEPENDENTES: "os 5 maiores placares positivos" e "os 5
+  // maiores placares negativos", cada lado rankeado pelo seu próprio score. Um
+  // jogador PODE aparecer nos dois (foi elogiado num trait e criticado em outro)
+  // — é isso que garante os 5 slots cheios: o pote de votados negativos é
+  // pequeno e a exclusividade antiga (um lado só) esvaziava o campo. A única
+  // exceção é o goleiro (ver abaixo): ninguém é o melhor E o pior goleiro.
+  const ladoPositivo = new Set<string>(scoresPositivo.keys());
+  const ladoNegativo = new Set<string>(scoresNegativo.keys());
 
-  // Goleiro: só quem tem o trait de goleiro como trait DOMINANTE do seu lado.
-  // Antes bastava ter o maior score naquele trait entre o lado — o que colocava
+  // Goleiro: só quem tem o trait de goleiro como trait DOMINANTE do seu lado
+  // (bestSlug). Antes bastava ter o maior score naquele trait — o que colocava
   // no gol alguém cujo problema real era outro (ex.: ALABA, dominante em Bagre,
-  // com 1 voto de Frangueiro, aparecia de goleiro). Sem ninguém dominante no
-  // trait de goleiro, a vaga fica vazia.
-  // Goleiro aparece em UM lado só — o de mais votos (Paredão vs Frangueiro).
-  // Empate vai pro Frangueiro (vale mais). counterWinsTie=true no lado dos
-  // melhores (Frangueiro ganha empate → não é o melhor goleiro); =false no lado
-  // dos piores (Paredão precisa ser estritamente maior pra tirar do pior gol).
-  const pickGK = (gkTrait: string, lado: Set<string>, scores: Map<string, ScoreEntry>, counterTrait: string, counterWinsTie: boolean) => {
-    const players = perTrait.get(gkTrait);
-    const counter = perTrait.get(counterTrait);
+  // com 1 voto de Frangueiro, virava goleiro). Sem ninguém dominante no trait de
+  // goleiro, a vaga fica vazia e o 5º slot é preenchido pela linha (quinto). O
+  // piso gkMinVotos evita eleger goleiro com 1 voto.
+  const pickGK = (gkTrait: string, lado: Set<string>, scores: Map<string, ScoreEntry>) => {
     if (cfg.comArte && !cfg.comArte.has(gkTrait)) return null;
+    const players = perTrait.get(gkTrait);
     let best: Slot | null = null;
     for (const pid of lado) {
       const sc = scores.get(pid);
       if (!sc || sc.bestSlug !== gkTrait) continue; // trait dominante precisa ser o de goleiro
       const gkVotos = players?.get(pid) ?? 0;
       if (gkVotos < (cfg.gkMinVotos ?? 1)) continue; // piso: goleiro fraco (1 voto) deixa o gol vazio
-      const counterVotos = counter?.get(pid) ?? 0;
-      if (counterWinsTie ? counterVotos >= gkVotos : counterVotos > gkVotos) continue;
       if (!best || sc.score > (scores.get(best.jogadorId)!.score) ||
           (sc.score === scores.get(best.jogadorId)!.score && pid.localeCompare(best.jogadorId) < 0)) {
         best = { jogadorId: pid, slug: gkTrait, votos: gkVotos, isGoleiro: true };
@@ -109,13 +98,6 @@ export function montarSelecao(perTrait: TraitVotos, cfg: SelecaoConfig): Selecao
     return out;
   };
 
-  // Melhor goleiro: mais Paredão que Frangueiro. Pior goleiro: Frangueiro >=
-  // Paredão. Assim o mesmo jogador nunca é os dois. Além do próprio slot, cada
-  // goleiro é excluído do OUTRO lado inteiro (linha inclusa) — goleiro aparece
-  // só de um lado.
-  const gkM = pickGK(cfg.gkPositivo, ladoPositivo, scoresPositivo, cfg.gkNegativo, true);
-  const gkP = pickGK(cfg.gkNegativo, ladoNegativo, scoresNegativo, cfg.gkPositivo, false);
-
   // Sem goleiro de verdade, o 5º slot é preenchido pelo próximo da fila (com
   // camisa normal — isGoleiro:false — pra completar o time sem rotular como
   // goleiro quem não é). Só o goleiro real (pickGK) leva isGoleiro:true.
@@ -124,15 +106,31 @@ export function montarSelecao(perTrait: TraitVotos, cfg: SelecaoConfig): Selecao
     return topLinha(scores, lado, 1, ja)[0];
   };
 
-  const usadosM = new Set<string>();
+  let gkM = pickGK(cfg.gkPositivo, ladoPositivo, scoresPositivo);
+  let gkP = pickGK(cfg.gkNegativo, ladoNegativo, scoresNegativo);
+
+  // Ninguém é os DOIS goleiros: se o mesmo jogador for o melhor Paredão e o pior
+  // Frangueiro, fica no gol do lado de mais votos (empate → pior, Frangueiro
+  // manda) e some do OUTRO lado inteiro (linha inclusa) — não faz sentido ser
+  // goleiro num gol e ainda aparecer no time do outro. É a única exclusão
+  // cruzada que sobra; no resto, os times são independentes e overlap é OK.
+  const exclPositivo = new Set<string>();
+  const exclNegativo = new Set<string>();
+  if (gkM && gkP && gkM.jogadorId === gkP.jogadorId) {
+    const pid = gkM.jogadorId;
+    const paredaoVotos = perTrait.get(cfg.gkPositivo)?.get(pid) ?? 0;
+    const frangueiroVotos = perTrait.get(cfg.gkNegativo)?.get(pid) ?? 0;
+    if (frangueiroVotos >= paredaoVotos) { gkM = null; exclPositivo.add(pid); } // é o pior goleiro → fora dos melhores
+    else { gkP = null; exclNegativo.add(pid); }                                  // é o melhor goleiro → fora dos piores
+  }
+
+  const usadosM = new Set<string>(exclPositivo);
   if (gkM) usadosM.add(gkM.jogadorId);
-  if (gkP) usadosM.add(gkP.jogadorId); // pior goleiro fora da linha dos melhores
   const linhaM = topLinha(scoresPositivo, ladoPositivo, 4, usadosM);
   const melhores = [...linhaM, gkM ?? quinto(scoresPositivo, ladoPositivo, usadosM, linhaM)];
 
-  const usadosP = new Set<string>();
+  const usadosP = new Set<string>(exclNegativo);
   if (gkP) usadosP.add(gkP.jogadorId);
-  if (gkM) usadosP.add(gkM.jogadorId); // melhor goleiro fora do lado dos piores
   const linhaP = topLinha(scoresNegativo, ladoNegativo, 4, usadosP);
   const piores = [...linhaP, gkP ?? quinto(scoresNegativo, ladoNegativo, usadosP, linhaP)];
 

@@ -105,25 +105,32 @@ describe("montarSelecao — goleiro", () => {
   });
 });
 
-describe("montarSelecao — lado (melhores vs piores)", () => {
-  it("manda pro lado PIOR quem tem score negativo maior, mesmo com voto positivo (caso Emanuel)", () => {
-    // Emanuel: 8 votos de Bagre (peso 2 = 16) + 2 votos Matador (peso 3 = 6).
-    // Score negativo (16) > positivo (6) → tem que estar nos piores, não melhores.
+describe("montarSelecao — times independentes (Opção B)", () => {
+  it("quem levou Bagre aparece nos piores mesmo tendo voto positivo (caso Emanuel)", () => {
+    // Emanuel: 8 votos de Bagre + 2 votos Matador. O que NÃO pode é o bagre
+    // sumir dos piores só porque também levou elogio — cada lado é independente.
     const v = votos({
       bagre: { emanuel: 8 },
       matador: { emanuel: 2 },
     });
-    const { melhores, piores } = montarSelecao(v, cfg());
+    const { piores } = montarSelecao(v, cfg());
     expect(piores.some((s) => s?.jogadorId === "emanuel")).toBe(true);
-    expect(melhores.some((s) => s?.jogadorId === "emanuel")).toBe(false);
   });
 
-  it("jogador aparece em UM lado só — nunca nos dois times (caso Marivaldo)", () => {
-    // Marivaldo: net-positivo (mais Matador que Pregueiro) → só nos melhores,
-    // nunca nos dois. Bug real: aparecia nos dois times.
+  it("jogador com voto relevante nos DOIS lados aparece nos dois times (overlap permitido)", () => {
+    // Zé: forte nos dois (Matador E Bagre). Na Opção B ele é escalado nos dois —
+    // é o que enche os 5 slots quando o pote de votados é pequeno.
+    const v = votos({ matador: { ze: 5 }, bagre: { ze: 5 } });
+    const { melhores, piores } = montarSelecao(v, cfg());
+    expect(melhores.some((s) => s?.jogadorId === "ze")).toBe(true);
+    expect(piores.some((s) => s?.jogadorId === "ze")).toBe(true);
+  });
+
+  it("quem só tem voto de um lado aparece só nesse lado (caso Marivaldo)", () => {
+    // Marivaldo só tem trait positivo relevante (Matador) — sem trait negativo
+    // configurado, não entra nos piores.
     const v = votos({
       matador: { marivaldo: 4, outro: 1 },
-      pregueiro: { marivaldo: 2, ruim: 5 },
       bagre: { ruim: 4 },
     });
     const { melhores, piores } = montarSelecao(v, cfg());
@@ -132,11 +139,37 @@ describe("montarSelecao — lado (melhores vs piores)", () => {
     expect(nas(piores)).not.toContain("marivaldo");
   });
 
-  it("net-negativo cai nos piores (mais peso no negativo que no positivo)", () => {
-    // Zé: 2 Matador (pos 6) + 4 Bagre (neg 12) → net-negativo → piores, não melhores.
-    const v = votos({ matador: { ze: 2 }, bagre: { ze: 4 } });
+  it("preenche os 5 piores quando há 5+ votados negativos, mesmo que vários também sejam melhores", () => {
+    // Pote misto: a/b/c são bem votados (positivo forte) e ainda levam bagre;
+    // d/e são só bagre. A exclusividade antiga esvaziava os piores (a/b/c iam
+    // pros melhores). Na Opção B os 5 slots enchem.
+    const v = votos({
+      matador: { a: 6, b: 6, c: 6 },
+      bagre: { a: 2, b: 2, c: 2, d: 5, e: 4 },
+    });
+    const { piores } = montarSelecao(v, cfg());
+    expect(piores.filter(Boolean)).toHaveLength(5);
+  });
+});
+
+describe("montarSelecao — goleiro único (Opção B)", () => {
+  it("melhor Paredão E pior Frangueiro no mesmo jogador: fica só no gol de mais votos, fora do outro time", () => {
+    // Vitor: 6 Paredão + 2 Frangueiro → é melhor goleiro (Paredão manda) e some
+    // dos piores por inteiro. Ninguém é os dois goleiros ao mesmo tempo.
+    const v = votos({
+      paredao: { vitor: 6 },
+      frangueiro: { vitor: 2 },
+      bagre: { santiago: 5 },
+    });
+    const { melhores, piores } = montarSelecao(v, cfg({ gkMinVotos: 2 }));
+    expect(melhores[4]?.jogadorId).toBe("vitor");
+    expect(piores.some((s) => s?.jogadorId === "vitor")).toBe(false);
+  });
+
+  it("empate Paredão×Frangueiro no mesmo goleiro → vai pro gol dos PIORES", () => {
+    const v = votos({ paredao: { ze: 3 }, frangueiro: { ze: 3 }, matador: { bom: 5 } });
     const { melhores, piores } = montarSelecao(v, cfg());
-    expect(piores.some((s) => s?.jogadorId === "ze")).toBe(true);
+    expect(piores[4]?.jogadorId).toBe("ze");
     expect(melhores.some((s) => s?.jogadorId === "ze")).toBe(false);
   });
 });

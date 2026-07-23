@@ -33,6 +33,21 @@ Atualizar a cada sessão: mover itens de "Em aberto" pra "Feito" e registrar dec
 
 ## Estado atual (feito, já no ar)
 
+- **Seleção da Rodada — Opção B (times independentes)** (`src/lib/selecaoRodada.ts`):
+  os dois times agora são "top-5 do próprio placar", cada lado independente. Um
+  jogador PODE aparecer nos dois (elogiado num trait, criticado em outro) — é o
+  que garante os 5 slots cheios (o pote de votados negativos é pequeno e a
+  exclusividade antiga esvaziava o campo dos piores). Única exclusão cruzada que
+  sobra: **ninguém é os dois goleiros** (melhor Paredão × pior Frangueiro) — fica
+  no gol de mais votos e some do outro lado. Testes reescritos em
+  `tests/selecaoRodada.test.ts` (44 passando). ⚠️ **Falta deploy** (push na `main`).
+- **Pesos negativos ajustados:** reclamão 2→1 (atitude, não é jogar mal),
+  paneleiro 1→2 (panelinha atrapalha o coletivo). Escala: bagre/frangueiro 3;
+  bragueiro/pregueiro/paneleiro 2; reclamão/chorão 1. **Já aplicado em produção**
+  (Neon, tabela `Trait`) e no `prisma/seed.ts`. Peso negativo só afeta a Seleção
+  (não soma no ranking/MVP).
+
+
 - **Ranking — fonte única de traits** (`src/lib/traits.ts`): polaridade
   (positivo/negativo/social); o VALOR de cada trait é o `peso` da tabela `Trait`.
   Ranking, MVP, Seleção e badges leem daí. Fim das listas duplicadas.

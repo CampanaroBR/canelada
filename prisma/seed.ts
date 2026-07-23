@@ -22,8 +22,8 @@ const TRAITS: { slug: string; nome: string; categoria: TraitCategoria; emoji: st
   { slug: "resenha-forte", nome: "Só Resenha",      categoria: TraitCategoria.PERSONALIDADE, emoji: "🎤", descricao: "Responsável pela animação, brincadeiras e energia do grupo. E não joga nada! 😂", peso: 1 },
   { slug: "delegado",      nome: "Delegado",        categoria: TraitCategoria.PERSONALIDADE, emoji: "🔒⚽", descricao: "A bola é dele. O resto do time só acompanha a jogada.", peso: 1 },
   { slug: "chorao",        nome: "Chorão",          categoria: TraitCategoria.PERSONALIDADE, emoji: "😭", descricao: "Sempre encontra um motivo para lamentar uma derrota, lance perdido ou situação adversa.", peso: 1 },
-  { slug: "reclamao",      nome: "Reclamão",        categoria: TraitCategoria.PERSONALIDADE, emoji: "😡", descricao: "Questiona decisões, marcações e jogadas com frequência.", peso: 2 },
-  { slug: "paneleiro",     nome: "Paneleiro",       categoria: TraitCategoria.PERSONALIDADE, emoji: "🍳", descricao: "Prefere jogar sempre com os mesmos parceiros e amigos.", peso: 1 },
+  { slug: "reclamao",      nome: "Reclamão",        categoria: TraitCategoria.PERSONALIDADE, emoji: "😡", descricao: "Questiona decisões, marcações e jogadas com frequência.", peso: 1 },
+  { slug: "paneleiro",     nome: "Paneleiro",       categoria: TraitCategoria.PERSONALIDADE, emoji: "🍳", descricao: "Prefere jogar sempre com os mesmos parceiros e amigos.", peso: 2 },
   // Grupo 3 — Destaques Negativos (opcional)
   { slug: "firuleiro",     nome: "Firuleiro",       categoria: TraitCategoria.RESENHA,       emoji: "🎭", descricao: "Tenta o drible mais difícil quando o passe simples resolveria.", peso: 1 },
   { slug: "pregueiro",     nome: "Pregueiro",       categoria: TraitCategoria.RESENHA,       emoji: "🦥", descricao: "Corre pouco, não se dedica e parece estar sempre economizando energia.", peso: 2 },
