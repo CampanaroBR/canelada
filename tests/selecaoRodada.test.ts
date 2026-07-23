@@ -174,6 +174,35 @@ describe("montarSelecao — goleiro único (Opção B)", () => {
   });
 });
 
+describe("montarSelecao — prêmio único por time (Opção A)", () => {
+  it("dois no mesmo prêmio: o de placar menor cai pro próximo prêmio dele", () => {
+    // Eduardo e Bruno dominantes em Categoria; Eduardo tem placar maior (fica com
+    // Categoria), Bruno cai pro próximo prêmio votado dele (Matador).
+    const v = votos({
+      categoria: { eduardo: 4, bruno: 4 },
+      garcom: { eduardo: 3 }, // desempata o placar a favor do Eduardo
+      matador: { bruno: 2 },
+    });
+    const c = cfg({
+      positivos: ["categoria", "matador", "garcom", "driblador"],
+      pesos: { categoria: 4, garcom: 3, matador: 3, driblador: 2, paredao: 2, frangueiro: 3, bagre: 2 },
+    });
+    const { melhores } = montarSelecao(v, c);
+    const slugs = melhores.filter(Boolean).map((s) => s!.slug);
+    expect(slugs.filter((x) => x === "categoria")).toHaveLength(1); // categoria só uma vez
+    expect(melhores.find((s) => s?.jogadorId === "eduardo")?.slug).toBe("categoria");
+    expect(melhores.find((s) => s?.jogadorId === "bruno")?.slug).toBe("matador");
+  });
+
+  it("votos do slot reflete o prêmio EXIBIDO, não o total do jogador no lado", () => {
+    const v = votos({ categoria: { eduardo: 4 }, garcom: { eduardo: 3 } });
+    const c = cfg({ positivos: ["categoria", "garcom", "matador", "driblador"] });
+    const eduardo = montarSelecao(v, c).melhores.find((s) => s?.jogadorId === "eduardo");
+    expect(eduardo?.slug).toBe("categoria");
+    expect(eduardo?.votos).toBe(4); // 4 de Categoria, não 7 (total 4+3)
+  });
+});
+
 describe("montarSelecao — formato", () => {
   it("sempre retorna 5 posições por lado (linha + gk), preenchendo com null", () => {
     const { melhores, piores } = montarSelecao(votos({ bagre: { x: 1 } }), cfg());

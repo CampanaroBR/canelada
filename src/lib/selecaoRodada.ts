@@ -124,15 +124,50 @@ export function montarSelecao(perTrait: TraitVotos, cfg: SelecaoConfig): Selecao
     else { gkP = null; exclNegativo.add(pid); }                                  // é o melhor goleiro → fora dos piores
   }
 
+  // Cada PRÊMIO aparece uma vez por time. Os 5 jogadores continuam sendo os de
+  // maior placar (não muda quem entra); só o RÓTULO é desduplicado: se o trait
+  // dominante de alguém já foi usado no time, ele recebe o próximo trait mais
+  // votado dele que ainda está livre (ex.: 2 "Categoria" → o de placar menor vira
+  // o próximo prêmio dele). O goleiro reserva seu trait (Paredão/Frangueiro)
+  // primeiro; o 5º slot (filler) é desduplicado por último. `votos` passa a ser a
+  // contagem do prêmio EXIBIDO — antes era o total do jogador no lado, o que
+  // inflava o "eleito por N jogadores" do card de compartilhar.
+  const traitsDoJogador = (pid: string, slugs: string[]) => {
+    const arr: { slug: string; count: number }[] = [];
+    for (const slug of slugs) {
+      if (cfg.comArte && !cfg.comArte.has(slug)) continue;
+      const c = perTrait.get(slug)?.get(pid) ?? 0;
+      if (c > 0) arr.push({ slug, count: c });
+    }
+    // próximo prêmio = mais votado (count); empate → maior peso, depois slug.
+    arr.sort((a, b) => b.count - a.count || (cfg.pesos[b.slug] ?? 1) - (cfg.pesos[a.slug] ?? 1) || a.slug.localeCompare(b.slug));
+    return arr;
+  };
+  const contaPremio = (pid: string, slug: string, fallback: number) => perTrait.get(slug)?.get(pid) ?? fallback;
+  const semRepetir = (slot: Slot | null, taken: Set<string>, slugs: string[]): Slot | null => {
+    if (!slot) return slot;
+    if (!taken.has(slot.slug)) { taken.add(slot.slug); return { ...slot, votos: contaPremio(slot.jogadorId, slot.slug, slot.votos) }; }
+    for (const t of traitsDoJogador(slot.jogadorId, slugs)) {
+      if (!taken.has(t.slug)) { taken.add(t.slug); return { ...slot, slug: t.slug, votos: t.count }; }
+    }
+    return { ...slot, votos: contaPremio(slot.jogadorId, slot.slug, slot.votos) }; // sem prêmio livre: mantém (dup raríssimo)
+  };
+  const montarTime = (linha: (Slot | null)[], gk: Slot | null, quintoSlot: Slot | null, slugs: string[]) => {
+    const taken = new Set<string>();
+    if (gk) taken.add(gk.slug);                                  // goleiro real reserva Paredão/Frangueiro
+    const linha2 = linha.map((s) => semRepetir(s, taken, slugs));
+    return [...linha2, gk ?? semRepetir(quintoSlot, taken, slugs)]; // filler desduplicado por último
+  };
+
   const usadosM = new Set<string>(exclPositivo);
   if (gkM) usadosM.add(gkM.jogadorId);
   const linhaM = topLinha(scoresPositivo, ladoPositivo, 4, usadosM);
-  const melhores = [...linhaM, gkM ?? quinto(scoresPositivo, ladoPositivo, usadosM, linhaM)];
+  const melhores = montarTime(linhaM, gkM, quinto(scoresPositivo, ladoPositivo, usadosM, linhaM), cfg.positivos);
 
   const usadosP = new Set<string>(exclNegativo);
   if (gkP) usadosP.add(gkP.jogadorId);
   const linhaP = topLinha(scoresNegativo, ladoNegativo, 4, usadosP);
-  const piores = [...linhaP, gkP ?? quinto(scoresNegativo, ladoNegativo, usadosP, linhaP)];
+  const piores = montarTime(linhaP, gkP, quinto(scoresNegativo, ladoNegativo, usadosP, linhaP), cfg.negativos);
 
   return { melhores, piores };
 }

@@ -41,6 +41,12 @@ Atualizar a cada sessão: mover itens de "Em aberto" pra "Feito" e registrar dec
   sobra: **ninguém é os dois goleiros** (melhor Paredão × pior Frangueiro) — fica
   no gol de mais votos e some do outro lado. Testes reescritos em
   `tests/selecaoRodada.test.ts` (44 passando). ⚠️ **Falta deploy** (push na `main`).
+- **Prêmio único por time (Opção A):** cada prêmio aparece 1× por time. Os 5
+  jogadores continuam os de maior placar; só o RÓTULO desduplica — quem cai num
+  prêmio já usado recebe o próximo prêmio mais votado dele (ex.: 2 "Categoria" →
+  o de placar menor vira o próximo dele). Goleiro reserva Paredão/Frangueiro
+  primeiro. Também corrigido: `Slot.votos` agora é a contagem do prêmio EXIBIDO
+  (antes era o total do jogador no lado → inflava o "eleito por N" do card).
 - **Pesos negativos ajustados:** reclamão 2→1 (atitude, não é jogar mal),
   paneleiro 1→2 (panelinha atrapalha o coletivo). Escala: bagre/frangueiro 3;
   bragueiro/pregueiro/paneleiro 2; reclamão/chorão 1. **Já aplicado em produção**
