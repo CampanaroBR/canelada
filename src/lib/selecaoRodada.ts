@@ -56,14 +56,21 @@ export function montarSelecao(perTrait: TraitVotos, cfg: SelecaoConfig): Selecao
   const scoresPositivo = buildScores(perTrait, cfg.positivos, cfg.pesos);
   const scoresNegativo = buildScores(perTrait, cfg.negativos, cfg.pesos);
 
-  // Os dois times são INDEPENDENTES: "os 5 maiores placares positivos" e "os 5
-  // maiores placares negativos", cada lado rankeado pelo seu próprio score. Um
-  // jogador PODE aparecer nos dois (foi elogiado num trait e criticado em outro)
-  // — é isso que garante os 5 slots cheios: o pote de votados negativos é
-  // pequeno e a exclusividade antiga (um lado só) esvaziava o campo. A única
-  // exceção é o goleiro (ver abaixo): ninguém é o melhor E o pior goleiro.
-  const ladoPositivo = new Set<string>(scoresPositivo.keys());
-  const ladoNegativo = new Set<string>(scoresNegativo.keys());
+  // NINGUÉM aparece nos dois times. Cada jogador tem um lado PREFERIDO — aquele
+  // onde o placar dele é maior (empate vai pros piores: quem foi tão criticado
+  // quanto elogiado conta como pior). Isso sozinho esvaziava o campo dos piores
+  // (poucos levam voto negativo, e os melhores puxavam metade deles), então
+  // depois da montagem por lado preferido há um PREENCHIMENTO por sobras: slot
+  // vazio pega o melhor jogador que ainda não foi usado em NENHUM time e que
+  // tenha voto naquele lado. Assim dá pra ter 5+5 sem repetir ninguém.
+  const ladoPositivo = new Set<string>();
+  const ladoNegativo = new Set<string>();
+  for (const pid of new Set<string>([...scoresPositivo.keys(), ...scoresNegativo.keys()])) {
+    const pos = scoresPositivo.get(pid)?.score ?? 0;
+    const neg = scoresNegativo.get(pid)?.score ?? 0;
+    if (neg >= pos) ladoNegativo.add(pid);
+    else ladoPositivo.add(pid);
+  }
 
   // Goleiro: só quem tem o trait de goleiro como trait DOMINANTE do seu lado
   // (bestSlug). Antes bastava ter o maior score naquele trait — o que colocava
@@ -97,32 +104,6 @@ export function montarSelecao(perTrait: TraitVotos, cfg: SelecaoConfig): Selecao
     while (out.length < n) out.push(null);
     return out;
   };
-
-  // Sem goleiro de verdade, o 5º slot é preenchido pelo próximo da fila (com
-  // camisa normal — isGoleiro:false — pra completar o time sem rotular como
-  // goleiro quem não é). Só o goleiro real (pickGK) leva isGoleiro:true.
-  const quinto = (scores: Map<string, ScoreEntry>, lado: Set<string>, usados: Set<string>, linha: (Slot | null)[]) => {
-    const ja = new Set([...usados, ...linha.filter(Boolean).map(s => s!.jogadorId)]);
-    return topLinha(scores, lado, 1, ja)[0];
-  };
-
-  let gkM = pickGK(cfg.gkPositivo, ladoPositivo, scoresPositivo);
-  let gkP = pickGK(cfg.gkNegativo, ladoNegativo, scoresNegativo);
-
-  // Ninguém é os DOIS goleiros: se o mesmo jogador for o melhor Paredão e o pior
-  // Frangueiro, fica no gol do lado de mais votos (empate → pior, Frangueiro
-  // manda) e some do OUTRO lado inteiro (linha inclusa) — não faz sentido ser
-  // goleiro num gol e ainda aparecer no time do outro. É a única exclusão
-  // cruzada que sobra; no resto, os times são independentes e overlap é OK.
-  const exclPositivo = new Set<string>();
-  const exclNegativo = new Set<string>();
-  if (gkM && gkP && gkM.jogadorId === gkP.jogadorId) {
-    const pid = gkM.jogadorId;
-    const paredaoVotos = perTrait.get(cfg.gkPositivo)?.get(pid) ?? 0;
-    const frangueiroVotos = perTrait.get(cfg.gkNegativo)?.get(pid) ?? 0;
-    if (frangueiroVotos >= paredaoVotos) { gkM = null; exclPositivo.add(pid); } // é o pior goleiro → fora dos melhores
-    else { gkP = null; exclNegativo.add(pid); }                                  // é o melhor goleiro → fora dos piores
-  }
 
   // Cada PRÊMIO aparece uma vez por time. Os 5 jogadores continuam sendo os de
   // maior placar (não muda quem entra); só o RÓTULO é desduplicado: se o trait
@@ -159,15 +140,57 @@ export function montarSelecao(perTrait: TraitVotos, cfg: SelecaoConfig): Selecao
     return [...linha2, gk ?? semRepetir(quintoSlot, taken, slugs)]; // filler desduplicado por último
   };
 
-  const usadosM = new Set<string>(exclPositivo);
-  if (gkM) usadosM.add(gkM.jogadorId);
-  const linhaM = topLinha(scoresPositivo, ladoPositivo, 4, usadosM);
-  const melhores = montarTime(linhaM, gkM, quinto(scoresPositivo, ladoPositivo, usadosM, linhaM), cfg.positivos);
+  // `usados` é GLOBAL (vale pros dois times) — é o que garante que ninguém
+  // apareça nas duas escalações. Toda escolha passa por aqui e marca o jogador.
+  const usados = new Set<string>();
+  /** Pega os N melhores ainda livres. pool=null → qualquer um com voto no lado (sobras). */
+  const pegar = (scores: Map<string, ScoreEntry>, pool: Set<string> | null, n: number): Slot[] => {
+    if (n <= 0) return [];
+    const ranked = [...scores.entries()]
+      .filter(([pid, e]) => !usados.has(pid) && (!pool || pool.has(pid)) && (!cfg.comArte || cfg.comArte.has(e.bestSlug)))
+      .sort((a, b) => b[1].score - a[1].score || b[1].totalVotos - a[1].totalVotos || a[0].localeCompare(b[0]))
+      .slice(0, n);
+    for (const [pid] of ranked) usados.add(pid);
+    return ranked.map(([pid, e]) => ({ jogadorId: pid, slug: e.bestSlug, votos: e.totalVotos, isGoleiro: false }));
+  };
 
-  const usadosP = new Set<string>(exclNegativo);
-  if (gkP) usadosP.add(gkP.jogadorId);
-  const linhaP = topLinha(scoresNegativo, ladoNegativo, 4, usadosP);
-  const piores = montarTime(linhaP, gkP, quinto(scoresNegativo, ladoNegativo, usadosP, linhaP), cfg.negativos);
+  // Goleiros primeiro (reservam a vaga). Como os lados são disjuntos, é
+  // impossível o mesmo jogador ser o melhor E o pior goleiro.
+  const gkM = pickGK(cfg.gkPositivo, ladoPositivo, scoresPositivo);
+  if (gkM) usados.add(gkM.jogadorId);
+  const gkP = pickGK(cfg.gkNegativo, ladoNegativo, scoresNegativo);
+  if (gkP) usados.add(gkP.jogadorId);
+
+  // 1ª passada: cada time monta com quem é DAQUELE lado (lado preferido).
+  // Sem goleiro real, o 5º slot é o próximo da fila com camisa normal
+  // (isGoleiro:false) — completa o time sem rotular de goleiro quem não é.
+  const time = (scores: Map<string, ScoreEntry>, pool: Set<string>, gk: Slot | null) => ({
+    gk,
+    linha: pegar(scores, pool, 4),
+    quinto: gk ? null : (pegar(scores, pool, 1)[0] ?? null),
+  });
+  const tM = time(scoresPositivo, ladoPositivo, gkM);
+  const tP = time(scoresNegativo, ladoNegativo, gkP);
+
+  // 2ª passada: sobras. Slot ainda vazio pega o melhor jogador livre com voto
+  // naquele lado, mesmo que o lado preferido dele seja o outro — é o que enche
+  // 5+5 sem repetir ninguém. Piores primeiro: é o lado escasso (bem menos gente
+  // leva voto negativo), então ele escolhe antes de os melhores consumirem.
+  const completar = (t: ReturnType<typeof time>, scores: Map<string, ScoreEntry>) => {
+    const faltam = 4 - t.linha.length;
+    if (faltam > 0) t.linha.push(...pegar(scores, null, faltam));
+    if (!t.gk && !t.quinto) t.quinto = pegar(scores, null, 1)[0] ?? null;
+  };
+  completar(tP, scoresNegativo);
+  completar(tM, scoresPositivo);
+
+  const pad = (arr: Slot[]) => {
+    const out: (Slot | null)[] = [...arr];
+    while (out.length < 4) out.push(null);
+    return out;
+  };
+  const melhores = montarTime(pad(tM.linha), tM.gk, tM.quinto, cfg.positivos);
+  const piores = montarTime(pad(tP.linha), tP.gk, tP.quinto, cfg.negativos);
 
   return { melhores, piores };
 }

@@ -105,7 +105,7 @@ describe("montarSelecao — goleiro", () => {
   });
 });
 
-describe("montarSelecao — times independentes (Opção B)", () => {
+describe("montarSelecao — sem repetir jogador entre os times", () => {
   it("quem levou Bagre aparece nos piores mesmo tendo voto positivo (caso Emanuel)", () => {
     // Emanuel: 8 votos de Bagre + 2 votos Matador. O que NÃO pode é o bagre
     // sumir dos piores só porque também levou elogio — cada lado é independente.
@@ -117,13 +117,28 @@ describe("montarSelecao — times independentes (Opção B)", () => {
     expect(piores.some((s) => s?.jogadorId === "emanuel")).toBe(true);
   });
 
-  it("jogador com voto relevante nos DOIS lados aparece nos dois times (overlap permitido)", () => {
-    // Zé: forte nos dois (Matador E Bagre). Na Opção B ele é escalado nos dois —
-    // é o que enche os 5 slots quando o pote de votados é pequeno.
+  it("jogador votado nos DOIS lados aparece em UM time só", () => {
+    // Zé: forte nos dois (Matador E Bagre). Não pode aparecer nas duas
+    // escalações — ficava estranho o mesmo cara nos dois campos.
     const v = votos({ matador: { ze: 5 }, bagre: { ze: 5 } });
     const { melhores, piores } = montarSelecao(v, cfg());
-    expect(melhores.some((s) => s?.jogadorId === "ze")).toBe(true);
-    expect(piores.some((s) => s?.jogadorId === "ze")).toBe(true);
+    const nosMelhores = melhores.some((s) => s?.jogadorId === "ze");
+    const nosPiores = piores.some((s) => s?.jogadorId === "ze");
+    expect(nosMelhores && nosPiores).toBe(false);
+    expect(nosMelhores || nosPiores).toBe(true); // mas está em algum
+  });
+
+  it("ninguém se repete entre os dois times, nem com pote grande e misto", () => {
+    const v = votos({
+      matador: { a: 6, b: 5, c: 4, d: 3, e: 2 },
+      categoria: { f: 6, g: 5 },
+      bagre: { a: 3, b: 3, h: 6, i: 5, j: 4 },
+      reclamao: { c: 2, k: 4 },
+    });
+    const { melhores, piores } = montarSelecao(v, cfg());
+    const ids = (arr: typeof melhores) => arr.filter(Boolean).map((s) => s!.jogadorId);
+    const repetidos = ids(melhores).filter((id) => ids(piores).includes(id));
+    expect(repetidos).toEqual([]);
   });
 
   it("quem só tem voto de um lado aparece só nesse lado (caso Marivaldo)", () => {
@@ -139,20 +154,33 @@ describe("montarSelecao — times independentes (Opção B)", () => {
     expect(nas(piores)).not.toContain("marivaldo");
   });
 
-  it("preenche os 5 piores quando há 5+ votados negativos, mesmo que vários também sejam melhores", () => {
-    // Pote misto: a/b/c são bem votados (positivo forte) e ainda levam bagre;
-    // d/e são só bagre. A exclusividade antiga esvaziava os piores (a/b/c iam
-    // pros melhores). Na Opção B os 5 slots enchem.
+  it("enche 5+5 sem repetir quando há gente suficiente nos dois lados", () => {
     const v = votos({
-      matador: { a: 6, b: 6, c: 6 },
-      bagre: { a: 2, b: 2, c: 2, d: 5, e: 4 },
+      matador: { a: 6, b: 5, c: 4, d: 3, e: 2 },
+      bagre: { h: 6, i: 5, j: 4, k: 3, l: 2 },
     });
-    const { piores } = montarSelecao(v, cfg());
+    const { melhores, piores } = montarSelecao(v, cfg());
+    expect(melhores.filter(Boolean)).toHaveLength(5);
     expect(piores.filter(Boolean)).toHaveLength(5);
+  });
+
+  it("slot vazio pega SOBRA do outro lado (quem não foi usado lá), sem duplicar", () => {
+    // Só h é "pior de verdade". f é do lado dos melhores (12 pos × 4 neg), mas
+    // sobrou (não coube nos 5 melhores) — então ele preenche vaga nos piores.
+    // Sem essa 2ª passada o campo dos piores ficaria com 1 jogador só.
+    const v = votos({
+      matador: { a: 9, b: 8, c: 7, d: 6, e: 5, f: 4 },
+      bagre: { h: 5, f: 2 },
+    });
+    const { melhores, piores } = montarSelecao(v, cfg());
+    const ids = (arr: typeof melhores) => arr.filter(Boolean).map((s) => s!.jogadorId);
+    expect(ids(piores)).toContain("f");     // sobra dos melhores preencheu os piores
+    expect(ids(melhores)).not.toContain("f"); // e saiu do outro time — sem repetir
+    expect(ids(melhores)).toHaveLength(5);
   });
 });
 
-describe("montarSelecao — goleiro único (Opção B)", () => {
+describe("montarSelecao — goleiro único", () => {
   it("melhor Paredão E pior Frangueiro no mesmo jogador: fica só no gol de mais votos, fora do outro time", () => {
     // Vitor: 6 Paredão + 2 Frangueiro → é melhor goleiro (Paredão manda) e some
     // dos piores por inteiro. Ninguém é os dois goleiros ao mesmo tempo.

@@ -33,14 +33,16 @@ Atualizar a cada sessão: mover itens de "Em aberto" pra "Feito" e registrar dec
 
 ## Estado atual (feito, já no ar)
 
-- **Seleção da Rodada — Opção B (times independentes)** (`src/lib/selecaoRodada.ts`):
-  os dois times agora são "top-5 do próprio placar", cada lado independente. Um
-  jogador PODE aparecer nos dois (elogiado num trait, criticado em outro) — é o
-  que garante os 5 slots cheios (o pote de votados negativos é pequeno e a
-  exclusividade antiga esvaziava o campo dos piores). Única exclusão cruzada que
-  sobra: **ninguém é os dois goleiros** (melhor Paredão × pior Frangueiro) — fica
-  no gol de mais votos e some do outro lado. Testes reescritos em
-  `tests/selecaoRodada.test.ts` (44 passando). ⚠️ **Falta deploy** (push na `main`).
+- **Seleção da Rodada — sem repetir jogador entre os times** (`src/lib/selecaoRodada.ts`):
+  ninguém aparece nas duas escalações. Montagem em 2 passadas: (1) cada jogador
+  vai pro lado PREFERIDO (maior placar; empate → piores) e cada time monta com
+  o pote dele; (2) **preenchimento por sobras** — slot ainda vazio pega o melhor
+  jogador livre com voto naquele lado, mesmo que o lado preferido dele seja o
+  outro. É isso que mantém 5+5 cheios sem duplicar (só a passada 1, como era no
+  começo, esvaziava os piores). `usados` é global e é a garantia do não-repete.
+  Testes em `tests/selecaoRodada.test.ts` (48 passando).
+  **Limite conhecido:** só entra nos piores quem levou voto negativo — se menos
+  de 5 pessoas levaram, sobra vaga vazia (não tem como encher sem inventar).
 - **Prêmio único por time (Opção A):** cada prêmio aparece 1× por time. Os 5
   jogadores continuam os de maior placar; só o RÓTULO desduplica — quem cai num
   prêmio já usado recebe o próximo prêmio mais votado dele (ex.: 2 "Categoria" →
