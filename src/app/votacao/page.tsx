@@ -120,11 +120,16 @@ export default async function VotacaoPage() {
   // Só quem foi marcado como presente nessa rodada pode votar OU ser votado —
   // sem esse filtro, gente que acabou de se cadastrar e nunca jogou naquele
   // dia entrava como candidato (e conseguia votar) só por estar no grupo.
+  // EXCEÇÃO: o dono do grupo (SUPER_ADMIN) vota mesmo sem ter jogado — ele
+  // acompanha o baba de fora e precisa conseguir votar/testar a rodada sem
+  // depender de estar na lista de presença. Continua NÃO sendo candidato (a
+  // lista de votáveis abaixo segue filtrada por presença), então ninguém vota
+  // em quem não jogou.
   const souPresente = await prisma.rodada.findFirst({
     where: { id: rodada.id, presentes: { some: { id: jogador.id } } },
     select: { id: true },
   });
-  if (!souPresente) {
+  if (!souPresente && !isSuperAdmin) {
     return <SemPresencaScreen isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} />;
   }
 

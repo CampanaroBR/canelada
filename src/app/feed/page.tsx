@@ -79,7 +79,9 @@ export default async function FeedPage() {
       }),
     ]);
     faltamVotar = Math.max(0, totalPresentes - jaVotaram.length);
-    souPresente = !!presenteRow;
+    // SUPER_ADMIN (dono) vota mesmo sem ter jogado — mesma exceção de /votacao.
+    // Sem isso o botão "Votar agora!" ficaria inativo na Home pra ele.
+    souPresente = !!presenteRow || jogador.role === "SUPER_ADMIN";
   }
 
   const [recentStories, recentTraits, rodadasRecentes] = await Promise.all([
