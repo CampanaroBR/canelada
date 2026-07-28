@@ -153,7 +153,9 @@ export default async function VotacaoPage() {
       isAdmin={isAdmin}
       // Dono entrando sem estar na lista de presença: pergunta antes se ele
       // jogou. A resposta decide se a votação conta participação (ranking/badges).
-      perguntarSeJogou={!souPresente}
+      // Só o SUPER_ADMIN cai aqui (o gate acima barra o resto) — explícito de
+      // propósito, pra não passar a valer pra outro role sem querer.
+      perguntarSeJogou={!souPresente && isSuperAdmin}
     />
   );
 }
