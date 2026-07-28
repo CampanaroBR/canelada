@@ -70,7 +70,9 @@ async function carregar(grupoId: string): Promise<Ctx> {
       select: { rodadaId: true, votadoId: true, traitSlug: true },
     }),
     prisma.voto.findMany({
-      where: { rodadaId: { in: rodadaIds } },
+      // votanteJogou:false = dono do grupo que votou declarando que NÃO jogou.
+      // Fica de fora da participação (não ganha "rodada" por baba que não jogou).
+      where: { rodadaId: { in: rodadaIds }, votanteJogou: true },
       select: { rodadaId: true, votanteId: true },
       distinct: ["rodadaId", "votanteId"],
     }),

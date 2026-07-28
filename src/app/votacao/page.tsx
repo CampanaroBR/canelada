@@ -151,6 +151,9 @@ export default async function VotacaoPage() {
       jogadores={jogadores}
       traits={traits}
       isAdmin={isAdmin}
+      // Dono entrando sem estar na lista de presença: pergunta antes se ele
+      // jogou. A resposta decide se a votação conta participação (ranking/badges).
+      perguntarSeJogou={!souPresente}
     />
   );
 }

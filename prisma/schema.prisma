@@ -153,6 +153,11 @@ model Voto {
   categoria   CategoriaVoto
   traitSlug   String?
   createdAt   DateTime   @default(now())
+  // O votante JOGOU essa rodada? Serve pro dono do grupo (SUPER_ADMIN), que pode
+  // votar sem ter jogado: nesse caso ele responde "não joguei" e o voto NÃO conta
+  // participação (ranking/badges). Default true preserva todo o histórico, onde
+  // votar exigia presença.
+  votanteJogou Boolean   @default(true)
 
   rodada      Rodada     @relation(fields: [rodadaId], references: [id])
   votante     Jogador    @relation("VotanteVotos", fields: [votanteId], references: [id])

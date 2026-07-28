@@ -17,6 +17,8 @@ interface Props {
   jogadores: Jogador[];
   traits: Trait[];
   isAdmin?: boolean;
+  /** Dono do grupo sem lista de presença: pergunta se jogou antes de votar. */
+  perguntarSeJogou?: boolean;
 }
 
 // Estrutura híbrida: personagens "hero" (tela cheia, obrigatórios — os que
@@ -126,14 +128,114 @@ function getAvatarColor(apelido: string) {
   return colors[h % colors.length];
 }
 
-type Phase = "hero" | "lista" | "review" | "done";
+/**
+ * Pergunta de entrada pro dono do grupo que não está na lista de presença.
+ * "Joguei" → entra na presença e a votação conta normal (ranking/badges).
+ * "Só assisti" → vota igual, mas não ganha participação na rodada.
+ */
+function PresencaScreen({ onResposta, onSair }: { onResposta: (jogou: boolean) => void; onSair: () => void }) {
+  const btnBase: React.CSSProperties = {
+    width: "100%",
+    minHeight: 56,
+    padding: "14px 20px",
+    borderRadius: 16,
+    fontFamily: "var(--font-display)",
+    fontWeight: 700,
+    fontSize: 15,
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    textAlign: "left",
+    WebkitTapHighlightColor: "transparent",
+  };
+  return (
+    <div style={{
+      minHeight: "100dvh",
+      background: "var(--color-bg)",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      padding: "calc(env(safe-area-inset-top, 0px) + 32px) 20px calc(env(safe-area-inset-bottom, 0px) + 32px)",
+    }}>
+      <div style={{ maxWidth: 420, width: "100%", margin: "0 auto" }}>
+        <div style={{
+          width: 52, height: 52, borderRadius: 16, background: "#1a1a1a",
+          border: "1px solid #2c2c2c", display: "flex", alignItems: "center",
+          justifyContent: "center", marginBottom: 20,
+        }}>
+          <Football size={26} weight="Outline" color="#9fe870" />
+        </div>
 
-export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Props) {
+        <h1 style={{
+          fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 26,
+          lineHeight: 1.15, color: "#fff", margin: "0 0 10px",
+        }}>
+          Você jogou esse baba?
+        </h1>
+        <p style={{
+          fontFamily: "var(--font-body)", fontSize: 14.5, lineHeight: 1.5,
+          color: "#9a9a9a", margin: "0 0 28px",
+        }}>
+          Você não está na lista de presença dessa rodada. Sua resposta define se
+          o baba conta no seu ranking — o voto vale nos dois casos.
+        </p>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <button
+            onClick={() => onResposta(true)}
+            style={{ ...btnBase, background: "#9fe870", color: "#0a1a06", border: "none" }}
+          >
+            <Check size={20} weight="Outline" color="#0a1a06" />
+            <span style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              Joguei esse baba
+              <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12.5, opacity: 0.75 }}>
+                Entra na presença e conta no ranking
+              </span>
+            </span>
+          </button>
+
+          <button
+            onClick={() => onResposta(false)}
+            style={{ ...btnBase, background: "#141414", color: "#fff", border: "1px solid #2c2c2c" }}
+          >
+            <Ghost size={20} weight="Outline" color="#fff" />
+            <span style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              Não joguei, só quero votar
+              <span style={{ fontFamily: "var(--font-body)", fontWeight: 500, fontSize: 12.5, color: "#8a8a8a" }}>
+                Não conta rodada nem badge pra você
+              </span>
+            </span>
+          </button>
+        </div>
+
+        <button
+          onClick={onSair}
+          style={{
+            marginTop: 18, width: "100%", height: 44, background: "none",
+            border: "none", color: "#7a7a7a", fontFamily: "var(--font-display)",
+            fontWeight: 600, fontSize: 14, cursor: "pointer",
+            WebkitTapHighlightColor: "transparent",
+          }}
+        >
+          Agora não
+        </button>
+      </div>
+    </div>
+  );
+}
+
+type Phase = "presenca" | "hero" | "lista" | "review" | "done";
+
+export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin, perguntarSeJogou }: Props) {
   const traitBySlug = new Map(traits.map((t) => [t.slug, t]));
   const heroTraits = HERO_SLUGS.map((s) => traitBySlug.get(s)).filter((t): t is Trait => !!t);
   const listaTraits = LISTA_SLUGS.map((s) => traitBySlug.get(s)).filter((t): t is Trait => !!t);
 
-  const [phase, setPhase] = useState<Phase>("hero");
+  const [phase, setPhase] = useState<Phase>(perguntarSeJogou ? "presenca" : "hero");
+  // Resposta da tela inicial. Só é perguntada quando o dono entra sem estar na
+  // lista de presença; nos outros casos vale true (votar já exigia ter jogado).
+  const [jogou, setJogou] = useState(true);
   const [heroStep, setHeroStep] = useState(0);
   const [selections, setSelections] = useState<Record<string, string>>({});
   const [pending, setPending] = useState<string | null>(null);
@@ -182,7 +284,10 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
   }
 
   function handleBack() {
-    if (phase === "hero" && heroStep === 0) router.push("/feed");
+    // Voltando do 1º personagem: se a pergunta de presença abriu o fluxo, volta
+    // pra ela (dá pra corrigir a resposta) em vez de sair direto pro feed.
+    if (phase === "hero" && heroStep === 0 && perguntarSeJogou) setPhase("presenca");
+    else if (phase === "hero" && heroStep === 0) router.push("/feed");
     else if (phase === "hero") setHeroStep((s) => s - 1);
     else if (phase === "lista") { setPhase("hero"); setHeroStep(heroTraits.length - 1); }
   }
@@ -208,13 +313,19 @@ export function VotacaoFlow({ rodadaId, meuId, jogadores, traits, isAdmin }: Pro
 
     setSubmitting(true);
     startTransition(async () => {
-      const result = await submitVotos(rodadaId, votos);
+      const result = await submitVotos(rodadaId, votos, jogou);
       setSubmitting(false);
       if ("error" in result) setError(result.error ?? "Erro desconhecido.");
       else setPhase("done");
     });
   }
 
+  if (phase === "presenca") return (
+    <PresencaScreen
+      onResposta={(j) => { setJogou(j); setPhase("hero"); }}
+      onSair={() => router.push("/feed")}
+    />
+  );
   if (phase === "done") return <DoneScreen router={router} />;
   if (phase === "review") return (
     <ReviewScreen

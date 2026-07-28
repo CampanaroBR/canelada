@@ -43,13 +43,22 @@ type VotoInput = {
   traitSlug?: string;
 };
 
-export async function submitVotos(rodadaId: string, votos: VotoInput[]) {
+/**
+ * Registra os votos da rodada.
+ *
+ * `jogou` só é perguntado (e só importa) pro dono do grupo votando sem estar na
+ * lista de presença — ver a tela de confirmação em VotacaoFlow. "Não joguei"
+ * grava os votos com `votanteJogou: false`, e badges.ts ignora esse votante na
+ * contagem de participação (não ganha "rodada" no ranking por baba que não
+ * jogou). "Joguei" entra na lista de presença de verdade.
+ */
+export async function submitVotos(rodadaId: string, votos: VotoInput[], jogou = true) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
   const jogador = await prisma.jogador.findUnique({
     where: { userId: session.user.id },
-    select: { id: true, grupoId: true },
+    select: { id: true, grupoId: true, role: true },
   });
   if (!jogador) return { error: "Jogador não encontrado." };
 
@@ -68,6 +77,29 @@ export async function submitVotos(rodadaId: string, votos: VotoInput[]) {
   });
   if (!rodada || rodada.grupoId !== jogador.grupoId || rodada.encerrada) {
     return { error: "Rodada inválida." };
+  }
+
+  // Presença: mesma regra da tela (/votacao). Só o dono do grupo vota sem estar
+  // na lista — pra todo o resto, presença é obrigatória. Esta checagem não
+  // existia aqui (só na página), então a action aceitava voto de quem não jogou.
+  const presente = await prisma.rodada.findFirst({
+    where: { id: rodadaId, presentes: { some: { id: jogador.id } } },
+    select: { id: true },
+  });
+  const isSuperAdmin = jogador.role === "SUPER_ADMIN";
+  if (!presente && !isSuperAdmin) {
+    return { error: "Só quem jogou essa rodada pode votar." };
+  }
+
+  // Dono votando fora da lista: a resposta dele decide se conta participação.
+  // Se disse que jogou, entra na lista de presença de verdade (fonte primária
+  // do ranking); se disse que não, os votos ficam marcados e não pontuam.
+  const contaPresenca = presente ? true : jogou;
+  if (!presente && isSuperAdmin && jogou) {
+    await prisma.rodada.update({
+      where: { id: rodadaId },
+      data: { presentes: { connect: { id: jogador.id } } },
+    });
   }
 
   // Segurança: só permite votar em jogadores do mesmo grupo e nunca em si mesmo.
@@ -91,6 +123,7 @@ export async function submitVotos(rodadaId: string, votos: VotoInput[]) {
             votadoId: v.votadoId,
             categoria: v.categoria,
             traitSlug: v.traitSlug ?? null,
+            votanteJogou: contaPresenca,
           },
         })
       )
