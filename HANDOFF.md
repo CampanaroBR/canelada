@@ -142,10 +142,13 @@ Atualizar a cada sessão: mover itens de "Em aberto" pra "Feito" e registrar dec
       Uili — de linha, mas topam pegar). Curinga só vai pro gol se faltar fixo.
       ⚠️ **Não dá pra inferir goleiro dos votos** — quem leva Frangueiro pode ter
       ido pro gol de brincadeira (o 1º teste marcou João Victor e ALABA errado).
-      **Falta:** (1) gravar ordem de chegada — `_RodadaPresentes` tem só *quem*,
-      e tem **105 linhas**, então usar tabela ADITIVA em vez de refatorar (é lida
-      por ranking/badges/feed/votação); (2) marcar `fixo`/`curinga` por jogador;
-      (3) ordem na tela `/votacao/presenca`; (4) tela de sorteio; (5) compartilhar.
+      **FEITO:** tabela `Chegada` (aditiva, ao lado de `_RodadaPresentes` que tem
+      105 linhas e é lida por ranking/badges/feed) · `Jogador.papelGol` + enum ·
+      `/votacao/presenca` reescrita: lista "Chegaram" numerada e reordenável
+      (↑↓✕) + "Ainda não chegaram" (+), e chip que cicla o papel no gol.
+      `salvarPresenca` agora renumera `Chegada` pela ordem do array.
+      **FALTA:** (1) tela de sorteio; (2) compartilhar no WhatsApp;
+      (3) decidir o que fazer quando um goleiro FIXO chega e tem CURINGA no gol.
 
 - [ ] **Suporte Vicente Naus (Android):** não consegue cadastrar; provável webview
       do WhatsApp. Instruído a abrir no Chrome com o link completo. Aguardando

@@ -23,17 +23,33 @@ export default async function PresencaPage() {
   });
   if (!rodada) redirect("/votacao");
 
-  const jogadores = await prisma.jogador.findMany({
-    where: { grupoId: jogador.grupoId },
-    select: { id: true, apelido: true },
-    orderBy: { apelido: "asc" },
-  });
+  const [jogadores, chegadas] = await Promise.all([
+    prisma.jogador.findMany({
+      where: { grupoId: jogador.grupoId },
+      select: { id: true, apelido: true, papelGol: true },
+      orderBy: { apelido: "asc" },
+    }),
+    prisma.chegada.findMany({
+      where: { rodadaId: rodada.id },
+      select: { jogadorId: true },
+      orderBy: { ordem: "asc" },
+    }),
+  ]);
+
+  // Ordem de chegada primeiro. Rodada antiga não tem `Chegada` (tabela nova):
+  // esses caem no fim, sem ordem, e o admin reordena na tela se quiser sortear.
+  const ordenados = chegadas.map((c) => c.jogadorId);
+  const jaOrdenado = new Set(ordenados);
+  const presentesIniciais = [
+    ...ordenados,
+    ...rodada.presentes.map((j) => j.id).filter((id) => !jaOrdenado.has(id)),
+  ];
 
   return (
     <PresencaClient
       rodadaId={rodada.id}
       jogadores={jogadores}
-      presentesIniciais={rodada.presentes.map((j) => j.id)}
+      presentesIniciais={presentesIniciais}
       pendentesIniciais={rodada.pendentes}
       isSuperAdmin={jogador.role === "SUPER_ADMIN"}
     />

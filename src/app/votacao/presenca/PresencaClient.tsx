@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, Link as LinkIcon, Edit2 } from "reicon-react";
-import { Content, Avatar, Toggle, Button, Select } from "@/ds";
+import { ChevronLeft, ChevronUp, ChevronDown, Plus, X, Link as LinkIcon, Edit2 } from "reicon-react";
+import { Content, Avatar, Button, Select } from "@/ds";
 import { toast } from "@/ds/toast";
-import { salvarPresenca, vincularPendente } from "../actions";
+import { salvarPresenca, vincularPendente, definirPapelGol } from "../actions";
 
-type Jogador = { id: string; apelido: string };
+type PapelGol = "FIXO" | "CURINGA" | null;
+type Jogador = { id: string; apelido: string; papelGol?: PapelGol };
 
 interface Props {
   rodadaId: string;
@@ -18,21 +19,103 @@ interface Props {
   isSuperAdmin: boolean;
 }
 
+const ACCENT = "#9fe870";
+
+/** Chip do gol. Cicla: linha → curinga → fixo → linha. */
+const PROXIMO_PAPEL: Record<string, PapelGol> = { "": "CURINGA", CURINGA: "FIXO", FIXO: null };
+const LABEL_PAPEL: Record<string, { txt: string; cor: string; bg: string }> = {
+  FIXO: { txt: "GOL", cor: "#0a1a06", bg: ACCENT },
+  CURINGA: { txt: "gol?", cor: ACCENT, bg: "rgba(159,232,112,0.14)" },
+};
+
+/** Botãozinho de ação da linha (subir/descer/tirar/adicionar). Alvo de toque 36px. */
+function IconBtn({ label, onClick, disabled, children }: { label: string; onClick: () => void; disabled?: boolean; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+        background: "rgba(255,255,255,0.04)", border: "none",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        cursor: disabled ? "default" : "pointer", opacity: disabled ? 0.3 : 1,
+        WebkitTapHighlightColor: "transparent",
+      }}
+    >
+      {children}
+    </button>
+  );
+}
+
+/** Chip do papel no gol. Vazio = jogador de linha (nada aparece além do contorno). */
+function ChipGol({ papel, onClick }: { papel: PapelGol; onClick: () => void }) {
+  const meta = papel ? LABEL_PAPEL[papel] : null;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={papel === "FIXO" ? "Goleiro fixo" : papel === "CURINGA" ? "Pega o gol se faltar" : "Jogador de linha"}
+      style={{
+        minWidth: 42, height: 26, padding: "0 9px", borderRadius: 999, flexShrink: 0,
+        background: meta?.bg ?? "transparent",
+        boxShadow: meta ? "none" : "inset 0 0 0 1px rgba(255,255,255,0.1)",
+        color: meta?.cor ?? "#6e6e6e",
+        border: "none", cursor: "pointer",
+        fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 10.5, letterSpacing: "0.3px",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        WebkitTapHighlightColor: "transparent",
+      }}
+    >
+      {meta?.txt ?? "—"}
+    </button>
+  );
+}
+
 export function PresencaClient({ rodadaId, jogadores, presentesIniciais, pendentesIniciais, isSuperAdmin }: Props) {
   const router = useRouter();
-  const [presentes, setPresentes] = useState(() => new Set(presentesIniciais));
+  // ARRAY, não Set: a ordem É a ordem de chegada e alimenta o sorteio.
+  const [presentes, setPresentes] = useState<string[]>(presentesIniciais);
+  const [papeis, setPapeis] = useState<Record<string, PapelGol>>(
+    () => Object.fromEntries(jogadores.map((j) => [j.id, j.papelGol ?? null]))
+  );
   const [pendentes, setPendentes] = useState(pendentesIniciais);
   const [saving, setSaving] = useState(false);
   const [vinculando, setVinculando] = useState<string | null>(null);
   const [escolha, setEscolha] = useState<Record<string, string>>({});
 
-  function toggle(id: string) {
+  const porId = new Map(jogadores.map((j) => [j.id, j]));
+  const naLista = presentes.map((id) => porId.get(id)).filter((j): j is Jogador => !!j);
+  const foraDaLista = jogadores.filter((j) => !presentes.includes(j.id));
+
+  /** Chegou agora → entra no FIM da fila. */
+  function marcarChegada(id: string) {
+    setPresentes((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  }
+  function removerChegada(id: string) {
+    setPresentes((prev) => prev.filter((x) => x !== id));
+  }
+  /** Admin corrige quem marcou fora de ordem. */
+  function mover(i: number, dir: -1 | 1) {
     setPresentes((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      const j = i + dir;
+      if (j < 0 || j >= prev.length) return prev;
+      const next = [...prev];
+      [next[i], next[j]] = [next[j], next[i]];
       return next;
     });
+  }
+
+  async function ciclarPapel(id: string) {
+    const atual = papeis[id] ?? null;
+    const novo = PROXIMO_PAPEL[atual ?? ""];
+    setPapeis((p) => ({ ...p, [id]: novo })); // otimista
+    const res = await definirPapelGol(id, novo);
+    if ("error" in res) {
+      setPapeis((p) => ({ ...p, [id]: atual })); // desfaz
+      toast.error(res.error ?? "Erro ao salvar.");
+    }
   }
 
   async function vincular(nome: string) {
@@ -43,13 +126,13 @@ export function PresencaClient({ rodadaId, jogadores, presentesIniciais, pendent
     setVinculando(null);
     if ("error" in res) { toast.error(res.error ?? "Erro ao vincular."); return; }
     setPendentes((prev) => prev.filter((n) => n !== nome));
-    setPresentes((prev) => new Set(prev).add(jogadorId));
+    marcarChegada(jogadorId);
     toast.success(`${nome} vinculado`);
   }
 
   async function salvar() {
     setSaving(true);
-    const res = await salvarPresenca(rodadaId, Array.from(presentes));
+    const res = await salvarPresenca(rodadaId, presentes);
     setSaving(false);
     if ("error" in res) { toast.error(res.error ?? "Erro ao salvar."); return; }
     toast.success("Lista de presença atualizada");
@@ -116,17 +199,92 @@ export function PresencaClient({ rodadaId, jogadores, presentesIniciais, pendent
           </div>
         )}
 
-        <div style={{ background: "#141414", border: "1px solid #2c2c2c", borderRadius: 16, overflow: "hidden" }}>
-          {jogadores.map((j, i) => (
-            <div key={j.id} style={{ padding: "12px 14px", borderTop: i === 0 ? "none" : "1px solid #1f1f1f" }}>
-              <Content
-                leading={<Avatar name={j.apelido} />}
-                label={j.apelido}
-                trailing={<Toggle checked={presentes.has(j.id)} onChange={() => toggle(j.id)} />}
-              />
-            </div>
-          ))}
+        {/* ── QUEM CHEGOU (na ordem) ──
+            A ordem desta lista É a ordem de chegada: alimenta o sorteio, que
+            escala os primeiros e manda o resto pra fila. */}
+        <div style={{ marginBottom: 8, display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
+          <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 13, letterSpacing: "1.4px", color: "#9a9a9a" }}>
+            CHEGARAM ({naLista.length})
+          </span>
+          <span style={{ fontFamily: "var(--font-body)", fontSize: 11.5, color: "#6e6e6e" }}>
+            na ordem de chegada
+          </span>
         </div>
+
+        {naLista.length === 0 ? (
+          <div style={{ background: "#141414", border: "1px solid #2c2c2c", borderRadius: 16, padding: "20px 16px", textAlign: "center" }}>
+            <p style={{ margin: 0, fontFamily: "var(--font-body)", fontSize: 13.5, color: "#7a7a7a" }}>
+              Ninguém marcado ainda. Toque em <strong style={{ color: "#bdbdbd" }}>+</strong> na lista de baixo conforme o pessoal for chegando.
+            </p>
+          </div>
+        ) : (
+          <div style={{ background: "#141414", border: "1px solid #2c2c2c", borderRadius: 16, overflow: "hidden" }}>
+            {naLista.map((j, i) => (
+              <div key={j.id} style={{ padding: "10px 12px", borderTop: i === 0 ? "none" : "1px solid #1f1f1f", display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{
+                  width: 24, height: 24, borderRadius: 999, flexShrink: 0,
+                  background: "rgba(255,255,255,0.06)", color: "#cfcfcf",
+                  fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 11,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>{i + 1}</span>
+
+                <Avatar name={j.apelido} />
+                <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {j.apelido}
+                </span>
+
+                <ChipGol papel={papeis[j.id] ?? null} onClick={() => ciclarPapel(j.id)} />
+
+                <div style={{ display: "flex", gap: 2, flexShrink: 0 }}>
+                  <IconBtn label="Subir" onClick={() => mover(i, -1)} disabled={i === 0}>
+                    <ChevronUp size={16} weight="Outline" color="#bdbdbd" />
+                  </IconBtn>
+                  <IconBtn label="Descer" onClick={() => mover(i, 1)} disabled={i === naLista.length - 1}>
+                    <ChevronDown size={16} weight="Outline" color="#bdbdbd" />
+                  </IconBtn>
+                  <IconBtn label={`Tirar ${j.apelido}`} onClick={() => removerChegada(j.id)}>
+                    <X size={16} weight="Outline" color="#e56767" />
+                  </IconBtn>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ── AINDA NÃO CHEGARAM ── */}
+        {foraDaLista.length > 0 && (
+          <>
+            <div style={{ margin: "20px 0 8px" }}>
+              <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 13, letterSpacing: "1.4px", color: "#9a9a9a" }}>
+                AINDA NÃO CHEGARAM ({foraDaLista.length})
+              </span>
+            </div>
+            <div style={{ background: "#141414", border: "1px solid #2c2c2c", borderRadius: 16, overflow: "hidden" }}>
+              {foraDaLista.map((j, i) => (
+                <div key={j.id} style={{ padding: "12px 14px", borderTop: i === 0 ? "none" : "1px solid #1f1f1f" }}>
+                  <Content
+                    leading={<Avatar name={j.apelido} />}
+                    label={j.apelido}
+                    trailing={
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <ChipGol papel={papeis[j.id] ?? null} onClick={() => ciclarPapel(j.id)} />
+                        <IconBtn label={`Marcar chegada de ${j.apelido}`} onClick={() => marcarChegada(j.id)}>
+                          <Plus size={18} weight="Outline" color={ACCENT} />
+                        </IconBtn>
+                      </div>
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        <p style={{ margin: "14px 2px 0", fontFamily: "var(--font-body)", fontSize: 11.5, lineHeight: 1.5, color: "#6e6e6e" }}>
+          Toque no chip pra definir quem pega o gol: <strong style={{ color: ACCENT }}>GOL</strong> = goleiro fixo ·{" "}
+          <strong style={{ color: ACCENT }}>gol?</strong> = joga na linha mas quebra galho. Vale pra todas as rodadas.
+        </p>
+
         <div style={{ height: 96 }} />
       </main>
 
@@ -136,7 +294,7 @@ export function PresencaClient({ rodadaId, jogadores, presentesIniciais, pendent
         background: "linear-gradient(180deg, rgba(9,9,9,0) 0%, #090909 40%)",
       }}>
         <Button onClick={salvar} loading={saving} fullWidth>
-          Salvar ({presentes.size} de {jogadores.length})
+          Salvar ({presentes.length} de {jogadores.length})
         </Button>
       </div>
     </div>

@@ -177,13 +177,30 @@ export async function getPresenca(rodadaId: string) {
   });
   if (!rodada || rodada.grupoId !== eu.grupoId) return { error: "Rodada inválida." } as const;
 
-  const jogadores = await prisma.jogador.findMany({
-    where: { grupoId: eu.grupoId },
-    select: { id: true, apelido: true },
-    orderBy: { apelido: "asc" },
-  });
+  const [jogadores, chegadas] = await Promise.all([
+    prisma.jogador.findMany({
+      where: { grupoId: eu.grupoId },
+      select: { id: true, apelido: true, papelGol: true },
+      orderBy: { apelido: "asc" },
+    }),
+    prisma.chegada.findMany({
+      where: { rodadaId },
+      select: { jogadorId: true },
+      orderBy: { ordem: "asc" },
+    }),
+  ]);
 
-  return { jogadores, presentesIds: rodada.presentes.map((j) => j.id), pendentes: rodada.pendentes } as const;
+  // presentesIds sai NA ORDEM DE CHEGADA. Rodadas antigas não têm `Chegada`
+  // (a tabela é nova) — nesse caso cai pro `presentes` sem ordem, e o admin
+  // ordena na tela quando quiser usar o sorteio.
+  const ordenados = chegadas.map((c) => c.jogadorId);
+  const semChegada = rodada.presentes.map((j) => j.id).filter((id) => !ordenados.includes(id));
+
+  return {
+    jogadores,
+    presentesIds: [...ordenados, ...semChegada],
+    pendentes: rodada.pendentes,
+  } as const;
 }
 
 /**
@@ -225,7 +242,15 @@ export async function vincularPendente(rodadaId: string, nomePendente: string, j
   return { success: true } as const;
 }
 
-/** Salva a lista de presença da rodada. Lista vazia = sem restrição (mostra o grupo todo). */
+/**
+ * Salva a lista de presença da rodada. Lista vazia = sem restrição (mostra o
+ * grupo todo).
+ *
+ * A ORDEM de `jogadorIds` é a ordem de chegada e vira a tabela `Chegada` — é
+ * ela que o sorteio usa pra decidir quem entra na primeira partida ("os
+ * primeiros jogam primeiro"). `presentes` continua guardando só QUEM jogou,
+ * intocado, porque ranking/badges/feed leem de lá.
+ */
 export async function salvarPresenca(rodadaId: string, jogadorIds: string[]) {
   const session = await auth();
   if (!session?.user?.id) return { error: "Não autenticado." } as const;
@@ -251,13 +276,55 @@ export async function salvarPresenca(rodadaId: string, jogadorIds: string[]) {
     select: { id: true },
   });
   const validos = new Set(membros.map((m) => m.id));
-  const ids = jogadorIds.filter((id) => validos.has(id));
+  // dedup preservando a ordem — id repetido bagunçaria a numeração da chegada
+  const ids = [...new Set(jogadorIds.filter((id) => validos.has(id)))];
 
-  await prisma.rodada.update({
-    where: { id: rodadaId },
-    data: { presentes: { set: ids.map((id) => ({ id })) } },
+  await prisma.$transaction([
+    prisma.rodada.update({
+      where: { id: rodadaId },
+      data: { presentes: { set: ids.map((id) => ({ id })) } },
+    }),
+    // Quem saiu da lista perde a chegada
+    prisma.chegada.deleteMany({
+      where: { rodadaId, jogadorId: { notIn: ids.length ? ids : ["-"] } },
+    }),
+    // Renumera todo mundo: o admin pode ter reordenado, não só adicionado
+    ...ids.map((id, i) =>
+      prisma.chegada.upsert({
+        where: { rodadaId_jogadorId: { rodadaId, jogadorId: id } },
+        update: { ordem: i },
+        create: { rodadaId, jogadorId: id, ordem: i },
+      })
+    ),
+  ]);
+
+  return { success: true } as const;
+}
+
+/**
+ * Marca quem pega o gol. É config do JOGADOR (vale pra todas as rodadas), não
+ * da rodada — por isso não entra em `salvarPresenca`.
+ *  - "FIXO": goleiro de verdade
+ *  - "CURINGA": joga na linha, mas assume o gol se faltar fixo
+ *  - null: jogador de linha puro
+ */
+export async function definirPapelGol(jogadorId: string, papel: "FIXO" | "CURINGA" | null) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Não autenticado." } as const;
+
+  const eu = await prisma.jogador.findUnique({
+    where: { userId: session.user.id },
+    select: { grupoId: true, role: true },
   });
+  if (!eu) return { error: "Jogador não encontrado." } as const;
+  if (eu.role !== "ADMIN" && eu.role !== "SUPER_ADMIN") {
+    return { error: "Só admins podem definir quem pega o gol." } as const;
+  }
 
+  const alvo = await prisma.jogador.findUnique({ where: { id: jogadorId }, select: { grupoId: true } });
+  if (!alvo || alvo.grupoId !== eu.grupoId) return { error: "Jogador inválido." } as const;
+
+  await prisma.jogador.update({ where: { id: jogadorId }, data: { papelGol: papel } });
   return { success: true } as const;
 }
 
