@@ -129,90 +129,161 @@ export function PerfilCliente(props: Props) {
 
   const avatarInner = foto
     // eslint-disable-next-line @next/next/no-img-element
-    ? <img src={foto} alt={displayName} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-    : <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 32, color: ACCENT }}>{initials}</span>;
-  const avatarStyle: React.CSSProperties = { position: "relative", width: 116, height: 116, borderRadius: "50%", background: "#171717", border: `2px solid ${ACCENT}`, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", padding: 0 };
+    ? <img src={foto} alt={displayName} style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} />
+    : <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 34, color: ACCENT }}>{initials}</span>;
+  // Anel em cone-gradient + halo difuso no lugar da borda chapada de 2px: dá
+  // volume ao avatar sem endurecer o contorno.
+  const avatarStyle: React.CSSProperties = {
+    position: "relative", width: 124, height: 124, borderRadius: "50%",
+    padding: 3, border: "none",
+    background: `conic-gradient(from 210deg, ${ACCENT}, #4e7d33 42%, ${ACCENT} 100%)`,
+    boxShadow: `0 10px 34px ${ACCENT}24`,
+    display: "flex", alignItems: "center", justifyContent: "center",
+  };
+  const avatarCore: React.CSSProperties = {
+    width: "100%", height: "100%", borderRadius: "50%", overflow: "hidden",
+    background: "#141414", display: "flex", alignItems: "center", justifyContent: "center",
+  };
 
   return (
     <>
-      {/* ── CARD DO JOGADOR ── */}
-      <div ref={cardRef} style={{
+      {/* ── CARD DO JOGADOR ──
+          Double-bezel: casca externa (hairline) + núcleo, com raios concêntricos
+          — o card era um retângulo chapado com borda cinza de 2px, que é o que
+          deixava a tela "grosseira". O canto assimétrico (estilo card de FIFA) é
+          identidade da marca e foi mantido, só recalculado pro núcleo. */}
+      <div style={{
         position: "relative",
-        background: "#171717", border: "2px solid #383838",
-        borderRadius: "64px 0 64px 64px", overflow: "hidden",
-        padding: "20px 24px 32px", display: "flex", flexDirection: "column", gap: 16,
+        padding: 6,
+        borderRadius: "64px 0 64px 64px",
+        background: "rgba(255,255,255,0.035)",
+        boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.07)",
       }}>
-        {/* Compartilhar */}
-        <button
-          ref={shareBtnRef}
-          onClick={compartilhar}
-          disabled={sharing}
-          aria-label="Compartilhar card"
-          style={{ position: "absolute", top: 16, right: 16, zIndex: 2, width: 48, height: 48, borderRadius: 16, background: "#090909", border: "1px solid #383838", display: "flex", alignItems: "center", justifyContent: "center", cursor: sharing ? "default" : "pointer", opacity: sharing ? 0.5 : 1, WebkitTapHighlightColor: "transparent" }}
-        >
-          <Export size={24} color="#9fe870" weight="Outline" />
-        </button>
+        <div ref={cardRef} style={{
+          position: "relative",
+          borderRadius: "58px 0 58px 58px",
+          background: "linear-gradient(180deg, #191919 0%, #0f0f0f 100%)",
+          boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08), 0 26px 60px rgba(0,0,0,0.55)",
+          overflow: "hidden",
+          padding: "20px 24px 28px", display: "flex", flexDirection: "column", gap: 18,
+        }}>
+          {/* Luz atrás do avatar — profundidade sem pesar */}
+          <div aria-hidden style={{
+            position: "absolute", top: -110, left: "50%", transform: "translateX(-50%)",
+            width: 420, height: 420, pointerEvents: "none",
+            background: `radial-gradient(circle, ${ACCENT}1c 0%, transparent 66%)`,
+          }} />
 
-        {/* DESDE */}
-        <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
-            <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 10, lineHeight: "14px", color: "#666" }}>DESDE</span>
-            <span style={{ fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 13, color: "#cfcfcf" }}>{joinYear}</span>
-          </div>
-        </div>
+          {/* Compartilhar — ilha circular com hairline, some do print */}
+          <button
+            ref={shareBtnRef}
+            onClick={compartilhar}
+            disabled={sharing}
+            aria-label="Compartilhar card"
+            style={{
+              position: "absolute", top: 18, right: 18, zIndex: 2,
+              width: 46, height: 46, borderRadius: 999,
+              background: "rgba(255,255,255,0.05)",
+              boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.1)",
+              border: "none",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              cursor: sharing ? "default" : "pointer", opacity: sharing ? 0.45 : 1,
+              transition: "transform 220ms cubic-bezier(0.32,0.72,0,1), opacity 220ms cubic-bezier(0.32,0.72,0,1)",
+              WebkitTapHighlightColor: "transparent",
+            }}
+          >
+            <Export size={22} color={ACCENT} weight="Outline" />
+          </button>
 
-        {/* avatar + nome + overall */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, paddingTop: 6 }}>
-          {isOwner ? (
-            <button type="button" onClick={() => setEditOpen(true)} aria-label="Editar perfil" style={{ ...avatarStyle, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>{avatarInner}</button>
-          ) : (
-            <div style={avatarStyle}>{avatarInner}</div>
-          )}
-
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, width: "100%", textAlign: "center" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 28, lineHeight: "32px", color: "#fff", textTransform: "uppercase" }}>{displayName}</span>
-              {isAdmin && <ShieldStar size={22} color={ACCENT} weight="Filled" aria-label={roleLabel} />}
+          {/* DESDE — eyebrow pill */}
+          <div style={{ position: "relative", display: "flex", justifyContent: "center", width: "100%" }}>
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 7,
+              padding: "6px 14px", borderRadius: 999,
+              background: "rgba(255,255,255,0.04)",
+              boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.07)",
+            }}>
+              <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 9.5, letterSpacing: "1.6px", color: "#787878" }}>DESDE</span>
+              <span style={{ fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 12, color: "#d4d4d4", fontVariantNumeric: "tabular-nums" }}>{joinYear}</span>
             </div>
-            {subtitle && <span style={{ fontFamily: "var(--font-body)", fontWeight: 400, fontSize: 14, lineHeight: "1.4", color: "#7a7a7a" }}>{subtitle}</span>}
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-            <span style={{ fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 64, lineHeight: "72px", letterSpacing: "-1px", color: ACCENT }}>{overall}</span>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
-              <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 10, letterSpacing: "1.8px", color: ACCENT }}>OVERALL</span>
-              <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 13, letterSpacing: "1px", color: "#cfcfcf" }}>{posAbbr}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* divisória */}
-        <div style={{ height: 1, background: "#22271f", width: "100%" }} />
-
-        {/* stats — tocar abre a sheet com o detalhe por trás do número */}
-        <div style={{ display: "flex", gap: 12, width: "100%" }}>
-          {stats.map((s) => {
-            const kind = SHEETS.find((k) => k === s.label);
-            return kind ? (
-              <button
-                key={s.label}
-                onClick={() => setSheet(kind)}
-                aria-label={`Ver detalhe de ${s.label}`}
-                style={{
-                  flex: "1 0 0", minWidth: 0, background: "none", border: "none",
-                  padding: 0, cursor: "pointer", WebkitTapHighlightColor: "transparent",
-                }}
-              >
-                <Stat value={s.value} label={s.label} color={s.color} />
+          {/* avatar + nome + overall */}
+          <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", gap: 18, paddingTop: 4 }}>
+            {isOwner ? (
+              <button type="button" onClick={() => setEditOpen(true)} aria-label="Editar perfil" style={{ ...avatarStyle, cursor: "pointer", WebkitTapHighlightColor: "transparent" }}>
+                <span style={avatarCore}>{avatarInner}</span>
               </button>
-            ) : s.href ? (
-              <Link key={s.label} href={s.href} style={{ flex: "1 0 0", minWidth: 0, textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
-                <Stat value={s.value} label={s.label} color={s.color} />
-              </Link>
             ) : (
-              <Stat key={s.label} value={s.value} label={s.label} color={s.color} />
-            );
-          })}
+              <div style={avatarStyle}><span style={avatarCore}>{avatarInner}</span></div>
+            )}
+
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6, width: "100%", textAlign: "center" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 900, fontSize: 30, lineHeight: "34px", letterSpacing: "-0.4px", color: "#fff", textTransform: "uppercase" }}>{displayName}</span>
+                {isAdmin && <ShieldStar size={22} color={ACCENT} weight="Filled" aria-label={roleLabel} />}
+              </div>
+              {subtitle && <span style={{ fontFamily: "var(--font-body)", fontWeight: 400, fontSize: 14, lineHeight: 1.4, color: "#818181" }}>{subtitle}</span>}
+            </div>
+
+            {/* OVR — posição na mesma linha do rótulo, com separador; antes eram
+                duas linhas empilhadas e o bloco ficava alto demais. */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+              <span style={{
+                fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 72,
+                lineHeight: "72px", letterSpacing: "-2.4px", color: ACCENT,
+                fontVariantNumeric: "tabular-nums",
+                textShadow: `0 0 46px ${ACCENT}3d`,
+              }}>{overall}</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 10, letterSpacing: "2.4px", color: ACCENT }}>OVERALL</span>
+                <span style={{ width: 3, height: 3, borderRadius: 999, background: "#4a4a4a", display: "block" }} />
+                <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 12, letterSpacing: "1.4px", color: "#d0d0d0" }}>{posAbbr}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* divisória que desvanece nas pontas — linha reta de ponta a ponta
+              corta o card; esta some nas bordas e integra melhor */}
+          <div style={{ position: "relative", height: 1, width: "100%", background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.1) 22%, rgba(255,255,255,0.1) 78%, transparent)" }} />
+
+          {/* stats — cada um vira uma ILHA com hairline. Além do acabamento,
+              resolve um problema real: eles abrem sheet ao toque mas não tinham
+              nenhuma pista visual de que eram tocáveis (número solto no vazio). */}
+          <div style={{ position: "relative", display: "flex", gap: 6, width: "100%" }}>
+            {stats.map((s) => {
+              const kind = SHEETS.find((k) => k === s.label);
+              const ilha: React.CSSProperties = {
+                flex: "1 0 0", minWidth: 0,
+                padding: "12px 2px 10px", borderRadius: 18,
+                background: "rgba(255,255,255,0.03)",
+                boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.06)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              };
+              return kind ? (
+                <button
+                  key={s.label}
+                  onClick={() => setSheet(kind)}
+                  aria-label={`Ver detalhe de ${s.label}`}
+                  style={{
+                    ...ilha, border: "none", cursor: "pointer",
+                    transition: "transform 220ms cubic-bezier(0.32,0.72,0,1), background 220ms cubic-bezier(0.32,0.72,0,1)",
+                    WebkitTapHighlightColor: "transparent",
+                  }}
+                >
+                  <Stat value={s.value} label={s.label} color={s.color} labelSize={8.5} />
+                </button>
+              ) : s.href ? (
+                <Link key={s.label} href={s.href} style={{ ...ilha, textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
+                  <Stat value={s.value} label={s.label} color={s.color} labelSize={8.5} />
+                </Link>
+              ) : (
+                <div key={s.label} style={ilha}>
+                  <Stat value={s.value} label={s.label} color={s.color} labelSize={8.5} />
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 

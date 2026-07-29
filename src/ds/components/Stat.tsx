@@ -10,10 +10,14 @@ export interface StatProps {
   icon?: React.ReactNode;
   /** cor do valor — default = texto primário */
   color?: string;
+  /** Tamanho do rótulo (stacked). Default 10. Use menor quando o Stat vive numa
+   *  coluna estreita — rótulo longo tipo "PERSONAGENS" estoura a caixa em 4
+   *  colunas na largura de celular. */
+  labelSize?: number;
 }
 
 /** Número + label (ex.: overall do jogador, contagem de badges). Duas formas reais: empilhada (grid) e em linha (com ícone). */
-export function Stat({ value, label, direction = "stacked", icon, color }: StatProps) {
+export function Stat({ value, label, direction = "stacked", icon, color, labelSize = 10 }: StatProps) {
   if (direction === "inline") {
     return (
       <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
@@ -35,7 +39,7 @@ export function Stat({ value, label, direction = "stacked", icon, color }: StatP
       <span style={{ fontFamily: font.numeric, fontWeight: 700, fontSize: 22, color: color ?? token("text-primary-default"), fontVariantNumeric: "tabular-nums" }}>
         {value}
       </span>
-      <span style={{ fontFamily: font.body, fontWeight: 600, fontSize: 10, lineHeight: "14px", color: token("text-tertiary-default"), textAlign: "center" }}>
+      <span style={{ fontFamily: font.body, fontWeight: 600, fontSize: labelSize, lineHeight: "14px", color: token("text-tertiary-default"), textAlign: "center", whiteSpace: "nowrap" }}>
         {label}
       </span>
     </div>
