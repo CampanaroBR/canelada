@@ -35,7 +35,6 @@ const SelecaoShareModal = dynamic(
 );
 
 import { TRAIT_BADGE } from "@/lib/badgeAssets";
-import { BotaoCriarRodada } from "@/components/BotaoCriarRodada";
 import { PlayerSlot, PlayerNamed, TSHIRT_OUTLINE, TSHIRT_GK_OUT, TSHIRT_FILLED, TSHIRT_GK_FILL, TSHIRT_FILLED_PIORES, TSHIRT_GK_FILL_PIORES } from "./CampoPlayers";
 
 const CAMPO   = "/campo.jpg";
@@ -84,7 +83,6 @@ interface Props {
   datePills: string[];
   grupoNome: string;
   proximoBaba: ProximoBaba | null;
-  criarRodadaAction: () => Promise<void>;
   isSuperAdmin: boolean;
   isAdmin: boolean;
   /** Presentes na rodada que ainda não votaram — cobrança no WhatsApp (só o número). */
@@ -98,7 +96,7 @@ const MEDAL_COLORS = ["#F59E0B", "#9CA3AF", "#B45309"];
 export function HomeClient({
   rodadaId, dataRodada, dataCurta, horarioJogo, votacao, jaVotou, top5Rodada,
   maisVotados, maisVotadosPiores, maisVotadosPorData, maisVotadosPioresPorData, personagensPorRodada, personagensSemana, personagensSemanaPorData, selecao, selecaoPiores, conquistas, badgesGrupo, datePills, grupoNome,
-  proximoBaba, criarRodadaAction, isSuperAdmin, isAdmin, faltamVotar, souPresente,
+  proximoBaba, isSuperAdmin, isAdmin, faltamVotar, souPresente,
 }: Props) {
   const [bsOpen, setBsOpen] = useState(false);
   const [bsMounted, setBsMounted] = useState(false); // só monta o sheet após 1ª abertura
@@ -307,10 +305,24 @@ export function HomeClient({
             {/* CTA */}
             <div style={{ position: "relative", width: "100%" }}>
               {!rodadaId ? (
-                /* Criar rodada — só o dono do grupo (super admin). Pros demais,
-                   nada aqui: rodada é criada só pelo super admin, em seg/qua. */
+                /* Criar rodada NÃO acontece mais aqui. O botão "BABA ROLOU
+                   HOJE" ficava no meio do campo, entre os slots de VOTE, e
+                   criava rodada num toque por um caminho que não pede lista —
+                   foi a origem das rodadas fantasma (o próprio código já
+                   registrava isso). Agora existe UM caminho só: a aba Baba,
+                   que pede data e participantes. Aqui fica só o atalho. */
                 isSuperAdmin ? (
-                  <BotaoCriarRodada action={criarRodadaAction} />
+                  <Link href="/pelada" style={{
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    width: "100%", padding: "12px 16px", borderRadius: 14,
+                    background: "rgba(255,255,255,0.04)",
+                    boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.08)",
+                    textDecoration: "none", WebkitTapHighlightColor: "transparent",
+                    fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14,
+                    color: "#9fe870",
+                  }}>
+                    Criar rodada na aba Baba
+                  </Link>
                 ) : null
               ) : (votacao?.fase === "encerrada" || jaVotou) ? (
                 /* Resultados — botão compartilhar separado, alinhado à faixa (Figma 529-155) */

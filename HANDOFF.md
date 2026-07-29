@@ -123,7 +123,15 @@ Rodada criada sem querer (29/07, 0 votos/0 presentes) — **não era o cron**. O
 botão "⚽ BABA ROLOU HOJE" (Home e /votacao) criava rodada num TOQUE, sem
 confirmação, por um caminho que não pede lista (por isso nasce vazia). É a mesma
 origem das fantasmas limpas antes.
-- **Prevenção:** `BotaoCriarRodada` — confirmação em 2 toques (desarma em 4s).
+- **Correção final:** o botão SAIU da Home e da /votacao. Existe **UM caminho
+  só** pra criar rodada: a aba **Baba** (`pelada/actions.ts` →
+  `criarRodada(data, ids, pendentes)`), que pede data e lista. A action
+  `criarRodada()` sem argumentos de `votacao/actions.ts` foi **deletada** — era
+  ela que criava rodada vazia. Na Home ficou só um link "Criar rodada na aba Baba".
+- Aproveitado: `getPresenca()` também foi deletada (server action exposta, sem
+  chamador desde que a tela passou a carregar dados no server component).
+- **Prevenção (mantida):** `BotaoCriarRodada` com confirmação em 2 toques,
+  disponível caso algum fluxo volte a precisar.
 - **Saída:** `BotaoExcluirRodada` no card da rodada em `/pelada` + action
   `excluirRodada` — só SUPER_ADMIN e só se a rodada estiver VAZIA (sem voto,
   presença, chegada ou story). Rodada com voto é histórico (ranking/badges leem

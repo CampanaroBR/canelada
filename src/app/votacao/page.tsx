@@ -3,8 +3,6 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { VotacaoFlow } from "./VotacaoFlow";
-import { criarRodada } from "./actions";
-import { BotaoCriarRodada } from "@/components/BotaoCriarRodada";
 import Link from "next/link";
 import Image from "next/image";
 import { EmptyState } from "@/ds/components/EmptyState";
@@ -179,9 +177,18 @@ function NoRodadaScreen({ isAdmin, isSuperAdmin }: { isAdmin: boolean; isSuperAd
           description="Quando o dono do grupo marcar que o baba rolou, a votação dos personagens abre aqui."
           action={
             isSuperAdmin ? (
-              // Mesma confirmação de dois toques da Home: criar rodada é ação
-              // que o grupo inteiro vê e não tem desfazer pela interface.
-              <BotaoCriarRodada action={criarRodada} style={{ borderRadius: 9999, fontSize: 15, padding: "13px 24px" }} />
+              // Criar rodada tem UM caminho só: a aba Baba, que pede data e
+              // lista. O botão que criava direto daqui gerava rodada vazia e
+              // era a origem das rodadas fantasma.
+              <Link href="/pelada" style={{
+                height: 48, padding: "0 24px", background: "#9fe870", color: "#0a1a06",
+                borderRadius: 9999, fontFamily: "var(--font-display)", fontWeight: 700,
+                fontSize: 15, display: "flex", alignItems: "center", gap: 8,
+                textDecoration: "none", WebkitTapHighlightColor: "transparent",
+              }}>
+                <Football size={18} weight="Outline" color="#0a1a06" />
+                Criar rodada
+              </Link>
             ) : undefined
           }
         />

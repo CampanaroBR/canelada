@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { criarRodada } from "@/app/votacao/actions";
 import { badgesHome } from "@/lib/badges";
 import { janelaVotacao, votacaoEncerrada } from "@/lib/votacaoJanela";
 import { pickWinner } from "@/lib/tieBreak";
@@ -492,7 +491,6 @@ export default async function FeedPage() {
       datePills={datePills}
       grupoNome={grupoNome}
       proximoBaba={proximoBaba}
-      criarRodadaAction={criarRodada}
     />
     </>
   );

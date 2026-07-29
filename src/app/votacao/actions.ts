@@ -5,37 +5,17 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { gerarStories } from "@/lib/stories";
 import { rateLimit } from "@/lib/ratelimit";
-import { isDiaDeBaba } from "@/lib/votacaoJanela";
 
-export async function criarRodada() {
-  const session = await auth();
-  if (!session?.user?.id) redirect("/login");
-
-  const jogador = await prisma.jogador.findUnique({
-    where: { userId: session.user.id },
-    select: { grupoId: true, role: true },
-  });
-  if (!jogador) redirect("/onboarding");
-
-  // Só o dono do grupo cria rodada. Antes qualquer jogador logado conseguia —
-  // o botão "Baba rolou hoje" no feed/votação disparava esta action sem
-  // nenhuma checagem de role, e foi assim que rodadas nasceram por engano.
-  if (jogador.role !== "SUPER_ADMIN") redirect("/votacao");
-
-  // Baba só em segunda/quarta — bloqueia criação em dia fora do calendário.
-  if (!isDiaDeBaba(new Date())) redirect("/votacao");
-
-  const existing = await prisma.rodada.findFirst({
-    where: { grupoId: jogador.grupoId, encerrada: false },
-  });
-  if (!existing) {
-    await prisma.rodada.create({
-      data: { grupoId: jogador.grupoId },
-    });
-  }
-
-  redirect("/votacao");
-}
+// REMOVIDO: `criarRodada()` sem argumentos.
+//
+// Criava rodada só com `grupoId` — sem data e sem lista de participantes — e
+// era disparada por um botão de largura inteira no meio da Home. Foi a origem
+// das rodadas fantasma (0 votos, 0 presentes), duas vezes: a primeira levou a
+// uma trava de role, que não resolveu porque o problema nunca foi permissão e
+// sim o botão estar ali.
+//
+// Agora existe UM caminho pra criar rodada: `criarRodada(data, ids, pendentes)`
+// em `src/app/pelada/actions.ts`, pela aba Baba, que pede data e participantes.
 
 type VotoInput = {
   categoria: "MVP" | "BAGRE" | "RACUDO" | "RESENHA" | "TRAIT";
@@ -157,51 +137,9 @@ export async function submitVotos(rodadaId: string, votos: VotoInput[], jogou = 
   return { success: true };
 }
 
-/** Lista de jogadores do grupo + quem está marcado presente na rodada (pra tela de edição). */
-export async function getPresenca(rodadaId: string) {
-  const session = await auth();
-  if (!session?.user?.id) return { error: "Não autenticado." } as const;
-
-  const eu = await prisma.jogador.findUnique({
-    where: { userId: session.user.id },
-    select: { grupoId: true, role: true },
-  });
-  if (!eu) return { error: "Jogador não encontrado." } as const;
-  if (eu.role !== "ADMIN" && eu.role !== "SUPER_ADMIN") {
-    return { error: "Só admins podem editar a lista de presença." } as const;
-  }
-
-  const rodada = await prisma.rodada.findUnique({
-    where: { id: rodadaId },
-    select: { grupoId: true, presentes: { select: { id: true } }, pendentes: true },
-  });
-  if (!rodada || rodada.grupoId !== eu.grupoId) return { error: "Rodada inválida." } as const;
-
-  const [jogadores, chegadas] = await Promise.all([
-    prisma.jogador.findMany({
-      where: { grupoId: eu.grupoId },
-      select: { id: true, apelido: true, papelGol: true },
-      orderBy: { apelido: "asc" },
-    }),
-    prisma.chegada.findMany({
-      where: { rodadaId },
-      select: { jogadorId: true },
-      orderBy: { ordem: "asc" },
-    }),
-  ]);
-
-  // presentesIds sai NA ORDEM DE CHEGADA. Rodadas antigas não têm `Chegada`
-  // (a tabela é nova) — nesse caso cai pro `presentes` sem ordem, e o admin
-  // ordena na tela quando quiser usar o sorteio.
-  const ordenados = chegadas.map((c) => c.jogadorId);
-  const semChegada = rodada.presentes.map((j) => j.id).filter((id) => !ordenados.includes(id));
-
-  return {
-    jogadores,
-    presentesIds: [...ordenados, ...semChegada],
-    pendentes: rodada.pendentes,
-  } as const;
-}
+// REMOVIDO: `getPresenca()`. Ficou sem nenhum chamador quando a tela passou a
+// carregar os dados direto no server component, e não conhecia convidados —
+// era um server action (endpoint exposto) morto e já desatualizado.
 
 /**
  * Associa um nome pendente (da lista do baba, sem conta na hora da criação
