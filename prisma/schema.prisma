@@ -77,6 +77,13 @@ enum RoleGrupo {
   PLAYER
 }
 
+/** Papel no gol (sorteio de times). FIXO = goleiro de verdade; CURINGA = joga
+ *  na linha, mas pega o gol se faltar fixo. */
+enum PapelGol {
+  FIXO
+  CURINGA
+}
+
 model Jogador {
   id          String    @id @default(cuid())
   userId      String    @unique
@@ -89,6 +96,11 @@ model Jogador {
   peDominante String?
   foto        String?
   role        RoleGrupo @default(PLAYER)
+  // Papel no gol pro sorteio de times. null = jogador de linha puro.
+  // FIXO = goleiro de verdade; CURINGA = de linha, mas topa pegar o gol quando
+  // falta goleiro. NÃO dá pra derivar isso dos votos (quem leva Frangueiro pode
+  // ter ido pro gol de brincadeira) — por isso é campo próprio.
+  papelGol    PapelGol?
   createdAt   DateTime  @default(now())
 
   user        User      @relation(fields: [userId], references: [id])
@@ -99,6 +111,33 @@ model Jogador {
   pushSubscriptions PushSubscription[]
   badgeUnlocks    BadgeUnlock[]
   rodadasPresente Rodada[]       @relation("RodadaPresentes")
+  chegadas        Chegada[]
+}
+
+/**
+ * Ordem de chegada no baba — base do sorteio ("os primeiros jogam primeiro").
+ *
+ * Tabela SEPARADA de propósito. A presença vive em `Rodada.presentes` (m2m
+ * implícita `_RodadaPresentes`, ~105 linhas), que é lida por ranking, badges,
+ * feed e votação. Transformar aquela relação em explícita só pra caber a ordem
+ * obrigaria a mexer em todas essas telas de uma vez. Aqui é aditivo: quem já
+ * funciona continua igual, e o sorteio lê daqui.
+ *
+ * `ordem` é a fonte da fila (o admin pode corrigir se marcar fora de sequência);
+ * `chegouEm` fica pro histórico.
+ */
+model Chegada {
+  id         String   @id @default(cuid())
+  rodadaId   String
+  jogadorId  String
+  ordem      Int
+  chegouEm   DateTime @default(now())
+
+  rodada     Rodada   @relation(fields: [rodadaId], references: [id], onDelete: Cascade)
+  jogador    Jogador  @relation(fields: [jogadorId], references: [id], onDelete: Cascade)
+
+  @@unique([rodadaId, jogadorId])
+  @@index([rodadaId, ordem])
 }
 
 model BadgeUnlock {
@@ -143,6 +182,9 @@ model Rodada {
   // rodada, editável manualmente. Vazio = sem restrição (mostra todo o grupo,
   // comportamento antigo — mantém rodadas passadas funcionando sem migração).
   presentes   Jogador[]    @relation("RodadaPresentes")
+  // Ordem de chegada (ver model Chegada). Convive com `presentes`: aquela diz
+  // QUEM jogou, esta diz em QUE ORDEM chegou.
+  chegadas    Chegada[]
 }
 
 model Voto {
