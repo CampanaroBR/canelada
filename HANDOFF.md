@@ -33,6 +33,24 @@ Atualizar a cada sessão: mover itens de "Em aberto" pra "Feito" e registrar dec
 
 ## Estado atual (feito, já no ar)
 
+- **Perfil: MVP/BAGRE estavam SEMPRE 0** (bug antigo, corrigido). Contavam
+  `Voto.categoria = "MVP"/"BAGRE"`, categorias que a votação **não cria mais** —
+  os 1006 votos do banco são todos `TRAIT`. Agora `src/lib/perfilStats.ts`
+  deriva igual às stories: **MVP = vencedor do trait `categoria` (👑)**,
+  **BAGRE = vencedor do trait `bagre` (🐟)**, com o **mesmo `pickWinner`/seed**
+  do `stories.ts` (senão, em rodada empatada, perfil e story mostrariam craques
+  diferentes — 15/07 e 22/07 tiveram empate). ⚠️ Isso **muda o OVERALL** de quem
+  já foi craque/bagre (Arthur: 78 → 83) — decidido com o usuário.
+- **Perfil: PRESENÇAS** era "rodadas em que me votaram"; virou a mesma união
+  `presentes ∪ votantes(votanteJogou)` do ranking/badges, pra não ter dois
+  números de "rodadas" divergentes no app.
+- **Perfil: sheets de detalhe** (`src/app/perfil/StatSheets.tsx`) — tocar num
+  stat abre BottomSheet: Personagens (miniatura + `Nx` de recorrência, vindo do
+  `contador` de `JogadorTrait`), Presenças (data + nº de participantes), Craque
+  e Bagre (rodadas + votos). PERSONAGENS não linka mais pra `/medalhas`.
+- **`ART_BY_SLUG` virou fonte única** em `src/lib/premioArt.ts` (era hardcoded
+  dentro de `feed/page.tsx`; o perfil passou a precisar das mesmas miniaturas).
+
 - **Seleção da Rodada — sem repetir jogador entre os times** (`src/lib/selecaoRodada.ts`):
   ninguém aparece nas duas escalações. Montagem em 2 passadas: (1) cada jogador
   vai pro lado PREFERIDO (maior placar; empate → piores) e cada time monta com

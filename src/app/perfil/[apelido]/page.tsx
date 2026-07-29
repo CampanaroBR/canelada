@@ -5,6 +5,8 @@ import { BottomNav } from "@/components/layout/BottomNav";
 import { PerfilCliente } from "../PerfilCliente";
 import { BackButton } from "../BackButton";
 import { computeConquistas, computeOverall } from "@/lib/conquistas";
+import { perfilStats } from "@/lib/perfilStats";
+import { artDoSlug } from "@/lib/premioArt";
 
 export const dynamic = "force-dynamic";
 
@@ -52,22 +54,35 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
   // Ranking/Badges (lib/badges.ts). Sem isso, votos da rodada em andamento
   // apareciam aqui na hora mas só refletiam no Ranking depois de fechar,
   // dando números divergentes entre as telas.
-  const votoEncerrada = { rodada: { encerrada: true } } as const;
-  const [mvpCount, bagreCount, presencaRows] = await Promise.all([
-    prisma.voto.count({ where: { votadoId: jogador.id, categoria: "MVP", ...votoEncerrada } }),
-    prisma.voto.count({ where: { votadoId: jogador.id, categoria: "BAGRE", ...votoEncerrada } }),
-    prisma.voto.findMany({ where: { votadoId: jogador.id, ...votoEncerrada }, select: { rodadaId: true }, distinct: ["rodadaId"] }),
+  // MVP/BAGRE/presenças vêm de src/lib/perfilStats.ts. Antes eram contados por
+  // `Voto.categoria = "MVP"/"BAGRE"` — categorias que a votação não cria mais
+  // (hoje é tudo TRAIT), então davam 0 pra todo mundo mesmo com o story dizendo
+  // "Fulano foi o CRAQUE DA RODADA". Presença também mudou: era "rodadas em que
+  // me votaram", agora é a mesma união presentes∪votantes do ranking/badges.
+  const [stats, personagensRows] = await Promise.all([
+    perfilStats(jogador.id, jogador.grupoId),
+    prisma.jogadorTrait.findMany({
+      where: { jogadorId: jogador.id },
+      select: {
+        traitSlug: true, contador: true,
+        trait: { select: { nome: true, emoji: true } },
+      },
+      orderBy: { contador: "desc" },
+    }),
   ]);
+  const { mvpCount, bagreCount, presencaCount } = stats;
 
   const isOwner = jogador.userId === session.user.id;
   const nomeCompleto = [jogador.nome, jogador.sobrenome].filter(Boolean).join(" ");
   const displayName = nomeCompleto || jogador.apelido;
   const initials = getInitials(displayName);
   const traitsUnlocked = jogador.traitsRecebidas.length;
-  const presencaCount = presencaRows.length;
   const joinYear = new Date(jogador.createdAt).getFullYear();
-  const racudoCount = await prisma.voto.count({ where: { votadoId: jogador.id, categoria: "RACUDO", ...votoEncerrada } });
-  const resenhaCount = await prisma.voto.count({ where: { votadoId: jogador.id, categoria: "RESENHA", ...votoEncerrada } });
+  // Raçudo/Resenha nunca são gravados como categoria de voto (a votação só cria
+  // TRAIT) e não entram no cálculo do overall — 0 fixo em vez de duas queries
+  // que sempre voltavam 0.
+  const racudoCount = 0;
+  const resenhaCount = 0;
 
   const conquiStats = { mvpCount, bagreCount, racudoCount, resenhaCount, traitsUnlocked, presencaCount };
   const overall = computeOverall(conquiStats);
@@ -85,8 +100,24 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
     { label: "MVP's", value: mvpCount, color: "#B5FF4D" },
     { label: "BAGRES", value: bagreCount, color: "#e56767" },
     // /medalhas só mostra as badges da própria conta — link só faz sentido no próprio perfil
-    { label: "PERSONAGENS", value: traitsUnlocked, color: "#A78BFA", href: isOwner ? "/medalhas" : undefined },
+    // PERSONAGENS abria /medalhas; agora abre a sheet com as miniaturas e a
+    // recorrência de cada personagem (o link virou o botão dentro da sheet).
+    { label: "PERSONAGENS", value: traitsUnlocked, color: "#A78BFA" },
   ];
+
+  const detalhes = {
+    personagens: personagensRows.map((p) => ({
+      slug: p.traitSlug,
+      nome: p.trait?.nome ?? p.traitSlug,
+      emoji: p.trait?.emoji ?? null,
+      vezes: p.contador,
+      art: artDoSlug(p.traitSlug),
+    })),
+    // Date não atravessa o boundary server→client de forma confiável: manda ISO.
+    presencas: stats.presencas.map((r) => ({ data: r.data.toISOString(), participantes: r.participantes })),
+    mvps: stats.mvps.map((r) => ({ data: r.data.toISOString(), votos: r.votos })),
+    bagres: stats.bagres.map((r) => ({ data: r.data.toISOString(), votos: r.votos })),
+  };
 
   return (
     <div style={{ minHeight: "100dvh", background: "#090909" }}>
@@ -105,6 +136,7 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
           foto={jogador.foto ?? ""}
           initials={initials}
           stats={STATS}
+          detalhes={detalhes}
           email={session.user.email ?? ""}
           grupoNome={jogador.grupo?.nome ?? "Canelada"}
           roleLabel={jogador.role === "PLAYER" ? "Jogador" : jogador.role === "SUPER_ADMIN" ? "Dono" : "Admin"}

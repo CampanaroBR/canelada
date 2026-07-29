@@ -7,6 +7,7 @@ import { janelaVotacao, votacaoEncerrada } from "@/lib/votacaoJanela";
 import { pickWinner } from "@/lib/tieBreak";
 import { montarSelecao } from "@/lib/selecaoRodada";
 import { TRAITS_POSITIVOS, TRAITS_NEGATIVOS } from "@/lib/traits";
+import { ART_BY_SLUG } from "@/lib/premioArt";
 import { HomeClient } from "./HomeClient";
 import { PushAutoEnroll } from "@/components/PushAutoEnroll";
 import { InstallPrompt } from "@/components/InstallPrompt";
@@ -131,16 +132,6 @@ export default async function FeedPage() {
 
   // ── Personagens da Semana: traits mais votados na rodada atual ──
   // Filtro de relevância: líder com ≥40% dos votos do personagem E ≥3 votos.
-  const ART_BY_SLUG: Record<string, string> = {
-    matador: "/premio/matador.jpg", categoria: "/premio/categoria.jpg", paredao: "/premio/paredao.jpg",
-    racudo: "/premio/racudo.jpg", xerife: "/premio/xerife.jpg", garcom: "/premio/garcom.jpg",
-    driblador: "/premio/driblador.jpg", "gol-mais-bonito": "/premio/gol-mais-bonito.jpg",
-    "resenha-forte": "/premio/soresenha.jpg", delegado: "/premio/delegado.jpg", chorao: "/premio/chorao.jpg", reclamao: "/premio/reclamao.jpg",
-    paneleiro: "/premio/paneleiro.jpg", firuleiro: "/premio/firuleiro.jpg",
-    pregueiro: "/premio/pregueiro.jpg", "corpo-mole": "/premio/pregueiro.jpg",
-    cone: "/premio/cone.jpg", bagre: "/premio/bagredanoite.jpg",
-    frangueiro: "/premio/frangueiro.jpg", bragueiro: "/premio/bragueiro.jpg",
-  };
   type PersonagemSemana = { slug: string; nome: string; emoji: string | null; descricao: string | null; art: string; vencedor: string; votos: number };
   let personagensSemana: PersonagemSemana[] = [];
   let selecao: (PersonagemSemana | null)[] = [];

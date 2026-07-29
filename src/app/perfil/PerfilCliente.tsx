@@ -6,6 +6,7 @@ import { toPng } from "html-to-image";
 import { Export, ShieldStar } from "reicon-react";
 import { ContaActions } from "./ContaActions";
 import { EditarPerfilSheet, type PerfilInitial } from "./EditarPerfilSheet";
+import { StatSheets, type SheetKind, type PersonagemItem, type RodadaItem } from "./StatSheets";
 import { Stat } from "@/ds";
 
 const ACCENT = "#9fe870";
@@ -25,11 +26,21 @@ interface Props {
   isAdmin: boolean;
   initial: PerfilInitial;
   isOwner: boolean;
+  detalhes: {
+    personagens: PersonagemItem[];
+    presencas: RodadaItem[];
+    mvps: RodadaItem[];
+    bagres: RodadaItem[];
+  };
 }
 
+/** Stats que abrem sheet de detalhe ao tocar (o label é a chave da sheet). */
+const SHEETS: SheetKind[] = ["PERSONAGENS", "PRESENÇAS", "MVP's", "BAGRES"];
+
 export function PerfilCliente(props: Props) {
-  const { displayName, subtitle, initials, overall, posAbbr, joinYear, foto, stats, email, grupoNome, roleLabel, isAdmin, initial, isOwner } = props;
+  const { displayName, subtitle, initials, overall, posAbbr, joinYear, foto, stats, email, grupoNome, roleLabel, isAdmin, initial, isOwner, detalhes } = props;
   const [editOpen, setEditOpen] = useState(false);
+  const [sheet, setSheet] = useState<SheetKind | null>(null);
   const [sharing, setSharing] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const shareBtnRef = useRef<HTMLButtonElement>(null);
@@ -127,17 +138,30 @@ export function PerfilCliente(props: Props) {
         {/* divisória */}
         <div style={{ height: 1, background: "#22271f", width: "100%" }} />
 
-        {/* stats */}
+        {/* stats — tocar abre a sheet com o detalhe por trás do número */}
         <div style={{ display: "flex", gap: 12, width: "100%" }}>
-          {stats.map((s) =>
-            s.href ? (
+          {stats.map((s) => {
+            const kind = SHEETS.find((k) => k === s.label);
+            return kind ? (
+              <button
+                key={s.label}
+                onClick={() => setSheet(kind)}
+                aria-label={`Ver detalhe de ${s.label}`}
+                style={{
+                  flex: "1 0 0", minWidth: 0, background: "none", border: "none",
+                  padding: 0, cursor: "pointer", WebkitTapHighlightColor: "transparent",
+                }}
+              >
+                <Stat value={s.value} label={s.label} color={s.color} />
+              </button>
+            ) : s.href ? (
               <Link key={s.label} href={s.href} style={{ flex: "1 0 0", minWidth: 0, textDecoration: "none", WebkitTapHighlightColor: "transparent" }}>
                 <Stat value={s.value} label={s.label} color={s.color} />
               </Link>
             ) : (
               <Stat key={s.label} value={s.value} label={s.label} color={s.color} />
-            )
-          )}
+            );
+          })}
         </div>
       </div>
 
@@ -148,6 +172,17 @@ export function PerfilCliente(props: Props) {
           <EditarPerfilSheet open={editOpen} onClose={() => setEditOpen(false)} initial={initial} />
         </>
       )}
+
+      {/* Detalhe dos stats — vale também no perfil dos outros (dá pra ver a
+          carreira de quem você abriu, não só a sua). */}
+      <StatSheets
+        aberta={sheet}
+        onClose={() => setSheet(null)}
+        personagens={detalhes.personagens}
+        presencas={detalhes.presencas}
+        mvps={detalhes.mvps}
+        bagres={detalhes.bagres}
+      />
     </>
   );
 }
