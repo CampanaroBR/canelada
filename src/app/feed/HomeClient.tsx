@@ -35,6 +35,7 @@ const SelecaoShareModal = dynamic(
 );
 
 import { TRAIT_BADGE } from "@/lib/badgeAssets";
+import { BotaoCriarRodada } from "@/components/BotaoCriarRodada";
 import { PlayerSlot, PlayerNamed, TSHIRT_OUTLINE, TSHIRT_GK_OUT, TSHIRT_FILLED, TSHIRT_GK_FILL, TSHIRT_FILLED_PIORES, TSHIRT_GK_FILL_PIORES } from "./CampoPlayers";
 
 const CAMPO   = "/campo.jpg";
@@ -309,14 +310,7 @@ export function HomeClient({
                 /* Criar rodada — só o dono do grupo (super admin). Pros demais,
                    nada aqui: rodada é criada só pelo super admin, em seg/qua. */
                 isSuperAdmin ? (
-                  <form action={criarRodadaAction}>
-                    <button type="submit" style={{
-                      width: "100%", background: "#0d0d0d", border: "1px solid #090909",
-                      borderRadius: 14, padding: "13px 16px",
-                      fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 18, color: "#9fe870",
-                      cursor: "pointer", letterSpacing: "-0.8px",
-                    }}>⚽ BABA ROLOU HOJE</button>
-                  </form>
+                  <BotaoCriarRodada action={criarRodadaAction} />
                 ) : null
               ) : (votacao?.fase === "encerrada" || jaVotou) ? (
                 /* Resultados — botão compartilhar separado, alinhado à faixa (Figma 529-155) */
