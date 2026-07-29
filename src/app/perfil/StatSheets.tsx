@@ -18,7 +18,9 @@ export interface StatSheetsProps {
 }
 
 const TITULOS: Record<SheetKind, { titulo: string; vazio: string }> = {
-  "PERSONAGENS": { titulo: "Personagens vencidos", vazio: "Ainda não venceu nenhum personagem." },
+  // "Vitórias" confundia — num app de futebol lê-se como "ganhou X jogos".
+  // O que o número conta é quantas rodadas o jogador FOI aquele personagem.
+  "PERSONAGENS": { titulo: "Personagens", vazio: "Ainda não levou nenhum personagem." },
   "PRESENÇAS": { titulo: "Presenças", vazio: "Nenhuma presença registrada ainda." },
   "MVP's": { titulo: "Craque da rodada", vazio: "Ainda não foi craque da rodada." },
   "BAGRES": { titulo: "Bagre da noite", vazio: "Nunca levou o bagre. Segue assim!" },
@@ -46,7 +48,7 @@ export function StatSheets({ aberta, onClose, personagens, presencas, mvps, bagr
         </h2>
         <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "#8a8a8a", margin: "0 0 16px" }}>
           {aberta === "PERSONAGENS"
-            ? `${personagens.length} ${personagens.length === 1 ? "personagem" : "personagens"} · ${personagens.reduce((t, p) => t + p.vezes, 0)} ${personagens.reduce((t, p) => t + p.vezes, 0) === 1 ? "vitória" : "vitórias"}`
+            ? `${personagens.length} ${personagens.length === 1 ? "diferente" : "diferentes"} · ${personagens.reduce((t, p) => t + p.vezes, 0)}x no total`
             : `${rodadas.length} ${rodadas.length === 1 ? "rodada" : "rodadas"}`}
         </p>
 

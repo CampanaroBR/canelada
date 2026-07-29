@@ -7,6 +7,7 @@ import { Export, ShieldStar } from "reicon-react";
 import { ContaActions } from "./ContaActions";
 import { EditarPerfilSheet, type PerfilInitial } from "./EditarPerfilSheet";
 import { StatSheets, type SheetKind, type PersonagemItem, type RodadaItem } from "./StatSheets";
+import { ShareStoryCard } from "./ShareStoryCard";
 import { Stat } from "@/ds";
 
 const ACCENT = "#9fe870";
@@ -42,18 +43,68 @@ export function PerfilCliente(props: Props) {
   const [editOpen, setEditOpen] = useState(false);
   const [sheet, setSheet] = useState<SheetKind | null>(null);
   const [sharing, setSharing] = useState(false);
+  // O card de story só é montado durante a captura (é 1080×1920 — caro pra
+  // deixar no DOM à toa num celular).
+  const [renderShare, setRenderShare] = useState(false);
+  const [fotoData, setFotoData] = useState<string | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const shareRef = useRef<HTMLDivElement>(null);
   const shareBtnRef = useRef<HTMLButtonElement>(null);
 
+  /** Baixa a foto e devolve data URI. html-to-image NÃO embute imagem
+   *  cross-origin (a foto do Google), e era por isso que o card compartilhado
+   *  saía com o anel verde vazio. Falhou? devolve null → cai nas iniciais. */
+  async function fotoEmDataUri(src: string): Promise<string | null> {
+    if (!src) return null;
+    try {
+      const res = await fetch(src, { mode: "cors", cache: "force-cache" });
+      if (!res.ok) return null;
+      const blob = await res.blob();
+      return await new Promise<string | null>((resolve) => {
+        const fr = new FileReader();
+        fr.onload = () => resolve(typeof fr.result === "string" ? fr.result : null);
+        fr.onerror = () => resolve(null);
+        fr.readAsDataURL(blob);
+      });
+    } catch {
+      return null;
+    }
+  }
+
+  /** Espera fontes + todas as imagens do nó decodificarem. Sem isso a captura
+   *  pega o card meio montado (texto sem fonte, miniatura em branco). */
+  async function esperarPronto(node: HTMLElement) {
+    try { await document.fonts.ready; } catch { /* browser antigo */ }
+    const imgs = Array.from(node.querySelectorAll("img"));
+    await Promise.all(imgs.map((img) =>
+      img.complete ? Promise.resolve() : new Promise<void>((r) => {
+        img.onload = () => r();
+        img.onerror = () => r();
+      })
+    ));
+    // 2 frames: garante que o layout do nó recém-montado já estabilizou
+    await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+  }
+
   async function compartilhar() {
-    if (sharing || !cardRef.current) return;
+    if (sharing) return;
     setSharing(true);
     const text = `🏆 ${displayName} — ${overall} OVR no Canelada`;
     const url = typeof window !== "undefined" ? window.location.href : "";
     try {
-      const dataUrl = await toPng(cardRef.current, {
-        pixelRatio: 2, cacheBust: true, backgroundColor: "#090909",
-        filter: (n) => n !== shareBtnRef.current,
+      setFotoData(await fotoEmDataUri(foto));
+      setRenderShare(true);
+      await new Promise((r) => requestAnimationFrame(r));
+      const node = shareRef.current;
+      if (!node) throw new Error("share node ausente");
+      await esperarPronto(node);
+
+      // O nó já é 1080×1920, então pixelRatio 1 dá o tamanho de story exato —
+      // antes era pixelRatio 2 sobre o card da tela, o que gerava uma imagem
+      // quase quadrada e enorme, que o Instagram esticava.
+      const dataUrl = await toPng(node, {
+        pixelRatio: 1, width: 1080, height: 1920,
+        cacheBust: true, backgroundColor: "#050505",
       });
       const blob = await (await fetch(dataUrl)).blob();
       const file = new File([blob], "card-canelada.png", { type: "image/png" });
@@ -67,11 +118,11 @@ export function PerfilCliente(props: Props) {
         URL.revokeObjectURL(u);
       }
     } catch (e) {
-      // CORS na foto pode falhar a imagem → fallback texto
       if ((e as Error)?.name !== "AbortError") {
         try { if (navigator.share) await navigator.share({ title: displayName, text, url }); } catch { /* */ }
       }
     } finally {
+      setRenderShare(false);
       setSharing(false);
     }
   }
@@ -183,6 +234,25 @@ export function PerfilCliente(props: Props) {
         mvps={detalhes.mvps}
         bagres={detalhes.bagres}
       />
+
+      {/* Fora da tela (não `display:none`, senão não renderiza pra captura). */}
+      {renderShare && (
+        <div style={{ position: "fixed", top: 0, left: -20000, zIndex: -1, pointerEvents: "none" }} aria-hidden>
+          <ShareStoryCard
+            ref={shareRef}
+            displayName={displayName}
+            subtitle={subtitle}
+            initials={initials}
+            overall={overall}
+            posAbbr={posAbbr}
+            joinYear={joinYear}
+            grupoNome={grupoNome}
+            fotoData={fotoData}
+            stats={stats}
+            personagens={detalhes.personagens}
+          />
+        </div>
+      )}
     </>
   );
 }

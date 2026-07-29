@@ -50,6 +50,17 @@ Atualizar a cada sessão: mover itens de "Em aberto" pra "Feito" e registrar dec
   jogador foi o mais votado naquele trait (mesmo `pickWinner`/seed do story).
   Quem nunca venceu um personagem não o lista mais. ⚠️ Mexe no OVERALL de novo
   (`traitBonus`): Arthur 14 personagens → **7**, OVR 83 → **82**.
+- **Card de compartilhar reescrito** (`src/app/perfil/ShareStoryCard.tsx`): nó
+  próprio de **1080×1920 (9:16)**, montado fora da tela só durante a captura.
+  Antes o share fazia `toPng` do card da própria tela → saía quase quadrado (o
+  Instagram esticava = "muito grande") e **sem a foto**, porque html-to-image não
+  embute imagem cross-origin (foto do Google) — vinha só o anel verde vazio.
+  Agora a foto é baixada e convertida em **data URI** antes da captura, e o
+  código espera `document.fonts.ready` + todas as `<img>` decodificarem.
+  Conteúdo novo: grupo, posição, top 3 personagens com miniatura, canelada.app.br.
+  **Não usar `pixelRatio` >1** aqui: o nó já está no tamanho final.
+- **Copy:** "vitórias" saiu da UI — em app de futebol lia-se como "ganhou X
+  jogos". Agora é "7 diferentes · 8x no total".
 - **Perfil: sheets de detalhe** (`src/app/perfil/StatSheets.tsx`) — tocar num
   stat abre BottomSheet: Personagens (miniatura + `Nx` de vitórias), Presenças
   (data + nº de participantes), Craque e Bagre (rodadas + votos). PERSONAGENS
