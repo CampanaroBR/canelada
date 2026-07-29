@@ -69,6 +69,7 @@ model Grupo {
 
   jogadores   Jogador[]
   rodadas     Rodada[]
+  convidados  Convidado[]
 }
 
 enum RoleGrupo {
@@ -82,6 +83,40 @@ enum RoleGrupo {
 enum PapelGol {
   FIXO
   CURINGA
+}
+
+/** Força estimada do convidado, já que ele não tem OVR (não é votado).
+ *  Vira média do grupo ajustada — ver `notaDoConvidado` em sorteioConvidados.ts. */
+enum NivelConvidado {
+  FRACO
+  MEDIO
+  FORTE
+}
+
+/**
+ * Quem joga o baba mas NÃO tem conta no app — e não vai ter. Existe só pro
+ * sorteio: não vota, não é votado, não entra em ranking/badges/Seleção (decidido
+ * com o usuário — quem não usa o app não teria como receber prêmio nem se
+ * defender de um bagre).
+ *
+ * Diferente de `Rodada.pendentes`, que é nome da lista esperando ser VINCULADO a
+ * um cadastrado. Convidado é permanente: cadastra uma vez, nas próximas rodadas
+ * só marca a chegada.
+ */
+model Convidado {
+  id        String         @id @default(cuid())
+  grupoId   String
+  nome      String
+  nivel     NivelConvidado @default(MEDIO)
+  papelGol  PapelGol?
+  /** Parou de vir? some das listas sem apagar o histórico. */
+  ativo     Boolean        @default(true)
+  createdAt DateTime       @default(now())
+
+  grupo     Grupo          @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  chegadas  Chegada[]
+
+  @@unique([grupoId, nome])
 }
 
 model Jogador {
@@ -127,16 +162,20 @@ model Jogador {
  * `chegouEm` fica pro histórico.
  */
 model Chegada {
-  id         String   @id @default(cuid())
-  rodadaId   String
-  jogadorId  String
-  ordem      Int
-  chegouEm   DateTime @default(now())
+  id          String   @id @default(cuid())
+  rodadaId    String
+  /** Exatamente UM dos dois é preenchido: cadastrado OU convidado. */
+  jogadorId   String?
+  convidadoId String?
+  ordem       Int
+  chegouEm    DateTime @default(now())
 
-  rodada     Rodada   @relation(fields: [rodadaId], references: [id], onDelete: Cascade)
-  jogador    Jogador  @relation(fields: [jogadorId], references: [id], onDelete: Cascade)
+  rodada      Rodada     @relation(fields: [rodadaId], references: [id], onDelete: Cascade)
+  jogador     Jogador?   @relation(fields: [jogadorId], references: [id], onDelete: Cascade)
+  convidado   Convidado? @relation(fields: [convidadoId], references: [id], onDelete: Cascade)
 
   @@unique([rodadaId, jogadorId])
+  @@unique([rodadaId, convidadoId])
   @@index([rodadaId, ordem])
 }
 

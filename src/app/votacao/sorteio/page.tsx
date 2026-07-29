@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { notasDoGrupo } from "@/lib/perfilStats";
+import { mediaDoGrupo, notaDoConvidado } from "@/lib/convidados";
 import { SorteioClient } from "./SorteioClient";
 
 export const dynamic = "force-dynamic";
@@ -30,21 +31,45 @@ export default async function SorteioPage() {
     prisma.chegada.findMany({
       where: { rodadaId: rodada.id },
       orderBy: { ordem: "asc" },
-      select: { jogador: { select: { id: true, apelido: true, foto: true, papelGol: true } } },
+      select: {
+        jogador: { select: { id: true, apelido: true, foto: true, papelGol: true } },
+        convidado: { select: { id: true, nome: true, nivel: true, papelGol: true } },
+      },
     }),
     notasDoGrupo(jogador.grupoId),
   ]);
 
-  const fila = chegadas.map((c) => ({
-    id: c.jogador.id,
-    apelido: c.jogador.apelido,
-    foto: c.jogador.foto ?? "",
-    // O lib de sorteio usa minúsculo; o enum do banco é maiúsculo.
-    gol: c.jogador.papelGol === "FIXO" ? ("fixo" as const)
-       : c.jogador.papelGol === "CURINGA" ? ("curinga" as const)
-       : undefined,
-    nota: notas.get(c.jogador.id) ?? 60,
-  }));
+  // Convidado não tem OVR (não é votado): a nota sai da média do grupo ajustada
+  // pelo nível que o admin marcou. Ver src/lib/convidados.ts.
+  const media = mediaDoGrupo(notas.values());
+
+  // O lib de sorteio usa minúsculo; o enum do banco é maiúsculo.
+  const paraGol = (p: "FIXO" | "CURINGA" | null | undefined) =>
+    p === "FIXO" ? ("fixo" as const) : p === "CURINGA" ? ("curinga" as const) : undefined;
+
+  const fila = chegadas.flatMap((c) => {
+    if (c.jogador) {
+      return [{
+        id: c.jogador.id,
+        apelido: c.jogador.apelido,
+        foto: c.jogador.foto ?? "",
+        gol: paraGol(c.jogador.papelGol),
+        nota: notas.get(c.jogador.id) ?? media,
+        convidado: false,
+      }];
+    }
+    if (c.convidado) {
+      return [{
+        id: c.convidado.id,
+        apelido: c.convidado.nome,
+        foto: "",
+        gol: paraGol(c.convidado.papelGol),
+        nota: notaDoConvidado(c.convidado.nivel, media),
+        convidado: true,
+      }];
+    }
+    return [];
+  });
 
   return <SorteioClient fila={fila} />;
 }

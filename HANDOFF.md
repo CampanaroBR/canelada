@@ -154,6 +154,16 @@ Atualizar a cada sessão: mover itens de "Em aberto" pra "Feito" e registrar dec
       MESMA fórmula do perfil, senão o sorteio usaria nota diferente da que o
       jogador vê. O "sortear de novo" usa `seed`: embaralha só quem EMPATA em
       nota, então varia a dupla sem piorar o equilíbrio.
+      **CONVIDADOS** (quem joga mas não tem conta): model `Convidado` por grupo
+      (nome único, nível FRACO/MEDIO/FORTE, papelGol, ativo). `Chegada.jogadorId`
+      virou opcional e ganhou `convidadoId` — cada linha é OU jogador OU convidado.
+      Convidado **não vota, não é votado, não entra em ranking/badges/Seleção**
+      (decidido com o usuário) — só existe na `Chegada`, que é o que o sorteio lê.
+      Nota = **média do grupo ± 8** pelo nível (`src/lib/convidados.ts`); usar o
+      piso 60 trataria todo convidado como perna-de-pau. Verificado: convidados
+      com a mesma nota se ESPALHAM sozinhos entre os times (o rateio "time com
+      menos pontos escolhe" já alterna), não precisou de regra extra.
+      `salvarPresenca` agora recebe `ItemPresenca[]` (lista mista ordenada).
       **Goleiro FIXO tem PREFERÊNCIA pra iniciar** (decidido com o usuário):
       fura a fila mesmo chegando atrasado — máx. 1 por time, e quem cede a vaga
       é o último do corte. CURINGA não fura. Sem isso, o goleiro de verdade

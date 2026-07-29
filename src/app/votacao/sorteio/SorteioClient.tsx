@@ -9,7 +9,7 @@ import { sortearTimes, type JogadorSorteio } from "@/lib/sorteioTimes";
 const ACCENT = "#9fe870";
 const NOMES_TIME = ["A", "B", "C", "D"];
 
-export type FilaItem = JogadorSorteio & { apelido: string; foto: string };
+export type FilaItem = JogadorSorteio & { apelido: string; foto: string; convidado: boolean };
 
 export function SorteioClient({ fila }: { fila: FilaItem[] }) {
   const [nTimes, setNTimes] = useState(2);

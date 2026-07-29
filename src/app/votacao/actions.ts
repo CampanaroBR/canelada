@@ -251,7 +251,9 @@ export async function vincularPendente(rodadaId: string, nomePendente: string, j
  * primeiros jogam primeiro"). `presentes` continua guardando só QUEM jogou,
  * intocado, porque ranking/badges/feed leem de lá.
  */
-export async function salvarPresenca(rodadaId: string, jogadorIds: string[]) {
+export type ItemPresenca = { tipo: "jogador" | "convidado"; id: string };
+
+export async function salvarPresenca(rodadaId: string, itens: ItemPresenca[]) {
   const session = await auth();
   if (!session?.user?.id) return { error: "Não autenticado." } as const;
 
@@ -275,29 +277,99 @@ export async function salvarPresenca(rodadaId: string, jogadorIds: string[]) {
     where: { grupoId: eu.grupoId },
     select: { id: true },
   });
-  const validos = new Set(membros.map((m) => m.id));
+  const convidados = await prisma.convidado.findMany({
+    where: { grupoId: eu.grupoId },
+    select: { id: true },
+  });
+  const validos = {
+    jogador: new Set(membros.map((m) => m.id)),
+    convidado: new Set(convidados.map((c) => c.id)),
+  };
+
   // dedup preservando a ordem — id repetido bagunçaria a numeração da chegada
-  const ids = [...new Set(jogadorIds.filter((id) => validos.has(id)))];
+  const vistos = new Set<string>();
+  const lista = itens.filter((it) => {
+    const chave = `${it.tipo}:${it.id}`;
+    if (vistos.has(chave) || !validos[it.tipo]?.has(it.id)) return false;
+    vistos.add(chave);
+    return true;
+  });
+
+  // `presentes` (ranking/badges/votação) só conhece jogador cadastrado.
+  // Convidado vive só na `Chegada`, que é o que o sorteio lê.
+  const jogadorIds = lista.filter((it) => it.tipo === "jogador").map((it) => it.id);
 
   await prisma.$transaction([
     prisma.rodada.update({
       where: { id: rodadaId },
-      data: { presentes: { set: ids.map((id) => ({ id })) } },
+      data: { presentes: { set: jogadorIds.map((id) => ({ id })) } },
     }),
-    // Quem saiu da lista perde a chegada
-    prisma.chegada.deleteMany({
-      where: { rodadaId, jogadorId: { notIn: ids.length ? ids : ["-"] } },
+    // Recria a ordem do zero: mais simples e correto que tentar casar o que
+    // mudou (o admin pode ter reordenado, removido e adicionado na mesma edição).
+    prisma.chegada.deleteMany({ where: { rodadaId } }),
+    prisma.chegada.createMany({
+      data: lista.map((it, i) => ({
+        rodadaId,
+        ordem: i,
+        jogadorId: it.tipo === "jogador" ? it.id : null,
+        convidadoId: it.tipo === "convidado" ? it.id : null,
+      })),
     }),
-    // Renumera todo mundo: o admin pode ter reordenado, não só adicionado
-    ...ids.map((id, i) =>
-      prisma.chegada.upsert({
-        where: { rodadaId_jogadorId: { rodadaId, jogadorId: id } },
-        update: { ordem: i },
-        create: { rodadaId, jogadorId: id, ordem: i },
-      })
-    ),
   ]);
 
+  return { success: true } as const;
+}
+
+/** Cria (ou reativa) um convidado do grupo. Nome é único por grupo. */
+export async function criarConvidado(nome: string) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Não autenticado." } as const;
+
+  const eu = await prisma.jogador.findUnique({
+    where: { userId: session.user.id },
+    select: { grupoId: true, role: true },
+  });
+  if (!eu) return { error: "Jogador não encontrado." } as const;
+  if (eu.role !== "ADMIN" && eu.role !== "SUPER_ADMIN") {
+    return { error: "Só admins podem adicionar convidados." } as const;
+  }
+
+  const limpo = nome.trim();
+  if (limpo.length < 2) return { error: "Nome muito curto." } as const;
+  if (limpo.length > 40) return { error: "Nome muito longo." } as const;
+
+  // Já existe (talvez desativado)? reativa em vez de duplicar.
+  const convidado = await prisma.convidado.upsert({
+    where: { grupoId_nome: { grupoId: eu.grupoId, nome: limpo } },
+    update: { ativo: true },
+    create: { grupoId: eu.grupoId, nome: limpo },
+    select: { id: true, nome: true, nivel: true, papelGol: true },
+  });
+
+  return { success: true, convidado } as const;
+}
+
+/** Ajusta nível/gol do convidado, ou desativa quem parou de vir. */
+export async function atualizarConvidado(
+  convidadoId: string,
+  dados: { nivel?: "FRACO" | "MEDIO" | "FORTE"; papelGol?: "FIXO" | "CURINGA" | null; ativo?: boolean },
+) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Não autenticado." } as const;
+
+  const eu = await prisma.jogador.findUnique({
+    where: { userId: session.user.id },
+    select: { grupoId: true, role: true },
+  });
+  if (!eu) return { error: "Jogador não encontrado." } as const;
+  if (eu.role !== "ADMIN" && eu.role !== "SUPER_ADMIN") {
+    return { error: "Só admins podem editar convidados." } as const;
+  }
+
+  const alvo = await prisma.convidado.findUnique({ where: { id: convidadoId }, select: { grupoId: true } });
+  if (!alvo || alvo.grupoId !== eu.grupoId) return { error: "Convidado inválido." } as const;
+
+  await prisma.convidado.update({ where: { id: convidadoId }, data: dados });
   return { success: true } as const;
 }
 

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { PresencaClient } from "./PresencaClient";
+import type { ItemPresenca } from "../actions";
 
 export const dynamic = "force-dynamic";
 
@@ -23,32 +24,46 @@ export default async function PresencaPage() {
   });
   if (!rodada) redirect("/votacao");
 
-  const [jogadores, chegadas] = await Promise.all([
+  const [jogadores, convidados, chegadas] = await Promise.all([
     prisma.jogador.findMany({
       where: { grupoId: jogador.grupoId },
       select: { id: true, apelido: true, papelGol: true },
       orderBy: { apelido: "asc" },
     }),
+    prisma.convidado.findMany({
+      where: { grupoId: jogador.grupoId, ativo: true },
+      select: { id: true, nome: true, nivel: true, papelGol: true },
+      orderBy: { nome: "asc" },
+    }),
     prisma.chegada.findMany({
       where: { rodadaId: rodada.id },
-      select: { jogadorId: true },
+      select: { jogadorId: true, convidadoId: true },
       orderBy: { ordem: "asc" },
     }),
   ]);
 
   // Ordem de chegada primeiro. Rodada antiga não tem `Chegada` (tabela nova):
   // esses caem no fim, sem ordem, e o admin reordena na tela se quiser sortear.
-  const ordenados = chegadas.map((c) => c.jogadorId);
-  const jaOrdenado = new Set(ordenados);
-  const presentesIniciais = [
+  const ordenados: ItemPresenca[] = chegadas.flatMap((c): ItemPresenca[] =>
+    c.jogadorId
+      ? [{ tipo: "jogador", id: c.jogadorId }]
+      : c.convidadoId
+        ? [{ tipo: "convidado", id: c.convidadoId }]
+        : []
+  );
+  const jaOrdenado = new Set(ordenados.map((o) => `${o.tipo}:${o.id}`));
+  const presentesIniciais: ItemPresenca[] = [
     ...ordenados,
-    ...rodada.presentes.map((j) => j.id).filter((id) => !jaOrdenado.has(id)),
+    ...rodada.presentes
+      .map((j): ItemPresenca => ({ tipo: "jogador", id: j.id }))
+      .filter((o) => !jaOrdenado.has(`${o.tipo}:${o.id}`)),
   ];
 
   return (
     <PresencaClient
       rodadaId={rodada.id}
       jogadores={jogadores}
+      convidados={convidados}
       presentesIniciais={presentesIniciais}
       pendentesIniciais={rodada.pendentes}
       isSuperAdmin={jogador.role === "SUPER_ADMIN"}
