@@ -6,7 +6,7 @@ import { PerfilCliente } from "../PerfilCliente";
 import { BackButton } from "../BackButton";
 import { computeConquistas, computeOverall } from "@/lib/conquistas";
 import { perfilStats } from "@/lib/perfilStats";
-import { artDoSlug } from "@/lib/premioArt";
+import { personagemBgSrc, personagemMascotSrc } from "@/lib/personagemArt";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +32,6 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
       id: true, userId: true, apelido: true, nome: true, sobrenome: true,
       posicao: true, peDominante: true, foto: true, grupoId: true, createdAt: true, role: true,
       grupo: { select: { nome: true } },
-      traitsRecebidas: { select: { traitSlug: true } },
     },
   });
 
@@ -59,24 +58,24 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
   // (hoje é tudo TRAIT), então davam 0 pra todo mundo mesmo com o story dizendo
   // "Fulano foi o CRAQUE DA RODADA". Presença também mudou: era "rodadas em que
   // me votaram", agora é a mesma união presentes∪votantes do ranking/badges.
-  const [stats, personagensRows] = await Promise.all([
-    perfilStats(jogador.id, jogador.grupoId),
-    prisma.jogadorTrait.findMany({
-      where: { jogadorId: jogador.id },
-      select: {
-        traitSlug: true, contador: true,
-        trait: { select: { nome: true, emoji: true } },
-      },
-      orderBy: { contador: "desc" },
-    }),
-  ]);
+  const stats = await perfilStats(jogador.id, jogador.grupoId);
   const { mvpCount, bagreCount, presencaCount } = stats;
+  const traitMeta = stats.personagens.length
+    ? await prisma.trait.findMany({
+        where: { slug: { in: stats.personagens.map((p) => p.slug) } },
+        select: { slug: true, nome: true, emoji: true },
+      })
+    : [];
+  const metaPorSlug = Object.fromEntries(traitMeta.map((t) => [t.slug, t]));
 
   const isOwner = jogador.userId === session.user.id;
   const nomeCompleto = [jogador.nome, jogador.sobrenome].filter(Boolean).join(" ");
   const displayName = nomeCompleto || jogador.apelido;
   const initials = getInitials(displayName);
-  const traitsUnlocked = jogador.traitsRecebidas.length;
+  // PERSONAGENS = personagens VENCIDOS (foi o mais votado no trait na rodada),
+  // não traits em que recebeu algum voto. `traitsRecebidas` contava qualquer
+  // voto, então quem levou 1 voto perdido "desbloqueava" o personagem.
+  const traitsUnlocked = stats.personagens.length;
   const joinYear = new Date(jogador.createdAt).getFullYear();
   // Raçudo/Resenha nunca são gravados como categoria de voto (a votação só cria
   // TRAIT) e não entram no cálculo do overall — 0 fixo em vez de duas queries
@@ -106,12 +105,16 @@ export default async function PerfilPage({ params }: { params: Promise<{ apelido
   ];
 
   const detalhes = {
-    personagens: personagensRows.map((p) => ({
-      slug: p.traitSlug,
-      nome: p.trait?.nome ?? p.traitSlug,
-      emoji: p.trait?.emoji ?? null,
-      vezes: p.contador,
-      art: artDoSlug(p.traitSlug),
+    personagens: stats.personagens.map((p) => ({
+      slug: p.slug,
+      nome: metaPorSlug[p.slug]?.nome ?? p.slug,
+      emoji: metaPorSlug[p.slug]?.emoji ?? null,
+      vezes: p.vitorias,
+      // Miniatura = só a ilustração: fundo do prêmio (sem título assado) +
+      // mascote transparente por cima. A arte /premio/*.jpg tem o TÍTULO
+      // embutido e ficava ilegível em 44px.
+      bg: personagemBgSrc(p.slug),
+      mascote: personagemMascotSrc(p.slug),
     })),
     // Date não atravessa o boundary server→client de forma confiável: manda ISO.
     presencas: stats.presencas.map((r) => ({ data: r.data.toISOString(), participantes: r.participantes })),

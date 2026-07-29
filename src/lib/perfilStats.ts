@@ -25,6 +25,10 @@ function votacaoFinalizada(data: Date, encerrada: boolean): boolean {
 
 export type TituloRodada = { rodadaId: string; data: Date; votos: number };
 export type PresencaRodada = { rodadaId: string; data: Date; participantes: number };
+/** Personagem VENCIDO (foi o mais votado naquele trait na rodada) e quantas vezes.
+ *  Não é o total de votos recebidos: levar 14 votos de Driblador espalhados em 6
+ *  rodadas sem nunca ser o mais votado = 0 vitórias. */
+export type PersonagemVencido = { slug: string; vitorias: number };
 
 export type PerfilStats = {
   mvpCount: number;
@@ -36,6 +40,8 @@ export type PerfilStats = {
   bagres: TituloRodada[];
   /** Rodadas em que participou, com quanta gente jogou. */
   presencas: PresencaRodada[];
+  /** Personagens que venceu ao menos 1x, do mais vencido pro menos. */
+  personagens: PersonagemVencido[];
 };
 
 const MVP_TRAIT = "categoria";
@@ -50,7 +56,7 @@ export async function perfilStats(jogadorId: string, grupoId: string): Promise<P
   const rodadas = rodadasTodas.filter((r) => votacaoFinalizada(r.data, r.encerrada));
   const vazio: PerfilStats = {
     mvpCount: 0, bagreCount: 0, presencaCount: 0,
-    mvps: [], bagres: [], presencas: [],
+    mvps: [], bagres: [], presencas: [], personagens: [],
   };
   if (rodadas.length === 0) return vazio;
 
@@ -97,6 +103,21 @@ export async function perfilStats(jogadorId: string, grupoId: string): Promise<P
   const mvps = titulos(MVP_TRAIT);
   const bagres = titulos(BAGRE_TRAIT);
 
+  // Vitórias por personagem: varre TODOS os traits de cada rodada e conta onde
+  // este jogador foi o vencedor. É diferente de `JogadorTrait.contador`, que
+  // soma VOTOS recebidos — dava números inflados no perfil ("Driblador 14x" com
+  // só 2 rodadas vencidas). Mesma seed do story, então bate com o "Fulano
+  // conquistou a trait X" que o grupo viu.
+  const vitorias = new Map<string, number>();
+  for (const r of rodadas) {
+    const traits = porRodada.get(r.id);
+    if (!traits) continue;
+    for (const [slug, jogs] of traits) {
+      const w = pickWinner(jogs, `${r.id}:${slug}`);
+      if (w?.id === jogadorId) vitorias.set(slug, (vitorias.get(slug) ?? 0) + 1);
+    }
+  }
+
   const presencas: PresencaRodada[] = rodadas
     .filter((r) => participantes.get(r.id)?.has(jogadorId))
     .map((r) => ({ rodadaId: r.id, data: r.data, participantes: participantes.get(r.id)?.size ?? 0 }));
@@ -108,5 +129,8 @@ export async function perfilStats(jogadorId: string, grupoId: string): Promise<P
     mvps,
     bagres,
     presencas,
+    personagens: [...vitorias.entries()]
+      .map(([slug, v]) => ({ slug, vitorias: v }))
+      .sort((a, b) => b.vitorias - a.vitorias || a.slug.localeCompare(b.slug)),
   };
 }

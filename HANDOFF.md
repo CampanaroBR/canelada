@@ -44,12 +44,21 @@ Atualizar a cada sessão: mover itens de "Em aberto" pra "Feito" e registrar dec
 - **Perfil: PRESENÇAS** era "rodadas em que me votaram"; virou a mesma união
   `presentes ∪ votantes(votanteJogou)` do ranking/badges, pra não ter dois
   números de "rodadas" divergentes no app.
+- **Perfil: PERSONAGENS = personagens VENCIDOS**, não votos recebidos. Era
+  `JogadorTrait.contador` (soma de votos), que inflava tudo — "Driblador 14x"
+  quando na real foram **2 rodadas vencidas**. Agora conta rodadas em que o
+  jogador foi o mais votado naquele trait (mesmo `pickWinner`/seed do story).
+  Quem nunca venceu um personagem não o lista mais. ⚠️ Mexe no OVERALL de novo
+  (`traitBonus`): Arthur 14 personagens → **7**, OVR 83 → **82**.
 - **Perfil: sheets de detalhe** (`src/app/perfil/StatSheets.tsx`) — tocar num
-  stat abre BottomSheet: Personagens (miniatura + `Nx` de recorrência, vindo do
-  `contador` de `JogadorTrait`), Presenças (data + nº de participantes), Craque
-  e Bagre (rodadas + votos). PERSONAGENS não linka mais pra `/medalhas`.
+  stat abre BottomSheet: Personagens (miniatura + `Nx` de vitórias), Presenças
+  (data + nº de participantes), Craque e Bagre (rodadas + votos). PERSONAGENS
+  não linka mais pra `/medalhas`.
+- **Miniatura = só ilustração**: `/premio/*.jpg` tem o TÍTULO assado na imagem e
+  virava borrão em 44px. As sheets usam `personagemArt.ts` — `/premio-bg`
+  (fundo sem título) + `/votacao-mascot` (mascote transparente) por cima.
 - **`ART_BY_SLUG` virou fonte única** em `src/lib/premioArt.ts` (era hardcoded
-  dentro de `feed/page.tsx`; o perfil passou a precisar das mesmas miniaturas).
+  dentro de `feed/page.tsx`).
 
 - **Seleção da Rodada — sem repetir jogador entre os times** (`src/lib/selecaoRodada.ts`):
   ninguém aparece nas duas escalações. Montagem em 2 passadas: (1) cada jogador

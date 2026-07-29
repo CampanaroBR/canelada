@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { BottomSheet } from "@/ds";
 
-export type PersonagemItem = { slug: string; nome: string; emoji: string | null; vezes: number; art: string | null };
+export type PersonagemItem = { slug: string; nome: string; emoji: string | null; vezes: number; bg: string; mascote: string };
 export type RodadaItem = { data: string; participantes?: number; votos?: number };
 
 export type SheetKind = "PERSONAGENS" | "PRESENÇAS" | "MVP's" | "BAGRES";
@@ -18,7 +18,7 @@ export interface StatSheetsProps {
 }
 
 const TITULOS: Record<SheetKind, { titulo: string; vazio: string }> = {
-  "PERSONAGENS": { titulo: "Personagens recebidos", vazio: "Nenhum personagem ainda. Bora jogar!" },
+  "PERSONAGENS": { titulo: "Personagens vencidos", vazio: "Ainda não venceu nenhum personagem." },
   "PRESENÇAS": { titulo: "Presenças", vazio: "Nenhuma presença registrada ainda." },
   "MVP's": { titulo: "Craque da rodada", vazio: "Ainda não foi craque da rodada." },
   "BAGRES": { titulo: "Bagre da noite", vazio: "Nunca levou o bagre. Segue assim!" },
@@ -46,7 +46,7 @@ export function StatSheets({ aberta, onClose, personagens, presencas, mvps, bagr
         </h2>
         <p style={{ fontFamily: "var(--font-body)", fontSize: 13, color: "#8a8a8a", margin: "0 0 16px" }}>
           {aberta === "PERSONAGENS"
-            ? `${personagens.length} personagens · ${personagens.reduce((t, p) => t + p.vezes, 0)} votos no total`
+            ? `${personagens.length} ${personagens.length === 1 ? "personagem" : "personagens"} · ${personagens.reduce((t, p) => t + p.vezes, 0)} ${personagens.reduce((t, p) => t + p.vezes, 0) === 1 ? "vitória" : "vitórias"}`
             : `${rodadas.length} ${rodadas.length === 1 ? "rodada" : "rodadas"}`}
         </p>
 
@@ -62,16 +62,20 @@ export function StatSheets({ aberta, onClose, personagens, presencas, mvps, bagr
                 background: "#141414", border: "1px solid #242424",
                 borderRadius: 14, padding: 10,
               }}>
+                {/* Miniatura só-ilustração: fundo do prêmio + mascote por cima.
+                    Nada de título — o nome do personagem já vem ao lado. */}
                 <div style={{
-                  width: 44, height: 44, borderRadius: 10, overflow: "hidden",
-                  background: "#1e1e1e", flexShrink: 0,
-                  display: "flex", alignItems: "center", justifyContent: "center",
+                  position: "relative", width: 44, height: 44, borderRadius: 10,
+                  overflow: "hidden", background: "#1e1e1e", flexShrink: 0,
                 }}>
-                  {p.art ? (
-                    <Image src={p.art} alt="" width={44} height={44} style={{ objectFit: "cover", width: 44, height: 44 }} />
-                  ) : (
-                    <span style={{ fontSize: 20 }}>{p.emoji ?? "⚽"}</span>
-                  )}
+                  <Image src={p.bg} alt="" fill sizes="44px" style={{ objectFit: "cover" }} />
+                  <Image
+                    src={p.mascote}
+                    alt=""
+                    fill
+                    sizes="44px"
+                    style={{ objectFit: "contain", padding: 4 }}
+                  />
                 </div>
                 <span style={{
                   flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 700,
