@@ -105,6 +105,32 @@ describe("sorteioTimes — gol (fixo × curinga)", () => {
   });
 });
 
+describe("sorteioTimes — sortear de novo (seed)", () => {
+  it("seeds diferentes trocam quem empata em nota, mas o equilíbrio se mantém", () => {
+    // 8 jogadores, notas em pares → há empate pra embaralhar.
+    const chegada = [
+      j("a", 80), j("b", 80), j("c", 70), j("d", 70),
+      j("e", 60), j("f", 60), j("g", 50), j("h", 50),
+    ];
+    const r1 = sortearTimes(chegada, { times: 2, linhaPorTime: 3, seed: 1 });
+    const r2 = sortearTimes(chegada, { times: 2, linhaPorTime: 3, seed: 7 });
+    // mesmo equilíbrio nos dois
+    expect(Math.abs(r1.times[0].total - r1.times[1].total))
+      .toBe(Math.abs(r2.times[0].total - r2.times[1].total));
+    // mas escalação diferente em ao menos um time
+    const t1 = r1.times.map((t) => ids(t).sort().join(","));
+    const t2 = r2.times.map((t) => ids(t).sort().join(","));
+    expect(t1).not.toEqual(t2);
+  });
+
+  it("mesma seed = mesmo resultado (não muda sozinho entre reloads)", () => {
+    const chegada = [j("a", 80), j("b", 80), j("c", 70), j("d", 70)];
+    const r1 = sortearTimes(chegada, { times: 2, linhaPorTime: 1, seed: 42 });
+    const r2 = sortearTimes(chegada, { times: 2, linhaPorTime: 1, seed: 42 });
+    expect(r1.times.map(ids)).toEqual(r2.times.map(ids));
+  });
+});
+
 describe("sorteioTimes — formato", () => {
   it("padrão é 1 gol + 4 linha", () => {
     const chegada = Array.from({ length: 10 }, (_, i) => j(`p${i}`, 60 + i, i < 2 ? "fixo" : undefined));

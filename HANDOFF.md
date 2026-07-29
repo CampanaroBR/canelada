@@ -147,8 +147,15 @@ Atualizar a cada sessão: mover itens de "Em aberto" pra "Feito" e registrar dec
       `/votacao/presenca` reescrita: lista "Chegaram" numerada e reordenável
       (↑↓✕) + "Ainda não chegaram" (+), e chip que cicla o papel no gol.
       `salvarPresenca` agora renumera `Chegada` pela ordem do array.
-      **FALTA:** (1) tela de sorteio; (2) compartilhar no WhatsApp;
-      (3) decidir o que fazer quando um goleiro FIXO chega e tem CURINGA no gol.
+      **FEITO tb:** tela `/votacao/sorteio` (admin) — escolhe nº de times e
+      jogadores de linha, mostra times com média, "Sortear de novo" e
+      compartilhar (texto pro WhatsApp). Entra pelo card da rodada em `/pelada`.
+      `notasDoGrupo()` em `perfilStats.ts` calcula o OVR de todos numa passada —
+      MESMA fórmula do perfil, senão o sorteio usaria nota diferente da que o
+      jogador vê. O "sortear de novo" usa `seed`: embaralha só quem EMPATA em
+      nota, então varia a dupla sem piorar o equilíbrio.
+      **FALTA:** decidir o que fazer quando um goleiro FIXO chega e tem CURINGA
+      no gol (trocar? avisar? deixar quieto).
 
 - [ ] **Suporte Vicente Naus (Android):** não consegue cadastrar; provável webview
       do WhatsApp. Instruído a abrir no Chrome com o link completo. Aguardando

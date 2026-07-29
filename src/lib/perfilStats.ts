@@ -12,6 +12,7 @@
 
 import { prisma } from "./prisma";
 import { pickWinner } from "./tieBreak";
+import { computeOverall } from "./conquistas";
 
 /** Rodada conta quando a votação encerrou (flag OU 15h do dia seguinte). Mesma
  *  regra de badges.ts — perfil e ranking não podem divergir. */
@@ -47,80 +48,90 @@ export type PerfilStats = {
 const MVP_TRAIT = "categoria";
 const BAGRE_TRAIT = "bagre";
 
-export async function perfilStats(jogadorId: string, grupoId: string): Promise<PerfilStats> {
+type Rodadinha = { id: string; data: Date };
+type CtxGrupo = {
+  rodadas: Rodadinha[];
+  /** rodadaId -> trait -> vencedor daquela rodada naquele trait. */
+  vencedores: Map<string, Map<string, { id: string; count: number }>>;
+  /** rodadaId -> quem participou (presentes ∪ votantes que jogaram). */
+  participantes: Map<string, Set<string>>;
+};
+
+/**
+ * UMA passada no grupo inteiro. Existe porque a tela de sorteio precisa da nota
+ * de ~16 jogadores de uma vez — chamar `perfilStats` por jogador repetiria a
+ * mesma query N vezes. `perfilStats` e `notasDoGrupo` derivam daqui, então o
+ * número do perfil e o do sorteio são sempre o mesmo.
+ */
+async function carregarGrupo(grupoId: string): Promise<CtxGrupo> {
   const rodadasTodas = await prisma.rodada.findMany({
     where: { grupoId },
     orderBy: { data: "desc" },
     select: { id: true, data: true, encerrada: true, presentes: { select: { id: true } } },
   });
   const rodadas = rodadasTodas.filter((r) => votacaoFinalizada(r.data, r.encerrada));
-  const vazio: PerfilStats = {
-    mvpCount: 0, bagreCount: 0, presencaCount: 0,
-    mvps: [], bagres: [], presencas: [], personagens: [],
-  };
-  if (rodadas.length === 0) return vazio;
+  if (rodadas.length === 0) return { rodadas: [], vencedores: new Map(), participantes: new Map() };
 
-  const ids = rodadas.map((r) => r.id);
   const votos = await prisma.voto.findMany({
-    where: { rodadaId: { in: ids }, categoria: "TRAIT", traitSlug: { not: null } },
+    where: { rodadaId: { in: rodadas.map((r) => r.id) }, categoria: "TRAIT", traitSlug: { not: null } },
     select: { rodadaId: true, votadoId: true, votanteId: true, traitSlug: true, votanteJogou: true },
   });
 
-  // votos por rodada → trait → jogador (base dos vencedores de cada rodada)
-  const porRodada = new Map<string, Map<string, Map<string, number>>>();
   // participação: presentes ∪ votantes que declararam ter jogado (mesma união
   // de badges.ts — `presentes` é a fonte primária, votante é fallback/reforço).
   const participantes = new Map<string, Set<string>>();
+  for (const r of rodadas) participantes.set(r.id, new Set(r.presentes.map((p) => p.id)));
 
-  for (const r of rodadas) {
-    const s = new Set<string>(r.presentes.map((p) => p.id));
-    participantes.set(r.id, s);
-  }
+  const contagem = new Map<string, Map<string, Map<string, number>>>();
   for (const v of votos) {
     const slug = v.traitSlug as string;
-    let traits = porRodada.get(v.rodadaId);
-    if (!traits) { traits = new Map(); porRodada.set(v.rodadaId, traits); }
+    let traits = contagem.get(v.rodadaId);
+    if (!traits) { traits = new Map(); contagem.set(v.rodadaId, traits); }
     let jogs = traits.get(slug);
     if (!jogs) { jogs = new Map(); traits.set(slug, jogs); }
     jogs.set(v.votadoId, (jogs.get(v.votadoId) ?? 0) + 1);
-
     if (v.votanteJogou) participantes.get(v.rodadaId)?.add(v.votanteId);
   }
 
-  const titulos = (trait: string): TituloRodada[] => {
-    const out: TituloRodada[] = [];
-    for (const r of rodadas) {
-      const jogs = porRodada.get(r.id)?.get(trait);
-      if (!jogs) continue;
-      // MESMA seed do story — senão, num empate, perfil e story apontariam
-      // vencedores diferentes na mesma rodada.
-      const w = pickWinner(jogs, `${r.id}:${trait}`);
-      if (w?.id === jogadorId) out.push({ rodadaId: r.id, data: r.data, votos: w.count });
+  // Vencedor de cada trait em cada rodada, com a MESMA seed do story — senão,
+  // num empate, perfil e story apontariam craques diferentes na mesma rodada.
+  const vencedores = new Map<string, Map<string, { id: string; count: number }>>();
+  for (const [rodadaId, traits] of contagem) {
+    const m = new Map<string, { id: string; count: number }>();
+    for (const [slug, jogs] of traits) {
+      const w = pickWinner(jogs, `${rodadaId}:${slug}`);
+      if (w) m.set(slug, w);
     }
-    return out;
-  };
+    vencedores.set(rodadaId, m);
+  }
+
+  return { rodadas: rodadas.map((r) => ({ id: r.id, data: r.data })), vencedores, participantes };
+}
+
+/** Extrai as estatísticas de UM jogador do contexto já carregado. */
+function statsDoJogador(jogadorId: string, ctx: CtxGrupo): PerfilStats {
+  const titulos = (trait: string): TituloRodada[] =>
+    ctx.rodadas.flatMap((r) => {
+      const w = ctx.vencedores.get(r.id)?.get(trait);
+      return w?.id === jogadorId ? [{ rodadaId: r.id, data: r.data, votos: w.count }] : [];
+    });
 
   const mvps = titulos(MVP_TRAIT);
   const bagres = titulos(BAGRE_TRAIT);
 
-  // Vitórias por personagem: varre TODOS os traits de cada rodada e conta onde
-  // este jogador foi o vencedor. É diferente de `JogadorTrait.contador`, que
-  // soma VOTOS recebidos — dava números inflados no perfil ("Driblador 14x" com
-  // só 2 rodadas vencidas). Mesma seed do story, então bate com o "Fulano
-  // conquistou a trait X" que o grupo viu.
+  // Vitórias por personagem: rodadas em que ele foi o mais votado naquele trait.
+  // Diferente de `JogadorTrait.contador`, que soma VOTOS recebidos e inflava o
+  // perfil ("Driblador 14x" com só 2 rodadas vencidas).
   const vitorias = new Map<string, number>();
-  for (const r of rodadas) {
-    const traits = porRodada.get(r.id);
-    if (!traits) continue;
-    for (const [slug, jogs] of traits) {
-      const w = pickWinner(jogs, `${r.id}:${slug}`);
-      if (w?.id === jogadorId) vitorias.set(slug, (vitorias.get(slug) ?? 0) + 1);
+  for (const r of ctx.rodadas) {
+    for (const [slug, w] of ctx.vencedores.get(r.id) ?? []) {
+      if (w.id === jogadorId) vitorias.set(slug, (vitorias.get(slug) ?? 0) + 1);
     }
   }
 
-  const presencas: PresencaRodada[] = rodadas
-    .filter((r) => participantes.get(r.id)?.has(jogadorId))
-    .map((r) => ({ rodadaId: r.id, data: r.data, participantes: participantes.get(r.id)?.size ?? 0 }));
+  const presencas: PresencaRodada[] = ctx.rodadas
+    .filter((r) => ctx.participantes.get(r.id)?.has(jogadorId))
+    .map((r) => ({ rodadaId: r.id, data: r.data, participantes: ctx.participantes.get(r.id)?.size ?? 0 }));
 
   return {
     mvpCount: mvps.length,
@@ -133,4 +144,31 @@ export async function perfilStats(jogadorId: string, grupoId: string): Promise<P
       .map(([slug, v]) => ({ slug, vitorias: v }))
       .sort((a, b) => b.vitorias - a.vitorias || a.slug.localeCompare(b.slug)),
   };
+}
+
+export async function perfilStats(jogadorId: string, grupoId: string): Promise<PerfilStats> {
+  return statsDoJogador(jogadorId, await carregarGrupo(grupoId));
+}
+
+/**
+ * OVR de TODOS os jogadores do grupo, numa passada. É o mesmo número do perfil
+ * (mesma fórmula, mesmos dados) — o sorteio não pode usar uma nota diferente da
+ * que o jogador vê na tela dele.
+ */
+export async function notasDoGrupo(grupoId: string): Promise<Map<string, number>> {
+  const ctx = await carregarGrupo(grupoId);
+  const jogadores = await prisma.jogador.findMany({ where: { grupoId }, select: { id: true } });
+  const out = new Map<string, number>();
+  for (const j of jogadores) {
+    const s = statsDoJogador(j.id, ctx);
+    out.set(j.id, computeOverall({
+      mvpCount: s.mvpCount,
+      bagreCount: s.bagreCount,
+      racudoCount: 0,
+      resenhaCount: 0,
+      traitsUnlocked: s.personagens.length,
+      presencaCount: s.presencaCount,
+    }));
+  }
+  return out;
 }

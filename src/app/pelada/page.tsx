@@ -76,6 +76,19 @@ export default async function PeladaPage() {
                   </div>
                 </Link>
               )}
+              {/* Sorteio: entra pela rodada aberta, que é onde o admin já está
+                  no dia do baba (marca chegada ao lado, sorteia aqui). */}
+              <Link href="/votacao/sorteio" style={{ textDecoration: "none" }}>
+                <div style={{
+                  background: "#9fe870", borderRadius: 16,
+                  padding: "14px", display: "flex", alignItems: "center", justifyContent: "center",
+                  width: "100%", boxSizing: "border-box",
+                }}>
+                  <span style={{ fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 15, color: "#0a1a06" }}>
+                    Sortear times
+                  </span>
+                </div>
+              </Link>
             </Card>
           </div>
         ) : isSuperAdmin ? (

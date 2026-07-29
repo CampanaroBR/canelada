@@ -35,6 +35,13 @@ export interface SorteioConfig {
   times?: number;
   /** Jogadores de LINHA por time. Default 4 (formação 1 goleiro + 4 linha). */
   linhaPorTime?: number;
+  /**
+   * Semente do "sortear de novo". O algoritmo é determinístico de propósito
+   * (equilíbrio não é sorte), então sem isto o botão devolveria SEMPRE o mesmo
+   * time. A semente só embaralha quem tem a MESMA nota — o equilíbrio fica
+   * idêntico, mas a dupla muda. Sem semente, resultado estável.
+   */
+  seed?: number;
 }
 
 export interface TimeSorteado {
@@ -58,6 +65,26 @@ const media = (js: JogadorSorteio[]) =>
   js.length ? Math.round(js.reduce((t, j) => t + j.nota, 0) / js.length) : 0;
 const total = (js: JogadorSorteio[]) => js.reduce((t, j) => t + j.nota, 0);
 
+/** Hash determinístico (FNV-1a), igual ao tieBreak.ts — mesma seed, mesmo sorteio. */
+function hash(s: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+  return h >>> 0;
+}
+
+/**
+ * Ordena por nota (desc) e desempata pela seed. Só quem EMPATA em nota muda de
+ * posição entre um sorteio e outro — por isso o "sortear de novo" varia o time
+ * sem piorar o equilíbrio. Sem seed, desempata por id (estável).
+ */
+const ordenar = (js: JogadorSorteio[], seed?: number) =>
+  [...js].sort((a, b) =>
+    b.nota - a.nota ||
+    (seed === undefined
+      ? a.id.localeCompare(b.id)
+      : hash(`${seed}:${a.id}`) - hash(`${seed}:${b.id}`))
+  );
+
 /**
  * @param chegada jogadores JÁ na ordem de chegada (primeiro = chegou primeiro).
  */
@@ -77,9 +104,8 @@ export function sortearTimes(chegada: JogadorSorteio[], cfg: SorteioConfig = {})
   // 1 gol por time. FIXO tem prioridade; curinga só é puxado pro gol se faltar
   // fixo (senão tiraríamos um jogador de linha do jogo à toa). Dentro de cada
   // nível, o de maior nota primeiro.
-  const porNota = (a: JogadorSorteio, b: JogadorSorteio) => b.nota - a.nota || a.id.localeCompare(b.id);
-  const fixos = escalados.filter((j) => j.gol === "fixo").sort(porNota);
-  const curingas = escalados.filter((j) => j.gol === "curinga").sort(porNota);
+  const fixos = ordenar(escalados.filter((j) => j.gol === "fixo"), cfg.seed);
+  const curingas = ordenar(escalados.filter((j) => j.gol === "curinga"), cfg.seed);
   const paraOGol = [...fixos, ...curingas].slice(0, nTimes);
   paraOGol.forEach((g, i) => {
     times[i].push(g);
@@ -90,7 +116,7 @@ export function sortearTimes(chegada: JogadorSorteio[], cfg: SorteioConfig = {})
   // Linha: o time com MENOS pontos escolhe primeiro. Isso aproxima as somas e
   // ainda corrige o desequilíbrio que a escalação dos goleiros deixou (goleiro
   // de nota alta num time, baixa no outro).
-  const linha = escalados.filter((j) => !usados.has(j.id)).sort(porNota);
+  const linha = ordenar(escalados.filter((j) => !usados.has(j.id)), cfg.seed);
   for (const j of linha) {
     const ordem = [...times.keys()]
       .filter((t) => times[t].length < porTime)
