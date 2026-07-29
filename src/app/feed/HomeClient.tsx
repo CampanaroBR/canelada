@@ -312,17 +312,25 @@ export function HomeClient({
                    registrava isso). Agora existe UM caminho só: a aba Baba,
                    que pede data e participantes. Aqui fica só o atalho. */
                 isSuperAdmin ? (
-                  <Link href="/pelada" style={{
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    width: "100%", padding: "12px 16px", borderRadius: 14,
-                    background: "rgba(255,255,255,0.04)",
-                    boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.08)",
-                    textDecoration: "none", WebkitTapHighlightColor: "transparent",
-                    fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14,
-                    color: "#9fe870",
-                  }}>
-                    Criar rodada na aba Baba
-                  </Link>
+                  // Pílula ESCURA e compacta: isto fica em cima do gramado, e
+                  // fundo translúcido claro (rgba(255,255,255,.04)) lava o
+                  // contraste e some no verde. Mesma linguagem do botão de
+                  // compartilhar do campo (#0d0d0d + hairline).
+                  <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+                    <Link href="/pelada" style={{
+                      display: "inline-flex", alignItems: "center", gap: 8,
+                      padding: "11px 18px", borderRadius: 999,
+                      background: "#0d0d0d",
+                      border: "1px solid rgba(255,255,255,0.14)",
+                      boxShadow: "0px 4px 12px rgba(0,0,0,0.35)",
+                      textDecoration: "none", WebkitTapHighlightColor: "transparent",
+                      fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14,
+                      color: "#9fe870", whiteSpace: "nowrap",
+                    }}>
+                      Criar rodada na aba Baba
+                      <ChevronRight size={16} weight="Outline" color="#9fe870" />
+                    </Link>
+                  </div>
                 ) : null
               ) : (votacao?.fase === "encerrada" || jaVotou) ? (
                 /* Resultados — botão compartilhar separado, alinhado à faixa (Figma 529-155) */
