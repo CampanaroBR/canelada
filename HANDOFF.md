@@ -118,6 +118,19 @@ Atualizar a cada sessão: mover itens de "Em aberto" pra "Feito" e registrar dec
 
 ---
 
+### Rodada fantasma (resolvido 2026-07-29)
+Rodada criada sem querer (29/07, 0 votos/0 presentes) — **não era o cron**. O
+botão "⚽ BABA ROLOU HOJE" (Home e /votacao) criava rodada num TOQUE, sem
+confirmação, por um caminho que não pede lista (por isso nasce vazia). É a mesma
+origem das fantasmas limpas antes.
+- **Prevenção:** `BotaoCriarRodada` — confirmação em 2 toques (desarma em 4s).
+- **Saída:** `BotaoExcluirRodada` no card da rodada em `/pelada` + action
+  `excluirRodada` — só SUPER_ADMIN e só se a rodada estiver VAZIA (sem voto,
+  presença, chegada ou story). Rodada com voto é histórico (ranking/badges leem
+  dela) e nunca pode sumir por um toque.
+
+---
+
 ## Como o login/convite funciona (importante p/ suporte)
 
 - App é **só por convite** (`src/auth.ts` — callback `signIn`).

@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { NovaRodadaForm } from "./NovaRodadaForm";
+import { BotaoExcluirRodada } from "@/components/BotaoExcluirRodada";
 import { EmptyState } from "@/ds/components/EmptyState";
 import { Card } from "@/ds/components/Card";
 import { Clock, History, Football } from "reicon-react";
@@ -89,6 +90,9 @@ export default async function PeladaPage() {
                   </span>
                 </div>
               </Link>
+              {/* Saída pra rodada criada por engano. Só o dono, e o servidor
+                  recusa se a rodada já tiver voto/presença. */}
+              {isSuperAdmin && <BotaoExcluirRodada rodadaId={rodadaAberta.id} />}
             </Card>
           </div>
         ) : isSuperAdmin ? (

@@ -320,6 +320,50 @@ export async function salvarPresenca(rodadaId: string, itens: ItemPresenca[]) {
   return { success: true } as const;
 }
 
+/**
+ * Apaga uma rodada VAZIA. Existe por causa das "rodadas fantasma": o botão
+ * "Baba rolou hoje" cria rodada num toque, e sem isto a única forma de desfazer
+ * era mexer no banco à mão.
+ *
+ * Trava de propósito: só o dono do grupo, e só se a rodada não tiver NADA
+ * (voto, presença, chegada ou story). Rodada com voto é histórico do grupo —
+ * ranking, badges e Seleção leem dela — então não pode sumir por um toque.
+ */
+export async function excluirRodada(rodadaId: string) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Não autenticado." } as const;
+
+  const eu = await prisma.jogador.findUnique({
+    where: { userId: session.user.id },
+    select: { grupoId: true, role: true },
+  });
+  if (!eu) return { error: "Jogador não encontrado." } as const;
+  if (eu.role !== "SUPER_ADMIN") return { error: "Só o dono do grupo pode excluir rodada." } as const;
+
+  const rodada = await prisma.rodada.findUnique({
+    where: { id: rodadaId },
+    select: { grupoId: true, _count: { select: { votos: true, stories: true, chegadas: true, presentes: true } } },
+  });
+  if (!rodada || rodada.grupoId !== eu.grupoId) return { error: "Rodada inválida." } as const;
+
+  // Mensagem diz o QUE está travando: só "não pode" deixaria o dono sem saber
+  // o que limpar. Convidado entra em `chegadas` sem entrar em `presentes`, então
+  // os dois precisam ser citados separadamente.
+  const { votos, stories, chegadas, presentes } = rodada._count;
+  const motivos = [
+    votos > 0 && `${votos} voto${votos === 1 ? "" : "s"}`,
+    presentes > 0 && `${presentes} presente${presentes === 1 ? "" : "s"}`,
+    chegadas > presentes && "convidado na lista",
+    stories > 0 && "resultado publicado",
+  ].filter(Boolean);
+  if (motivos.length > 0) {
+    return { error: `Rodada com ${motivos.join(", ")} não pode ser excluída. Limpe a lista de presença primeiro.` } as const;
+  }
+
+  await prisma.rodada.delete({ where: { id: rodadaId } });
+  return { success: true } as const;
+}
+
 /** Cria (ou reativa) um convidado do grupo. Nome é único por grupo. */
 export async function criarConvidado(nome: string) {
   const session = await auth();
