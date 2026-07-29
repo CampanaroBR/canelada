@@ -134,6 +134,19 @@ Atualizar a cada sessão: mover itens de "Em aberto" pra "Feito" e registrar dec
 
 ## Em aberto / próximos passos
 
+- [ ] **Sorteio de times equilibrado** — pedido do grupo. Algoritmo PRONTO e
+      testado (`src/lib/sorteioTimes.ts`, 14 testes). Regras: **ordem de chegada
+      decide QUEM joga** (primeiros entram, resto vai pra fila na ordem), **nota
+      (OVR) decide EM QUAL time**. Formação **1 goleiro + 4 linha**.
+      Gol tem 2 níveis: `fixo` (Raphael, Vitor) e `curinga` (Bruno, Luiz Junior,
+      Uili — de linha, mas topam pegar). Curinga só vai pro gol se faltar fixo.
+      ⚠️ **Não dá pra inferir goleiro dos votos** — quem leva Frangueiro pode ter
+      ido pro gol de brincadeira (o 1º teste marcou João Victor e ALABA errado).
+      **Falta:** (1) gravar ordem de chegada — `_RodadaPresentes` tem só *quem*,
+      e tem **105 linhas**, então usar tabela ADITIVA em vez de refatorar (é lida
+      por ranking/badges/feed/votação); (2) marcar `fixo`/`curinga` por jogador;
+      (3) ordem na tela `/votacao/presenca`; (4) tela de sorteio; (5) compartilhar.
+
 - [ ] **Suporte Vicente Naus (Android):** não consegue cadastrar; provável webview
       do WhatsApp. Instruído a abrir no Chrome com o link completo. Aguardando
       confirmação. Se persistir no Chrome: pedir print + o que acontece ao tocar
