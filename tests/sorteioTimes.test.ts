@@ -28,6 +28,42 @@ describe("sorteioTimes — ordem de chegada", () => {
     expect(times.flatMap(ids)).not.toContain("z");
   });
 
+  it("goleiro FIXO atrasado FURA A FILA (preferência pra iniciar)", () => {
+    // 2 times × (1 gol + 1 linha) = 4 vagas. O goleiro chegou em 6º.
+    const chegada = [
+      j("a", 60), j("b", 61), j("c", 62), j("d", 63),
+      j("e", 64), j("raphael", 55, "fixo"),
+    ];
+    const { times, fila } = sortearTimes(chegada, { times: 2, linhaPorTime: 1 });
+    // entrou mesmo tendo chegado por último
+    expect(times.flatMap(ids)).toContain("raphael");
+    // quem cedeu a vaga foi o ÚLTIMO do corte (d), não os primeiros
+    expect(fila.map((f) => f.id)).toEqual(["d", "e"]);
+    expect(times.flatMap(ids)).toEqual(expect.arrayContaining(["a", "b", "c"]));
+  });
+
+  it("preferência vale no máximo 1 fixo por time — o 3º goleiro espera", () => {
+    const chegada = [
+      j("a", 60), j("b", 61), j("c", 62), j("d", 63),
+      j("g1", 50, "fixo"), j("g2", 51, "fixo"), j("g3", 52, "fixo"),
+    ];
+    const { times, fila } = sortearTimes(chegada, { times: 2, linhaPorTime: 1 });
+    const escalados = times.flatMap(ids);
+    expect(escalados).toContain("g1");
+    expect(escalados).toContain("g2");
+    expect(fila.map((f) => f.id)).toContain("g3"); // 3º goleiro não fura
+  });
+
+  it("CURINGA não fura a fila (só o fixo tem preferência)", () => {
+    const chegada = [
+      j("a", 60), j("b", 61), j("c", 62), j("d", 63),
+      j("bruno", 80, "curinga"),
+    ];
+    const { times, fila } = sortearTimes(chegada, { times: 2, linhaPorTime: 1 });
+    expect(fila.map((f) => f.id)).toEqual(["bruno"]);
+    expect(times.flatMap(ids)).not.toContain("bruno");
+  });
+
   it("fila preserva a ordem de chegada, não ordena por nota", () => {
     const chegada = [j("a", 50), j("b", 50), j("c", 50), j("d", 50), j("x", 10), j("y", 99), j("w", 40)];
     const { fila } = sortearTimes(chegada, { times: 2, linhaPorTime: 1 });

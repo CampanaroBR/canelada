@@ -154,8 +154,10 @@ Atualizar a cada sessão: mover itens de "Em aberto" pra "Feito" e registrar dec
       MESMA fórmula do perfil, senão o sorteio usaria nota diferente da que o
       jogador vê. O "sortear de novo" usa `seed`: embaralha só quem EMPATA em
       nota, então varia a dupla sem piorar o equilíbrio.
-      **FALTA:** decidir o que fazer quando um goleiro FIXO chega e tem CURINGA
-      no gol (trocar? avisar? deixar quieto).
+      **Goleiro FIXO tem PREFERÊNCIA pra iniciar** (decidido com o usuário):
+      fura a fila mesmo chegando atrasado — máx. 1 por time, e quem cede a vaga
+      é o último do corte. CURINGA não fura. Sem isso, o goleiro de verdade
+      ficava assistindo enquanto um jogador de linha pegava o gol.
 
 - [ ] **Suporte Vicente Naus (Android):** não consegue cadastrar; provável webview
       do WhatsApp. Instruído a abrir no Chrome com o link completo. Aguardando

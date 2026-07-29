@@ -95,8 +95,22 @@ export function sortearTimes(chegada: JogadorSorteio[], cfg: SorteioConfig = {})
   const vagas = nTimes * porTime;
 
   // Corte por ordem de chegada — é a regra 1. Só depois a nota entra em cena.
-  const escalados = chegada.slice(0, vagas);
-  const fila = chegada.slice(vagas);
+  //
+  // EXCEÇÃO: goleiro FIXO tem preferência pra iniciar. Sem isso, goleiro que
+  // chega atrasado ficava na fila e um jogador de linha ia pro gol enquanto o
+  // goleiro de verdade assistia — o que ninguém faz num baba. Ele fura a fila
+  // (no máximo 1 por time, na ordem de chegada entre os fixos) e o último
+  // colocado do corte cede a vaga.
+  const preferencia = new Set(
+    chegada.filter((j) => j.gol === "fixo").slice(0, nTimes).map((j) => j.id)
+  );
+  const restantes = chegada.filter((j) => !preferencia.has(j.id));
+  const porChegada = new Set(restantes.slice(0, Math.max(0, vagas - preferencia.size)).map((j) => j.id));
+  const entra = (j: JogadorSorteio) => preferencia.has(j.id) || porChegada.has(j.id);
+
+  // mantém a ordem de chegada nas duas listas
+  const escalados = chegada.filter(entra);
+  const fila = chegada.filter((j) => !entra(j));
 
   const times: JogadorSorteio[][] = Array.from({ length: nTimes }, () => []);
   const usados = new Set<string>();
