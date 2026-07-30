@@ -116,6 +116,35 @@ Atualizar a cada sessão: mover itens de "Em aberto" pra "Feito" e registrar dec
   lib de ícone concorrente. SVGs inline que sobram são legítimos (logo WhatsApp,
   anel de progresso de badge, primitivos do DS).
 
+- **SORTEIO DE TIMES** (feito 2026-07-29, pedido do grupo) —
+  `src/lib/sorteioTimes.ts` (lógica pura, 14 testes) + tela `/votacao/sorteio`.
+  Duas regras que convivem: **ordem de chegada decide QUEM joga** (os primeiros
+  entram, o resto vai pra fila NA ORDEM); **nota (OVR) decide EM QUAL time** (o
+  time com menos pontos escolhe primeiro). Formação **1 goleiro + 4 de linha**.
+  - **Gol tem 2 níveis** (`Jogador.papelGol`): `FIXO` (Raphael, Vitor) e
+    `CURINGA` (Bruno, Luiz Junior, Uili — de linha, mas pegam o gol). Curinga só
+    vai pro gol se faltar fixo. ⚠️ **Não dá pra inferir goleiro dos votos** —
+    quem leva Frangueiro pode ter ido pro gol de brincadeira (a 1ª tentativa
+    marcou João Victor e ALABA errado).
+  - **Goleiro FIXO fura a fila** pra iniciar (máx. 1 por time; quem cede a vaga é
+    o último do corte). Sem isso o goleiro de verdade ficava assistindo.
+  - **Ordem de chegada** mora na tabela `Chegada` — ADITIVA, ao lado de
+    `_RodadaPresentes` (105 linhas, lida por ranking/badges/feed/votação). Não
+    refatorar aquela relação só pra caber ordem.
+  - **Convidados** (`model Convidado`): quem joga e não tem conta. **Não vota,
+    não é votado, não entra em ranking/badges/Seleção** — só existe na `Chegada`.
+    Nota = **média do grupo ± 8** pelo nível (`src/lib/convidados.ts`); usar o
+    piso 60 trataria todo convidado como perna-de-pau. Verificado: convidados
+    com a mesma nota já se ESPALHAM sozinhos entre os times, não precisou regra.
+  - `notasDoGrupo()` (`perfilStats.ts`) calcula o OVR de todos numa passada —
+    MESMA fórmula do perfil, senão o sorteio mostraria nota diferente da que o
+    jogador vê. "Sortear de novo" usa `seed`: embaralha só quem EMPATA em nota,
+    variando a dupla sem piorar o equilíbrio.
+  - `salvarPresenca` recebe `ItemPresenca[]` (lista mista ordenada) e renumera
+    `Chegada` do zero a cada save.
+  - **Entrada:** aba Baba → card da rodada → "Sortear times".
+
+
 ---
 
 ### Rodada fantasma (resolvido 2026-07-29)
@@ -155,41 +184,6 @@ origem das fantasmas limpas antes.
 
 ## Em aberto / próximos passos
 
-- [ ] **Sorteio de times equilibrado** — pedido do grupo. Algoritmo PRONTO e
-      testado (`src/lib/sorteioTimes.ts`, 14 testes). Regras: **ordem de chegada
-      decide QUEM joga** (primeiros entram, resto vai pra fila na ordem), **nota
-      (OVR) decide EM QUAL time**. Formação **1 goleiro + 4 linha**.
-      Gol tem 2 níveis: `fixo` (Raphael, Vitor) e `curinga` (Bruno, Luiz Junior,
-      Uili — de linha, mas topam pegar). Curinga só vai pro gol se faltar fixo.
-      ⚠️ **Não dá pra inferir goleiro dos votos** — quem leva Frangueiro pode ter
-      ido pro gol de brincadeira (o 1º teste marcou João Victor e ALABA errado).
-      **FEITO:** tabela `Chegada` (aditiva, ao lado de `_RodadaPresentes` que tem
-      105 linhas e é lida por ranking/badges/feed) · `Jogador.papelGol` + enum ·
-      `/votacao/presenca` reescrita: lista "Chegaram" numerada e reordenável
-      (↑↓✕) + "Ainda não chegaram" (+), e chip que cicla o papel no gol.
-      `salvarPresenca` agora renumera `Chegada` pela ordem do array.
-      **FEITO tb:** tela `/votacao/sorteio` (admin) — escolhe nº de times e
-      jogadores de linha, mostra times com média, "Sortear de novo" e
-      compartilhar (texto pro WhatsApp). Entra pelo card da rodada em `/pelada`.
-      `notasDoGrupo()` em `perfilStats.ts` calcula o OVR de todos numa passada —
-      MESMA fórmula do perfil, senão o sorteio usaria nota diferente da que o
-      jogador vê. O "sortear de novo" usa `seed`: embaralha só quem EMPATA em
-      nota, então varia a dupla sem piorar o equilíbrio.
-      **CONVIDADOS** (quem joga mas não tem conta): model `Convidado` por grupo
-      (nome único, nível FRACO/MEDIO/FORTE, papelGol, ativo). `Chegada.jogadorId`
-      virou opcional e ganhou `convidadoId` — cada linha é OU jogador OU convidado.
-      Convidado **não vota, não é votado, não entra em ranking/badges/Seleção**
-      (decidido com o usuário) — só existe na `Chegada`, que é o que o sorteio lê.
-      Nota = **média do grupo ± 8** pelo nível (`src/lib/convidados.ts`); usar o
-      piso 60 trataria todo convidado como perna-de-pau. Verificado: convidados
-      com a mesma nota se ESPALHAM sozinhos entre os times (o rateio "time com
-      menos pontos escolhe" já alterna), não precisou de regra extra.
-      `salvarPresenca` agora recebe `ItemPresenca[]` (lista mista ordenada).
-      **Goleiro FIXO tem PREFERÊNCIA pra iniciar** (decidido com o usuário):
-      fura a fila mesmo chegando atrasado — máx. 1 por time, e quem cede a vaga
-      é o último do corte. CURINGA não fura. Sem isso, o goleiro de verdade
-      ficava assistindo enquanto um jogador de linha pegava o gol.
-
 - [ ] **Suporte Vicente Naus (Android):** não consegue cadastrar; provável webview
       do WhatsApp. Instruído a abrir no Chrome com o link completo. Aguardando
       confirmação. Se persistir no Chrome: pedir print + o que acontece ao tocar
@@ -199,14 +193,47 @@ origem das fantasmas limpas antes.
       como está (fallback por voto cobre) OU marcar presença no dia dos próximos
       babas. Feature de editar rodada passada NÃO existe (não vale construir).
 - [ ] **Espelhar no Figma** o que for novo de UI/design (regra do usuário).
+      Pendente desta sessão: card do perfil redesenhado, sheets de stat, card de
+      compartilhar 9:16, tela de presença nova, tela de sorteio.
+- [ ] **Testar o sorteio num baba real** (seg/qua) — nada foi usado em campo
+      ainda. Conferir principalmente se as NOTAS fazem sentido pro grupo; é a
+      parte que gera discussão.
+- [ ] **Cache do app (PWA)** — ⭐ o que mais atrapalhou nesta sessão. Duas vezes o
+      usuário viu versão velha depois do deploy e reportou como bug; a segunda
+      me levou a diagnosticar deploy quebrado que NÃO estava quebrado. O `sw.js`
+      só faz push (sem `fetch`/`caches`), então é cache do iOS/PWA mesmo.
+      Ideia: o app detectar build novo e recarregar (ou avisar "nova versão").
+      **Enquanto não existir: sempre fechar e reabrir o app antes de concluir
+      que algo não subiu.**
+- [ ] **`middleware` deprecado** — Next 16 avisa em todo build que virou `proxy`.
+- [ ] **`package.json#prisma` deprecado** — `prisma.config.ts` já existe e
+      sobrepõe; é só remover a chave e o warning some.
+- [ ] **Lint quebrado (pré-existente)** em `EditarPerfilSheet.tsx`,
+      `VotacaoFlow.tsx` e `AdminVotosClient.tsx` (`react-hooks/set-state-in-effect`).
+      Suja todo `npx eslint` — hoje só dá pra validar arquivo por arquivo.
+- [ ] **`BotaoCriarRodada` ficou sem uso** (o botão saiu da Home e da /votacao).
+      Manter pro futuro ou remover — decidir.
 
 ---
 
 ## Convenções / gotchas
 
-- Validar com `npx tsc --noEmit` e `npx vitest run` (41 testes). Não subir dev server.
+- Validar com `npx tsc --noEmit` e `npx vitest run` (67 testes). Não subir dev server.
 - `@/` **não** resolve no Storybook — usar import relativo lá.
 - DS "Bagre" é **flat** (sem degradê). Stroke cinza padrão `#2c2c2c`.
 - Git às vezes dá `Operation not permitted` (TCC do macOS) — precisa Full Disk
   Access no Terminal; hoje já está funcionando.
 - Commits: mensagens curtas em pt-BR, estilo dos últimos (ver `git log`).
+- **Deploy automático FUNCIONA.** Todo push na `main` dispara deploy de produção.
+  Nesta sessão eu li mal o `vercel ls` e concluí que estava quebrado — não
+  estava, e os deploys manuais que fiz foram desnecessários. Pra checar de
+  verdade: `gh api repos/CampanaroBR/canelada/commits/<sha>/status --jq .state`,
+  ou `npx vercel alias ls` (mostra qual deploy serve canelada.app.br).
+- **Migração em produção:** escrever o SQL IDEMPOTENTE (`IF NOT EXISTS`, `DO
+  $$ ... EXCEPTION WHEN duplicate_object`), aplicar em prod pelo MCP `neon`
+  ANTES do push, e deixar o `prisma migrate deploy` do build rodar depois. Assim
+  build quebrado não derruba o deploy. (Foi assim com `Chegada` e `Convidado`.)
+- **Validar UI sem dev server (8GB):** renderizar o componente num HTML estático
+  no scratchpad, servir com `python3 -m http.server` e abrir no browser. Pegou
+  bugs reais que `tsc` não pega — rótulo estourando a caixa e botão sem
+  contraste. **Testar sempre sobre o fundo REAL** (ex.: o gramado `campo.jpg`).
