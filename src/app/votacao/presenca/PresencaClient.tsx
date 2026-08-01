@@ -109,6 +109,10 @@ export function PresencaClient({ rodadaId, jogadores, convidados: convidadosInic
   const [escolha, setEscolha] = useState<Record<string, string>>({});
   const [novoConvidado, setNovoConvidado] = useState("");
   const [criando, setCriando] = useState(false);
+  // Busca: o grupo tem 30+ nomes e a lista de "ainda não chegaram" passava de
+  // 20. Sem filtro, marcar quem chegou virava rolagem procurando nome — que é
+  // exatamente o momento em que o admin está com pressa, no campo.
+  const [busca, setBusca] = useState("");
 
   const pessoas = new Map<string, Pessoa>([
     ...jogadores.map((j) => [chave({ tipo: "jogador", id: j.id }), { tipo: "jogador" as const, id: j.id, nome: j.apelido }] as const),
@@ -117,7 +121,11 @@ export function PresencaClient({ rodadaId, jogadores, convidados: convidadosInic
 
   const naLista = presentes.map((it) => pessoas.get(chave(it))).filter((p): p is Pessoa => !!p);
   const presentesKeys = new Set(presentes.map(chave));
-  const foraDaLista = [...pessoas.values()].filter((p) => !presentesKeys.has(chave(p)));
+  const norm = (t: string) => t.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
+  const alvo = norm(busca.trim());
+  const foraDaLista = [...pessoas.values()]
+    .filter((p) => !presentesKeys.has(chave(p)))
+    .filter((p) => !alvo || norm(p.nome).includes(alvo));
 
   /** Chegou agora → entra no FIM da fila. */
   function marcarChegada(p: { tipo: "jogador" | "convidado"; id: string }) {
@@ -304,11 +312,25 @@ export function PresencaClient({ rodadaId, jogadores, convidados: convidadosInic
         {/* ── AINDA NÃO CHEGARAM ── */}
         {foraDaLista.length > 0 && (
           <>
-            <div style={{ margin: "20px 0 8px" }}>
+            <div style={{ margin: "20px 0 10px", display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
               <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 13, letterSpacing: "1.4px", color: "#9a9a9a" }}>
                 AINDA NÃO CHEGARAM ({foraDaLista.length})
               </span>
             </div>
+            {/* Busca: com 30+ no grupo, achar quem chegou era rolagem pura —
+                justo no momento em que o admin está com pressa, no campo. */}
+            <input
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar nome…"
+              style={{
+                width: "100%", height: 44, padding: "0 14px", marginBottom: 10,
+                borderRadius: 14, background: "rgba(255,255,255,0.04)",
+                border: "none", boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.08)",
+                color: "#fff", fontFamily: "var(--font-body)", fontSize: 14, outline: "none",
+                boxSizing: "border-box",
+              }}
+            />
             <div style={{ background: "#141414", border: "1px solid #2c2c2c", borderRadius: 16, overflow: "hidden" }}>
               {foraDaLista.map((p, i) => (
                 <div key={chave(p)} style={{ padding: "12px 14px", borderTop: i === 0 ? "none" : "1px solid #1f1f1f" }}>
