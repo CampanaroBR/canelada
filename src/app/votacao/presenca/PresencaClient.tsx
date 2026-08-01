@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft, ChevronUp, ChevronDown, Plus, X, Link as LinkIcon, Edit2 } from "reicon-react";
-import { Content, Avatar, Button, Select } from "@/ds";
+import { Avatar, Button, Select } from "@/ds";
 import { toast } from "@/ds/toast";
 import { salvarPresenca, vincularPendente, definirPapelGol, criarConvidado, atualizarConvidado, type ItemPresenca } from "../actions";
 import { LABEL_NIVEL, type Nivel } from "@/lib/convidados";
@@ -28,6 +28,8 @@ interface Props {
 
 const ACCENT = "#9fe870";
 const chave = (it: { tipo: string; id: string }) => `${it.tipo}:${it.id}`;
+/** Mínimo pra fechar 2 times na formação padrão (1 goleiro + 4 linha). */
+const MIN_SORTEIO = 10;
 
 const PROXIMO_PAPEL: Record<string, PapelGol> = { "": "CURINGA", CURINGA: "FIXO", FIXO: null };
 const LABEL_PAPEL: Record<string, { txt: string; cor: string; bg: string }> = {
@@ -35,6 +37,25 @@ const LABEL_PAPEL: Record<string, { txt: string; cor: string; bg: string }> = {
   CURINGA: { txt: "gol?", cor: ACCENT, bg: "rgba(159,232,112,0.14)" },
 };
 const PROXIMO_NIVEL: Record<Nivel, Nivel> = { FRACO: "MEDIO", MEDIO: "FORTE", FORTE: "FRACO" };
+
+/** Metade do controle de reordenar (↑ / ↓). Sem fundo próprio: o fundo é do
+ *  bloco que agrupa os dois, pra lerem como UM controle e não duas ilhas. */
+function SetaBtn({ label, onClick, disabled, children }: { label: string; onClick: () => void; disabled?: boolean; children: React.ReactNode }) {
+  return (
+    <button
+      type="button" aria-label={label} onClick={onClick} disabled={disabled}
+      style={{
+        width: 34, height: 34, border: "none", background: "transparent",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        cursor: disabled ? "default" : "pointer", opacity: disabled ? 0.25 : 1,
+        transition: "opacity 200ms cubic-bezier(0.32,0.72,0,1)",
+        WebkitTapHighlightColor: "transparent",
+      }}
+    >
+      {children}
+    </button>
+  );
+}
 
 /** Botãozinho de ação da linha. Alvo de toque 36px. */
 function IconBtn({ label, onClick, disabled, children }: { label: string; onClick: () => void; disabled?: boolean; children: React.ReactNode }) {
@@ -260,52 +281,106 @@ export function PresencaClient({ rodadaId, jogadores, convidados: convidadosInic
           </div>
         )}
 
-        {/* ── QUEM CHEGOU (na ordem) ── */}
-        <div style={{ marginBottom: 8, display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
-          <span style={{ fontFamily: "var(--font-display)", fontWeight: 800, fontSize: 13, letterSpacing: "1.4px", color: "#9a9a9a" }}>
-            CHEGARAM ({naLista.length})
-          </span>
-          <span style={{ fontFamily: "var(--font-body)", fontSize: 11.5, color: "#6e6e6e" }}>na ordem de chegada</span>
+        {/* ── PROGRESSO ──
+            Conecta esta tela com a próxima: o admin marca presença PRA sortear,
+            então o número que importa é quanto falta pra fechar os times. */}
+        <div style={{
+          padding: "14px 16px", borderRadius: 20, marginBottom: 14,
+          background: "rgba(255,255,255,0.03)",
+          boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.07)",
+        }}>
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 10 }}>
+            <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 10, letterSpacing: "1.6px", color: "#7a7a7a" }}>
+              CHEGARAM
+            </span>
+            <span style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+              <span style={{ fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 26, lineHeight: 1, color: ACCENT, fontVariantNumeric: "tabular-nums" }}>
+                {naLista.length}
+              </span>
+              <span style={{ fontFamily: "var(--font-body)", fontWeight: 600, fontSize: 12, color: "#6e6e6e" }}>
+                / {MIN_SORTEIO}
+              </span>
+            </span>
+          </div>
+          <div style={{ height: 6, borderRadius: 999, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
+            <div style={{
+              height: "100%", width: `${Math.min(100, (naLista.length / MIN_SORTEIO) * 100)}%`,
+              background: ACCENT, borderRadius: 999,
+              transition: "width 420ms cubic-bezier(0.32,0.72,0,1)",
+            }} />
+          </div>
+          <p style={{ margin: "10px 0 0", fontFamily: "var(--font-body)", fontSize: 11.5, color: "#6e6e6e" }}>
+            {naLista.length >= MIN_SORTEIO
+              ? "Dá pra sortear 2 times · a ordem abaixo é a de chegada"
+              : `Faltam ${MIN_SORTEIO - naLista.length} pra fechar 2 times`}
+          </p>
         </div>
 
         {naLista.length === 0 ? (
-          <div style={{ background: "#141414", border: "1px solid #2c2c2c", borderRadius: 16, padding: "20px 16px", textAlign: "center" }}>
-            <p style={{ margin: 0, fontFamily: "var(--font-body)", fontSize: 13.5, color: "#7a7a7a" }}>
-              Ninguém marcado ainda. Toque em <strong style={{ color: "#bdbdbd" }}>+</strong> na lista de baixo conforme o pessoal for chegando.
+          <div style={{
+            padding: "22px 18px", borderRadius: 20, textAlign: "center",
+            background: "rgba(255,255,255,0.025)",
+            boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.06)",
+          }}>
+            <p style={{ margin: 0, fontFamily: "var(--font-body)", fontSize: 13.5, lineHeight: 1.5, color: "#7a7a7a" }}>
+              Ninguém marcado ainda. Toque em <strong style={{ color: ACCENT }}>+</strong> na lista de baixo conforme o pessoal for chegando.
             </p>
           </div>
         ) : (
-          <div style={{ background: "#141414", border: "1px solid #2c2c2c", borderRadius: 16, overflow: "hidden" }}>
-            {naLista.map((p, i) => (
-              <div key={chave(p)} style={{ padding: "10px 12px", borderTop: i === 0 ? "none" : "1px solid #1f1f1f", display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{
-                  width: 24, height: 24, borderRadius: 999, flexShrink: 0,
-                  background: "rgba(255,255,255,0.06)", color: "#cfcfcf",
-                  fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 11,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                }}>{i + 1}</span>
+          /* Double-bezel: casca + núcleo com raios concêntricos (26 → 21) */
+          <div style={{
+            padding: 5, borderRadius: 26,
+            background: "rgba(255,255,255,0.035)",
+            boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.07)",
+          }}>
+            <div style={{
+              borderRadius: 21, overflow: "hidden",
+              background: "linear-gradient(180deg, #161616 0%, #101010 100%)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)",
+            }}>
+              {naLista.map((p, i) => (
+                <div key={chave(p)} style={{
+                  padding: "10px 10px 10px 14px",
+                  borderTop: i === 0 ? "none" : "1px solid rgba(255,255,255,0.04)",
+                  display: "flex", alignItems: "center", gap: 10,
+                }}>
+                  {/* Ordinal: número em tabular, sem caixinha — a caixa cinza
+                      competia com o avatar e engordava a linha. */}
+                  <span style={{
+                    width: 18, flexShrink: 0, textAlign: "center",
+                    fontFamily: "var(--font-numeric)", fontWeight: 700, fontSize: 13,
+                    color: i < MIN_SORTEIO ? "#8a8a8a" : "#4e4e4e",
+                    fontVariantNumeric: "tabular-nums",
+                  }}>{i + 1}</span>
 
-                <Avatar name={p.nome} />
-                <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {p.nome}
-                </span>
+                  <Avatar name={p.nome} />
+                  <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14.5, color: "#fff", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {p.nome}
+                  </span>
 
-                {p.tipo === "convidado" && <ChipNivel nivel={(p.nivel ?? "MEDIO") as Nivel} onClick={() => ciclarNivel(p)} />}
-                <ChipGol papel={papeis[chave(p)] ?? null} onClick={() => ciclarPapel(p)} />
+                  {p.tipo === "convidado" && <ChipNivel nivel={(p.nivel ?? "MEDIO") as Nivel} onClick={() => ciclarNivel(p)} />}
+                  <ChipGol papel={papeis[chave(p)] ?? null} onClick={() => ciclarPapel(p)} />
 
-                <div style={{ display: "flex", gap: 2, flexShrink: 0 }}>
-                  <IconBtn label="Subir" onClick={() => mover(i, -1)} disabled={i === 0}>
-                    <ChevronUp size={16} weight="Outline" color="#bdbdbd" />
-                  </IconBtn>
-                  <IconBtn label="Descer" onClick={() => mover(i, 1)} disabled={i === naLista.length - 1}>
-                    <ChevronDown size={16} weight="Outline" color="#bdbdbd" />
-                  </IconBtn>
+                  {/* ↑↓ agrupados num só bloco: eram 3 ilhas de 36px comendo
+                      108px da linha. Agora leem como um controle só. */}
+                  <div style={{
+                    display: "flex", flexShrink: 0, borderRadius: 11, overflow: "hidden",
+                    background: "rgba(255,255,255,0.05)",
+                  }}>
+                    <SetaBtn label="Subir" onClick={() => mover(i, -1)} disabled={i === 0}>
+                      <ChevronUp size={15} weight="Outline" color="#bdbdbd" />
+                    </SetaBtn>
+                    <span aria-hidden style={{ width: 1, background: "rgba(255,255,255,0.06)" }} />
+                    <SetaBtn label="Descer" onClick={() => mover(i, 1)} disabled={i === naLista.length - 1}>
+                      <ChevronDown size={15} weight="Outline" color="#bdbdbd" />
+                    </SetaBtn>
+                  </div>
                   <IconBtn label={`Tirar ${p.nome}`} onClick={() => removerChegada(p)}>
-                    <X size={16} weight="Outline" color="#e56767" />
+                    <X size={15} weight="Outline" color="#e56767" />
                   </IconBtn>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
 
@@ -331,25 +406,48 @@ export function PresencaClient({ rodadaId, jogadores, convidados: convidadosInic
                 boxSizing: "border-box",
               }}
             />
-            <div style={{ background: "#141414", border: "1px solid #2c2c2c", borderRadius: 16, overflow: "hidden" }}>
-              {foraDaLista.map((p, i) => (
-                <div key={chave(p)} style={{ padding: "12px 14px", borderTop: i === 0 ? "none" : "1px solid #1f1f1f" }}>
-                  <Content
-                    leading={<Avatar name={p.nome} />}
-                    label={p.nome}
-                    trailing={
-                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        {p.tipo === "convidado" && <ChipNivel nivel={(p.nivel ?? "MEDIO") as Nivel} onClick={() => ciclarNivel(p)} />}
-                        <ChipGol papel={papeis[chave(p)] ?? null} onClick={() => ciclarPapel(p)} />
-                        <IconBtn label={`Marcar chegada de ${p.nome}`} onClick={() => marcarChegada(p)}>
-                          <Plus size={18} weight="Outline" color={ACCENT} />
-                        </IconBtn>
-                      </div>
-                    }
-                  />
-                </div>
-              ))}
-            </div>
+            {foraDaLista.length === 0 ? (
+              <p style={{ margin: 0, padding: "18px 4px", fontFamily: "var(--font-body)", fontSize: 13, color: "#6e6e6e", textAlign: "center" }}>
+                Nenhum nome com “{busca}”.
+              </p>
+            ) : (
+              <div style={{
+                borderRadius: 20, overflow: "hidden",
+                background: "rgba(255,255,255,0.025)",
+                boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.06)",
+              }}>
+                {foraDaLista.map((p, i) => (
+                  <div key={chave(p)} style={{
+                    display: "flex", alignItems: "center", gap: 12,
+                    padding: "10px 10px 10px 14px",
+                    borderTop: i === 0 ? "none" : "1px solid rgba(255,255,255,0.04)",
+                  }}>
+                    <Avatar name={p.nome} />
+                    <span style={{ flex: 1, minWidth: 0, fontFamily: "var(--font-display)", fontWeight: 700, fontSize: 14.5, color: "#c8c8c8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {p.nome}
+                    </span>
+                    {p.tipo === "convidado" && <ChipNivel nivel={(p.nivel ?? "MEDIO") as Nivel} onClick={() => ciclarNivel(p)} />}
+                    <ChipGol papel={papeis[chave(p)] ?? null} onClick={() => ciclarPapel(p)} />
+                    {/* CTA da linha: cheio, porque marcar chegada é a ação
+                        principal desta lista — não pode ter o mesmo peso do ✕. */}
+                    <button
+                      type="button"
+                      onClick={() => marcarChegada(p)}
+                      aria-label={`Marcar chegada de ${p.nome}`}
+                      style={{
+                        width: 36, height: 36, borderRadius: 12, flexShrink: 0, border: "none",
+                        background: `${ACCENT}1f`, cursor: "pointer",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        transition: "background 200ms cubic-bezier(0.32,0.72,0,1)",
+                        WebkitTapHighlightColor: "transparent",
+                      }}
+                    >
+                      <Plus size={18} weight="Outline" color={ACCENT} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </>
         )}
 

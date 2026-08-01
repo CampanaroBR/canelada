@@ -216,6 +216,20 @@ origem das fantasmas limpas antes.
 
 ---
 
+## Linguagem visual (estabelecida 2026-07-30)
+
+Vale pras telas novas — perfil, presença, sorteio e card de compartilhar:
+- **Double-bezel**: casca externa (`rgba(255,255,255,.035)` + hairline) com
+  `padding: 5` e o núcleo dentro, com raio menor (26 → 21). Nada de card chapado
+  com `1px solid #2c2c2c`.
+- **Hairline** `inset 0 0 0 1px rgba(255,255,255,.06-.08)` no lugar de `border`.
+- **Números com peso**: OVR/média/nota em `var(--font-numeric)` + `tabular-nums`,
+  tamanho grande e cor de destaque. Número é o conteúdo, não legenda.
+- **Cor por time** no sorteio (`#9fe870`, `#5cc8ff`, `#f0a44a`, `#c58cff`).
+- **Transições** `cubic-bezier(0.32,0.72,0,1)` — nunca `ease-in-out`.
+- **Barra de progresso/equilíbrio** em vez de texto solto quando o dado é
+  comparativo (quantos faltam, quão parelho está).
+
 ## Convenções / gotchas
 
 - Validar com `npx tsc --noEmit` e `npx vitest run` (67 testes). Não subir dev server.
